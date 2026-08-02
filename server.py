@@ -15,6 +15,7 @@ import sys
 import threading
 import time
 import webbrowser
+import urllib.request
 from pathlib import Path
 from datetime import datetime
 
@@ -69,14 +70,41 @@ def encontrar_puerto(preferred_port):
     raise OSError('No hay un puerto local disponible para la aplicación.')
 
 
-def abrir_navegador_cuando_este_listo(port, url):
-    for _ in range(600):
-        try:
-            with socket.create_connection(('127.0.0.1', port), timeout=0.2):
-                webbrowser.open(f'http://localhost:{port}{url}')
-                return
-        except OSError:
-            time.sleep(0.1)
+def app_ya_corriendo(port):
+    """True si la aplicación ya responde en el puerto dado."""
+    try:
+        with urllib.request.urlopen(f'http://127.0.0.1:{port}/api/health', timeout=2) as response:
+            return response.status == 200
+    except Exception:
+        return False
+
+
+def contar_y_abrir_navegador(port, url):
+    """Cuenta atrás de 10 s; pulsar cualquier tecla abre el navegador de inmediato."""
+    import msvcrt
+
+    print()
+    print("=" * 58)
+    print("  La aplicación se abrirá en tu navegador en 10 segundos.")
+    print("  Presiona cualquier tecla para abrirla ahora.")
+    print("=" * 58)
+    mensaje = '  Abriendo el navegador...'
+    try:
+        for remaining in range(10, 0, -1):
+            sys.stdout.write(f'\r  Abriendo en {remaining} segundos...   ')
+            sys.stdout.flush()
+            deadline = time.monotonic() + 1.0
+            while time.monotonic() < deadline:
+                if msvcrt.kbhit():
+                    msvcrt.getch()
+                    mensaje = '  Abriendo el navegador ahora...'
+                    raise SystemExit
+                time.sleep(0.05)
+    except SystemExit:
+        pass
+    sys.stdout.write('\r' + mensaje + '                      \n')
+    sys.stdout.flush()
+    webbrowser.open(f'http://localhost:{port}{url}')
 
 
 def normalizar_datos_graficos(datos):
@@ -304,25 +332,43 @@ if __name__ == '__main__':
     print("Servidor de Análisis Estratégico")
     print("=" * 50)
     requested_port = int(os.environ.get('FLASK_PORT', '5000'))
-    port_file = os.environ.get('PORT_FILE')
-    busca_puerto = os.environ.get('OPEN_BROWSER') == '1' or bool(port_file)
-    app_port = encontrar_puerto(requested_port) if busca_puerto else requested_port
-    if port_file:
-        try:
-            with open(port_file, 'w', encoding='utf-8') as f:
-                f.write(str(app_port))
-        except OSError as error:
-            print(f"AVISO: No se pudo escribir el puerto en {port_file}: {error}")
-    print(f"Abre tu navegador en: http://localhost:{app_port}")
-    print("Presiona Ctrl+C para detener el servidor")
+    abre_navegador = os.environ.get('OPEN_BROWSER') != '0'
+    initial_url = '/setup' if setup_api.is_portable() else '/app/context'
+
+    # Si la aplicación ya está en ejecución, solo abrir el navegador y salir.
+    if not setup_api.port_in_use(requested_port) or not app_ya_corriendo(requested_port):
+        app_port = encontrar_puerto(requested_port)
+    else:
+        print(f"La aplicación ya está en ejecución en http://localhost:{requested_port}")
+        if abre_navegador:
+            webbrowser.open(f'http://localhost:{requested_port}/app/context')
+        sys.exit(0)
+
+    print(f"  Aplicación disponible en: http://localhost:{app_port}{initial_url}")
+    print("  Cierra esta ventana o presiona Ctrl+C para detener la aplicación")
     print("=" * 50)
 
-    if os.environ.get('OPEN_BROWSER') == '1':
-        initial_url = '/setup' if setup_api.is_portable() else '/app/context'
-        threading.Thread(
-            target=abrir_navegador_cuando_este_listo,
-            args=(app_port, initial_url),
-            daemon=True,
-        ).start()
+    serve_thread = threading.Thread(
+        target=serve,
+        args=(app,),
+        kwargs={'host': '127.0.0.1', 'port': app_port, 'threads': 4},
+        daemon=True,
+    )
+    serve_thread.start()
 
-    serve(app, host='127.0.0.1', port=app_port, threads=4)
+    # Esperar a que el servidor empiece a escuchar.
+    for _ in range(100):
+        try:
+            with socket.create_connection(('127.0.0.1', app_port), timeout=0.2):
+                break
+        except OSError:
+            time.sleep(0.1)
+
+    if abre_navegador:
+        contar_y_abrir_navegador(app_port, initial_url)
+
+    try:
+        while True:
+            time.sleep(3600)
+    except KeyboardInterrupt:
+        print("\nServidor detenido.")

@@ -51,7 +51,7 @@ http://localhost:5000            (UN solo puerto, siempre)
 |---|---|
 | ¿Cuándo aparece el wizard? | Solo primer uso (deps no instaladas). `/setup` en modo full/portable muestra **pantalla "Todo en orden"** con botón "Ir a la aplicación" |
 | Bienvenida portable | El navegador abre `/setup` solo en el **portable**: pantalla "Todo en orden" con **cuenta atrás de 20 s** y redirección automática a `/app/context` (botón "Ir a la aplicación ahora" cancela la espera). En modo full se abre `/app/context` directo |
-| Launchers | Ambos bats (`iniciar.bat`, `iniciar_portable.bat`) muestran *"La aplicación se abrirá en tu navegador en 10 segundos; presiona cualquier tecla para abrirla ahora"* (`timeout /t 10`) y abren el navegador ellos mismos vía `start "" http://localhost:<puerto>/<ruta>` (el puerto lo leen de un archivo que escribe el servidor: env `PORT_FILE` en `%TEMP%`) |
+| Launchers | `iniciar.bat` ejecuta `server.py` en **primer plano** (ventana única, sin `start`). `server.py` hace la cuenta atrás de 10 s con `msvcrt` (tecla = abrir ya) y abre el navegador (`webbrowser.open`). `iniciar_portable.bat` ejecuta el exe en primer plano (misma lógica). El check de primer uso existe SOLO en `iniciar.bat` |
 | ¿Dónde vive el wizard durante una instalación desde cero? | **Mismo puerto 5000** (handoff de listener) |
 | Estructura de vistas en código | **Una carpeta por ruta** (`src/app/(pages)/<ruta>/` — route group estilo Next.js; el wizard NO va en `(pages)`) |
 | Skill de React Router | `react-router-declarative-mode` instalada en `.agents/skills/` (el `-g` global falló: "PromptScript does not support global skill installation") |
@@ -339,10 +339,10 @@ if errorlevel 1 (
 
 ## 6. PORTABLE OFFLINE — salvaguardas (requisito del usuario)
 
-1. **`iniciar_portable.bat` (raíz y `offline/`)**: exe directo con `OPEN_BROWSER=0` + `PORT_FILE=%TEMP%\analisis_estrategico_port.txt`; espera el puerto, poll de `/api/health` y abre el navegador con mensaje de 10 s (`timeout /t 10`, tecla = abrir ya) en `/setup`. El check de primer uso existe SOLO en `iniciar.bat`.
+1. **`iniciar_portable.bat` (raíz y `offline/`)**: ejecuta el exe en primer plano (ventana única). El exe hace la cuenta atrás de 10 s (`msvcrt`) y abre el navegador en `/setup` (bienvenida con cuenta atrás 20 s). El check de primer uso existe SOLO en `iniciar.bat`.
 2. **Nunca se ejecuta `setup_server.py` en el portable**: el exe contiene todo (deps + dist). El wizard nunca se auto-muestra.
 3. **Modo portable** (`sys.frozen`): `/api/health` responde `mode: 'portable'` → el wizard en `/setup` muestra banner informativo, checks sin acciones, y `/api/install` responde error claro. El botón "Iniciar Aplicación" no existe en este modo.
-4. **URL inicial del portable**: el launcher abre `/setup` → **bienvenida** ("Todo en orden" + cuenta atrás 20 s) → redirige a `/app/context`. En modo full el launcher abre `/app/context` directo (sin bienvenida). El exe solo abre navegador si recibe `OPEN_BROWSER=1` (modo residual, timeout 60 s).
+4. **URL inicial del portable**: el launcher ejecuta el exe en primer plano → el exe hace la cuenta atrás de 10 s (`msvcrt`) y abre `/setup` → **bienvenida** ("Todo en orden" + cuenta atrás 20 s) → redirige a `/app/context`. En modo full el exe abre `/app/context` directo (sin bienvenida). Si `OPEN_BROWSER=0` (handoff), no abre navegador ni hace countdown.
 5. **Verificación post-build** (§8.4): el exe sirve `/app/context`, `/setup` (banner) y las APIs; grep de `setup_server` en el paquete offline → solo documentación.
 
 ---
@@ -386,9 +386,9 @@ if errorlevel 1 (
 | # | Prueba | Esperado |
 |---|---|---|
 | 18 | Regenerar con `preparar_portable_offline.bat` | Exit 0; `offline/AnalisisEstrategico/_internal/frontend/dist/` con `index.html` (sin `setup.html`); `offline/iniciar_portable.bat` actualizado (copiado del raíz) |
-| 19 | Ejecutar exe con `OPEN_BROWSER=0` + `PORT_FILE=%TEMP%\analisis_estrategico_port.txt` | Escribe el puerto real en el archivo; sirve `/api/health` y `/setup`; modo portable |
+| 19 | Ejecutar exe con `OPEN_BROWSER=0` | Sirve `/api/health` y `/setup`; modo portable; sin countdown (OPEN_BROWSER=0) |
 | 20 | `GET /api/health` en exe | `mode: 'portable'` |
-| 21 | `iniciar_portable.bat` | Mensaje "se abrirá en 10 segundos" → `timeout /t 10` (tecla = abrir ya) → `start "" http://localhost:<puerto>/setup` |
+| 21 | `iniciar_portable.bat` | Ejecuta exe en primer plano; countdown 10 s (`msvcrt`) con apertura inmediata al pulsar tecla; abre `http://localhost:5000/setup` |
 | 22 | Bienvenida en `/setup` (portable) | "Todo en orden" + "Será redirigido a la aplicación automáticamente en X segundos" (cuenta atrás 20 s) → redirige a `/app/context` |
 | 23 | `iniciar.bat` (modo full) | Mismo mensaje de 10 s → abre `http://localhost:<puerto>/app/context` (sin bienvenida) |
 
@@ -433,7 +433,7 @@ if errorlevel 1 (
 
 **FASE 4 — Portable** ✅ COMPLETADA (build + exe verificado)
 18. `preparar_portable_offline.bat` → regenerar. **Correcciones del .bat**: (a) `for /f` de PYTHON_BASE roto con rutas con espacios (leía el archivo en vez del contenido) → fix con archivo temporal + `usebackq`; (b) detección de DLLs: `_ctypes.pyd` exige `ffi.dll` (no `ffi-8.dll`) → prioridad `ffi.dll` primero; (c) `pyexpat` exige `libexpat.dll` → empaquetado quirúrgico vía `--add-binary` (loop `call set`): ffi.dll, LIBBZ2.dll, libcrypto-3-x64.dll, libexpat.dll, liblzma.dll, libmpdec-4.dll, libssl-3-x64.dll, sqlite3.dll (set derivado de `dumpbin /dependents` sobre todos los `.pyd` del base).
-19. Pruebas §7.4: exe arranca, escribe `PORT_FILE`, `/api/health`→`mode:'portable'`, `/setup`→200, `/api/install`→error portable, `/generar-pdf`→PDF válido. Launchers nuevos: secuencia completa simulada en ambos bats (espera puerto → poll salud → mensaje 10 s → URL correcta: `/setup` portable, `/app/context` full). Bienvenida con Edge headless: cuenta atrás visible ("...en 16 segundos" a los 5 s) y redirección automática a `/app/context` a los 20 s. `iniciar_portable.bat`/`iniciar.bat` ahora abren el navegador ellos mismos (antes lo hacía `server.py` con `webbrowser`, que fallaba si el arranque tardaba >10 s — el timeout del exe se subió a 60 s para el modo `OPEN_BROWSER=1` residual).
+19. **Ventana única + countdown en servidor** (reemplaza PORT_FILE + start + timeout): `start /b` resultó inviable (el servidor muere cuando el bat sale). Rediseño: `server.py` hace la cuenta atrás de 10 s (`msvcrt`, tecla = abrir ya), abre el navegador (`webbrowser.open`) y se queda sirviendo en primer plano. Los bats ejecutan el servidor/exe **en foreground** (sin `start`, sin `PORT_FILE`, sin PowerShell). Esto garantiza una sola ventana. Pruebas: full OK (health, countdown 10→1, "ya corriendo" detecta instancia previa y sale con código 0); exe portable OK (health portable, countdown, `/setup`); handoff OK (`OPEN_BROWSER=0` → sin countdown). `abrir_navegador_cuando_este_listo` eliminado (reemplazado por `contar_y_abrir_navegador` con msvcrt). Flush añadido al final de la cuenta atrás.
 
 **FASE 5 — Cierre**
 20. Actualizar `PLAN_MAESTRO_IMPLEMENTACION.md` (esquema de URLs, arquitectura de servidor único, estado de módulos).
