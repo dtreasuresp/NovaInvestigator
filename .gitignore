@@ -1,0 +1,40 @@
+
+
+# AI, IDE y herramientas locales
+/.github/instructions/
+/.agents/
+/.codacy/
+/.playwright-mcp/
+/.vscode/
+
+# Dependencias y builds JavaScript
+node_modules/
+frontend/dist/
+*.tsbuildinfo
+
+# Entornos y artefactos Python
+.venv/
+venv/
+env/
+__pycache__/
+*.py[cod]
+*.pyd
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Configuracion local y secretos
+.env
+.env.*
+!.env.example
+
+# Builds portables y archivos generados
+offline/
+build/
+
+# Logs y archivos del sistema
+*.log
+.coverage
+htmlcov/
+.DS_Store
+Thumbs.db

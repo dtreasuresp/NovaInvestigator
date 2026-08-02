@@ -1,0 +1,23 @@
+{
+  "name": "matriz-dafo-estrategica",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 0.0.0.0",
+    "build": "vite build",
+    "preview": "vite preview --host 0.0.0.0",
+    "app:normal": "cmd /d /c iniciar.bat",
+    "app:offline": "cmd /d /c preparar_portable_offline.bat"
+  },
+  "dependencies": {
+    "lucide-react": "^1.28.0",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "react-router-dom": "^7.18.2"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^5.0.2",
+    "vite": "^7.1.7"
+  }
+}

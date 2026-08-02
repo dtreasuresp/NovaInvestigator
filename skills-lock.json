@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "skills": {
+    "react-router-declarative-mode": {
+      "source": "remix-run/agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/react-router-declarative-mode/SKILL.md",
+      "computedHash": "b399ee32fa82efdbdad1121421702b7725fcffac36424529a0ea452796f3bc92"
+    }
+  }
+}

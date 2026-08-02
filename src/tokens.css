@@ -1,0 +1,88 @@
+/* tokens.css - Tokens globales + fuentes locales (Inter / JetBrains Mono) */
+
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-display: swap;
+  src: url('fonts/Inter-400.woff2') format('woff2');
+  font-weight: 400;
+}
+
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-display: swap;
+  src: url('fonts/Inter-500.woff2') format('woff2');
+  font-weight: 500;
+}
+
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-display: swap;
+  src: url('fonts/Inter-600.woff2') format('woff2');
+  font-weight: 600;
+}
+
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-display: swap;
+  src: url('fonts/Inter-700.woff2') format('woff2');
+  font-weight: 700;
+}
+
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-display: swap;
+  src: url('fonts/JetBrainsMono-400.woff2') format('woff2');
+  font-weight: 400;
+}
+
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-display: swap;
+  src: url('fonts/JetBrainsMono-500.woff2') format('woff2');
+  font-weight: 500;
+}
+
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-display: swap;
+  src: url('fonts/JetBrainsMono-600.woff2') format('woff2');
+  font-weight: 600;
+}
+
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-display: swap;
+  src: url('fonts/JetBrainsMono-700.woff2') format('woff2');
+  font-weight: 700;
+}
+
+:root {
+  --ink: #172b33;
+  --ink-soft: #52646a;
+  --muted: #76858a;
+  --line: #d7e0de;
+  --line-strong: #bdcbc7;
+  --canvas: #eaf0ee;
+  --surface: #ffffff;
+  --surface-soft: #f5f8f7;
+  --teal: #087f78;
+  --teal-dark: #075e5a;
+  --teal-soft: #dcefeb;
+  --amber: #a76516;
+  --amber-soft: #f9ead0;
+  --brick: #a14a3c;
+  --brick-soft: #f6e0dc;
+  --blue: #356d91;
+  --blue-soft: #e1ecf3;
+  --shadow: 0 12px 30px rgba(28, 54, 58, 0.08);
+  --mono: 'JetBrains Mono', 'Cascadia Mono', Consolas, monospace;
+  --sans: 'Inter', 'Segoe UI', sans-serif;
+}
