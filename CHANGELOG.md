@@ -4,6 +4,16 @@
 
 All notable changes to this template will be documented in this file
 
+## v0.0.38 (2026-08-24)
+
+### Fixed & Cloud Infrastructure
+- **Corrección de Enlace 404 en Botón Flotante de Upgrade**:
+  - En [`UpgradePro.tsx`](file:///d:/03.%20MATRIZ%20DAFO/src/components/layout/UpgradePro.tsx), corregida la ruta de navegación de `/pages/pricing/billing/upgrade/` a la ruta canónica de Next.js App Router [`/pages/billing/upgrade`](file:///d:/03.%20MATRIZ%20DAFO/src/app/(pages)/pages/billing/upgrade/page.tsx).
+  - En [`next.config.ts`](file:///d:/03.%20MATRIZ%20DAFO/next.config.ts), agregado redireccionamiento permanente 308 desde `/pages/pricing/billing/upgrade` hacia `/pages/billing/upgrade` para capturar cualquier prefetch o enlace residual.
+- **Sincronización Hermética de Variables de Entorno en Vercel**:
+  - Sincronizadas las 18 variables de entorno de producción/preview en Vercel (Supabase, Stripe, Resend y LLM Providers) con sus valores reales cifrados.
+  - Implementados fallbacks seguros de inicialización en [`src/lib/supabase/browser.ts`](file:///d:/03.%20MATRIZ%20DAFO/src/lib/supabase/browser.ts) y [`src/lib/supabase/server.ts`](file:///d:/03.%20MATRIZ%20DAFO/src/lib/supabase/server.ts) para compatibilidad con el worker de generación estática de Next.js.
+
 ## v0.0.37 (2026-08-24)
 
 ### Added & Production Infrastructure

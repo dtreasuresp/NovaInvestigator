@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button'
 const BuyNowButton = () => {
   return (
     <Button
-      render={<Link href='/pages/pricing/billing/upgrade/'/>}
+      render={<Link href='/pages/billing/upgrade' />}
       className='animate-heartbeat fixed right-15 bottom-8 z-50'
       nativeButton={false}
     >

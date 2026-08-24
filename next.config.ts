@@ -28,6 +28,11 @@ const nextConfig: NextConfig = {
         source: '/dashboard',
         destination: '/dashboard/investigations',
         permanent: true
+      },
+      {
+        source: '/pages/pricing/billing/upgrade',
+        destination: '/pages/billing/upgrade',
+        permanent: true
       }
     ]
   }
