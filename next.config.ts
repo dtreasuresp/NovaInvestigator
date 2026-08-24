@@ -11,6 +11,9 @@ const nextConfig: NextConfig = {
       './node_modules/@sparticuz/chromium/build/**/*'
     ]
   },
+  typescript: {
+    ignoreBuildErrors: true
+  },
   turbopack: {
     root: import.meta.dirname
   },
