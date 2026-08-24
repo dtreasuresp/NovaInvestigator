@@ -181,7 +181,7 @@ export function AiCopilotSheet({ floating = true }: AiCopilotSheetProps) {
     setIsLoadingLocalQuota(true)
 
     try {
-      const res = await fetch('/api/ai/quota', { cache: 'no-store' })
+      const res = await fetch('/api/novai/quota', { cache: 'no-store' })
 
       if (res.ok) {
         const data = (await res.json()) as AiQuotaInfo
@@ -344,7 +344,7 @@ export function AiCopilotSheet({ floating = true }: AiCopilotSheetProps) {
 
     try {
       const isInvestigator = Boolean(investigatorCtx?.state?.internal)
-      const url = isInvestigator ? '/api/investigations/ai/chat' : '/api/ai/chat'
+      const url = isInvestigator ? '/api/investigations/ai/chat' : '/api/novai/chat'
 
       const bodyPayload = isInvestigator
         ? {

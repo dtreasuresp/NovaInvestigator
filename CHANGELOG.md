@@ -4,6 +4,29 @@
 
 All notable changes to this template will be documented in this file
 
+## v0.0.40 (2026-08-24)
+
+### Added & UI Components
+- **Integración del Componente Stepper Canónico basado en `@stepperize/react`**:
+  - Instalado `@stepperize/react` e integrado en [`src/components/ui/stepper.tsx`](file:///d:/03.%20MATRIZ%20DAFO/src/components/ui/stepper.tsx) con soporte reactivo completo para navegación, indicadores personalizables (`indicators.completed`), orientación responsive automática y accesibilidad WAI-ARIA para tabs.
+  - Creado el componente variante [`src/components/shadcn-studio/stepper/stepper-07.tsx`](file:///d:/03.%20MATRIZ%20DAFO/src/components/shadcn-studio/stepper/stepper-07.tsx) con la estética Shadcn Studio.
+  - Actualizado [`src/app/(pages)/apps/investigator/layout-client.tsx`](file:///d:/03.%20MATRIZ%20DAFO/src/app/(pages)/apps/investigator/layout-client.tsx) para renderizar el nuevo Stepper en las 7 etapas canónicas del análisis estratégico.
+
+### Fixed & Navigation
+- **Navegación al Paso 1 al Abrir o Crear Investigaciones**:
+  - En [`src/views/apps/investigator/investigations/index.tsx`](file:///d:/03.%20MATRIZ%20DAFO/src/views/apps/investigator/investigations/index.tsx), corregido el botón "Abrir expediente", el botón "+ Nueva Investigación" y "Cargar demo" para ejecutar `router.push('/apps/investigator/context')` tras cargar el estado, redirigiendo de inmediato al usuario al primer paso del expediente.
+
+### Refactored & API Architecture
+- **Migración Integral de Rutas `/api/ai` a `/api/novai`**:
+  - Migrados todos los Route Handlers de IA al prefijo canónico de dominio `/api/novai`:
+    - `/api/novai/chat` (streaming de chat con contexto y roles)
+    - `/api/novai/quota` (consulta de entitlements y cuotas)
+    - `/api/novai/report` (generación de informes y dictámenes ejecutivos)
+    - `/api/novai/investigator/propose-dafo` (propuesta de cruces DAFO)
+    - `/api/novai/investigator/propose-qspm` (propuesta de ponderaciones QSPM)
+  - Actualizados todos los puntos de consumo en el frontend ([`novai/index.tsx`](file:///d:/03.%20MATRIZ%20DAFO/src/views/apps/novai/index.tsx), [`ai-copilot-sheet.tsx`](file:///d:/03.%20MATRIZ%20DAFO/src/views/apps/investigator/shared/ai-copilot-sheet.tsx), [`dafo-ai-modal.tsx`](file:///d:/03.%20MATRIZ%20DAFO/src/views/apps/investigator/dafo/dafo-ai-modal.tsx), [`qspm-ai-modal.tsx`](file:///d:/03.%20MATRIZ%20DAFO/src/views/apps/investigator/qspm/qspm-ai-modal.tsx)).
+  - Eliminado el directorio legacy `src/app/api/ai`.
+
 ## v0.0.39 (2026-08-24)
 
 ### Added & UI/UX Architecture

@@ -5,6 +5,7 @@ import { getNovaiQuotaInfo } from '@/features/novai/service'
 import { toErrorResponse } from '@/lib/investigations/http'
 
 export const runtime = 'nodejs'
+export const dynamic = 'force-dynamic'
 
 export async function GET() {
   try {

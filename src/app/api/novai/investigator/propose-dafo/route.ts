@@ -4,6 +4,7 @@ import { generateDafoProposal } from '@/features/novai/service'
 import { toErrorResponse } from '@/lib/investigations/http'
 
 export const runtime = 'nodejs'
+export const dynamic = 'force-dynamic'
 
 export async function POST(request: Request) {
   try {

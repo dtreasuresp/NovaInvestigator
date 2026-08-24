@@ -52,7 +52,7 @@ export function DafoAiModal({
     setError(null)
 
     try {
-      const response = await fetch('/api/ai/investigator/propose-dafo', {
+      const response = await fetch('/api/novai/investigator/propose-dafo', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

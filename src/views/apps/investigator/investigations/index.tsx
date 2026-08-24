@@ -3,6 +3,9 @@
 // React Imports
 import { useEffect, useMemo, useState } from 'react'
 
+// Next Imports
+import { useRouter } from 'next/navigation'
+
 // Type Imports
 import type { InvestigationState } from '@/types/apps/investigator-types'
 
@@ -383,6 +386,7 @@ const ResearchCard = ({
 }
 
 export const InvestigatorInvestigationsView = () => {
+  const router = useRouter()
   const { t } = useI18n()
   const {
     state,
@@ -402,6 +406,21 @@ export const InvestigatorInvestigationsView = () => {
     localMigration,
     migrateLocalInvestigations
   } = useInvestigatorAnalysis()
+
+  const handleOpenResearch = (item: InvestigationState) => {
+    openResearch(item)
+    router.push('/apps/investigator/context')
+  }
+
+  const handleCreateNew = () => {
+    createNewResearch()
+    router.push('/apps/investigator/context')
+  }
+
+  const handleLoadDemo = () => {
+    loadDemo()
+    router.push('/apps/investigator/context')
+  }
 
   const [migrationDialogOpen, setMigrationDialogOpen] = useState(false)
   const [sharingItem, setSharingItem] = useState<InvestigationState | null>(null)
@@ -513,10 +532,10 @@ export const InvestigatorInvestigationsView = () => {
         description={t('investigator.subtitle')}
         action={
           <div className='flex gap-2'>
-            <Button variant='outline' size='sm' onClick={loadDemo}>
+            <Button variant='outline' size='sm' onClick={handleLoadDemo}>
               {t('investigator.loadDemo')}
             </Button>
-            <Button size='sm' onClick={createNewResearch}>
+            <Button size='sm' onClick={handleCreateNew}>
               + {t('investigator.newInvestigation')}
             </Button>
           </div>
@@ -714,7 +733,7 @@ export const InvestigatorInvestigationsView = () => {
                   item={item}
                   isActive={item.metadata.id === state.metadata.id}
                   isOwner={isItemOwner}
-                  onOpen={() => openResearch(item)}
+                  onOpen={() => handleOpenResearch(item)}
                   onDuplicate={() => duplicateResearch(item)}
                   onRename={title => renameResearch(item.metadata.id, title)}
                   onArchive={() => archiveResearch(item.metadata.id)}

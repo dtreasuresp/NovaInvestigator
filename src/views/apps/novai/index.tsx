@@ -98,7 +98,7 @@ export default function NovAiView() {
     setIsLoadingQuota(true)
 
     try {
-      const res = await fetch('/api/ai/quota', { cache: 'no-store' })
+      const res = await fetch('/api/novai/quota', { cache: 'no-store' })
 
       if (res.ok) {
         const data = (await res.json()) as AiQuotaInfo
@@ -338,7 +338,7 @@ export default function NovAiView() {
         .filter(m => m.content || m.role === 'user')
         .map(m => ({ role: m.role, content: m.content }))
 
-      const response = await fetch('/api/ai/chat', {
+      const response = await fetch('/api/novai/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         signal: controller.signal,
@@ -555,7 +555,7 @@ export default function NovAiView() {
         .filter(m => m.content || m.role === 'user')
         .map(m => ({ role: m.role, content: m.content }))
 
-      const response = await fetch('/api/ai/chat', {
+      const response = await fetch('/api/novai/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         signal: controller.signal,
