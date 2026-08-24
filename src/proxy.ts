@@ -47,7 +47,8 @@ function matchesPrefix(pathname: string, prefixes: readonly string[]): boolean {
 
 export async function proxy(request: NextRequest) {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
-  const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
+  const supabaseKey =
+    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 
   // Missing Supabase configuration: let the request through unchanged.
   // Route Handlers/Server Components will raise a clear, actionable error
