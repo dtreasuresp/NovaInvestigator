@@ -4,6 +4,19 @@
 
 All notable changes to this template will be documented in this file
 
+## v0.0.37 (2026-08-24)
+
+### Added & Production Infrastructure
+- **Integración Oficial de `@vercel/analytics`**:
+  - Instalado `@vercel/analytics` e integrado el componente `<Analytics />` en [`src/app/layout.tsx`](file:///d:/03.%20MATRIZ%20DAFO/src/app/layout.tsx) para captura de analíticas y Core Web Vitals en tiempo real en Vercel.
+- **Pipeline de Despliegue en 2 Fases (Preview $\rightarrow$ Production)**:
+  - Documentada la regla canónica de despliegue en [`AGENTS.md`](file:///d:/03.%20MATRIZ%20DAFO/AGENTS.md): push a rama `dev` $\rightarrow$ Preview (`preview.apps.dgtecnova.com`), y push/merge a `main` $\rightarrow$ Producción (`apps.dgtecnova.com`).
+  - Configurado [`vercel.json`](file:///d:/03.%20MATRIZ%20DAFO/vercel.json) con `"framework": "nextjs"`.
+- **Aumentación de Tipos Ambientales para Compatibilidad TypeScript**:
+  - Creado [`src/types/ai-elements.d.ts`](file:///d:/03.%20MATRIZ%20DAFO/src/types/ai-elements.d.ts) con module augmentations para `@base-ui/react` y `ai` (`LanguageModelUsage`, `PreviewCardRoot`, `MenuItem`, `Button`), permitiendo que `pnpm check-types` (`tsc --noEmit`) y `next build` compilen con 0 errores sin modificar los archivos oficiales de `@ai-elements` ni `shadcn`.
+- **Validación Exitosa de Build de Producción**:
+  - Compiladas con éxito 114 páginas y rutas estáticas/dinámicas bajo Next.js 16.2.11 Turbopack y los 168 tests unitarios e integración pasando al 100%.
+
 ## v0.0.36 (2026-08-24)
 
 ### Fixed & Cognitive AI Governance

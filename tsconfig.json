@@ -43,6 +43,7 @@
   ],
   "exclude": [
     "node_modules",
-    ".next"
+    ".next",
+    "src/components/ai-elements/**/*"
   ]
 }

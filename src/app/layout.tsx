@@ -7,6 +7,7 @@ import { Geist, Geist_Mono } from 'next/font/google'
 
 // Third-party Imports
 import { NuqsAdapter } from 'nuqs/adapters/next/app'
+import { Analytics } from '@vercel/analytics/next'
 
 // Component Imports
 import Providers from '@/components/Providers'
@@ -76,6 +77,8 @@ const RootLayout = ({ children }: Readonly<{ children: ReactNode }>) => {
         <ScrollToTop />
 
         <UpgradeProButton />
+
+        <Analytics />
       </body>
     </html>
   )

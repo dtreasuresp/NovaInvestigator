@@ -63,8 +63,8 @@ Para evitar confusiones, alucinaciones o modificaciones erróneas, **todo agente
 | **Rate limiting** | PostgreSQL RPC / memoria en `src/features/billing/rate-limit.ts` y `src/app/api/auth/_lib/rate-limit.ts` (diseño fail-open intencional ante caídas de red) |
 | **UI libs** | shadcn/ui (4.13), `@base-ui/react`, Radix UI Slot, TanStack Table, Recharts, Lucide React, Sonner |
 | **i18n** | Catálogos en `src/locales/` (`es`, `en`, `de`, `ko`, `pt`), scripts en `scripts/i18n-*.ts` |
+| **Deploy** | Vercel en 2 fases: Push a `dev` $\rightarrow$ Preview (`preview.apps.dgtecnova.com`); Push/Merge a `main` $\rightarrow$ Production (`apps.dgtecnova.com`) |
 | **Testing** | Node Test Runner vía `tsx` (`pnpm test` → `tsx --test tests/**/*.test.ts`), TestSprite MCP |
-| **Deploy** | Vercel (automático en push a `main`) |
 
 ---
 
