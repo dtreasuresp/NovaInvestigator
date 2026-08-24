@@ -1,0 +1,646 @@
+
+🔍 [i18n-audit] Escaneo de vistas y componentes completado:
+   Archivos analizados: 149
+   Archivos con textos pendientes: 92
+   Total de cadenas sin traducir detectadas: 591
+
+📋 Lista detallada de cadenas pendientes por archivo:
+
+📁 src/views/apps/access/permissions/index.tsx (2 textos pendientes):
+   L265 [jsx-text]: "No hay capacidades activas para este ámbito."
+   L273 [jsx-text]: "Overrides por miembro"
+
+📁 src/views/apps/access/roles/index.tsx (3 textos pendientes):
+   L419 [prop:placeholder]: "analista_financiero"
+   L428 [prop:placeholder]: "Analista financiero"
+   L455 [jsx-text]: "La clave y el ámbito son inmutables para no romper las membresías."
+
+📁 src/views/apps/calendar/day-view.tsx (1 textos pendientes):
+   L71 [jsx-text]: "eventStart && currentDate"
+
+📁 src/views/apps/calendar/index.tsx (4 textos pendientes):
+   L148 [jsx-text]: "New event"
+   L155 [jsx-text]: "Today"
+   L163 [prop:aria-label]: "Previous"
+   L167 [prop:aria-label]: "Next"
+
+📁 src/views/apps/calendar/month-view.tsx (1 textos pendientes):
+   L254 [jsx-text]: "more"
+
+📁 src/views/apps/calendar/week-view.tsx (2 textos pendientes):
+   L88 [jsx-text]: "eventStart && day"
+   L248 [jsx-text]: "eventStart && day"
+
+📁 src/views/apps/investigator/came/index.tsx (19 textos pendientes):
+   L262 [prop:placeholder]: "¿Qué resultado concreto se busca alcanzar?"
+   L273 [prop:placeholder]: "Detalla los pasos y actividades a ejecutar..."
+   L293 [prop:placeholder]: "Áreas colaboradoras"
+   L326 [prop:placeholder]: "Ej: % de procesos automatizados"
+   L335 [prop:placeholder]: "Ej: 15 %"
+   L344 [prop:placeholder]: "Ej: 85 %"
+   L356 [prop:placeholder]: "Fundamento de la acción en el marco de la investigación..."
+   L419 [jsx-text]: "Factor:"
+   L432 [jsx-text]: "Prioridad Multicriterio"
+   L450 [jsx-text]: "Criterios (1–5)"
+   L461 [prop:title]: "${c.label}: ${val}/5"
+   L489 [jsx-text]: "Responsable"
+   L499 [prop:placeholder]: "Responsable del área"
+   L508 [jsx-text]: "Estado"
+   L523 [jsx-text]: "Propuesta"
+   ... y 4 más en este archivo.
+
+📁 src/views/apps/investigator/dafo/index.tsx (6 textos pendientes):
+   L310 [jsx-text]: "Fuerza de la relación estratégica"
+   L313 [prop:placeholder]: "Selecciona la fuerza del vínculo"
+   L326 [jsx-text]: "Justificación cualitativa del cruce"
+   L331 [prop:placeholder]: "Explica por qué este factor interno se vincula estratégicamente con este factor externo..."
+   L341 [prop:placeholder]: "Ej: Entrevistas a directivos, informe de gestión, diagnóstico operativo"
+   L447 [jsx-text]: "Sin justificación redactada"
+
+📁 src/views/apps/investigator/investigations/index.tsx (4 textos pendientes):
+   L206 [jsx-text]: "Autor:"
+   L339 [jsx-text]: "Migración de investigaciones locales"
+   L348 [jsx-text]: "Reintentar importación"
+   L402 [prop:aria-label]: "Sincronización: ${syncStatusLabels[syncStatus] || syncStatus}"
+
+📁 src/views/apps/investigator/qspm/index.tsx (5 textos pendientes):
+   L100 [jsx-text]: "= 1 && asScore"
+   L107 [jsx-text]: "= 1 && asScore"
+   L469 [jsx-text]: "= 1 && numScore"
+   L480 [prop:placeholder]: "AS —"
+   L495 [jsx-text]: "TAS: —"
+
+📁 src/views/apps/investigator/summary/index.tsx (6 textos pendientes):
+   L130 [prop:label]: "EFI · Interno"
+   L133 [jsx-text]: "= 2.5 ? 'positive' : analysis.efi.total"
+   L136 [prop:label]: "EFE · Entorno"
+   L139 [jsx-text]: "= 2.5 ? 'positive' : analysis.efe.total"
+   L147 [prop:label]: "Selección QSPM"
+   L240 [jsx-text]: "Informe resumen del diagnóstico metodológico"
+
+📁 src/views/apps/kanban/components/card-form-dialog.tsx (13 textos pendientes):
+   L47 [jsx-text]: "Promise"
+   L149 [prop:placeholder]: "Task or project title"
+   L164 [prop:placeholder]: "Define objectives, scope or requirements..."
+   L179 [prop:placeholder]: "Select priority"
+   L182 [jsx-text]: "Low"
+   L183 [jsx-text]: "Medium"
+   L184 [jsx-text]: "High"
+   L218 [prop:alt]: "Preview"
+   L225 [jsx-text]: "Assignees"
+   L228 [jsx-text]: "No assignees selected"
+   L257 [prop:placeholder]: "+ Add / Remove assignee"
+   L272 [jsx-text]: "Due date"
+   L286 [jsx-text]: "Pick a date"
+
+📁 src/views/apps/kanban/components/column-form-dialog.tsx (3 textos pendientes):
+   L12 [jsx-text]: "Promise"
+   L37 [jsx-text]: "Add New Column"
+   L50 [prop:placeholder]: "e.g. In Testing, QA, Staging"
+
+📁 src/views/apps/kanban/components/kanban-board.tsx (8 textos pendientes):
+   L209 [prop:placeholder]: "Search cards or tasks..."
+   L220 [prop:placeholder]: "All Projects"
+   L223 [jsx-text]: "All Projects"
+   L236 [prop:placeholder]: "Priority: All"
+   L239 [jsx-text]: "Priority: All"
+   L240 [jsx-text]: "High"
+   L242 [jsx-text]: "Medium"
+   L243 [jsx-text]: "Low"
+
+📁 src/views/apps/kanban/components/kanban-card.tsx (1 textos pendientes):
+   L148 [jsx-text]: "Unassigned"
+
+📁 src/views/apps/mail/index.tsx (10 textos pendientes):
+   L149 [jsx-text]: "Search"
+   L153 [prop:placeholder]: "Search mail"
+   L164 [jsx-text]: "Default order"
+   L165 [jsx-text]: "Newest first"
+   L166 [jsx-text]: "Oldest first"
+   L235 [jsx-text]: "Search"
+   L239 [prop:placeholder]: "Search mail"
+   L250 [jsx-text]: "Default order"
+   L251 [jsx-text]: "Newest first"
+   L252 [jsx-text]: "Oldest first"
+
+📁 src/views/apps/mail/mail-display/index.tsx (1 textos pendientes):
+   L18 [jsx-text]: "Choose an email from the list to read it here."
+
+📁 src/views/apps/mail/mail-display/label-manager.tsx (2 textos pendientes):
+   L24 [prop:title]: "Manage labels"
+   L26 [jsx-text]: "Manage labels"
+
+📁 src/views/apps/mail/mail-display/mail-display-content.tsx (33 textos pendientes):
+   L81 [prop:title]: "Archive"
+   L83 [jsx-text]: "Archive"
+   L85 [jsx-text]: "Archive"
+   L91 [prop:title]: "Move to spam"
+   L93 [jsx-text]: "Move to spam"
+   L95 [jsx-text]: "Move to spam"
+   L101 [prop:title]: "Not spam"
+   L103 [jsx-text]: "Not spam"
+   L105 [jsx-text]: "Not spam"
+   L111 [prop:title]: "Restore to inbox"
+   L113 [jsx-text]: "Restore to inbox"
+   L115 [jsx-text]: "Restore to inbox"
+   L125 [prop:title]: "Move to trash"
+   L127 [jsx-text]: "Move to trash"
+   L129 [jsx-text]: "Move to trash"
+   ... y 18 más en este archivo.
+
+📁 src/views/apps/mail/mail-list.tsx (1 textos pendientes):
+   L25 [jsx-text]: "This folder is empty."
+
+📁 src/views/apps/mail/mail-nav.tsx (4 textos pendientes):
+   L56 [jsx-text]: "Mailboxes"
+   L86 [jsx-text]: "0 &&"
+   L97 [jsx-text]: "Labels"
+   L127 [jsx-text]: "0 &&"
+
+📁 src/views/apps/platform/platform-billing/index.tsx (88 textos pendientes):
+   L840 [jsx-text]: "trial"
+   L1044 [jsx-text]: "Límite efectivo"
+   L1045 [jsx-text]: "Habilitado"
+   L1046 [jsx-text]: "Acción"
+   L1068 [jsx-text]: "Plan"
+   L1069 [jsx-text]: "Entitlement"
+   L1070 [jsx-text]: "Límite base"
+   L1071 [jsx-text]: "Límite efectivo"
+   L1072 [jsx-text]: "Habilitado"
+   L1073 [jsx-text]: "Acción"
+   L1105 [prop:aria-label]: "Límite ${row.entitlementKey}"
+   L1110 [prop:placeholder]: "Ilimitado"
+   L1122 [prop:aria-label]: "Habilitar ${row.entitlementKey}"
+   L1162 [jsx-text]: "Suscripciones Activas"
+   L1172 [jsx-text]: "Tenant"
+   ... y 73 más en este archivo.
+
+📁 src/views/apps/platform/registration-cleanup/index.tsx (5 textos pendientes):
+   L223 [jsx-text]: "No se pudo cargar la configuración."
+   L245 [jsx-text]: "Conservar durante (días)"
+   L276 [jsx-text]: "Elegibles"
+   L301 [jsx-text]: "Limpieza completada"
+   L322 [jsx-text]: "¿Ejecutar limpieza?"
+
+📁 src/views/apps/platform/vid/index.tsx (9 textos pendientes):
+   L238 [jsx-text]: "No se pudo completar la operación"
+   L267 [jsx-text]: "No hay solicitudes VID"
+   L268 [jsx-text]: "La cola se actualizará cuando un usuario solicite una revisión."
+   L287 [jsx-text]: "Método"
+   L291 [jsx-text]: "Enviada"
+   L295 [jsx-text]: "Versión"
+   L299 [jsx-text]: "Retención"
+   L384 [jsx-text]: "Motivo"
+   L389 [prop:placeholder]: "Describe de forma breve qué debe corregirse."
+
+📁 src/views/apps/users/dialogs/add-edit-user-sheet.tsx (13 textos pendientes):
+   L137 [jsx-text]: "Name"
+   L138 [prop:placeholder]: "Full name"
+   L149 [jsx-text]: "Email"
+   L154 [prop:placeholder]: "name@example.com"
+   L172 [prop:placeholder]: "+1 (555) 000-0000"
+   L185 [jsx-text]: "Company"
+   L186 [prop:placeholder]: "Company name"
+   L197 [jsx-text]: "Country"
+   L200 [prop:placeholder]: "Select country"
+   L225 [prop:placeholder]: "Select role"
+   L250 [prop:placeholder]: "Select plan"
+   L272 [jsx-text]: "Status"
+   L275 [prop:placeholder]: "Select status"
+
+📁 src/views/apps/users/dialogs/manage-member-sheet.tsx (2 textos pendientes):
+   L46 [jsx-text]: "Promise"
+   L47 [jsx-text]: "Promise"
+
+📁 src/views/apps/users/invitations/index.tsx (8 textos pendientes):
+   L614 [prop:aria-label]: "Reenviar invitación a ${invitation.email}"
+   L624 [prop:aria-label]: "Revocar invitación de ${invitation.email}"
+   L625 [prop:title]: "Revocar invitación"
+   L660 [jsx-text]: "Revisa las invitaciones enviadas a tu correo y acepta las que correspondan."
+   L707 [jsx-text]: "Invitado por"
+   L763 [jsx-text]: "No se pudo completar la operación."
+   L808 [jsx-text]: "Workspace"
+   L865 [jsx-text]: "Revocar invitación"
+
+📁 src/views/apps/users/list/index.tsx (1 textos pendientes):
+   L70 [jsx-text]: "No se pudo cargar la lista de miembros."
+
+📁 src/views/apps/users/view/projects-datatable.tsx (15 textos pendientes):
+   L155 [jsx-text]: "Projects List"
+   L164 [prop:placeholder]: "Search project"
+   L178 [prop:aria-label]: "Select all projects"
+   L181 [jsx-text]: "Project"
+   L182 [jsx-text]: "Leader"
+   L184 [jsx-text]: "Progress"
+   L185 [jsx-text]: "Action"
+   L202 [prop:aria-label]: "Select ${project.name}"
+   L238 [prop:aria-label]: "Project actions"
+   L240 [jsx-text]: "Menu"
+   L244 [jsx-text]: "View"
+   L260 [jsx-text]: "to"
+   L260 [jsx-text]: "of"
+   L272 [prop:aria-label]: "Go to previous page"
+   L314 [prop:aria-label]: "Go to next page"
+
+📁 src/views/apps/users/view/tabs/account-tab.tsx (2 textos pendientes):
+   L86 [jsx-text]: "User Activity Timeline"
+   L90 [jsx-text]: "No activity yet"
+
+📁 src/views/apps/users/view/tabs/billing-tab.tsx (13 textos pendientes):
+   L84 [jsx-text]: "No billing plan assigned."
+   L126 [jsx-text]: "Days"
+   L154 [jsx-text]: "Billing Details"
+   L159 [jsx-text]: "Company"
+   L163 [jsx-text]: "Billing Email"
+   L167 [jsx-text]: "Tax ID"
+   L171 [jsx-text]: "Country"
+   L180 [jsx-text]: "Invoice History"
+   L184 [jsx-text]: "No invoices found."
+   L190 [jsx-text]: "Invoice"
+   L191 [jsx-text]: "Status"
+   L193 [jsx-text]: "Issued Date"
+   L194 [jsx-text]: "Action"
+
+📁 src/views/apps/users/view/tabs/connections-tab.tsx (6 textos pendientes):
+   L128 [jsx-text]: "Connected Accounts"
+   L129 [jsx-text]: "Display content from your connected accounts on your site"
+   L145 [prop:aria-label]: "Toggle ${integration.name}"
+   L155 [jsx-text]: "Social Accounts"
+   L156 [jsx-text]: "Display content from social accounts on your site"
+   L180 [jsx-text]: "Not Connected"
+
+📁 src/views/apps/users/view/tabs/notifications-tab.tsx (6 textos pendientes):
+   L34 [jsx-text]: "Notifications"
+   L43 [jsx-text]: "Type"
+   L82 [prop:aria-label]: "${setting.title} email notifications"
+   L89 [prop:aria-label]: "${setting.title} browser notifications"
+   L96 [prop:aria-label]: "${setting.title} app notifications"
+   L105 [jsx-text]: "Save Changes"
+
+📁 src/views/apps/users/view/tabs/security-tab.tsx (19 textos pendientes):
+   L29 [jsx-text]: "Change Password"
+   L34 [jsx-text]: "Current Password"
+   L35 [prop:placeholder]: "············"
+   L38 [jsx-text]: "New Password"
+   L39 [prop:placeholder]: "············"
+   L43 [jsx-text]: "Confirm New Password"
+   L44 [prop:placeholder]: "············"
+   L47 [jsx-text]: "Minimum 8 characters long — the more, the better"
+   L48 [jsx-text]: "At least one lowercase & one uppercase character"
+   L49 [jsx-text]: "At least one number, symbol, or whitespace character"
+   L51 [jsx-text]: "Save Changes"
+   L58 [jsx-text]: "Two-steps verification"
+   L59 [jsx-text]: "Keep your account secure with authentication step."
+   L64 [prop:aria-label]: "Two-step verification"
+   L78 [jsx-text]: "Recent Devices"
+   ... y 4 más en este archivo.
+
+📁 src/views/apps/users/view/user-view-left-panel.tsx (3 textos pendientes):
+   L74 [jsx-text]: "Task Done"
+   L79 [jsx-text]: "Project Done"
+   L84 [jsx-text]: "Details"
+
+📁 src/views/apps/users/view/user-view-tabs.tsx (4 textos pendientes):
+   L21 [jsx-text]: "Account"
+   L22 [jsx-text]: "Security"
+   L24 [jsx-text]: "Notifications"
+   L25 [jsx-text]: "Connections"
+
+📁 src/views/dashboards/charts/chart-sales-metrics.tsx (9 textos pendientes):
+   L98 [jsx-text]: "Sales metrics"
+   L102 [jsx-text]: "Sandy&apos; Company"
+   L103 [jsx-text]: "sandy@company.com"
+   L127 [jsx-text]: "Revenue goal"
+   L183 [jsx-text]: "Sales plan"
+   L185 [jsx-text]: "Percentage profit from total sales"
+   L188 [jsx-text]: "Cohort analysis indicators"
+   L196 [jsx-text]: "Open Statistics"
+   L200 [jsx-text]: "Percentage Change"
+
+📁 src/views/dashboards/investigations/components/factors-distribution-chart.tsx (2 textos pendientes):
+   L52 [jsx-text]: "Total:"
+   L53 [jsx-text]: "Peso:"
+
+📁 src/views/dashboards/investigations/components/investigation-summary-sheet.tsx (3 textos pendientes):
+   L176 [jsx-text]: "Fred R. David (EFI / EFE / DAFO / QSPM / CAME)"
+   L274 [jsx-text]: "Fundamentación del Comité Evaluador:"
+   L401 [jsx-text]: "Severidad / Urgencia:"
+
+📁 src/views/dashboards/investigations/components/kpi-cards.tsx (1 textos pendientes):
+   L110 [jsx-text]: "= 2.5 ?"
+
+📁 src/views/dashboards/investigations/components/positioning-matrix.tsx (2 textos pendientes):
+   L75 [jsx-text]: "EFI:"
+   L76 [jsx-text]: "EFE:"
+
+📁 src/views/dashboards/statistics/statistics-card-01.tsx (1 textos pendientes):
+   L29 [jsx-text]: "than last week"
+
+📁 src/views/dashboards/widgets/widget-product-insights.tsx (5 textos pendientes):
+   L48 [jsx-text]: "Product insight"
+   L49 [jsx-text]: "Published on 12 MAY 2025 - 6:10 PM"
+   L51 [prop:alt]: "Product"
+   L59 [jsx-text]: "Product reached"
+   L71 [jsx-text]: "Order placed"
+
+📁 src/views/dashboards/widgets/widget-total-earning.tsx (1 textos pendientes):
+   L46 [jsx-text]: "Menu"
+
+📁 src/views/datatables/basic/basic-datatable.tsx (3 textos pendientes):
+   L34 [prop:aria-label]: "Select all"
+   L41 [prop:aria-label]: "Select row"
+   L64 [jsx-text]: "Amount"
+
+📁 src/views/datatables/datatable-transaction.tsx (8 textos pendientes):
+   L50 [prop:alt]: "Hallie Richards"
+   L83 [jsx-text]: "Paid by"
+   L89 [prop:alt]: "Payment platform"
+   L196 [prop:aria-label]: "Go to previous page"
+   L238 [prop:aria-label]: "Go to next page"
+   L257 [prop:aria-label]: "Edit item"
+   L266 [jsx-text]: "Duplicate"
+   L269 [jsx-text]: "Delete"
+
+📁 src/views/datatables/filters/filters-datatable.tsx (7 textos pendientes):
+   L52 [prop:aria-label]: "Select all"
+   L59 [prop:aria-label]: "Select row"
+   L238 [prop:placeholder]: "Min"
+   L240 [prop:aria-label]: "${columnHeader} min"
+   L252 [prop:placeholder]: "Max"
+   L254 [prop:aria-label]: "${columnHeader} max"
+   L304 [prop:placeholder]: "Search ${columnHeader.toLowerCase()}"
+
+📁 src/views/datatables/index.tsx (3 textos pendientes):
+   L10 [jsx-text]: "Basic Data Table"
+   L14 [jsx-text]: "Pinnable Columns"
+   L18 [jsx-text]: "Datatable with Filters"
+
+📁 src/views/datatables/pinnable-columns/pinnable-columns-datatable.tsx (4 textos pendientes):
+   L131 [prop:aria-label]: "Unpin ${header.column.columnDef.header as string} column"
+   L132 [prop:title]: "Unpin ${header.column.columnDef.header as string} column"
+   L144 [prop:aria-label]: "Pin options for ${header.column.columnDef.header as string} column"
+   L145 [prop:title]: "Pin options for ${header.column.columnDef.header as string} column"
+
+📁 src/views/forms/form-layouts/horizontal/basic-form-with-icon.tsx (14 textos pendientes):
+   L15 [jsx-text]: "Name"
+   L19 [jsx-text]: "Name"
+   L21 [prop:placeholder]: "John Doe"
+   L26 [jsx-text]: "Company"
+   L30 [jsx-text]: "Company"
+   L37 [jsx-text]: "Email"
+   L41 [jsx-text]: "Email"
+   L43 [prop:placeholder]: "john.doe"
+   L51 [jsx-text]: "Phone No"
+   L55 [jsx-text]: "Phone"
+   L62 [jsx-text]: "Message"
+   L66 [jsx-text]: "Message"
+   L70 [prop:placeholder]: "Hi, Do you have a moment to talk Joe?"
+   L79 [jsx-text]: "Send"
+
+📁 src/views/forms/form-layouts/horizontal/basic-form.tsx (9 textos pendientes):
+   L13 [jsx-text]: "Name"
+   L14 [prop:placeholder]: "John Doe"
+   L18 [jsx-text]: "Company"
+   L23 [jsx-text]: "Email"
+   L25 [prop:placeholder]: "john.doe"
+   L33 [jsx-text]: "Phone No"
+   L38 [jsx-text]: "Message"
+   L42 [prop:placeholder]: "Hi, Do you have a moment to talk Joe?"
+   L49 [jsx-text]: "Send"
+
+📁 src/views/forms/form-layouts/horizontal/index.tsx (2 textos pendientes):
+   L11 [jsx-text]: "Basic Form"
+   L20 [jsx-text]: "Basic Form with Icon"
+
+📁 src/views/forms/form-layouts/vertical/basic-form-with-icon.tsx (24 textos pendientes):
+   L14 [jsx-text]: "First Name"
+   L18 [jsx-text]: "First Name"
+   L20 [prop:placeholder]: "John"
+   L25 [jsx-text]: "Last Name"
+   L29 [jsx-text]: "Last Name"
+   L31 [prop:placeholder]: "Doe"
+   L36 [jsx-text]: "Mobile"
+   L40 [jsx-text]: "Mobile"
+   L47 [jsx-text]: "Pincode"
+   L51 [jsx-text]: "Pincode"
+   L53 [prop:placeholder]: "Postal Code"
+   L58 [jsx-text]: "Address"
+   L62 [jsx-text]: "Address"
+   L64 [prop:placeholder]: "123 Main St"
+   L69 [jsx-text]: "Landmark"
+   ... y 9 más en este archivo.
+
+📁 src/views/forms/form-layouts/vertical/basic-form.tsx (16 textos pendientes):
+   L11 [jsx-text]: "First Name"
+   L12 [prop:placeholder]: "John"
+   L16 [jsx-text]: "Last Name"
+   L17 [prop:placeholder]: "Doe"
+   L21 [jsx-text]: "Mobile"
+   L26 [jsx-text]: "Pincode"
+   L27 [prop:placeholder]: "Postal Code"
+   L31 [jsx-text]: "Address"
+   L32 [prop:placeholder]: "123 Main St"
+   L36 [jsx-text]: "Landmark"
+   L37 [prop:placeholder]: "Near Central Park, New York"
+   L41 [jsx-text]: "City"
+   L42 [prop:placeholder]: "New York"
+   L46 [jsx-text]: "State"
+   L47 [prop:placeholder]: "NY"
+   ... y 1 más en este archivo.
+
+📁 src/views/forms/form-layouts/vertical/index.tsx (2 textos pendientes):
+   L11 [jsx-text]: "Basic Form"
+   L20 [jsx-text]: "Basic Form with Icon"
+
+📁 src/views/forms/form-validation/index.tsx (1 textos pendientes):
+   L9 [jsx-text]: "Registration Form"
+
+📁 src/views/forms/form-validation/registration-demo-form.tsx (34 textos pendientes):
+   L69 [jsx-text]: "Issue submitted successfully! Our team will reach out to you shortly."
+   L77 [jsx-text]: "Report Issue"
+   L78 [jsx-text]: "Describe the issue you&apos;re facing; our team will help you."
+   L87 [jsx-text]: "Name"
+   L92 [prop:placeholder]: "Your full name"
+   L105 [jsx-text]: "Phone"
+   L111 [prop:placeholder]: "Phone number"
+   L124 [jsx-text]: "Company"
+   L129 [prop:placeholder]: "Company name"
+   L143 [jsx-text]: "Email"
+   L149 [prop:placeholder]: "Email address"
+   L162 [jsx-text]: "Order ID"
+   L163 [prop:placeholder]: "Order ID"
+   L175 [jsx-text]: "Issue"
+   L178 [prop:placeholder]: "Issue you are facing"
+   ... y 19 más en este archivo.
+
+📁 src/views/forms/form-validation/validation-demos.tsx (36 textos pendientes):
+   L68 [jsx-text]: "Validation Modes Demo"
+   L79 [jsx-text]: "onChange Mode"
+   L80 [jsx-text]: "Validates on every keystroke"
+   L95 [jsx-text]: "Demo Input"
+   L96 [prop:placeholder]: "Type here..."
+   L98 [jsx-text]: "instantly"
+   L119 [jsx-text]: "onBlur Mode"
+   L120 [jsx-text]: "Validates when you leave the field"
+   L135 [jsx-text]: "Demo Input"
+   L136 [prop:placeholder]: "Type here..."
+   L138 [jsx-text]: "after"
+   L159 [jsx-text]: "onSubmit Mode (Default)"
+   L160 [jsx-text]: "Validates only when you click submit"
+   L175 [jsx-text]: "Demo Input"
+   L176 [prop:placeholder]: "Type here..."
+   ... y 21 más en este archivo.
+
+📁 src/views/pages/auth/forgot-password/forgot-password-form.tsx (1 textos pendientes):
+   L62 [prop:placeholder]: "Enter your email address"
+
+📁 src/views/pages/auth/forgot-password/index.tsx (1 textos pendientes):
+   L30 [jsx-text]: "Forgot Password?"
+
+📁 src/views/pages/auth/invitations/accept/index.tsx (2 textos pendientes):
+   L89 [jsx-text]: "Workspace invitation"
+   L100 [jsx-text]: "Checking invitation..."
+
+📁 src/views/pages/auth/login/login-form.tsx (1 textos pendientes):
+   L172 [prop:placeholder]: "Enter your email address"
+
+📁 src/views/pages/auth/register/register-form.tsx (5 textos pendientes):
+   L108 [prop:placeholder]: "Enter your company name"
+   L116 [prop:placeholder]: "Enter your full name"
+   L123 [prop:placeholder]: "Enter your email address"
+   L182 [jsx-text]: "I agree to"
+   L182 [jsx-text]: "privacy policy & terms"
+
+📁 src/views/pages/auth/reset-password/index.tsx (1 textos pendientes):
+   L30 [jsx-text]: "Reset Password"
+
+📁 src/views/pages/auth/reset-password/reset-password-form.tsx (1 textos pendientes):
+   L75 [prop:placeholder]: "Enter your email address"
+
+📁 src/views/pages/auth/two-steps/index.tsx (1 textos pendientes):
+   L28 [jsx-text]: "Two Steps Verification"
+
+📁 src/views/pages/auth/verify-email/index.tsx (2 textos pendientes):
+   L46 [jsx-text]: "Verify your email"
+   L100 [prop:placeholder]: "Enter your email address"
+
+📁 src/views/pages/misc/error-page/index.tsx (2 textos pendientes):
+   L10 [jsx-text]: "4&#129396;4"
+   L12 [jsx-text]: "We couldn&apos;t find the page you are looking for"
+
+📁 src/views/pages/pricing/billing/upgrade/index.tsx (7 textos pendientes):
+   L456 [jsx-text]: "permiso delegado"
+   L461 [jsx-text]: "propietario (Owner)"
+   L532 [prop:placeholder]: "+1 234 567 8900"
+   L604 [jsx-text]: "Plan activo actual en el espacio de trabajo:"
+   L619 [jsx-text]: "Asunción / Renovación del plan actual"
+   L755 [jsx-text]: "Comprador / Pagador:"
+   L804 [jsx-text]: ") ofrece menores capacidades o límites que el plan actualmente activo en tu espacio de trabajo ("
+
+📁 src/views/pages/pricing/index.tsx (1 textos pendientes):
+   L678 [prop:placeholder]: "tu@empresa.com"
+
+📁 src/views/pages/user-profile/profile/profile-project-datatable.tsx (4 textos pendientes):
+   L210 [prop:aria-label]: "Select all projects"
+   L263 [prop:aria-label]: "Select ${project.name}"
+   L311 [prop:aria-label]: "Project actions"
+   L314 [jsx-text]: "Menu"
+
+📁 src/views/pages/user-profile/use-user-profile-data.tsx (1 textos pendientes):
+   L86 [jsx-text]: "Promise"
+
+📁 src/views/pages/user-settings/billing/current-plan-section.tsx (1 textos pendientes):
+   L18 [jsx-text]: "Promise"
+
+📁 src/views/pages/user-settings/billing/purchase-delegation-section.tsx (1 textos pendientes):
+   L493 [prop:title]: "Revocar delegación"
+
+📁 src/views/pages/user-settings/billing/usage-limits-section.tsx (4 textos pendientes):
+   L53 [jsx-text]: "Used 1 investigation"
+   L96 [jsx-text]: "Used 0 exports"
+   L113 [jsx-text]: "Used 5.0 MiB"
+   L114 [jsx-text]: "100 MiB included"
+
+📁 src/views/pages/user-settings/general/connect-account.tsx (2 textos pendientes):
+   L141 [prop:placeholder]: "Zoom, Slack, etc."
+   L145 [jsx-text]: "URL / API Key"
+
+📁 src/views/pages/user-settings/general/danger-zone.tsx (4 textos pendientes):
+   L181 [jsx-text]: "Suscripción Activa Vigente"
+   L196 [jsx-text]: "Impacto de la eliminación:"
+   L199 [jsx-text]: "Se cerrará tu sesión activa de forma inmediata en todos los dispositivos."
+   L200 [jsx-text]: "Tus datos personales y matrices serán desvinculados."
+
+📁 src/views/pages/user-settings/general/personal-info.tsx (1 textos pendientes):
+   L298 [prop:alt]: "avatar preview"
+
+📁 src/views/pages/user-settings/members/index.tsx (2 textos pendientes):
+   L123 [jsx-text]: "Espectador"
+   L200 [jsx-text]: "INV"
+
+📁 src/views/pages/user-settings/security/two-factor.tsx (5 textos pendientes):
+   L278 [jsx-text]: "No se pudo cargar el estado de autenticación de dos factores. Por favor, recarga la página."
+   L302 [prop:alt]: "QR"
+   L363 [jsx-text]: "Factores de verificación activos:"
+   L385 [jsx-text]: "Guarda estos códigos en un lugar seguro"
+   L394 [jsx-text]: "Verificación adicional requerida"
+
+📁 src/views/pages/user-settings/vid/index.tsx (5 textos pendientes):
+   L170 [jsx-text]: "Verificación de identidad"
+   L171 [jsx-text]: "Solicita una verificación digital básica como capa de seguridad de la cuenta."
+   L178 [jsx-text]: "No se pudo completar la operación"
+   L207 [jsx-text]: "Verificación aprobada"
+   L215 [jsx-text]: "Solicitud en revisión"
+
+📁 src/views/pages/user-settings/workspace/primary-organization.tsx (2 textos pendientes):
+   L157 [jsx-text]: "Default organization"
+   L167 [jsx-text]: "Organization"
+
+📁 src/views/pages/user-settings/workspace/team/create-team-dialog.tsx (5 textos pendientes):
+   L200 [prop:placeholder]: "Ej. Consultores Estratégicos, Auditoría..."
+   L223 [prop:placeholder]: "Describe el propósito y alcance de este equipo..."
+   L241 [prop:placeholder]: "Ej. Consultoría, Estrategia, TI..."
+   L299 [prop:alt]: "Logo Preview"
+   L303 [jsx-text]: "WebP"
+
+📁 src/views/pages/user-settings/workspace/team/edit-team-dialog.tsx (5 textos pendientes):
+   L207 [prop:placeholder]: "Ej. Consultores Estratégicos, Auditoría..."
+   L229 [prop:placeholder]: "Describe el propósito y alcance de este equipo..."
+   L247 [prop:placeholder]: "Ej. Consultoría, Estrategia, TI..."
+   L305 [prop:alt]: "Logo Preview"
+   L309 [jsx-text]: "WebP"
+
+📁 src/views/pages/user-settings/workspace/workspace-data.tsx (3 textos pendientes):
+   L69 [jsx-text]: "TYPE"
+   L70 [jsx-text]: "DATE"
+   L91 [jsx-text]: "Completed"
+
+📁 src/views/pages/user-settings/workspace/workspace-detail.tsx (3 textos pendientes):
+   L197 [prop:alt]: "logo preview"
+   L242 [prop:placeholder]: "workspace-slug"
+   L255 [prop:placeholder]: "Describe this workspace..."
+
+📁 src/views/pages/user-settings/workspace/workspace-name.tsx (2 textos pendientes):
+   L153 [jsx-text]: "App ID"
+   L157 [prop:placeholder]: "App ID"
+
+📁 src/components/layout/AppInitializerGate.tsx (2 textos pendientes):
+   L93 [prop:aria-label]: "Cargando NovaStore"
+   L106 [jsx-text]: "Loading components and workspace..."
+
+📁 src/components/layout/CommercialAccessGate.tsx (1 textos pendientes):
+   L159 [jsx-text]: "Your access is unavailable"
+
+📁 src/components/layout/Header.tsx (1 textos pendientes):
+   L74 [prop:aria-label]: "Star shadcnstudio/shadcn-studio on GitHub"
+
+📁 src/components/layout/ModeToggle.tsx (1 textos pendientes):
+   L21 [jsx-text]: "Toggle theme"
+
+📁 src/components/layout/ScrollToTop.tsx (1 textos pendientes):
+   L49 [jsx-text]: "Scroll to top"
+
+(node:43356) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///D:/03.%20MATRIZ%20DAFO/scripts/i18n-audit-views.ts is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to D:\03. MATRIZ DAFO\package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)

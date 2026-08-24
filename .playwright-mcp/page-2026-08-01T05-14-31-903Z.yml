@@ -1,0 +1,450 @@
+- generic [ref=e3]:
+  - banner [ref=e4]:
+    - generic [ref=e5]:
+      - generic [ref=e6]: E
+      - generic [ref=e7]:
+        - paragraph [ref=e8]: Mesa de evidencia estratégica
+        - heading "EFI / EFE / DAFO / QSPM / CAME" [level=1] [ref=e9]
+    - generic [ref=e10]:
+      - generic [ref=e11]: en análisis
+      - button "Investigaciones" [ref=e13] [cursor=pointer]:
+        - generic [ref=e14]: ▦
+        - text: Investigaciones
+      - button "Nueva" [ref=e15] [cursor=pointer]:
+        - generic [ref=e16]: +
+        - text: Nueva
+      - button "Guía" [ref=e17] [cursor=pointer]:
+        - generic [ref=e18]: "?"
+        - text: Guía
+      - button "Exportar PDF" [ref=e19] [cursor=pointer]:
+        - generic [ref=e20]: ↓
+        - text: Exportar PDF
+  - generic [ref=e21]:
+    - complementary [ref=e22]:
+      - generic [ref=e23]:
+        - paragraph [ref=e24]: Caso activo
+        - heading "Entidad por definir" [level=2] [ref=e2302]
+        - paragraph [ref=e26]: Unidad de análisis pendiente
+        - generic [ref=e27]: INV-157200
+        - generic [ref=e28]: en análisis · guardado local
+      - region "Estado de validación" [ref=e29]:
+        - generic [ref=e30]:
+          - text: Control de calidad
+          - strong [ref=e31]: 57 revisiones pendientes
+        - generic [ref=e32]:
+          - button "ContextoRequiere revisión" [ref=e2303] [cursor=pointer]: Contexto!
+          - button "EFIRequiere revisión" [ref=e34] [cursor=pointer]: EFI!
+          - button "EFERequiere revisión" [ref=e35] [cursor=pointer]: EFE!
+          - button "DAFORequiere revisión" [ref=e2304] [cursor=pointer]: DAFO!
+          - button "QSPMRequiere revisión" [ref=e2305] [cursor=pointer]: QSPM!
+          - button "CAMERequiere revisión" [ref=e2306] [cursor=pointer]: CAME!
+        - paragraph [ref=e39]: "Primera revisión: Falta completar: Organización."
+      - navigation "Etapas del análisis" [ref=e40]:
+        - button "00 Contexto Entidad y propósito Requiere revisión" [ref=e2307] [cursor=pointer]:
+          - generic [ref=e42]: "00"
+          - generic [ref=e43]:
+            - strong [ref=e44]: Contexto
+            - generic [ref=e45]: Entidad y propósito
+          - generic "Requiere revisión" [ref=e2308]: "!"
+          - generic [ref=e47]: ›
+        - button "00 Resumen Lectura ejecutiva Requiere revisión" [ref=e48] [cursor=pointer]:
+          - generic [ref=e49]: "00"
+          - generic [ref=e50]:
+            - strong [ref=e51]: Resumen
+            - generic [ref=e52]: Lectura ejecutiva
+          - generic "Requiere revisión" [ref=e53]: "!"
+          - generic [ref=e54]: ›
+        - button "01 EFI Factores internos Requiere revisión" [ref=e55] [cursor=pointer]:
+          - generic [ref=e56]: "01"
+          - generic [ref=e57]:
+            - strong [ref=e58]: EFI
+            - generic [ref=e59]: Factores internos
+          - generic "Requiere revisión" [ref=e60]: "!"
+          - generic [ref=e61]: ›
+        - button "02 EFE Entorno estratégico Requiere revisión" [ref=e62] [cursor=pointer]:
+          - generic [ref=e63]: "02"
+          - generic [ref=e64]:
+            - strong [ref=e65]: EFE
+            - generic [ref=e66]: Entorno estratégico
+          - generic "Requiere revisión" [ref=e67]: "!"
+          - generic [ref=e68]: ›
+        - button "03 DAFO Cruces y relaciones Requiere revisión" [ref=e2309] [cursor=pointer]:
+          - generic [ref=e70]: "03"
+          - generic [ref=e71]:
+            - strong [ref=e72]: DAFO
+            - generic [ref=e73]: Cruces y relaciones
+          - generic "Requiere revisión" [ref=e2310]: "!"
+          - generic [ref=e75]: ›
+        - button "04 QSPM Selección estratégica Requiere revisión" [ref=e2311] [cursor=pointer]:
+          - generic [ref=e77]: "04"
+          - generic [ref=e78]:
+            - strong [ref=e79]: QSPM
+            - generic [ref=e80]: Selección estratégica
+          - generic "Requiere revisión" [ref=e2312]: "!"
+          - generic [ref=e82]: ›
+        - button "05 CAME Plan de acción Requiere revisión" [ref=e2313] [cursor=pointer]:
+          - generic [ref=e84]: "05"
+          - generic [ref=e85]:
+            - strong [ref=e86]: CAME
+            - generic [ref=e87]: Plan de acción
+          - generic "Requiere revisión" [ref=e2314]: "!"
+          - generic [ref=e89]: ›
+      - generic [ref=e90]:
+        - generic [ref=e91]: Cadena de trazabilidad
+        - strong [ref=e92]: D-08 → DO → EST-DO-01
+        - generic [ref=e93]: → ACC-D-08
+      - generic [ref=e94]:
+        - button "Nueva investigación" [ref=e95] [cursor=pointer]:
+          - generic [ref=e96]: +
+          - text: Nueva investigación
+        - button "Abrir investigación" [ref=e97] [cursor=pointer]:
+          - generic [ref=e98]: ▦
+          - text: Abrir investigación
+        - button "Cargar demostrativo" [ref=e99] [cursor=pointer]:
+          - generic [ref=e100]: ↺
+          - text: Cargar demostrativo
+        - button "Limpiar análisis" [ref=e101] [cursor=pointer]
+    - main [ref=e102]:
+      - generic [ref=e2361]:
+        - generic [ref=e2362]:
+          - paragraph [ref=e2363]: Cruce / 03
+          - heading "DAFO y relaciones" [level=2] [ref=e2364]
+          - paragraph [ref=e2365]: El índice exploratorio muestra potencial. La orientación operativa se calcula únicamente con relaciones evaluadas, fuerza y evidencia.
+        - generic [ref=e2366]: 1 relaciones evaluadas
+      - generic [ref=e2367]:
+        - article [ref=e2368]:
+          - generic [ref=e2369]:
+            - generic [ref=e2370]: FO
+            - generic [ref=e2371]: Ofensiva
+          - strong [ref=e2372]: "0.00"
+          - paragraph [ref=e2373]: Índice relacional · 0.00 exploratorio
+          - generic [ref=e2374]: 1/25 pares · 0 % cobertura
+        - article [ref=e2375]:
+          - generic [ref=e2376]:
+            - generic [ref=e2377]: DO
+            - generic [ref=e2378]: Adaptativa
+          - strong [ref=e2379]: "0.00"
+          - paragraph [ref=e2380]: Índice relacional · 0.00 exploratorio
+          - generic [ref=e2381]: 0/25 pares · 0 % cobertura
+        - article [ref=e2382]:
+          - generic [ref=e2383]:
+            - generic [ref=e2384]: FA
+            - generic [ref=e2385]: Defensiva
+          - strong [ref=e2386]: "0.00"
+          - paragraph [ref=e2387]: Índice relacional · 0.00 exploratorio
+          - generic [ref=e2388]: 0/25 pares · 0 % cobertura
+        - article [ref=e2389]:
+          - generic [ref=e2390]:
+            - generic [ref=e2391]: DA
+            - generic [ref=e2392]: Supervivencia
+          - strong [ref=e2393]: "0.00"
+          - paragraph [ref=e2394]: Índice relacional · 0.00 exploratorio
+          - generic [ref=e2395]: 0/25 pares · 0 % cobertura
+      - generic [ref=e2396]:
+        - generic [ref=e2397]:
+          - generic [ref=e2398]:
+            - paragraph [ref=e2399]: Matriz visual
+            - heading "Mapa de cruces estratégicos" [level=3] [ref=e2400]
+          - generic [ref=e2401]: Los tres vínculos de mayor contribución aparecen primero
+        - generic [ref=e2402]:
+          - article [ref=e2403]:
+            - generic [ref=e2404]:
+              - generic [ref=e2405]: FO
+              - generic [ref=e2406]:
+                - strong [ref=e2407]: Fortalezas + oportunidades
+                - generic [ref=e2408]: Potenciar · índice 0.00
+            - generic [ref=e2409]:
+              - generic [ref=e2410]:
+                - text: Fortalezas
+                - list [ref=e2411]:
+                  - listitem [ref=e2412]:
+                    - code [ref=e2413]: F-01
+                    - strong [ref=e2414]: Factor sin describir
+                  - listitem [ref=e2415]:
+                    - code [ref=e2416]: F-02
+                    - strong [ref=e2417]: Factor sin describir
+                  - listitem [ref=e2418]:
+                    - code [ref=e2419]: F-03
+                    - strong [ref=e2420]: Factor sin describir
+                  - listitem [ref=e2421]:
+                    - code [ref=e2422]: F-04
+                    - strong [ref=e2423]: Factor sin describir
+                - generic [ref=e2424]: 5 factores en este eje
+              - generic [ref=e2425]:
+                - text: Oportunidades
+                - list [ref=e2426]:
+                  - listitem [ref=e2427]:
+                    - code [ref=e2428]: O-01
+                    - strong [ref=e2429]: Factor sin describir
+                  - listitem [ref=e2430]:
+                    - code [ref=e2431]: O-02
+                    - strong [ref=e2432]: Factor sin describir
+                  - listitem [ref=e2433]:
+                    - code [ref=e2434]: O-03
+                    - strong [ref=e2435]: Factor sin describir
+                  - listitem [ref=e2436]:
+                    - code [ref=e2437]: O-04
+                    - strong [ref=e2438]: Factor sin describir
+                - generic [ref=e2439]: 5 factores en este eje
+            - generic [ref=e2440]:
+              - text: Vínculos destacados
+              - generic [ref=e2675]:
+                - code [ref=e2676]: F-01 + O-01
+                - generic [ref=e2677]: 0.00 aporte
+          - article [ref=e2442]:
+            - generic [ref=e2443]:
+              - generic [ref=e2444]: DO
+              - generic [ref=e2445]:
+                - strong [ref=e2446]: Debilidades + oportunidades
+                - generic [ref=e2447]: Reorientar · índice 0.00
+            - generic [ref=e2448]:
+              - generic [ref=e2449]:
+                - text: Debilidades
+                - list [ref=e2450]:
+                  - listitem [ref=e2451]:
+                    - code [ref=e2452]: D-06
+                    - strong [ref=e2453]: Factor sin describir
+                  - listitem [ref=e2454]:
+                    - code [ref=e2455]: D-07
+                    - strong [ref=e2456]: Factor sin describir
+                  - listitem [ref=e2457]:
+                    - code [ref=e2458]: D-08
+                    - strong [ref=e2459]: Factor sin describir
+                  - listitem [ref=e2460]:
+                    - code [ref=e2461]: D-09
+                    - strong [ref=e2462]: Factor sin describir
+                - generic [ref=e2463]: 5 factores en este eje
+              - generic [ref=e2464]:
+                - text: Oportunidades
+                - list [ref=e2465]:
+                  - listitem [ref=e2466]:
+                    - code [ref=e2467]: O-01
+                    - strong [ref=e2468]: Factor sin describir
+                  - listitem [ref=e2469]:
+                    - code [ref=e2470]: O-02
+                    - strong [ref=e2471]: Factor sin describir
+                  - listitem [ref=e2472]:
+                    - code [ref=e2473]: O-03
+                    - strong [ref=e2474]: Factor sin describir
+                  - listitem [ref=e2475]:
+                    - code [ref=e2476]: O-04
+                    - strong [ref=e2477]: Factor sin describir
+                - generic [ref=e2478]: 5 factores en este eje
+            - generic [ref=e2479]:
+              - text: Vínculos destacados
+              - paragraph [ref=e2480]: Sin relaciones evaluadas.
+          - article [ref=e2481]:
+            - generic [ref=e2482]:
+              - generic [ref=e2483]: FA
+              - generic [ref=e2484]:
+                - strong [ref=e2485]: Fortalezas + amenazas
+                - generic [ref=e2486]: Proteger · índice 0.00
+            - generic [ref=e2487]:
+              - generic [ref=e2488]:
+                - text: Fortalezas
+                - list [ref=e2489]:
+                  - listitem [ref=e2490]:
+                    - code [ref=e2491]: F-01
+                    - strong [ref=e2492]: Factor sin describir
+                  - listitem [ref=e2493]:
+                    - code [ref=e2494]: F-02
+                    - strong [ref=e2495]: Factor sin describir
+                  - listitem [ref=e2496]:
+                    - code [ref=e2497]: F-03
+                    - strong [ref=e2498]: Factor sin describir
+                  - listitem [ref=e2499]:
+                    - code [ref=e2500]: F-04
+                    - strong [ref=e2501]: Factor sin describir
+                - generic [ref=e2502]: 5 factores en este eje
+              - generic [ref=e2503]:
+                - text: Amenazas
+                - list [ref=e2504]:
+                  - listitem [ref=e2505]:
+                    - code [ref=e2506]: A-06
+                    - strong [ref=e2507]: Factor sin describir
+                  - listitem [ref=e2508]:
+                    - code [ref=e2509]: A-07
+                    - strong [ref=e2510]: Factor sin describir
+                  - listitem [ref=e2511]:
+                    - code [ref=e2512]: A-08
+                    - strong [ref=e2513]: Factor sin describir
+                  - listitem [ref=e2514]:
+                    - code [ref=e2515]: A-09
+                    - strong [ref=e2516]: Factor sin describir
+                - generic [ref=e2517]: 5 factores en este eje
+            - generic [ref=e2518]:
+              - text: Vínculos destacados
+              - paragraph [ref=e2519]: Sin relaciones evaluadas.
+          - article [ref=e2520]:
+            - generic [ref=e2521]:
+              - generic [ref=e2522]: DA
+              - generic [ref=e2523]:
+                - strong [ref=e2524]: Debilidades + amenazas
+                - generic [ref=e2525]: Contener · índice 0.00
+            - generic [ref=e2526]:
+              - generic [ref=e2527]:
+                - text: Debilidades
+                - list [ref=e2528]:
+                  - listitem [ref=e2529]:
+                    - code [ref=e2530]: D-06
+                    - strong [ref=e2531]: Factor sin describir
+                  - listitem [ref=e2532]:
+                    - code [ref=e2533]: D-07
+                    - strong [ref=e2534]: Factor sin describir
+                  - listitem [ref=e2535]:
+                    - code [ref=e2536]: D-08
+                    - strong [ref=e2537]: Factor sin describir
+                  - listitem [ref=e2538]:
+                    - code [ref=e2539]: D-09
+                    - strong [ref=e2540]: Factor sin describir
+                - generic [ref=e2541]: 5 factores en este eje
+              - generic [ref=e2542]:
+                - text: Amenazas
+                - list [ref=e2543]:
+                  - listitem [ref=e2544]:
+                    - code [ref=e2545]: A-06
+                    - strong [ref=e2546]: Factor sin describir
+                  - listitem [ref=e2547]:
+                    - code [ref=e2548]: A-07
+                    - strong [ref=e2549]: Factor sin describir
+                  - listitem [ref=e2550]:
+                    - code [ref=e2551]: A-08
+                    - strong [ref=e2552]: Factor sin describir
+                  - listitem [ref=e2553]:
+                    - code [ref=e2554]: A-09
+                    - strong [ref=e2555]: Factor sin describir
+                - generic [ref=e2556]: 5 factores en este eje
+            - generic [ref=e2557]:
+              - text: Vínculos destacados
+              - paragraph [ref=e2558]: Sin relaciones evaluadas.
+      - generic [ref=e2559]:
+        - generic [ref=e2560]:
+          - generic [ref=e2561]:
+            - generic [ref=e2562]:
+              - paragraph [ref=e2563]: Lectura comparativa
+              - heading "Capacidad y respuesta" [level=3] [ref=e2564]
+            - generic [ref=e2565]: Escala máxima 4.00
+          - generic [ref=e2566]:
+            - generic [ref=e2568]:
+              - generic [ref=e2569]: EFI · interno
+              - strong [ref=e2570]: "0.00"
+            - generic [ref=e2574]:
+              - generic [ref=e2575]: EFE · entorno
+              - strong [ref=e2576]: "0.00"
+            - generic [ref=e2580]:
+              - generic [ref=e2581]: Cobertura dominante
+              - strong [ref=e2582]: 0 %
+        - generic [ref=e2585]:
+          - generic [ref=e2586]:
+            - generic [ref=e2587]:
+              - paragraph [ref=e2588]: Perfil del caso
+              - heading "Radar de lectura" [level=3] [ref=e2589]
+            - generic [ref=e2590]: Valores normalizados
+          - generic [ref=e2591]:
+            - generic [ref=e2592]:
+              - generic [ref=e2593]: EFI
+              - generic [ref=e2594]: EFE
+              - generic [ref=e2595]: Cobertura
+              - generic [ref=e2596]: QSPM
+              - generic [ref=e2597]: CAME
+            - generic [ref=e2598]:
+              - generic [ref=e2599]: Perfil actual
+              - generic [ref=e2601]: La forma combina desempeño, cobertura, selección y capacidad de acción.
+        - generic [ref=e2602]:
+          - generic [ref=e2603]:
+            - generic [ref=e2604]:
+              - paragraph [ref=e2605]: CAME · prioridad
+              - heading "Acciones que abren el plan" [level=3] [ref=e2606]
+            - generic [ref=e2607]: Top 5
+          - paragraph [ref=e2609]: Sin acciones priorizadas todavía.
+      - generic [ref=e2610]:
+        - generic [ref=e2611]:
+          - paragraph [ref=e2612]: Orientación sugerida
+          - generic [ref=e2613]:
+            - generic [ref=e2614]: —
+            - heading "Sin orientación concluyente" [level=3] [ref=e2615]
+          - paragraph [ref=e2616]: Evalúe relaciones con fuerza y evidencia antes de interpretar el cuadrante.
+        - generic [ref=e2617]:
+          - generic [ref=e2618]: Confianza
+          - strong [ref=e2619]: no concluyente
+          - generic [ref=e2620]: Diferencia frente al segundo
+          - strong [ref=e2621]: 0 %
+          - generic [ref=e2622]: Cobertura dominante
+          - strong [ref=e2623]: 0 %
+      - generic [ref=e2624]:
+        - generic [ref=e2625]: "!"
+        - list [ref=e2626]:
+          - listitem [ref=e2678]: Las relaciones evaluadas no aportan una orientación positiva.
+      - generic [ref=e2628]:
+        - generic [ref=e2629]:
+          - paragraph [ref=e2630]: Nuevo vínculo
+          - heading "Añadir un par relevante" [level=3] [ref=e2631]
+          - paragraph [ref=e2632]: Seleccione un factor interno y uno externo para abrir una evaluación pendiente.
+        - generic [ref=e2633]:
+          - generic [ref=e2634]:
+            - text: Factor interno
+            - combobox "Factor interno" [ref=e2635]:
+              - option "F-01 · Sin describir" [selected]
+              - option "F-02 · Sin describir"
+              - option "F-03 · Sin describir"
+              - option "F-04 · Sin describir"
+              - option "F-05 · Sin describir"
+              - option "D-06 · Sin describir"
+              - option "D-07 · Sin describir"
+              - option "D-08 · Sin describir"
+              - option "D-09 · Sin describir"
+              - option "D-10 · Sin describir"
+          - text: +
+          - generic [ref=e2636]:
+            - text: Factor externo
+            - combobox "Factor externo" [ref=e2637]:
+              - option "O-01 · Sin describir" [selected]
+              - option "O-02 · Sin describir"
+              - option "O-03 · Sin describir"
+              - option "O-04 · Sin describir"
+              - option "O-05 · Sin describir"
+              - option "A-06 · Sin describir"
+              - option "A-07 · Sin describir"
+              - option "A-08 · Sin describir"
+              - option "A-09 · Sin describir"
+              - option "A-10 · Sin describir"
+          - button "Par ya añadido" [disabled] [ref=e2657] [cursor=pointer]
+      - generic [ref=e2639]:
+        - generic [ref=e2640]:
+          - generic [ref=e2641]:
+            - paragraph [ref=e2642]: Mesa de evidencia
+            - heading "100 pares internos y externos" [level=3] [ref=e2643]
+          - generic [ref=e2644]: Fuerza 0 = sin relación identificada
+        - table [ref=e2646]:
+          - rowgroup [ref=e2647]:
+            - row [ref=e2648]:
+              - columnheader "Par" [ref=e2649]
+              - columnheader "Cuadrante" [ref=e2650]
+              - columnheader "Estado" [ref=e2651]
+              - columnheader "Fuerza" [ref=e2652]
+              - columnheader "Justificación" [ref=e2653]
+              - columnheader "Evidencia" [ref=e2654]
+              - columnheader "Evaluador" [ref=e2655]
+              - columnheader "Fecha" [ref=e2656]
+          - rowgroup [ref=e2658]:
+            - row [ref=e2679]:
+              - cell [ref=e2660]:
+                - code [ref=e2661]: F-01 + O-01
+              - cell "FO" [ref=e2662]
+              - cell "fuerte" [ref=e2680]
+              - cell "3 · Fuerte" [ref=e2681]:
+                - combobox "Fuerza F-01 O-01" [ref=e2666]:
+                  - option "Pendiente"
+                  - option "0 · Sin relación"
+                  - option "1 · Débil"
+                  - option "2 · Moderada"
+                  - option "3 · Fuerte" [selected]
+              - cell [ref=e2667]:
+                - textbox "Por qué existe o no existe el vínculo" [ref=e2668]
+              - cell [ref=e2669]:
+                - textbox "Fuente o evidencia" [ref=e2670]
+              - cell [ref=e2671]:
+                - textbox "Evaluador" [ref=e2672]
+              - cell [ref=e2673]:
+                - textbox "Fecha F-01 O-01" [ref=e2674]
+  - status [ref=e2360]: Nueva investigación creada como borrador.

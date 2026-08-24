@@ -1,0 +1,2759 @@
+- generic [ref=e3]:
+  - banner [ref=e4]:
+    - generic [ref=e5]:
+      - generic [ref=e6]: E
+      - generic [ref=e7]:
+        - paragraph [ref=e8]: Mesa de evidencia estratégica
+        - heading "EFI / EFE / DAFO / QSPM / CAME" [level=1] [ref=e9]
+    - generic [ref=e10]:
+      - generic [ref=e11]: borrador
+      - button "Investigaciones" [ref=e13] [cursor=pointer]:
+        - generic [ref=e14]: ▦
+        - text: Investigaciones
+      - button "Nueva" [ref=e15] [cursor=pointer]:
+        - generic [ref=e16]: +
+        - text: Nueva
+      - button "Guía" [ref=e17] [cursor=pointer]:
+        - generic [ref=e18]: "?"
+        - text: Guía
+      - button "Exportar PDF" [ref=e19] [cursor=pointer]:
+        - generic [ref=e20]: ↓
+        - text: Exportar PDF
+  - generic [ref=e21]:
+    - complementary [ref=e22]:
+      - generic [ref=e23]:
+        - paragraph [ref=e24]: Caso activo
+        - heading "ETECSA" [level=2] [ref=e25]
+        - paragraph [ref=e26]: Sistema de Trabajo con los Cuadros y sus Reservas
+        - generic [ref=e27]: ETECSA-DEMO-01
+        - generic [ref=e28]: borrador · guardado local
+      - region "Estado de validación" [ref=e29]:
+        - generic [ref=e30]:
+          - text: Control de calidad
+          - strong [ref=e31]: 20 revisiones pendientes
+        - generic [ref=e32]:
+          - button "ContextoSin pendientes" [ref=e33] [cursor=pointer]: ContextoOK
+          - button "EFIRequiere revisión" [ref=e34] [cursor=pointer]: EFI!
+          - button "EFERequiere revisión" [ref=e35] [cursor=pointer]: EFE!
+          - button "DAFOSin pendientes" [ref=e36] [cursor=pointer]: DAFOOK
+          - button "QSPMSin pendientes" [ref=e37] [cursor=pointer]: QSPMOK
+          - button "CAMESin pendientes" [ref=e38] [cursor=pointer]: CAMEOK
+        - paragraph [ref=e39]: "Primera revisión: F-01: falta registrar evidencia o fuente."
+      - navigation "Etapas del análisis" [ref=e40]:
+        - button "00 Contexto Sin pendientes" [ref=e41] [cursor=pointer]:
+          - generic [ref=e42]: "00"
+          - strong [ref=e44]: Contexto
+          - generic "Sin pendientes" [ref=e45]: OK
+        - button "00 Resumen Requiere revisión" [ref=e46] [cursor=pointer]:
+          - generic [ref=e47]: "00"
+          - strong [ref=e49]: Resumen
+          - generic "Requiere revisión" [ref=e50]: "!"
+        - button "01 Factores internos (EFI) Requiere revisión" [ref=e51] [cursor=pointer]:
+          - generic [ref=e52]: "01"
+          - strong [ref=e54]: Factores internos (EFI)
+          - generic "Requiere revisión" [ref=e55]: "!"
+        - button "02 Factores externos (EFE) Requiere revisión" [ref=e56] [cursor=pointer]:
+          - generic [ref=e57]: "02"
+          - strong [ref=e59]: Factores externos (EFE)
+          - generic "Requiere revisión" [ref=e60]: "!"
+        - button "03 Cruces y relaciones (DAFO) Sin pendientes" [active] [ref=e61] [cursor=pointer]:
+          - generic [ref=e62]: "03"
+          - strong [ref=e64]: Cruces y relaciones (DAFO)
+          - generic "Sin pendientes" [ref=e65]: OK
+        - button "04 Selección estratégica (QSPM) Sin pendientes" [ref=e66] [cursor=pointer]:
+          - generic [ref=e67]: "04"
+          - strong [ref=e69]: Selección estratégica (QSPM)
+          - generic "Sin pendientes" [ref=e70]: OK
+        - button "05 Plan de acción (CAME) Sin pendientes" [ref=e71] [cursor=pointer]:
+          - generic [ref=e72]: "05"
+          - strong [ref=e74]: Plan de acción (CAME)
+          - generic "Sin pendientes" [ref=e75]: OK
+    - main [ref=e76]:
+      - generic [ref=e279]:
+        - generic [ref=e280]:
+          - paragraph [ref=e281]: Cruce / 03
+          - heading "DAFO y relaciones" [level=2] [ref=e282]
+          - paragraph [ref=e283]: El índice exploratorio muestra potencial. La orientación operativa se calcula únicamente con relaciones evaluadas, fuerza y evidencia.
+        - generic [ref=e284]: 100 relaciones evaluadas
+      - generic [ref=e285]:
+        - article [ref=e286]:
+          - generic [ref=e287]:
+            - generic [ref=e288]: FO
+            - generic [ref=e289]: Ofensiva
+          - strong [ref=e290]: "0.36"
+          - paragraph [ref=e291]: Índice relacional · 1.89 exploratorio
+          - generic [ref=e292]: 25/25 pares · 100 % cobertura
+        - article [ref=e293]:
+          - generic [ref=e294]:
+            - generic [ref=e295]: DO
+            - generic [ref=e296]: Dominante
+          - strong [ref=e297]: "0.75"
+          - paragraph [ref=e298]: Índice relacional · 1.98 exploratorio
+          - generic [ref=e299]: 25/25 pares · 100 % cobertura
+        - article [ref=e300]:
+          - generic [ref=e301]:
+            - generic [ref=e302]: FA
+            - generic [ref=e303]: Defensiva
+          - strong [ref=e304]: "0.35"
+          - paragraph [ref=e305]: Índice relacional · 0.68 exploratorio
+          - generic [ref=e306]: 25/25 pares · 100 % cobertura
+        - article [ref=e307]:
+          - generic [ref=e308]:
+            - generic [ref=e309]: DA
+            - generic [ref=e310]: Supervivencia
+          - strong [ref=e311]: "0.35"
+          - paragraph [ref=e312]: Índice relacional · 0.72 exploratorio
+          - generic [ref=e313]: 25/25 pares · 100 % cobertura
+      - generic [ref=e314]:
+        - generic [ref=e315]:
+          - generic [ref=e316]:
+            - paragraph [ref=e317]: Análisis legacy integrado
+            - heading "Matriz de cruzamiento completa" [level=3] [ref=e318]
+          - generic [ref=e319]: Puntaje interno × puntaje externo
+        - paragraph [ref=e320]: "Cada celda cruza el puntaje EFI del factor interno con el puntaje EFE del factor externo. Los subtotales conservan la lectura exploratoria clásica: FO, FA, DO y DA."
+        - table [ref=e322]:
+          - rowgroup [ref=e323]:
+            - row [ref=e324]:
+              - columnheader "Factor" [ref=e325]
+              - columnheader "Pond." [ref=e326]
+              - columnheader "Oportunidades" [ref=e327]
+              - columnheader "Subtotal" [ref=e328]
+              - columnheader "Amenazas" [ref=e329]
+              - columnheader "Subtotal" [ref=e330]
+              - columnheader "Total" [ref=e331]
+            - row [ref=e332]:
+              - columnheader "O-01 Transformación digital" [ref=e333]:
+                - code [ref=e334]: O-01
+                - generic [ref=e335]: Transformación digital
+              - columnheader "O-02 Modernización del sector" [ref=e336]:
+                - code [ref=e337]: O-02
+                - generic [ref=e338]: Modernización del sector
+              - columnheader "O-03 Uso de la Inteligencia Artificial" [ref=e339]:
+                - code [ref=e340]: O-03
+                - generic [ref=e341]: Uso de la Inteligencia Artificial
+              - columnheader "O-04 Vínculo con la DCEG" [ref=e342]:
+                - code [ref=e343]: O-04
+                - generic [ref=e344]: Vínculo con la DCEG
+              - columnheader "O-05 Marco legal de país" [ref=e345]:
+                - code [ref=e346]: O-05
+                - generic [ref=e347]: Marco legal de país
+              - columnheader "A-06 Migración al extranjero" [ref=e348]:
+                - code [ref=e349]: A-06
+                - generic [ref=e350]: Migración al extranjero
+              - columnheader "A-07 Bloqueo del gobierno de EE. UU." [ref=e351]:
+                - code [ref=e352]: A-07
+                - generic [ref=e353]: Bloqueo del gobierno de EE. UU.
+              - columnheader "A-08 Situación económica y financiera" [ref=e354]:
+                - code [ref=e355]: A-08
+                - generic [ref=e356]: Situación económica y financiera
+              - columnheader "A-09 Migración al sector privado" [ref=e357]:
+                - code [ref=e358]: A-09
+                - generic [ref=e359]: Migración al sector privado
+              - columnheader "A-10 Inestabilidad energética" [ref=e360]:
+                - code [ref=e361]: A-10
+                - generic [ref=e362]: Inestabilidad energética
+          - rowgroup [ref=e363]:
+            - row [ref=e364]:
+              - cell [ref=e365]:
+                - code [ref=e366]: F-01
+                - strong [ref=e367]: Voluntad de la alta dirección
+              - cell "0.06" [ref=e368]
+              - cell "0.1080" [ref=e369]
+              - cell "0.0936" [ref=e370]
+              - cell "0.0720" [ref=e371]
+              - cell "0.0864" [ref=e372]
+              - cell "0.0720" [ref=e373]
+              - cell "0.43" [ref=e374]
+              - cell "0.0336" [ref=e375]
+              - cell "0.0384" [ref=e376]
+              - cell "0.0384" [ref=e377]
+              - cell "0.0336" [ref=e378]
+              - cell "0.0120" [ref=e379]
+              - cell "0.16" [ref=e380]
+              - cell "0.59" [ref=e381]
+            - row [ref=e382]:
+              - cell [ref=e383]:
+                - code [ref=e384]: F-02
+                - strong [ref=e385]: Marco legal empresarial
+              - cell "0.06" [ref=e386]
+              - cell "0.0810" [ref=e387]
+              - cell "0.0702" [ref=e388]
+              - cell "0.0540" [ref=e389]
+              - cell "0.0648" [ref=e390]
+              - cell "0.0540" [ref=e391]
+              - cell "0.32" [ref=e392]
+              - cell "0.0252" [ref=e393]
+              - cell "0.0288" [ref=e394]
+              - cell "0.0288" [ref=e395]
+              - cell "0.0252" [ref=e396]
+              - cell "0.0090" [ref=e397]
+              - cell "0.12" [ref=e398]
+              - cell "0.44" [ref=e399]
+            - row [ref=e400]:
+              - cell [ref=e401]:
+                - code [ref=e402]: F-03
+                - strong [ref=e403]: Indicadores de gestión
+              - cell "0.07" [ref=e404]
+              - cell "0.0945" [ref=e405]
+              - cell "0.0819" [ref=e406]
+              - cell "0.0630" [ref=e407]
+              - cell "0.0756" [ref=e408]
+              - cell "0.0630" [ref=e409]
+              - cell "0.38" [ref=e410]
+              - cell "0.0294" [ref=e411]
+              - cell "0.0336" [ref=e412]
+              - cell "0.0336" [ref=e413]
+              - cell "0.0294" [ref=e414]
+              - cell "0.0105" [ref=e415]
+              - cell "0.14" [ref=e416]
+              - cell "0.51" [ref=e417]
+            - row [ref=e418]:
+              - cell [ref=e419]:
+                - code [ref=e420]: F-04
+                - strong [ref=e421]: Uso de herramientas
+              - cell "0.06" [ref=e422]
+              - cell "0.0540" [ref=e423]
+              - cell "0.0468" [ref=e424]
+              - cell "0.0360" [ref=e425]
+              - cell "0.0432" [ref=e426]
+              - cell "0.0360" [ref=e427]
+              - cell "0.22" [ref=e428]
+              - cell "0.0168" [ref=e429]
+              - cell "0.0192" [ref=e430]
+              - cell "0.0192" [ref=e431]
+              - cell "0.0168" [ref=e432]
+              - cell "0.0060" [ref=e433]
+              - cell "0.08" [ref=e434]
+              - cell "0.29" [ref=e435]
+            - row [ref=e436]:
+              - cell [ref=e437]:
+                - code [ref=e438]: F-05
+                - strong [ref=e439]: Profesionalidad de los cuadros
+              - cell "0.10" [ref=e440]
+              - cell "0.1350" [ref=e441]
+              - cell "0.1170" [ref=e442]
+              - cell "0.0900" [ref=e443]
+              - cell "0.1080" [ref=e444]
+              - cell "0.0900" [ref=e445]
+              - cell "0.54" [ref=e446]
+              - cell "0.0420" [ref=e447]
+              - cell "0.0480" [ref=e448]
+              - cell "0.0480" [ref=e449]
+              - cell "0.0420" [ref=e450]
+              - cell "0.0150" [ref=e451]
+              - cell "0.20" [ref=e452]
+              - cell "0.74" [ref=e453]
+            - row [ref=e454]:
+              - cell [ref=e455]:
+                - strong [ref=e456]: Subtotal fortalezas
+              - cell [ref=e457]
+              - cell "FO · 1.89" [ref=e458]
+              - cell [ref=e459]
+              - cell "FA · 0.68" [ref=e460]
+              - cell "2.57" [ref=e461]
+            - row [ref=e462]:
+              - cell [ref=e463]:
+                - code [ref=e464]: D-06
+                - strong [ref=e465]: Procesos burocráticos
+              - cell "0.10" [ref=e466]
+              - cell "0.0900" [ref=e467]
+              - cell "0.0780" [ref=e468]
+              - cell "0.0600" [ref=e469]
+              - cell "0.0720" [ref=e470]
+              - cell "0.0600" [ref=e471]
+              - cell "0.36" [ref=e472]
+              - cell "0.0280" [ref=e473]
+              - cell "0.0320" [ref=e474]
+              - cell "0.0320" [ref=e475]
+              - cell "0.0280" [ref=e476]
+              - cell "0.0100" [ref=e477]
+              - cell "0.13" [ref=e478]
+              - cell "0.49" [ref=e479]
+            - row [ref=e480]:
+              - cell [ref=e481]:
+                - code [ref=e482]: D-07
+                - strong [ref=e483]: Falta de automatización de procesos
+              - cell "0.14" [ref=e484]
+              - cell "0.1260" [ref=e485]
+              - cell "0.1092" [ref=e486]
+              - cell "0.0840" [ref=e487]
+              - cell "0.1008" [ref=e488]
+              - cell "0.0840" [ref=e489]
+              - cell "0.50" [ref=e490]
+              - cell "0.0392" [ref=e491]
+              - cell "0.0448" [ref=e492]
+              - cell "0.0448" [ref=e493]
+              - cell "0.0392" [ref=e494]
+              - cell "0.0140" [ref=e495]
+              - cell "0.18" [ref=e496]
+              - cell "0.69" [ref=e497]
+            - row [ref=e498]:
+              - cell [ref=e499]:
+                - code [ref=e500]: D-08
+                - strong [ref=e501]: Falta de integración de procesos
+              - cell "0.20" [ref=e502]
+              - cell "0.0900" [ref=e503]
+              - cell "0.0780" [ref=e504]
+              - cell "0.0600" [ref=e505]
+              - cell "0.0720" [ref=e506]
+              - cell "0.0600" [ref=e507]
+              - cell "0.36" [ref=e508]
+              - cell "0.0280" [ref=e509]
+              - cell "0.0320" [ref=e510]
+              - cell "0.0320" [ref=e511]
+              - cell "0.0280" [ref=e512]
+              - cell "0.0100" [ref=e513]
+              - cell "0.13" [ref=e514]
+              - cell "0.49" [ref=e515]
+            - row [ref=e516]:
+              - cell [ref=e517]:
+                - code [ref=e518]: D-09
+                - strong [ref=e519]: Falta de evaluación del impacto de la capacitación
+              - cell "0.10" [ref=e520]
+              - cell "0.0900" [ref=e521]
+              - cell "0.0780" [ref=e522]
+              - cell "0.0600" [ref=e523]
+              - cell "0.0720" [ref=e524]
+              - cell "0.0600" [ref=e525]
+              - cell "0.36" [ref=e526]
+              - cell "0.0280" [ref=e527]
+              - cell "0.0320" [ref=e528]
+              - cell "0.0320" [ref=e529]
+              - cell "0.0280" [ref=e530]
+              - cell "0.0100" [ref=e531]
+              - cell "0.13" [ref=e532]
+              - cell "0.49" [ref=e533]
+            - row [ref=e534]:
+              - cell [ref=e535]:
+                - code [ref=e536]: D-10
+                - strong [ref=e537]: Fluctuación de cuadros y reservas
+              - cell "0.11" [ref=e538]
+              - cell "0.0990" [ref=e539]
+              - cell "0.0858" [ref=e540]
+              - cell "0.0660" [ref=e541]
+              - cell "0.0792" [ref=e542]
+              - cell "0.0660" [ref=e543]
+              - cell "0.40" [ref=e544]
+              - cell "0.0308" [ref=e545]
+              - cell "0.0352" [ref=e546]
+              - cell "0.0352" [ref=e547]
+              - cell "0.0308" [ref=e548]
+              - cell "0.0110" [ref=e549]
+              - cell "0.14" [ref=e550]
+              - cell "0.54" [ref=e551]
+            - row [ref=e552]:
+              - cell [ref=e553]:
+                - strong [ref=e554]: Subtotal debilidades
+              - cell [ref=e555]
+              - cell "DO · 1.98" [ref=e556]
+              - cell [ref=e557]
+              - cell "DA · 0.72" [ref=e558]
+              - cell "2.70" [ref=e559]
+      - generic [ref=e560]:
+        - generic [ref=e561]:
+          - generic [ref=e562]:
+            - paragraph [ref=e563]: Análisis estratégico
+            - heading "Justificación de cada cuadrante" [level=3] [ref=e564]
+          - generic [ref=e565]: Lectura exploratoria, no selección automática
+        - paragraph [ref=e566]:
+          - text: La orientación operativa actual es
+          - strong [ref=e567]: DO
+          - text: . La puntuación exploratoria ayuda a interpretar el potencial; la recomendación final requiere relaciones evaluadas, evidencia y comparación QSPM.
+        - generic [ref=e568]:
+          - article [ref=e569]:
+            - generic [ref=e570]:
+              - generic [ref=e571]: FO
+              - generic [ref=e572]:
+                - strong [ref=e573]: Ofensiva
+                - generic [ref=e574]: Índice exploratorio 1.89
+            - paragraph [ref=e575]:
+              - strong [ref=e576]: ¿Por qué es ofensiva?
+            - paragraph [ref=e577]: Con fortalezas como Profesionalidad de los cuadros y Voluntad de la alta dirección se pueden aprovechar oportunidades como Transformación digital y Modernización del sector.
+            - paragraph [ref=e578]:
+              - strong [ref=e579]: "Análisis:"
+              - text: La puntuación FO (1.89) representa el potencial combinado de fortalezas y oportunidades; no valida por sí sola una relación.
+            - paragraph [ref=e580]:
+              - strong [ref=e581]: "Recomendación:"
+              - text: Enfocar recursos en iniciativas que capitalicen las capacidades internas para capturar las oportunidades disponibles.
+          - article [ref=e582]:
+            - generic [ref=e583]:
+              - generic [ref=e584]: DO
+              - generic [ref=e585]:
+                - strong [ref=e586]: Adaptativa
+                - generic [ref=e587]: Índice exploratorio 1.98
+            - paragraph [ref=e588]:
+              - strong [ref=e589]: ¿Por qué es adaptativa?
+            - paragraph [ref=e590]: Es necesario corregir debilidades como Falta de automatización de procesos y Fluctuación de cuadros y reservas para aprovechar oportunidades como Transformación digital y Modernización del sector.
+            - paragraph [ref=e591]:
+              - strong [ref=e592]: "Análisis:"
+              - text: La puntuación DO (1.98) refleja el potencial de desarrollo cuando se reducen las limitaciones internas.
+            - paragraph [ref=e593]:
+              - strong [ref=e594]: "Recomendación:"
+              - text: Priorizar un plan de mejora para las debilidades críticas antes de comprometer nuevas iniciativas de aprovechamiento.
+          - article [ref=e595]:
+            - generic [ref=e596]:
+              - generic [ref=e597]: FA
+              - generic [ref=e598]:
+                - strong [ref=e599]: Defensiva
+                - generic [ref=e600]: Índice exploratorio 0.68
+            - paragraph [ref=e601]:
+              - strong [ref=e602]: ¿Por qué es defensiva?
+            - paragraph [ref=e603]: Las fortalezas Profesionalidad de los cuadros y Voluntad de la alta dirección pueden proteger a la organización frente a amenazas como Bloqueo del gobierno de EE. UU. y Situación económica y financiera.
+            - paragraph [ref=e604]:
+              - strong [ref=e605]: "Análisis:"
+              - text: La puntuación FA (0.68) indica el potencial de utilizar fortalezas como barrera protectora ante el entorno.
+            - paragraph [ref=e606]:
+              - strong [ref=e607]: "Recomendación:"
+              - text: Identificar qué fortalezas son más efectivas para contener cada amenaza prioritaria.
+          - article [ref=e608]:
+            - generic [ref=e609]:
+              - generic [ref=e610]: DA
+              - generic [ref=e611]:
+                - strong [ref=e612]: Supervivencia
+                - generic [ref=e613]: Índice exploratorio 0.72
+            - paragraph [ref=e614]:
+              - strong [ref=e615]: ¿Por qué es de supervivencia?
+            - paragraph [ref=e616]: La organización debe reducir debilidades como Falta de automatización de procesos y Fluctuación de cuadros y reservas para mitigar amenazas como Bloqueo del gobierno de EE. UU. y Situación económica y financiera.
+            - paragraph [ref=e617]:
+              - strong [ref=e618]: "Análisis:"
+              - text: La puntuación DA (0.72) representa el potencial de exposición conjunta a debilidades y amenazas.
+            - paragraph [ref=e619]:
+              - strong [ref=e620]: "Recomendación:"
+              - text: Reducir vulnerabilidades críticas y establecer medidas de contingencia para limitar la exposición.
+      - generic [ref=e621]:
+        - generic [ref=e622]:
+          - generic [ref=e623]:
+            - paragraph [ref=e624]: Matriz visual
+            - heading "Mapa de cruces estratégicos" [level=3] [ref=e625]
+          - generic [ref=e626]: Los tres vínculos de mayor contribución aparecen primero
+        - generic [ref=e627]:
+          - article [ref=e628]:
+            - generic [ref=e629]:
+              - generic [ref=e630]: FO
+              - generic [ref=e631]:
+                - strong [ref=e632]: Fortalezas + oportunidades
+                - generic [ref=e633]: Potenciar · índice 0.36
+            - generic [ref=e634]:
+              - generic [ref=e635]:
+                - text: Fortalezas
+                - list [ref=e636]:
+                  - listitem [ref=e637]:
+                    - code [ref=e638]: F-01
+                    - strong [ref=e639]: Voluntad de la alta dirección
+                  - listitem [ref=e640]:
+                    - code [ref=e641]: F-02
+                    - strong [ref=e642]: Marco legal empresarial
+                  - listitem [ref=e643]:
+                    - code [ref=e644]: F-03
+                    - strong [ref=e645]: Indicadores de gestión
+                  - listitem [ref=e646]:
+                    - code [ref=e647]: F-04
+                    - strong [ref=e648]: Uso de herramientas
+                - generic [ref=e649]: 5 factores en este eje
+              - generic [ref=e650]:
+                - text: Oportunidades
+                - list [ref=e651]:
+                  - listitem [ref=e652]:
+                    - code [ref=e653]: O-01
+                    - strong [ref=e654]: Transformación digital
+                  - listitem [ref=e655]:
+                    - code [ref=e656]: O-02
+                    - strong [ref=e657]: Modernización del sector
+                  - listitem [ref=e658]:
+                    - code [ref=e659]: O-03
+                    - strong [ref=e660]: Uso de la Inteligencia Artificial
+                  - listitem [ref=e661]:
+                    - code [ref=e662]: O-04
+                    - strong [ref=e663]: Vínculo con la DCEG
+                - generic [ref=e664]: 5 factores en este eje
+            - generic [ref=e665]:
+              - text: Vínculos destacados
+              - generic [ref=e666]:
+                - code [ref=e667]: F-03 + O-02
+                - generic [ref=e668]: 0.01 aporte
+              - generic [ref=e669]:
+                - code [ref=e670]: F-01 + O-01
+                - generic [ref=e671]: 0.01 aporte
+              - generic [ref=e672]:
+                - code [ref=e673]: F-04 + O-01
+                - generic [ref=e674]: 0.01 aporte
+          - article [ref=e675]:
+            - generic [ref=e676]:
+              - generic [ref=e677]: DO
+              - generic [ref=e678]:
+                - strong [ref=e679]: Debilidades + oportunidades
+                - generic [ref=e680]: Reorientar · índice 0.75
+            - generic [ref=e681]:
+              - generic [ref=e682]:
+                - text: Debilidades
+                - list [ref=e683]:
+                  - listitem [ref=e684]:
+                    - code [ref=e685]: D-06
+                    - strong [ref=e686]: Procesos burocráticos
+                  - listitem [ref=e687]:
+                    - code [ref=e688]: D-07
+                    - strong [ref=e689]: Falta de automatización de procesos
+                  - listitem [ref=e690]:
+                    - code [ref=e691]: D-08
+                    - strong [ref=e692]: Falta de integración de procesos
+                  - listitem [ref=e693]:
+                    - code [ref=e694]: D-09
+                    - strong [ref=e695]: Falta de evaluación del impacto de la capacitación
+                - generic [ref=e696]: 5 factores en este eje
+              - generic [ref=e697]:
+                - text: Oportunidades
+                - list [ref=e698]:
+                  - listitem [ref=e699]:
+                    - code [ref=e700]: O-01
+                    - strong [ref=e701]: Transformación digital
+                  - listitem [ref=e702]:
+                    - code [ref=e703]: O-02
+                    - strong [ref=e704]: Modernización del sector
+                  - listitem [ref=e705]:
+                    - code [ref=e706]: O-03
+                    - strong [ref=e707]: Uso de la Inteligencia Artificial
+                  - listitem [ref=e708]:
+                    - code [ref=e709]: O-04
+                    - strong [ref=e710]: Vínculo con la DCEG
+                - generic [ref=e711]: 5 factores en este eje
+            - generic [ref=e712]:
+              - text: Vínculos destacados
+              - generic [ref=e713]:
+                - code [ref=e714]: D-08 + O-01
+                - generic [ref=e715]: 0.03 aporte
+              - generic [ref=e716]:
+                - code [ref=e717]: D-08 + O-03
+                - generic [ref=e718]: 0.03 aporte
+              - generic [ref=e719]:
+                - code [ref=e720]: D-08 + O-02
+                - generic [ref=e721]: 0.03 aporte
+          - article [ref=e722]:
+            - generic [ref=e723]:
+              - generic [ref=e724]: FA
+              - generic [ref=e725]:
+                - strong [ref=e726]: Fortalezas + amenazas
+                - generic [ref=e727]: Proteger · índice 0.35
+            - generic [ref=e728]:
+              - generic [ref=e729]:
+                - text: Fortalezas
+                - list [ref=e730]:
+                  - listitem [ref=e731]:
+                    - code [ref=e732]: F-01
+                    - strong [ref=e733]: Voluntad de la alta dirección
+                  - listitem [ref=e734]:
+                    - code [ref=e735]: F-02
+                    - strong [ref=e736]: Marco legal empresarial
+                  - listitem [ref=e737]:
+                    - code [ref=e738]: F-03
+                    - strong [ref=e739]: Indicadores de gestión
+                  - listitem [ref=e740]:
+                    - code [ref=e741]: F-04
+                    - strong [ref=e742]: Uso de herramientas
+                - generic [ref=e743]: 5 factores en este eje
+              - generic [ref=e744]:
+                - text: Amenazas
+                - list [ref=e745]:
+                  - listitem [ref=e746]:
+                    - code [ref=e747]: A-06
+                    - strong [ref=e748]: Migración al extranjero
+                  - listitem [ref=e749]:
+                    - code [ref=e750]: A-07
+                    - strong [ref=e751]: Bloqueo del gobierno de EE. UU.
+                  - listitem [ref=e752]:
+                    - code [ref=e753]: A-08
+                    - strong [ref=e754]: Situación económica y financiera
+                  - listitem [ref=e755]:
+                    - code [ref=e756]: A-09
+                    - strong [ref=e757]: Migración al sector privado
+                - generic [ref=e758]: 5 factores en este eje
+            - generic [ref=e759]:
+              - text: Vínculos destacados
+              - generic [ref=e760]:
+                - code [ref=e761]: F-03 + A-08
+                - generic [ref=e762]: 0.00 aporte
+              - generic [ref=e763]:
+                - code [ref=e764]: F-01 + A-06
+                - generic [ref=e765]: 0.00 aporte
+              - generic [ref=e766]:
+                - code [ref=e767]: F-05 + A-07
+                - generic [ref=e768]: 0.00 aporte
+          - article [ref=e769]:
+            - generic [ref=e770]:
+              - generic [ref=e771]: DA
+              - generic [ref=e772]:
+                - strong [ref=e773]: Debilidades + amenazas
+                - generic [ref=e774]: Contener · índice 0.35
+            - generic [ref=e775]:
+              - generic [ref=e776]:
+                - text: Debilidades
+                - list [ref=e777]:
+                  - listitem [ref=e778]:
+                    - code [ref=e779]: D-06
+                    - strong [ref=e780]: Procesos burocráticos
+                  - listitem [ref=e781]:
+                    - code [ref=e782]: D-07
+                    - strong [ref=e783]: Falta de automatización de procesos
+                  - listitem [ref=e784]:
+                    - code [ref=e785]: D-08
+                    - strong [ref=e786]: Falta de integración de procesos
+                  - listitem [ref=e787]:
+                    - code [ref=e788]: D-09
+                    - strong [ref=e789]: Falta de evaluación del impacto de la capacitación
+                - generic [ref=e790]: 5 factores en este eje
+              - generic [ref=e791]:
+                - text: Amenazas
+                - list [ref=e792]:
+                  - listitem [ref=e793]:
+                    - code [ref=e794]: A-06
+                    - strong [ref=e795]: Migración al extranjero
+                  - listitem [ref=e796]:
+                    - code [ref=e797]: A-07
+                    - strong [ref=e798]: Bloqueo del gobierno de EE. UU.
+                  - listitem [ref=e799]:
+                    - code [ref=e800]: A-08
+                    - strong [ref=e801]: Situación económica y financiera
+                  - listitem [ref=e802]:
+                    - code [ref=e803]: A-09
+                    - strong [ref=e804]: Migración al sector privado
+                - generic [ref=e805]: 5 factores en este eje
+            - generic [ref=e806]:
+              - text: Vínculos destacados
+              - generic [ref=e807]:
+                - code [ref=e808]: D-08 + A-09
+                - generic [ref=e809]: 0.01 aporte
+              - generic [ref=e810]:
+                - code [ref=e811]: D-08 + A-07
+                - generic [ref=e812]: 0.01 aporte
+              - generic [ref=e813]:
+                - code [ref=e814]: D-08 + A-08
+                - generic [ref=e815]: 0.01 aporte
+      - generic [ref=e816]:
+        - generic [ref=e817]:
+          - generic [ref=e818]:
+            - generic [ref=e819]:
+              - paragraph [ref=e820]: Lectura comparativa
+              - heading "Capacidad y respuesta" [level=3] [ref=e821]
+            - generic [ref=e822]: Escala máxima 4.00
+          - generic [ref=e823]:
+            - generic [ref=e825]:
+              - generic [ref=e826]: EFI · interno
+              - strong [ref=e827]: "2.15"
+            - generic [ref=e831]:
+              - generic [ref=e832]: EFE · entorno
+              - strong [ref=e833]: "2.45"
+            - generic [ref=e837]:
+              - generic [ref=e838]: Cobertura dominante
+              - strong [ref=e839]: 100 %
+        - generic [ref=e842]:
+          - generic [ref=e843]:
+            - generic [ref=e844]:
+              - paragraph [ref=e845]: Perfil del caso
+              - heading "Radar de lectura" [level=3] [ref=e846]
+            - generic [ref=e847]: Valores normalizados
+          - generic [ref=e848]:
+            - generic [ref=e849]:
+              - generic [ref=e850]: EFI
+              - generic [ref=e851]: EFE
+              - generic [ref=e852]: Cobertura
+              - generic [ref=e853]: QSPM
+              - generic [ref=e854]: CAME
+            - generic [ref=e855]:
+              - generic [ref=e856]: Perfil actual
+              - generic [ref=e858]: La forma combina desempeño, cobertura, selección y capacidad de acción.
+        - generic [ref=e859]:
+          - generic [ref=e860]:
+            - generic [ref=e861]:
+              - paragraph [ref=e862]: CAME · prioridad
+              - heading "Acciones que abren el plan" [level=3] [ref=e863]
+            - generic [ref=e864]: Top 5
+          - generic [ref=e865]:
+            - generic [ref=e866]:
+              - generic [ref=e867]:
+                - code [ref=e868]: ACC-D-06
+                - generic [ref=e869]: Diseñar medidas para corregir procesos burocráticos.
+              - strong [ref=e872]: "0.36"
+            - generic [ref=e875]:
+              - generic [ref=e876]:
+                - code [ref=e877]: ACC-D-07
+                - generic [ref=e878]: Diseñar medidas para corregir falta de automatización de procesos.
+              - strong [ref=e881]: "0.36"
+            - generic [ref=e884]:
+              - generic [ref=e885]:
+                - code [ref=e886]: ACC-D-08
+                - generic [ref=e887]: Diseñar y aprobar el mapa integrado de procesos de cuadros y reservas.
+              - strong [ref=e890]: "0.36"
+            - generic [ref=e893]:
+              - generic [ref=e894]:
+                - code [ref=e895]: ACC-D-09
+                - generic [ref=e896]: Diseñar medidas para corregir falta de evaluación del impacto de la capacitación.
+              - strong [ref=e899]: "0.32"
+            - generic [ref=e902]:
+              - generic [ref=e903]:
+                - code [ref=e904]: ACC-D-10
+                - generic [ref=e905]: Diseñar medidas para corregir fluctuación de cuadros y reservas.
+              - strong [ref=e908]: "0.32"
+      - generic [ref=e911]:
+        - generic [ref=e912]:
+          - paragraph [ref=e913]: Orientación sugerida
+          - generic [ref=e914]:
+            - generic [ref=e915]: DO
+            - heading "Adaptativa" [level=3] [ref=e916]
+          - paragraph [ref=e917]: Corregir debilidades para aprovechar oportunidades.
+        - generic [ref=e918]:
+          - generic [ref=e919]: Confianza
+          - strong [ref=e920]: alta
+          - generic [ref=e921]: Diferencia frente al segundo
+          - strong [ref=e922]: 52 %
+          - generic [ref=e923]: Cobertura dominante
+          - strong [ref=e924]: 100 %
+      - generic [ref=e925]:
+        - generic [ref=e926]:
+          - paragraph [ref=e927]: Nuevo vínculo
+          - heading "Añadir un par relevante" [level=3] [ref=e928]
+          - paragraph [ref=e929]: Seleccione un factor interno y uno externo para abrir una evaluación pendiente.
+        - generic [ref=e930]:
+          - generic [ref=e931]:
+            - generic [ref=e932]: Factor interno
+            - combobox "Factor interno" [ref=e933]:
+              - option "F-01 · Voluntad de la alta dirección" [selected]
+              - option "F-02 · Marco legal empresarial"
+              - option "F-03 · Indicadores de gestión"
+              - option "F-04 · Uso de herramientas"
+              - option "F-05 · Profesionalidad de los cuadros"
+              - option "D-06 · Procesos burocráticos"
+              - option "D-07 · Falta de automatización de procesos"
+              - option "D-08 · Falta de integración de procesos"
+              - option "D-09 · Falta de evaluación del impacto de la capacitación"
+              - option "D-10 · Fluctuación de cuadros y reservas"
+          - generic [ref=e934]:
+            - generic [ref=e935]: Factor externo
+            - combobox "Factor externo" [ref=e936]:
+              - option "O-01 · Transformación digital" [selected]
+              - option "O-02 · Modernización del sector"
+              - option "O-03 · Uso de la Inteligencia Artificial"
+              - option "O-04 · Vínculo con la DCEG"
+              - option "O-05 · Marco legal de país"
+              - option "A-06 · Migración al extranjero"
+              - option "A-07 · Bloqueo del gobierno de EE. UU."
+              - option "A-08 · Situación económica y financiera"
+              - option "A-09 · Migración al sector privado"
+              - option "A-10 · Inestabilidad energética"
+          - button "Par ya añadido" [disabled] [ref=e937] [cursor=pointer]
+      - generic [ref=e938]:
+        - generic [ref=e939]:
+          - generic [ref=e940]:
+            - paragraph [ref=e941]: Mesa de evidencia
+            - heading "100 pares internos y externos" [level=3] [ref=e942]
+          - generic [ref=e943]: Fuerza 0 = sin relación identificada
+        - table [ref=e945]:
+          - rowgroup [ref=e946]:
+            - row [ref=e947]:
+              - columnheader "Par" [ref=e948]
+              - columnheader "Cuadrante" [ref=e949]
+              - columnheader "Estado" [ref=e950]
+              - columnheader "Fuerza" [ref=e951]
+              - columnheader "Justificación" [ref=e952]
+              - columnheader "Evidencia" [ref=e953]
+              - columnheader "Evaluador" [ref=e954]
+              - columnheader "Fecha" [ref=e955]
+          - rowgroup [ref=e956]:
+            - row [ref=e957]:
+              - cell [ref=e958]:
+                - code [ref=e959]: F-01 + O-01
+              - cell "FO" [ref=e960]
+              - cell "moderada" [ref=e962]
+              - cell "2 · Moderada" [ref=e964]:
+                - combobox "Fuerza F-01 O-01" [ref=e965]:
+                  - option "Pendiente"
+                  - option "0 · Sin relación"
+                  - option "1 · Débil"
+                  - option "2 · Moderada" [selected]
+                  - option "3 · Fuerte"
+              - cell [ref=e966]:
+                - textbox "Por qué existe o no existe el vínculo" [ref=e967]: Voluntad de la alta dirección permite aprovechar Transformación digital; la relación se valora con fuerza 2/3.
+              - cell [ref=e968]:
+                - textbox "Fuente o evidencia" [ref=e969]: "Tesis ETECSA: revisión documental y entrevistas (simulado)."
+              - cell [ref=e970]:
+                - textbox "Evaluador" [ref=e971]: Equipo metodológico
+              - cell [ref=e972]:
+                - textbox "Fecha F-01 O-01" [ref=e973]: 2026-07-31
+            - row [ref=e974]:
+              - cell [ref=e975]:
+                - code [ref=e976]: F-01 + O-02
+              - cell "FO" [ref=e977]
+              - cell "débil" [ref=e979]
+              - cell "1 · Débil" [ref=e981]:
+                - combobox "Fuerza F-01 O-02" [ref=e982]:
+                  - option "Pendiente"
+                  - option "0 · Sin relación"
+                  - option "1 · Débil" [selected]
+                  - option "2 · Moderada"
+                  - option "3 · Fuerte"
+              - cell [ref=e983]:
+                - textbox "Por qué existe o no existe el vínculo" [ref=e984]: Voluntad de la alta dirección permite aprovechar Modernización del sector; la relación se valora con fuerza 1/3.
+              - cell [ref=e985]:
+                - textbox "Fuente o evidencia" [ref=e986]: "Tesis ETECSA: revisión documental y entrevistas (simulado)."
+              - cell [ref=e987]:
+                - textbox "Evaluador" [ref=e988]: Equipo metodológico
+              - cell [ref=e989]:
+                - textbox "Fecha F-01 O-02" [ref=e990]: 2026-07-31
+            - row [ref=e991]:
+              - cell [ref=e992]:
+                - code [ref=e993]: F-01 + O-03
+              - cell "FO" [ref=e994]
+              - cell "débil" [ref=e996]
+              - cell "1 · Débil" [ref=e998]:
+                - combobox "Fuerza F-01 O-03" [ref=e999]:
+                  - option "Pendiente"
+                  - option "0 · Sin relación"
+                  - option "1 · Débil" [selected]
+                  - option "2 · Moderada"
+                  - option "3 · Fuerte"
+              - cell [ref=e1000]:
+                - textbox "Por qué existe o no existe el vínculo" [ref=e1001]: Voluntad de la alta dirección permite aprovechar Uso de la Inteligencia Artificial; la relación se valora con fuerza 1/3.
+              - cell [ref=e1002]:
+                - textbox "Fuente o evidencia" [ref=e1003]: "Tesis ETECSA: revisión documental y entrevistas (simulado)."
+              - cell [ref=e1004]:
+                - textbox "Evaluador" [ref=e1005]: Equipo metodológico
+              - cell [ref=e1006]:
+                - textbox "Fecha F-01 O-03" [ref=e1007]: 2026-07-31
+            - row [ref=e1008]:
+              - cell [ref=e1009]:
+                - code [ref=e1010]: F-01 + O-04
+              - cell "FO" [ref=e1011]
+              - cell "débil" [ref=e1013]
+              - cell "1 · Débil" [ref=e1015]:
+                - combobox "Fuerza F-01 O-04" [ref=e1016]:
+                  - option "Pendiente"
+                  - option "0 · Sin relación"
+                  - option "1 · Débil" [selected]
+                  - option "2 · Moderada"
+                  - option "3 · Fuerte"
+              - cell [ref=e1017]:
+                - textbox "Por qué existe o no existe el vínculo" [ref=e1018]: Voluntad de la alta dirección permite aprovechar Vínculo con la DCEG; la relación se valora con fuerza 1/3.
+              - cell [ref=e1019]:
+                - textbox "Fuente o evidencia" [ref=e1020]: "Tesis ETECSA: revisión documental y entrevistas (simulado)."
+              - cell [ref=e1021]:
+                - textbox "Evaluador" [ref=e1022]: Equipo metodológico
+              - cell [ref=e1023]:
+                - textbox "Fecha F-01 O-04" [ref=e1024]: 2026-07-31
+            - row [ref=e1025]:
+              - cell [ref=e1026]:
+                - code [ref=e1027]: F-01 + O-05
+              - cell "FO" [ref=e1028]
+              - cell "débil" [ref=e1030]
+              - cell "1 · Débil" [ref=e1032]:
+                - combobox "Fuerza F-01 O-05" [ref=e1033]:
+                  - option "Pendiente"
+                  - option "0 · Sin relación"
+                  - option "1 · Débil" [selected]
+                  - option "2 · Moderada"
+                  - option "3 · Fuerte"
+              - cell [ref=e1034]:
+                - textbox "Por qué existe o no existe el vínculo" [ref=e1035]: Voluntad de la alta dirección permite aprovechar Marco legal de país; la relación se valora con fuerza 1/3.
+              - cell [ref=e1036]:
+                - textbox "Fuente o evidencia" [ref=e1037]: "Tesis ETECSA: revisión documental y entrevistas (simulado)."
+              - cell [ref=e1038]:
+                - textbox "Evaluador" [ref=e1039]: Equipo metodológico
+              - cell [ref=e1040]:
+                - textbox "Fecha F-01 O-05" [ref=e1041]: 2026-07-31
+            - row [ref=e1042]:
+              - cell [ref=e1043]:
+                - code [ref=e1044]: F-01 + A-06
+              - cell "FA" [ref=e1045]
+              - cell "moderada" [ref=e1047]
+              - cell "2 · Moderada" [ref=e1049]:
+                - combobox "Fuerza F-01 A-06" [ref=e1050]:
+                  - option "Pendiente"
+                  - option "0 · Sin relación"
+                  - option "1 · Débil"
+                  - option "2 · Moderada" [selected]
+                  - option "3 · Fuerte"
+              - cell [ref=e1051]:
+                - textbox "Por qué existe o no existe el vínculo" [ref=e1052]: Voluntad de la alta dirección puede contener Migración al extranjero; la relación se valora con fuerza 2/3.
+              - cell [ref=e1053]:
+                - textbox "Fuente o evidencia" [ref=e1054]: "Tesis ETECSA: revisión documental y entrevistas (simulado)."
+              - cell [ref=e1055]:
+                - textbox "Evaluador" [ref=e1056]: Equipo metodológico
+              - cell [ref=e1057]:
+                - textbox "Fecha F-01 A-06" [ref=e1058]: 2026-07-31
+            - row [ref=e1059]:
+              - cell [ref=e1060]:
+                - code [ref=e1061]: F-01 + A-07
+              - cell "FA" [ref=e1062]
+              - cell "débil" [ref=e1064]
+              - cell "1 · Débil" [ref=e1066]:
+                - combobox "Fuerza F-01 A-07" [ref=e1067]:
+                  - option "Pendiente"
+                  - option "0 · Sin relación"
+                  - option "1 · Débil" [selected]
+                  - option "2 · Moderada"
+                  - option "3 · Fuerte"
+              - cell [ref=e1068]:
+                - textbox "Por qué existe o no existe el vínculo" [ref=e1069]: Voluntad de la alta dirección puede contener Bloqueo del gobierno de EE. UU.; la relación se valora con fuerza 1/3.
+              - cell [ref=e1070]:
+                - textbox "Fuente o evidencia" [ref=e1071]: "Tesis ETECSA: revisión documental y entrevistas (simulado)."
+              - cell [ref=e1072]:
+                - textbox "Evaluador" [ref=e1073]: Equipo metodológico
+              - cell [ref=e1074]:
+                - textbox "Fecha F-01 A-07" [ref=e1075]: 2026-07-31
+            - row [ref=e1076]:
+              - cell [ref=e1077]:
+                - code [ref=e1078]: F-01 + A-08
+              - cell "FA" [ref=e1079]
+              - cell "débil" [ref=e1081]
+              - cell "1 · Débil" [ref=e1083]:
+                - combobox "Fuerza F-01 A-08" [ref=e1084]:
+                  - option "Pendiente"
+                  - option "0 · Sin relación"
+                  - option "1 · Débil" [selected]
+                  - option "2 · Moderada"
+                  - option "3 · Fuerte"
+              - cell [ref=e1085]:
+                - textbox "Por qué existe o no existe el vínculo" [ref=e1086]: Voluntad de la alta dirección puede contener Situación económica y financiera; la relación se valora con fuerza 1/3.
+              - cell [ref=e1087]:
+                - textbox "Fuente o evidencia" [ref=e1088]: "Tesis ETECSA: revisión documental y entrevistas (simulado)."
+              - cell [ref=e1089]:
+                - textbox "Evaluador" [ref=e1090]: Equipo metodológico
+              - cell [ref=e1091]:
+                - textbox "Fecha F-01 A-08" [ref=e1092]: 2026-07-31
+            - row [ref=e1093]:
+              - cell [ref=e1094]:
+                - code [ref=e1095]: F-01 + A-09
+              - cell "FA" [ref=e1096]
+              - cell "débil" [ref=e1098]
+              - cell "1 · Débil" [ref=e1100]:
+                - combobox "Fuerza F-01 A-09" [ref=e1101]:
+                  - option "Pendiente"
+                  - option "0 · Sin relación"
+                  - option "1 · Débil" [selected]
+                  - option "2 · Moderada"
+                  - option "3 · Fuerte"
+              - cell [ref=e1102]:
+                - textbox "Por qué existe o no existe el vínculo" [ref=e1103]: Voluntad de la alta dirección puede contener Migración al sector privado; la relación se valora con fuerza 1/3.
+              - cell [ref=e1104]:
+                - textbox "Fuente o evidencia" [ref=e1105]: "Tesis ETECSA: revisión documental y entrevistas (simulado)."
+              - cell [ref=e1106]:
+                - textbox "Evaluador" [ref=e1107]: Equipo metodológico
+              - cell [ref=e1108]:
+                - textbox "Fecha F-01 A-09" [ref=e1109]: 2026-07-31
+            - row [ref=e1110]:
+              - cell [ref=e1111]:
+                - code [ref=e1112]: F-01 + A-10
+              - cell "FA" [ref=e1113]
+              - cell "débil" [ref=e1115]
+              - cell "1 · Débil" [ref=e1117]:
+                - combobox "Fuerza F-01 A-10" [ref=e1118]:
+                  - option "Pendiente"
+                  - option "0 · Sin relación"
+                  - option "1 · Débil" [selected]
+                  - option "2 · Moderada"
+                  - option "3 · Fuerte"
+              - cell [ref=e1119]:
+                - textbox "Por qué existe o no existe el vínculo" [ref=e1120]: Voluntad de la alta dirección puede contener Inestabilidad energética; la relación se valora con fuerza 1/3.
+              - cell [ref=e1121]:
+                - textbox "Fuente o evidencia" [ref=e1122]: "Tesis ETECSA: revisión documental y entrevistas (simulado)."
+              - cell [ref=e1123]:
+                - textbox "Evaluador" [ref=e1124]: Equipo metodológico
+              - cell [ref=e1125]:
+                - textbox "Fecha F-01 A-10" [ref=e1126]: 2026-07-31
+            - row [ref=e1127]:
+              - cell [ref=e1128]:
+                - code [ref=e1129]: F-02 + O-01
+              - cell "FO" [ref=e1130]
+              - cell "débil" [ref=e1132]
+              - cell "1 · Débil" [ref=e1134]:
+                - combobox "Fuerza F-02 O-01" [ref=e1135]:
+                  - option "Pendiente"
+                  - option "0 · Sin relación"
+                  - option "1 · Débil" [selected]
+                  - option "2 · Moderada"
+                  - option "3 · Fuerte"
+              - cell [ref=e1136]:
+                - textbox "Por qué existe o no existe el vínculo" [ref=e1137]: Marco legal empresarial permite aprovechar Transformación digital; la relación se valora con fuerza 1/3.
+              - cell [ref=e1138]:
+                - textbox "Fuente o evidencia" [ref=e1139]: "Tesis ETECSA: revisión documental y entrevistas (simulado)."
+              - cell [ref=e1140]:
+                - textbox "Evaluador" [ref=e1141]: Equipo metodológico
+              - cell [ref=e1142]:
+                - textbox "Fecha F-02 O-01" [ref=e1143]: 2026-07-31
+            - row [ref=e1144]:
+              - cell [ref=e1145]:
+                - code [ref=e1146]: F-02 + O-02
+              - cell "FO" [ref=e1147]
+              - cell "débil" [ref=e1149]
+              - cell "1 · Débil" [ref=e1151]:
+                - combobox "Fuerza F-02 O-02" [ref=e1152]:
+                  - option "Pendiente"
+                  - option "0 · Sin relación"
+                  - option "1 · Débil" [selected]
+                  - option "2 · Moderada"
+                  - option "3 · Fuerte"
+              - cell [ref=e1153]:
+                - textbox "Por qué existe o no existe el vínculo" [ref=e1154]: Marco legal empresarial permite aprovechar Modernización del sector; la relación se valora con fuerza 1/3.
+              - cell [ref=e1155]:
+                - textbox "Fuente o evidencia" [ref=e1156]: "Tesis ETECSA: revisión documental y entrevistas (simulado)."
+              - cell [ref=e1157]:
+                - textbox "Evaluador" [ref=e1158]: Equipo metodológico
+              - cell [ref=e1159]:
+                - textbox "Fecha F-02 O-02" [ref=e1160]: 2026-07-31
+            - row [ref=e1161]:
+              - cell [ref=e1162]:
+                - code [ref=e1163]: F-02 + O-03
+              - cell "FO" [ref=e1164]
+              - cell "sin relación" [ref=e1166]
+              - cell "0 · Sin relación" [ref=e1168]:
+                - combobox "Fuerza F-02 O-03" [ref=e1169]:
+                  - option "Pendiente"
+                  - option "0 · Sin relación" [selected]
+                  - option "1 · Débil"
+                  - option "2 · Moderada"
+                  - option "3 · Fuerte"
+              - cell [ref=e1170]:
+                - textbox "Por qué existe o no existe el vínculo" [ref=e1171]: El par F-02 + O-03 fue revisado y no presenta un vínculo directo en este escenario.
+              - cell [ref=e1172]:
+                - textbox "Fuente o evidencia" [ref=e1173]: Revisión del diagnóstico; vínculo no identificado (simulado).
+              - cell [ref=e1174]:
+                - textbox "Evaluador" [ref=e1175]: Equipo metodológico
+              - cell [ref=e1176]:
+                - textbox "Fecha F-02 O-03" [ref=e1177]: 2026-07-31
+            - row [ref=e1178]:
+              - cell [ref=e1179]:
+                - code [ref=e1180]: F-02 + O-04
+              - cell "FO" [ref=e1181]
+              - cell "débil" [ref=e1183]
+              - cell "1 · Débil" [ref=e1185]:
+                - combobox "Fuerza F-02 O-04" [ref=e1186]:
+                  - option "Pendiente"
+                  - option "0 · Sin relación"
+                  - option "1 · Débil" [selected]
+                  - option "2 · Moderada"
+                  - option "3 · Fuerte"
+              - cell [ref=e1187]:
+                - textbox "Por qué existe o no existe el vínculo" [ref=e1188]: Marco legal empresarial permite aprovechar Vínculo con la DCEG; la relación se valora con fuerza 1/3.
+              - cell [ref=e1189]:
+                - textbox "Fuente o evidencia" [ref=e1190]: "Tesis ETECSA: revisión documental y entrevistas (simulado)."
+              - cell [ref=e1191]:
+                - textbox "Evaluador" [ref=e1192]: Equipo metodológico
+              - cell [ref=e1193]:
+                - textbox "Fecha F-02 O-04" [ref=e1194]: 2026-07-31
+            - row [ref=e1195]:
+              - cell [ref=e1196]:
+                - code [ref=e1197]: F-02 + O-05
+              - cell "FO" [ref=e1198]
+              - cell "débil" [ref=e1200]
+              - cell "1 · Débil" [ref=e1202]:
+                - combobox "Fuerza F-02 O-05" [ref=e1203]:
+                  - option "Pendiente"
+                  - option "0 · Sin relación"
+                  - option "1 · Débil" [selected]
+                  - option "2 · Moderada"
+                  - option "3 · Fuerte"
+              - cell [ref=e1204]:
+                - textbox "Por qué existe o no existe el vínculo" [ref=e1205]: Marco legal empresarial permite aprovechar Marco legal de país; la relación se valora con fuerza 1/3.
+              - cell [ref=e1206]:
+                - textbox "Fuente o evidencia" [ref=e1207]: "Tesis ETECSA: revisión documental y entrevistas (simulado)."
+              - cell [ref=e1208]:
+                - textbox "Evaluador" [ref=e1209]: Equipo metodológico
+              - cell [ref=e1210]:
+                - textbox "Fecha F-02 O-05" [ref=e1211]: 2026-07-31
+            - row [ref=e1212]:
+              - cell [ref=e1213]:
+                - code [ref=e1214]: F-02 + A-06
+              - cell "FA" [ref=e1215]
+              - cell "débil" [ref=e1217]
+              - cell "1 · Débil" [ref=e1219]:
+                - combobox "Fuerza F-02 A-06" [ref=e1220]:
+                  - option "Pendiente"
+                  - option "0 · Sin relación"
+                  - option "1 · Débil" [selected]
+                  - option "2 · Moderada"
+                  - option "3 · Fuerte"
+              - cell [ref=e1221]:
+                - textbox "Por qué existe o no existe el vínculo" [ref=e1222]: Marco legal empresarial puede contener Migración al extranjero; la relación se valora con fuerza 1/3.
+              - cell [ref=e1223]:
+                - textbox "Fuente o evidencia" [ref=e1224]: "Tesis ETECSA: revisión documental y entrevistas (simulado)."
+              - cell [ref=e1225]:
+                - textbox "Evaluador" [ref=e1226]: Equipo metodológico
+              - cell [ref=e1227]:
+                - textbox "Fecha F-02 A-06" [ref=e1228]: 2026-07-31
+            - row [ref=e1229]:
+              - cell [ref=e1230]:
+                - code [ref=e1231]: F-02 + A-07
+              - cell "FA" [ref=e1232]
+              - cell "débil" [ref=e1234]
+              - cell "1 · Débil" [ref=e1236]:
+                - combobox "Fuerza F-02 A-07" [ref=e1237]:
+                  - option "Pendiente"
+                  - option "0 · Sin relación"
+                  - option "1 · Débil" [selected]
+                  - option "2 · Moderada"
+                  - option "3 · Fuerte"
+              - cell [ref=e1238]:
+                - textbox "Por qué existe o no existe el vínculo" [ref=e1239]: Marco legal empresarial puede contener Bloqueo del gobierno de EE. UU.; la relación se valora con fuerza 1/3.
+              - cell [ref=e1240]:
+                - textbox "Fuente o evidencia" [ref=e1241]: "Tesis ETECSA: revisión documental y entrevistas (simulado)."
+              - cell [ref=e1242]:
+                - textbox "Evaluador" [ref=e1243]: Equipo metodológico
+              - cell [ref=e1244]:
+                - textbox "Fecha F-02 A-07" [ref=e1245]: 2026-07-31
+            - row [ref=e1246]:
+              - cell [ref=e1247]:
+                - code [ref=e1248]: F-02 + A-08
+              - cell "FA" [ref=e1249]
+              - cell "débil" [ref=e1251]
+              - cell "1 · Débil" [ref=e1253]:
+                - combobox "Fuerza F-02 A-08" [ref=e1254]:
+                  - option "Pendiente"
+                  - option "0 · Sin relación"
+                  - option "1 · Débil" [selected]
+                  - option "2 · Moderada"
+                  - option "3 · Fuerte"
+              - cell [ref=e1255]:
+                - textbox "Por qué existe o no existe el vínculo" [ref=e1256]: Marco legal empresarial puede contener Situación económica y financiera; la relación se valora con fuerza 1/3.
+              - cell [ref=e1257]:
+                - textbox "Fuente o evidencia" [ref=e1258]: "Tesis ETECSA: revisión documental y entrevistas (simulado)."
+              - cell [ref=e1259]:
+                - textbox "Evaluador" [ref=e1260]: Equipo metodológico
+              - cell [ref=e1261]:
+                - textbox "Fecha F-02 A-08" [ref=e1262]: 2026-07-31
+            - row [ref=e1263]:
+              - cell [ref=e1264]:
+                - code [ref=e1265]: F-02 + A-09
+              - cell "FA" [ref=e1266]
+              - cell "débil" [ref=e1268]
+              - cell "1 · Débil" [ref=e1270]:
+                - combobox "Fuerza F-02 A-09" [ref=e1271]:
+                  - option "Pendiente"
+                  - option "0 · Sin relación"
+                  - option "1 · Débil" [selected]
+                  - option "2 · Moderada"
+                  - option "3 · Fuerte"
+              - cell [ref=e1272]:
+                - textbox "Por qué existe o no existe el vínculo" [ref=e1273]: Marco legal empresarial puede contener Migración al sector privado; la relación se valora con fuerza 1/3.
+              - cell [ref=e1274]:
+                - textbox "Fuente o evidencia" [ref=e1275]: "Tesis ETECSA: revisión documental y entrevistas (simulado)."
+              - cell [ref=e1276]:
+                - textbox "Evaluador" [ref=e1277]: Equipo metodológico
+              - cell [ref=e1278]:
+                - textbox "Fecha F-02 A-09" [ref=e1279]: 2026-07-31
+            - row [ref=e1280]:
+              - cell [ref=e1281]:
+                - code [ref=e1282]: F-02 + A-10
+              - cell "FA" [ref=e1283]
+              - cell "débil" [ref=e1285]
+              - cell "1 · Débil" [ref=e1287]:
+                - combobox "Fuerza F-02 A-10" [ref=e1288]:
+                  - option "Pendiente"
+                  - option "0 · Sin relación"
+                  - option "1 · Débil" [selected]
+                  - option "2 · Moderada"
+                  - option "3 · Fuerte"
+              - cell [ref=e1289]:
+                - textbox "Por qué existe o no existe el vínculo" [ref=e1290]: Marco legal empresarial puede contener Inestabilidad energética; la relación se valora con fuerza 1/3.
+              - cell [ref=e1291]:
+                - textbox "Fuente o evidencia" [ref=e1292]: "Tesis ETECSA: revisión documental y entrevistas (simulado)."
+              - cell [ref=e1293]:
+                - textbox "Evaluador" [ref=e1294]: Equipo metodológico
+              - cell [ref=e1295]:
+                - textbox "Fecha F-02 A-10" [ref=e1296]: 2026-07-31
+            - row [ref=e1297]:
+              - cell [ref=e1298]:
+                - code [ref=e1299]: F-03 + O-01
+              - cell "FO" [ref=e1300]
+              - cell "débil" [ref=e1302]
+              - cell "1 · Débil" [ref=e1304]:
+                - combobox "Fuerza F-03 O-01" [ref=e1305]:
+                  - option "Pendiente"
+                  - option "0 · Sin relación"
+                  - option "1 · Débil" [selected]
+                  - option "2 · Moderada"
+                  - option "3 · Fuerte"
+              - cell [ref=e1306]:
+                - textbox "Por qué existe o no existe el vínculo" [ref=e1307]: Indicadores de gestión permite aprovechar Transformación digital; la relación se valora con fuerza 1/3.
+              - cell [ref=e1308]:
+                - textbox "Fuente o evidencia" [ref=e1309]: "Tesis ETECSA: revisión documental y entrevistas (simulado)."
+              - cell [ref=e1310]:
+                - textbox "Evaluador" [ref=e1311]: Equipo metodológico
+              - cell [ref=e1312]:
+                - textbox "Fecha F-03 O-01" [ref=e1313]: 2026-07-31
+            - row [ref=e1314]:
+              - cell [ref=e1315]:
+                - code [ref=e1316]: F-03 + O-02
+              - cell "FO" [ref=e1317]
+              - cell "moderada" [ref=e1319]
+              - cell "2 · Moderada" [ref=e1321]:
+                - combobox "Fuerza F-03 O-02" [ref=e1322]:
+                  - option "Pendiente"
+                  - option "0 · Sin relación"
+                  - option "1 · Débil"
+                  - option "2 · Moderada" [selected]
+                  - option "3 · Fuerte"
+              - cell [ref=e1323]:
+                - textbox "Por qué existe o no existe el vínculo" [ref=e1324]: Indicadores de gestión permite aprovechar Modernización del sector; la relación se valora con fuerza 2/3.
+              - cell [ref=e1325]:
+                - textbox "Fuente o evidencia" [ref=e1326]: "Tesis ETECSA: revisión documental y entrevistas (simulado)."
+              - cell [ref=e1327]:
+                - textbox "Evaluador" [ref=e1328]: Equipo metodológico
+              - cell [ref=e1329]:
+                - textbox "Fecha F-03 O-02" [ref=e1330]: 2026-07-31
+            - row [ref=e1331]:
+              - cell [ref=e1332]:
+                - code [ref=e1333]: F-03 + O-03
+              - cell "FO" [ref=e1334]
+              - cell "débil" [ref=e1336]
+              - cell "1 · Débil" [ref=e1338]:
+                - combobox "Fuerza F-03 O-03" [ref=e1339]:
+                  - option "Pendiente"
+                  - option "0 · Sin relación"
+                  - option "1 · Débil" [selected]
+                  - option "2 · Moderada"
+                  - option "3 · Fuerte"
+              - cell [ref=e1340]:
+                - textbox "Por qué existe o no existe el vínculo" [ref=e1341]: Indicadores de gestión permite aprovechar Uso de la Inteligencia Artificial; la relación se valora con fuerza 1/3.
+              - cell [ref=e1342]:
+                - textbox "Fuente o evidencia" [ref=e1343]: "Tesis ETECSA: revisión documental y entrevistas (simulado)."
+              - cell [ref=e1344]:
+                - textbox "Evaluador" [ref=e1345]: Equipo metodológico
+              - cell [ref=e1346]:
+                - textbox "Fecha F-03 O-03" [ref=e1347]: 2026-07-31
+            - row [ref=e1348]:
+              - cell [ref=e1349]:
+                - code [ref=e1350]: F-03 + O-04
+              - cell "FO" [ref=e1351]
+              - cell "débil" [ref=e1353]
+              - cell "1 · Débil" [ref=e1355]:
+                - combobox "Fuerza F-03 O-04" [ref=e1356]:
+                  - option "Pendiente"
+                  - option "0 · Sin relación"
+                  - option "1 · Débil" [selected]
+                  - option "2 · Moderada"
+                  - option "3 · Fuerte"
+              - cell [ref=e1357]:
+                - textbox "Por qué existe o no existe el vínculo" [ref=e1358]: Indicadores de gestión permite aprovechar Vínculo con la DCEG; la relación se valora con fuerza 1/3.
+              - cell [ref=e1359]:
+                - textbox "Fuente o evidencia" [ref=e1360]: "Tesis ETECSA: revisión documental y entrevistas (simulado)."
+              - cell [ref=e1361]:
+                - textbox "Evaluador" [ref=e1362]: Equipo metodológico
+              - cell [ref=e1363]:
+                - textbox "Fecha F-03 O-04" [ref=e1364]: 2026-07-31
+            - row [ref=e1365]:
+              - cell [ref=e1366]:
+                - code [ref=e1367]: F-03 + O-05
+              - cell "FO" [ref=e1368]
+              - cell "débil" [ref=e1370]
+              - cell "1 · Débil" [ref=e1372]:
+                - combobox "Fuerza F-03 O-05" [ref=e1373]:
+                  - option "Pendiente"
+                  - option "0 · Sin relación"
+                  - option "1 · Débil" [selected]
+                  - option "2 · Moderada"
+                  - option "3 · Fuerte"
+              - cell [ref=e1374]:
+                - textbox "Por qué existe o no existe el vínculo" [ref=e1375]: Indicadores de gestión permite aprovechar Marco legal de país; la relación se valora con fuerza 1/3.
+              - cell [ref=e1376]:
+                - textbox "Fuente o evidencia" [ref=e1377]: "Tesis ETECSA: revisión documental y entrevistas (simulado)."
+              - cell [ref=e1378]:
+                - textbox "Evaluador" [ref=e1379]: Equipo metodológico
+              - cell [ref=e1380]:
+                - textbox "Fecha F-03 O-05" [ref=e1381]: 2026-07-31
+            - row [ref=e1382]:
+              - cell [ref=e1383]:
+                - code [ref=e1384]: F-03 + A-06
+              - cell "FA" [ref=e1385]
+              - cell "débil" [ref=e1387]
+              - cell "1 · Débil" [ref=e1389]:
+                - combobox "Fuerza F-03 A-06" [ref=e1390]:
+                  - option "Pendiente"
+                  - option "0 · Sin relación"
+                  - option "1 · Débil" [selected]
+                  - option "2 · Moderada"
+                  - option "3 · Fuerte"
+              - cell [ref=e1391]:
+                - textbox "Por qué existe o no existe el vínculo" [ref=e1392]: Indicadores de gestión puede contener Migración al extranjero; la relación se valora con fuerza 1/3.
+              - cell [ref=e1393]:
+                - textbox "Fuente o evidencia" [ref=e1394]: "Tesis ETECSA: revisión documental y entrevistas (simulado)."
+              - cell [ref=e1395]:
+                - textbox "Evaluador" [ref=e1396]: Equipo metodológico
+              - cell [ref=e1397]:
+                - textbox "Fecha F-03 A-06" [ref=e1398]: 2026-07-31
+            - row [ref=e1399]:
+              - cell [ref=e1400]:
+                - code [ref=e1401]: F-03 + A-07
+              - cell "FA" [ref=e1402]
+              - cell "débil" [ref=e1404]
+              - cell "1 · Débil" [ref=e1406]:
+                - combobox "Fuerza F-03 A-07" [ref=e1407]:
+                  - option "Pendiente"
+                  - option "0 · Sin relación"
+                  - option "1 · Débil" [selected]
+                  - option "2 · Moderada"
+                  - option "3 · Fuerte"
+              - cell [ref=e1408]:
+                - textbox "Por qué existe o no existe el vínculo" [ref=e1409]: Indicadores de gestión puede contener Bloqueo del gobierno de EE. UU.; la relación se valora con fuerza 1/3.
+              - cell [ref=e1410]:
+                - textbox "Fuente o evidencia" [ref=e1411]: "Tesis ETECSA: revisión documental y entrevistas (simulado)."
+              - cell [ref=e1412]:
+                - textbox "Evaluador" [ref=e1413]: Equipo metodológico
+              - cell [ref=e1414]:
+                - textbox "Fecha F-03 A-07" [ref=e1415]: 2026-07-31
+            - row [ref=e1416]:
+              - cell [ref=e1417]:
+                - code [ref=e1418]: F-03 + A-08
+              - cell "FA" [ref=e1419]
+              - cell "moderada" [ref=e1421]
+              - cell "2 · Moderada" [ref=e1423]:
+                - combobox "Fuerza F-03 A-08" [ref=e1424]:
+                  - option "Pendiente"
+                  - option "0 · Sin relación"
+                  - option "1 · Débil"
+                  - option "2 · Moderada" [selected]
+                  - option "3 · Fuerte"
+              - cell [ref=e1425]:
+                - textbox "Por qué existe o no existe el vínculo" [ref=e1426]: Indicadores de gestión puede contener Situación económica y financiera; la relación se valora con fuerza 2/3.
+              - cell [ref=e1427]:
+                - textbox "Fuente o evidencia" [ref=e1428]: "Tesis ETECSA: revisión documental y entrevistas (simulado)."
+              - cell [ref=e1429]:
+                - textbox "Evaluador" [ref=e1430]: Equipo metodológico
+              - cell [ref=e1431]:
+                - textbox "Fecha F-03 A-08" [ref=e1432]: 2026-07-31
+            - row [ref=e1433]:
+              - cell [ref=e1434]:
+                - code [ref=e1435]: F-03 + A-09
+              - cell "FA" [ref=e1436]
+              - cell "débil" [ref=e1438]
+              - cell "1 · Débil" [ref=e1440]:
+                - combobox "Fuerza F-03 A-09" [ref=e1441]:
+                  - option "Pendiente"
+                  - option "0 · Sin relación"
+                  - option "1 · Débil" [selected]
+                  - option "2 · Moderada"
+                  - option "3 · Fuerte"
+              - cell [ref=e1442]:
+                - textbox "Por qué existe o no existe el vínculo" [ref=e1443]: Indicadores de gestión puede contener Migración al sector privado; la relación se valora con fuerza 1/3.
+              - cell [ref=e1444]:
+                - textbox "Fuente o evidencia" [ref=e1445]: "Tesis ETECSA: revisión documental y entrevistas (simulado)."
+              - cell [ref=e1446]:
+                - textbox "Evaluador" [ref=e1447]: Equipo metodológico
+              - cell [ref=e1448]:
+                - textbox "Fecha F-03 A-09" [ref=e1449]: 2026-07-31
+            - row [ref=e1450]:
+              - cell [ref=e1451]:
+                - code [ref=e1452]: F-03 + A-10
+              - cell "FA" [ref=e1453]
+              - cell "débil" [ref=e1455]
+              - cell "1 · Débil" [ref=e1457]:
+                - combobox "Fuerza F-03 A-10" [ref=e1458]:
+                  - option "Pendiente"
+                  - option "0 · Sin relación"
+                  - option "1 · Débil" [selected]
+                  - option "2 · Moderada"
+                  - option "3 · Fuerte"
+              - cell [ref=e1459]:
+                - textbox "Por qué existe o no existe el vínculo" [ref=e1460]: Indicadores de gestión puede contener Inestabilidad energética; la relación se valora con fuerza 1/3.
+              - cell [ref=e1461]:
+                - textbox "Fuente o evidencia" [ref=e1462]: "Tesis ETECSA: revisión documental y entrevistas (simulado)."
+              - cell [ref=e1463]:
+                - textbox "Evaluador" [ref=e1464]: Equipo metodológico
+              - cell [ref=e1465]:
+                - textbox "Fecha F-03 A-10" [ref=e1466]: 2026-07-31
+            - row [ref=e1467]:
+              - cell [ref=e1468]:
+                - code [ref=e1469]: F-04 + O-01
+              - cell "FO" [ref=e1470]
+              - cell "moderada" [ref=e1472]
+              - cell "2 · Moderada" [ref=e1474]:
+                - combobox "Fuerza F-04 O-01" [ref=e1475]:
+                  - option "Pendiente"
+                  - option "0 · Sin relación"
+                  - option "1 · Débil"
+                  - option "2 · Moderada" [selected]
+                  - option "3 · Fuerte"
+              - cell [ref=e1476]:
+                - textbox "Por qué existe o no existe el vínculo" [ref=e1477]: Uso de herramientas permite aprovechar Transformación digital; la relación se valora con fuerza 2/3.
+              - cell [ref=e1478]:
+                - textbox "Fuente o evidencia" [ref=e1479]: "Tesis ETECSA: revisión documental y entrevistas (simulado)."
+              - cell [ref=e1480]:
+                - textbox "Evaluador" [ref=e1481]: Equipo metodológico
+              - cell [ref=e1482]:
+                - textbox "Fecha F-04 O-01" [ref=e1483]: 2026-07-31
+            - row [ref=e1484]:
+              - cell [ref=e1485]:
+                - code [ref=e1486]: F-04 + O-02
+              - cell "FO" [ref=e1487]
+              - cell "débil" [ref=e1489]
+              - cell "1 · Débil" [ref=e1491]:
+                - combobox "Fuerza F-04 O-02" [ref=e1492]:
+                  - option "Pendiente"
+                  - option "0 · Sin relación"
+                  - option "1 · Débil" [selected]
+                  - option "2 · Moderada"
+                  - option "3 · Fuerte"
+              - cell [ref=e1493]:
+                - textbox "Por qué existe o no existe el vínculo" [ref=e1494]: Uso de herramientas permite aprovechar Modernización del sector; la relación se valora con fuerza 1/3.
+              - cell [ref=e1495]:
+                - textbox "Fuente o evidencia" [ref=e1496]: "Tesis ETECSA: revisión documental y entrevistas (simulado)."
+              - cell [ref=e1497]:
+                - textbox "Evaluador" [ref=e1498]: Equipo metodológico
+              - cell [ref=e1499]:
+                - textbox "Fecha F-04 O-02" [ref=e1500]: 2026-07-31
+            - row [ref=e1501]:
+              - cell [ref=e1502]:
+                - code [ref=e1503]: F-04 + O-03
+              - cell "FO" [ref=e1504]
+              - cell "débil" [ref=e1506]
+              - cell "1 · Débil" [ref=e1508]:
+                - combobox "Fuerza F-04 O-03" [ref=e1509]:
+                  - option "Pendiente"
+                  - option "0 · Sin relación"
+                  - option "1 · Débil" [selected]
+                  - option "2 · Moderada"
+                  - option "3 · Fuerte"
+              - cell [ref=e1510]:
+                - textbox "Por qué existe o no existe el vínculo" [ref=e1511]: Uso de herramientas permite aprovechar Uso de la Inteligencia Artificial; la relación se valora con fuerza 1/3.
+              - cell [ref=e1512]:
+                - textbox "Fuente o evidencia" [ref=e1513]: "Tesis ETECSA: revisión documental y entrevistas (simulado)."
+              - cell [ref=e1514]:
+                - textbox "Evaluador" [ref=e1515]: Equipo metodológico
+              - cell [ref=e1516]:
+                - textbox "Fecha F-04 O-03" [ref=e1517]: 2026-07-31
+            - row [ref=e1518]:
+              - cell [ref=e1519]:
+                - code [ref=e1520]: F-04 + O-04
+              - cell "FO" [ref=e1521]
+              - cell "débil" [ref=e1523]
+              - cell "1 · Débil" [ref=e1525]:
+                - combobox "Fuerza F-04 O-04" [ref=e1526]:
+                  - option "Pendiente"
+                  - option "0 · Sin relación"
+                  - option "1 · Débil" [selected]
+                  - option "2 · Moderada"
+                  - option "3 · Fuerte"
+              - cell [ref=e1527]:
+                - textbox "Por qué existe o no existe el vínculo" [ref=e1528]: Uso de herramientas permite aprovechar Vínculo con la DCEG; la relación se valora con fuerza 1/3.
+              - cell [ref=e1529]:
+                - textbox "Fuente o evidencia" [ref=e1530]: "Tesis ETECSA: revisión documental y entrevistas (simulado)."
+              - cell [ref=e1531]:
+                - textbox "Evaluador" [ref=e1532]: Equipo metodológico
+              - cell [ref=e1533]:
+                - textbox "Fecha F-04 O-04" [ref=e1534]: 2026-07-31
+            - row [ref=e1535]:
+              - cell [ref=e1536]:
+                - code [ref=e1537]: F-04 + O-05
+              - cell "FO" [ref=e1538]
+              - cell "débil" [ref=e1540]
+              - cell "1 · Débil" [ref=e1542]:
+                - combobox "Fuerza F-04 O-05" [ref=e1543]:
+                  - option "Pendiente"
+                  - option "0 · Sin relación"
+                  - option "1 · Débil" [selected]
+                  - option "2 · Moderada"
+                  - option "3 · Fuerte"
+              - cell [ref=e1544]:
+                - textbox "Por qué existe o no existe el vínculo" [ref=e1545]: Uso de herramientas permite aprovechar Marco legal de país; la relación se valora con fuerza 1/3.
+              - cell [ref=e1546]:
+                - textbox "Fuente o evidencia" [ref=e1547]: "Tesis ETECSA: revisión documental y entrevistas (simulado)."
+              - cell [ref=e1548]:
+                - textbox "Evaluador" [ref=e1549]: Equipo metodológico
+              - cell [ref=e1550]:
+                - textbox "Fecha F-04 O-05" [ref=e1551]: 2026-07-31
+            - row [ref=e1552]:
+              - cell [ref=e1553]:
+                - code [ref=e1554]: F-04 + A-06
+              - cell "FA" [ref=e1555]
+              - cell "débil" [ref=e1557]
+              - cell "1 · Débil" [ref=e1559]:
+                - combobox "Fuerza F-04 A-06" [ref=e1560]:
+                  - option "Pendiente"
+                  - option "0 · Sin relación"
+                  - option "1 · Débil" [selected]
+                  - option "2 · Moderada"
+                  - option "3 · Fuerte"
+              - cell [ref=e1561]:
+                - textbox "Por qué existe o no existe el vínculo" [ref=e1562]: Uso de herramientas puede contener Migración al extranjero; la relación se valora con fuerza 1/3.
+              - cell [ref=e1563]:
+                - textbox "Fuente o evidencia" [ref=e1564]: "Tesis ETECSA: revisión documental y entrevistas (simulado)."
+              - cell [ref=e1565]:
+                - textbox "Evaluador" [ref=e1566]: Equipo metodológico
+              - cell [ref=e1567]:
+                - textbox "Fecha F-04 A-06" [ref=e1568]: 2026-07-31
+            - row [ref=e1569]:
+              - cell [ref=e1570]:
+                - code [ref=e1571]: F-04 + A-07
+              - cell "FA" [ref=e1572]
+              - cell "débil" [ref=e1574]
+              - cell "1 · Débil" [ref=e1576]:
+                - combobox "Fuerza F-04 A-07" [ref=e1577]:
+                  - option "Pendiente"
+                  - option "0 · Sin relación"
+                  - option "1 · Débil" [selected]
+                  - option "2 · Moderada"
+                  - option "3 · Fuerte"
+              - cell [ref=e1578]:
+                - textbox "Por qué existe o no existe el vínculo" [ref=e1579]: Uso de herramientas puede contener Bloqueo del gobierno de EE. UU.; la relación se valora con fuerza 1/3.
+              - cell [ref=e1580]:
+                - textbox "Fuente o evidencia" [ref=e1581]: "Tesis ETECSA: revisión documental y entrevistas (simulado)."
+              - cell [ref=e1582]:
+                - textbox "Evaluador" [ref=e1583]: Equipo metodológico
+              - cell [ref=e1584]:
+                - textbox "Fecha F-04 A-07" [ref=e1585]: 2026-07-31
+            - row [ref=e1586]:
+              - cell [ref=e1587]:
+                - code [ref=e1588]: F-04 + A-08
+              - cell "FA" [ref=e1589]
+              - cell "débil" [ref=e1591]
+              - cell "1 · Débil" [ref=e1593]:
+                - combobox "Fuerza F-04 A-08" [ref=e1594]:
+                  - option "Pendiente"
+                  - option "0 · Sin relación"
+                  - option "1 · Débil" [selected]
+                  - option "2 · Moderada"
+                  - option "3 · Fuerte"
+              - cell [ref=e1595]:
+                - textbox "Por qué existe o no existe el vínculo" [ref=e1596]: Uso de herramientas puede contener Situación económica y financiera; la relación se valora con fuerza 1/3.
+              - cell [ref=e1597]:
+                - textbox "Fuente o evidencia" [ref=e1598]: "Tesis ETECSA: revisión documental y entrevistas (simulado)."
+              - cell [ref=e1599]:
+                - textbox "Evaluador" [ref=e1600]: Equipo metodológico
+              - cell [ref=e1601]:
+                - textbox "Fecha F-04 A-08" [ref=e1602]: 2026-07-31
+            - row [ref=e1603]:
+              - cell [ref=e1604]:
+                - code [ref=e1605]: F-04 + A-09
+              - cell "FA" [ref=e1606]
+              - cell "débil" [ref=e1608]
+              - cell "1 · Débil" [ref=e1610]:
+                - combobox "Fuerza F-04 A-09" [ref=e1611]:
+                  - option "Pendiente"
+                  - option "0 · Sin relación"
+                  - option "1 · Débil" [selected]
+                  - option "2 · Moderada"
+                  - option "3 · Fuerte"
+              - cell [ref=e1612]:
+                - textbox "Por qué existe o no existe el vínculo" [ref=e1613]: Uso de herramientas puede contener Migración al sector privado; la relación se valora con fuerza 1/3.
+              - cell [ref=e1614]:
+                - textbox "Fuente o evidencia" [ref=e1615]: "Tesis ETECSA: revisión documental y entrevistas (simulado)."
+              - cell [ref=e1616]:
+                - textbox "Evaluador" [ref=e1617]: Equipo metodológico
+              - cell [ref=e1618]:
+                - textbox "Fecha F-04 A-09" [ref=e1619]: 2026-07-31
+            - row [ref=e1620]:
+              - cell [ref=e1621]:
+                - code [ref=e1622]: F-04 + A-10
+              - cell "FA" [ref=e1623]
+              - cell "débil" [ref=e1625]
+              - cell "1 · Débil" [ref=e1627]:
+                - combobox "Fuerza F-04 A-10" [ref=e1628]:
+                  - option "Pendiente"
+                  - option "0 · Sin relación"
+                  - option "1 · Débil" [selected]
+                  - option "2 · Moderada"
+                  - option "3 · Fuerte"
+              - cell [ref=e1629]:
+                - textbox "Por qué existe o no existe el vínculo" [ref=e1630]: Uso de herramientas puede contener Inestabilidad energética; la relación se valora con fuerza 1/3.
+              - cell [ref=e1631]:
+                - textbox "Fuente o evidencia" [ref=e1632]: "Tesis ETECSA: revisión documental y entrevistas (simulado)."
+              - cell [ref=e1633]:
+                - textbox "Evaluador" [ref=e1634]: Equipo metodológico
+              - cell [ref=e1635]:
+                - textbox "Fecha F-04 A-10" [ref=e1636]: 2026-07-31
+            - row [ref=e1637]:
+              - cell [ref=e1638]:
+                - code [ref=e1639]: F-05 + O-01
+              - cell "FO" [ref=e1640]
+              - cell "débil" [ref=e1642]
+              - cell "1 · Débil" [ref=e1644]:
+                - combobox "Fuerza F-05 O-01" [ref=e1645]:
+                  - option "Pendiente"
+                  - option "0 · Sin relación"
+                  - option "1 · Débil" [selected]
+                  - option "2 · Moderada"
+                  - option "3 · Fuerte"
+              - cell [ref=e1646]:
+                - textbox "Por qué existe o no existe el vínculo" [ref=e1647]: Profesionalidad de los cuadros permite aprovechar Transformación digital; la relación se valora con fuerza 1/3.
+              - cell [ref=e1648]:
+                - textbox "Fuente o evidencia" [ref=e1649]: "Tesis ETECSA: revisión documental y entrevistas (simulado)."
+              - cell [ref=e1650]:
+                - textbox "Evaluador" [ref=e1651]: Equipo metodológico
+              - cell [ref=e1652]:
+                - textbox "Fecha F-05 O-01" [ref=e1653]: 2026-07-31
+            - row [ref=e1654]:
+              - cell [ref=e1655]:
+                - code [ref=e1656]: F-05 + O-02
+              - cell "FO" [ref=e1657]
+              - cell "débil" [ref=e1659]
+              - cell "1 · Débil" [ref=e1661]:
+                - combobox "Fuerza F-05 O-02" [ref=e1662]:
+                  - option "Pendiente"
+                  - option "0 · Sin relación"
+                  - option "1 · Débil" [selected]
+                  - option "2 · Moderada"
+                  - option "3 · Fuerte"
+              - cell [ref=e1663]:
+                - textbox "Por qué existe o no existe el vínculo" [ref=e1664]: Profesionalidad de los cuadros permite aprovechar Modernización del sector; la relación se valora con fuerza 1/3.
+              - cell [ref=e1665]:
+                - textbox "Fuente o evidencia" [ref=e1666]: "Tesis ETECSA: revisión documental y entrevistas (simulado)."
+              - cell [ref=e1667]:
+                - textbox "Evaluador" [ref=e1668]: Equipo metodológico
+              - cell [ref=e1669]:
+                - textbox "Fecha F-05 O-02" [ref=e1670]: 2026-07-31
+            - row [ref=e1671]:
+              - cell [ref=e1672]:
+                - code [ref=e1673]: F-05 + O-03
+              - cell "FO" [ref=e1674]
+              - cell "débil" [ref=e1676]
+              - cell "1 · Débil" [ref=e1678]:
+                - combobox "Fuerza F-05 O-03" [ref=e1679]:
+                  - option "Pendiente"
+                  - option "0 · Sin relación"
+                  - option "1 · Débil" [selected]
+                  - option "2 · Moderada"
+                  - option "3 · Fuerte"
+              - cell [ref=e1680]:
+                - textbox "Por qué existe o no existe el vínculo" [ref=e1681]: Profesionalidad de los cuadros permite aprovechar Uso de la Inteligencia Artificial; la relación se valora con fuerza 1/3.
+              - cell [ref=e1682]:
+                - textbox "Fuente o evidencia" [ref=e1683]: "Tesis ETECSA: revisión documental y entrevistas (simulado)."
+              - cell [ref=e1684]:
+                - textbox "Evaluador" [ref=e1685]: Equipo metodológico
+              - cell [ref=e1686]:
+                - textbox "Fecha F-05 O-03" [ref=e1687]: 2026-07-31
+            - row [ref=e1688]:
+              - cell [ref=e1689]:
+                - code [ref=e1690]: F-05 + O-04
+              - cell "FO" [ref=e1691]
+              - cell "débil" [ref=e1693]
+              - cell "1 · Débil" [ref=e1695]:
+                - combobox "Fuerza F-05 O-04" [ref=e1696]:
+                  - option "Pendiente"
+                  - option "0 · Sin relación"
+                  - option "1 · Débil" [selected]
+                  - option "2 · Moderada"
+                  - option "3 · Fuerte"
+              - cell [ref=e1697]:
+                - textbox "Por qué existe o no existe el vínculo" [ref=e1698]: Profesionalidad de los cuadros permite aprovechar Vínculo con la DCEG; la relación se valora con fuerza 1/3.
+              - cell [ref=e1699]:
+                - textbox "Fuente o evidencia" [ref=e1700]: "Tesis ETECSA: revisión documental y entrevistas (simulado)."
+              - cell [ref=e1701]:
+                - textbox "Evaluador" [ref=e1702]: Equipo metodológico
+              - cell [ref=e1703]:
+                - textbox "Fecha F-05 O-04" [ref=e1704]: 2026-07-31
+            - row [ref=e1705]:
+              - cell [ref=e1706]:
+                - code [ref=e1707]: F-05 + O-05
+              - cell "FO" [ref=e1708]
+              - cell "débil" [ref=e1710]
+              - cell "1 · Débil" [ref=e1712]:
+                - combobox "Fuerza F-05 O-05" [ref=e1713]:
+                  - option "Pendiente"
+                  - option "0 · Sin relación"
+                  - option "1 · Débil" [selected]
+                  - option "2 · Moderada"
+                  - option "3 · Fuerte"
+              - cell [ref=e1714]:
+                - textbox "Por qué existe o no existe el vínculo" [ref=e1715]: Profesionalidad de los cuadros permite aprovechar Marco legal de país; la relación se valora con fuerza 1/3.
+              - cell [ref=e1716]:
+                - textbox "Fuente o evidencia" [ref=e1717]: "Tesis ETECSA: revisión documental y entrevistas (simulado)."
+              - cell [ref=e1718]:
+                - textbox "Evaluador" [ref=e1719]: Equipo metodológico
+              - cell [ref=e1720]:
+                - textbox "Fecha F-05 O-05" [ref=e1721]: 2026-07-31
+            - row [ref=e1722]:
+              - cell [ref=e1723]:
+                - code [ref=e1724]: F-05 + A-06
+              - cell "FA" [ref=e1725]
+              - cell "débil" [ref=e1727]
+              - cell "1 · Débil" [ref=e1729]:
+                - combobox "Fuerza F-05 A-06" [ref=e1730]:
+                  - option "Pendiente"
+                  - option "0 · Sin relación"
+                  - option "1 · Débil" [selected]
+                  - option "2 · Moderada"
+                  - option "3 · Fuerte"
+              - cell [ref=e1731]:
+                - textbox "Por qué existe o no existe el vínculo" [ref=e1732]: Profesionalidad de los cuadros puede contener Migración al extranjero; la relación se valora con fuerza 1/3.
+              - cell [ref=e1733]:
+                - textbox "Fuente o evidencia" [ref=e1734]: "Tesis ETECSA: revisión documental y entrevistas (simulado)."
+              - cell [ref=e1735]:
+                - textbox "Evaluador" [ref=e1736]: Equipo metodológico
+              - cell [ref=e1737]:
+                - textbox "Fecha F-05 A-06" [ref=e1738]: 2026-07-31
+            - row [ref=e1739]:
+              - cell [ref=e1740]:
+                - code [ref=e1741]: F-05 + A-07
+              - cell "FA" [ref=e1742]
+              - cell "débil" [ref=e1744]
+              - cell "1 · Débil" [ref=e1746]:
+                - combobox "Fuerza F-05 A-07" [ref=e1747]:
+                  - option "Pendiente"
+                  - option "0 · Sin relación"
+                  - option "1 · Débil" [selected]
+                  - option "2 · Moderada"
+                  - option "3 · Fuerte"
+              - cell [ref=e1748]:
+                - textbox "Por qué existe o no existe el vínculo" [ref=e1749]: Profesionalidad de los cuadros puede contener Bloqueo del gobierno de EE. UU.; la relación se valora con fuerza 1/3.
+              - cell [ref=e1750]:
+                - textbox "Fuente o evidencia" [ref=e1751]: "Tesis ETECSA: revisión documental y entrevistas (simulado)."
+              - cell [ref=e1752]:
+                - textbox "Evaluador" [ref=e1753]: Equipo metodológico
+              - cell [ref=e1754]:
+                - textbox "Fecha F-05 A-07" [ref=e1755]: 2026-07-31
+            - row [ref=e1756]:
+              - cell [ref=e1757]:
+                - code [ref=e1758]: F-05 + A-08
+              - cell "FA" [ref=e1759]
+              - cell "débil" [ref=e1761]
+              - cell "1 · Débil" [ref=e1763]:
+                - combobox "Fuerza F-05 A-08" [ref=e1764]:
+                  - option "Pendiente"
+                  - option "0 · Sin relación"
+                  - option "1 · Débil" [selected]
+                  - option "2 · Moderada"
+                  - option "3 · Fuerte"
+              - cell [ref=e1765]:
+                - textbox "Por qué existe o no existe el vínculo" [ref=e1766]: Profesionalidad de los cuadros puede contener Situación económica y financiera; la relación se valora con fuerza 1/3.
+              - cell [ref=e1767]:
+                - textbox "Fuente o evidencia" [ref=e1768]: "Tesis ETECSA: revisión documental y entrevistas (simulado)."
+              - cell [ref=e1769]:
+                - textbox "Evaluador" [ref=e1770]: Equipo metodológico
+              - cell [ref=e1771]:
+                - textbox "Fecha F-05 A-08" [ref=e1772]: 2026-07-31
+            - row [ref=e1773]:
+              - cell [ref=e1774]:
+                - code [ref=e1775]: F-05 + A-09
+              - cell "FA" [ref=e1776]
+              - cell "débil" [ref=e1778]
+              - cell "1 · Débil" [ref=e1780]:
+                - combobox "Fuerza F-05 A-09" [ref=e1781]:
+                  - option "Pendiente"
+                  - option "0 · Sin relación"
+                  - option "1 · Débil" [selected]
+                  - option "2 · Moderada"
+                  - option "3 · Fuerte"
+              - cell [ref=e1782]:
+                - textbox "Por qué existe o no existe el vínculo" [ref=e1783]: Profesionalidad de los cuadros puede contener Migración al sector privado; la relación se valora con fuerza 1/3.
+              - cell [ref=e1784]:
+                - textbox "Fuente o evidencia" [ref=e1785]: "Tesis ETECSA: revisión documental y entrevistas (simulado)."
+              - cell [ref=e1786]:
+                - textbox "Evaluador" [ref=e1787]: Equipo metodológico
+              - cell [ref=e1788]:
+                - textbox "Fecha F-05 A-09" [ref=e1789]: 2026-07-31
+            - row [ref=e1790]:
+              - cell [ref=e1791]:
+                - code [ref=e1792]: F-05 + A-10
+              - cell "FA" [ref=e1793]
+              - cell "sin relación" [ref=e1795]
+              - cell "0 · Sin relación" [ref=e1797]:
+                - combobox "Fuerza F-05 A-10" [ref=e1798]:
+                  - option "Pendiente"
+                  - option "0 · Sin relación" [selected]
+                  - option "1 · Débil"
+                  - option "2 · Moderada"
+                  - option "3 · Fuerte"
+              - cell [ref=e1799]:
+                - textbox "Por qué existe o no existe el vínculo" [ref=e1800]: El par F-05 + A-10 fue revisado y no presenta un vínculo directo en este escenario.
+              - cell [ref=e1801]:
+                - textbox "Fuente o evidencia" [ref=e1802]: Revisión del diagnóstico; vínculo no identificado (simulado).
+              - cell [ref=e1803]:
+                - textbox "Evaluador" [ref=e1804]: Equipo metodológico
+              - cell [ref=e1805]:
+                - textbox "Fecha F-05 A-10" [ref=e1806]: 2026-07-31
+            - row [ref=e1807]:
+              - cell [ref=e1808]:
+                - code [ref=e1809]: D-06 + O-01
+              - cell "DO" [ref=e1810]
+              - cell "moderada" [ref=e1812]
+              - cell "2 · Moderada" [ref=e1814]:
+                - combobox "Fuerza D-06 O-01" [ref=e1815]:
+                  - option "Pendiente"
+                  - option "0 · Sin relación"
+                  - option "1 · Débil"
+                  - option "2 · Moderada" [selected]
+                  - option "3 · Fuerte"
+              - cell [ref=e1816]:
+                - textbox "Por qué existe o no existe el vínculo" [ref=e1817]: Procesos burocráticos requiere corregir para aprovechar Transformación digital; la relación se valora con fuerza 2/3.
+              - cell [ref=e1818]:
+                - textbox "Fuente o evidencia" [ref=e1819]: "Tesis ETECSA: revisión documental y entrevistas (simulado)."
+              - cell [ref=e1820]:
+                - textbox "Evaluador" [ref=e1821]: Equipo metodológico
+              - cell [ref=e1822]:
+                - textbox "Fecha D-06 O-01" [ref=e1823]: 2026-07-31
+            - row [ref=e1824]:
+              - cell [ref=e1825]:
+                - code [ref=e1826]: D-06 + O-02
+              - cell "DO" [ref=e1827]
+              - cell "moderada" [ref=e1829]
+              - cell "2 · Moderada" [ref=e1831]:
+                - combobox "Fuerza D-06 O-02" [ref=e1832]:
+                  - option "Pendiente"
+                  - option "0 · Sin relación"
+                  - option "1 · Débil"
+                  - option "2 · Moderada" [selected]
+                  - option "3 · Fuerte"
+              - cell [ref=e1833]:
+                - textbox "Por qué existe o no existe el vínculo" [ref=e1834]: Procesos burocráticos requiere corregir para aprovechar Modernización del sector; la relación se valora con fuerza 2/3.
+              - cell [ref=e1835]:
+                - textbox "Fuente o evidencia" [ref=e1836]: "Tesis ETECSA: revisión documental y entrevistas (simulado)."
+              - cell [ref=e1837]:
+                - textbox "Evaluador" [ref=e1838]: Equipo metodológico
+              - cell [ref=e1839]:
+                - textbox "Fecha D-06 O-02" [ref=e1840]: 2026-07-31
+            - row [ref=e1841]:
+              - cell [ref=e1842]:
+                - code [ref=e1843]: D-06 + O-03
+              - cell "DO" [ref=e1844]
+              - cell "moderada" [ref=e1846]
+              - cell "2 · Moderada" [ref=e1848]:
+                - combobox "Fuerza D-06 O-03" [ref=e1849]:
+                  - option "Pendiente"
+                  - option "0 · Sin relación"
+                  - option "1 · Débil"
+                  - option "2 · Moderada" [selected]
+                  - option "3 · Fuerte"
+              - cell [ref=e1850]:
+                - textbox "Por qué existe o no existe el vínculo" [ref=e1851]: Procesos burocráticos requiere corregir para aprovechar Uso de la Inteligencia Artificial; la relación se valora con fuerza 2/3.
+              - cell [ref=e1852]:
+                - textbox "Fuente o evidencia" [ref=e1853]: "Tesis ETECSA: revisión documental y entrevistas (simulado)."
+              - cell [ref=e1854]:
+                - textbox "Evaluador" [ref=e1855]: Equipo metodológico
+              - cell [ref=e1856]:
+                - textbox "Fecha D-06 O-03" [ref=e1857]: 2026-07-31
+            - row [ref=e1858]:
+              - cell [ref=e1859]:
+                - code [ref=e1860]: D-06 + O-04
+              - cell "DO" [ref=e1861]
+              - cell "moderada" [ref=e1863]
+              - cell "2 · Moderada" [ref=e1865]:
+                - combobox "Fuerza D-06 O-04" [ref=e1866]:
+                  - option "Pendiente"
+                  - option "0 · Sin relación"
+                  - option "1 · Débil"
+                  - option "2 · Moderada" [selected]
+                  - option "3 · Fuerte"
+              - cell [ref=e1867]:
+                - textbox "Por qué existe o no existe el vínculo" [ref=e1868]: Procesos burocráticos requiere corregir para aprovechar Vínculo con la DCEG; la relación se valora con fuerza 2/3.
+              - cell [ref=e1869]:
+                - textbox "Fuente o evidencia" [ref=e1870]: "Tesis ETECSA: revisión documental y entrevistas (simulado)."
+              - cell [ref=e1871]:
+                - textbox "Evaluador" [ref=e1872]: Equipo metodológico
+              - cell [ref=e1873]:
+                - textbox "Fecha D-06 O-04" [ref=e1874]: 2026-07-31
+            - row [ref=e1875]:
+              - cell [ref=e1876]:
+                - code [ref=e1877]: D-06 + O-05
+              - cell "DO" [ref=e1878]
+              - cell "sin relación" [ref=e1880]
+              - cell "0 · Sin relación" [ref=e1882]:
+                - combobox "Fuerza D-06 O-05" [ref=e1883]:
+                  - option "Pendiente"
+                  - option "0 · Sin relación" [selected]
+                  - option "1 · Débil"
+                  - option "2 · Moderada"
+                  - option "3 · Fuerte"
+              - cell [ref=e1884]:
+                - textbox "Por qué existe o no existe el vínculo" [ref=e1885]: El par D-06 + O-05 fue revisado y no presenta un vínculo directo en este escenario.
+              - cell [ref=e1886]:
+                - textbox "Fuente o evidencia" [ref=e1887]: Revisión del diagnóstico; vínculo no identificado (simulado).
+              - cell [ref=e1888]:
+                - textbox "Evaluador" [ref=e1889]: Equipo metodológico
+              - cell [ref=e1890]:
+                - textbox "Fecha D-06 O-05" [ref=e1891]: 2026-07-31
+            - row [ref=e1892]:
+              - cell [ref=e1893]:
+                - code [ref=e1894]: D-06 + A-06
+              - cell "DA" [ref=e1895]
+              - cell "débil" [ref=e1897]
+              - cell "1 · Débil" [ref=e1899]:
+                - combobox "Fuerza D-06 A-06" [ref=e1900]:
+                  - option "Pendiente"
+                  - option "0 · Sin relación"
+                  - option "1 · Débil" [selected]
+                  - option "2 · Moderada"
+                  - option "3 · Fuerte"
+              - cell [ref=e1901]:
+                - textbox "Por qué existe o no existe el vínculo" [ref=e1902]: Procesos burocráticos incrementa la exposición ante Migración al extranjero; la relación se valora con fuerza 1/3.
+              - cell [ref=e1903]:
+                - textbox "Fuente o evidencia" [ref=e1904]: "Tesis ETECSA: revisión documental y entrevistas (simulado)."
+              - cell [ref=e1905]:
+                - textbox "Evaluador" [ref=e1906]: Equipo metodológico
+              - cell [ref=e1907]:
+                - textbox "Fecha D-06 A-06" [ref=e1908]: 2026-07-31
+            - row [ref=e1909]:
+              - cell [ref=e1910]:
+                - code [ref=e1911]: D-06 + A-07
+              - cell "DA" [ref=e1912]
+              - cell "débil" [ref=e1914]
+              - cell "1 · Débil" [ref=e1916]:
+                - combobox "Fuerza D-06 A-07" [ref=e1917]:
+                  - option "Pendiente"
+                  - option "0 · Sin relación"
+                  - option "1 · Débil" [selected]
+                  - option "2 · Moderada"
+                  - option "3 · Fuerte"
+              - cell [ref=e1918]:
+                - textbox "Por qué existe o no existe el vínculo" [ref=e1919]: Procesos burocráticos incrementa la exposición ante Bloqueo del gobierno de EE. UU.; la relación se valora con fuerza 1/3.
+              - cell [ref=e1920]:
+                - textbox "Fuente o evidencia" [ref=e1921]: "Tesis ETECSA: revisión documental y entrevistas (simulado)."
+              - cell [ref=e1922]:
+                - textbox "Evaluador" [ref=e1923]: Equipo metodológico
+              - cell [ref=e1924]:
+                - textbox "Fecha D-06 A-07" [ref=e1925]: 2026-07-31
+            - row [ref=e1926]:
+              - cell [ref=e1927]:
+                - code [ref=e1928]: D-06 + A-08
+              - cell "DA" [ref=e1929]
+              - cell "débil" [ref=e1931]
+              - cell "1 · Débil" [ref=e1933]:
+                - combobox "Fuerza D-06 A-08" [ref=e1934]:
+                  - option "Pendiente"
+                  - option "0 · Sin relación"
+                  - option "1 · Débil" [selected]
+                  - option "2 · Moderada"
+                  - option "3 · Fuerte"
+              - cell [ref=e1935]:
+                - textbox "Por qué existe o no existe el vínculo" [ref=e1936]: Procesos burocráticos incrementa la exposición ante Situación económica y financiera; la relación se valora con fuerza 1/3.
+              - cell [ref=e1937]:
+                - textbox "Fuente o evidencia" [ref=e1938]: "Tesis ETECSA: revisión documental y entrevistas (simulado)."
+              - cell [ref=e1939]:
+                - textbox "Evaluador" [ref=e1940]: Equipo metodológico
+              - cell [ref=e1941]:
+                - textbox "Fecha D-06 A-08" [ref=e1942]: 2026-07-31
+            - row [ref=e1943]:
+              - cell [ref=e1944]:
+                - code [ref=e1945]: D-06 + A-09
+              - cell "DA" [ref=e1946]
+              - cell "débil" [ref=e1948]
+              - cell "1 · Débil" [ref=e1950]:
+                - combobox "Fuerza D-06 A-09" [ref=e1951]:
+                  - option "Pendiente"
+                  - option "0 · Sin relación"
+                  - option "1 · Débil" [selected]
+                  - option "2 · Moderada"
+                  - option "3 · Fuerte"
+              - cell [ref=e1952]:
+                - textbox "Por qué existe o no existe el vínculo" [ref=e1953]: Procesos burocráticos incrementa la exposición ante Migración al sector privado; la relación se valora con fuerza 1/3.
+              - cell [ref=e1954]:
+                - textbox "Fuente o evidencia" [ref=e1955]: "Tesis ETECSA: revisión documental y entrevistas (simulado)."
+              - cell [ref=e1956]:
+                - textbox "Evaluador" [ref=e1957]: Equipo metodológico
+              - cell [ref=e1958]:
+                - textbox "Fecha D-06 A-09" [ref=e1959]: 2026-07-31
+            - row [ref=e1960]:
+              - cell [ref=e1961]:
+                - code [ref=e1962]: D-06 + A-10
+              - cell "DA" [ref=e1963]
+              - cell "débil" [ref=e1965]
+              - cell "1 · Débil" [ref=e1967]:
+                - combobox "Fuerza D-06 A-10" [ref=e1968]:
+                  - option "Pendiente"
+                  - option "0 · Sin relación"
+                  - option "1 · Débil" [selected]
+                  - option "2 · Moderada"
+                  - option "3 · Fuerte"
+              - cell [ref=e1969]:
+                - textbox "Por qué existe o no existe el vínculo" [ref=e1970]: Procesos burocráticos incrementa la exposición ante Inestabilidad energética; la relación se valora con fuerza 1/3.
+              - cell [ref=e1971]:
+                - textbox "Fuente o evidencia" [ref=e1972]: "Tesis ETECSA: revisión documental y entrevistas (simulado)."
+              - cell [ref=e1973]:
+                - textbox "Evaluador" [ref=e1974]: Equipo metodológico
+              - cell [ref=e1975]:
+                - textbox "Fecha D-06 A-10" [ref=e1976]: 2026-07-31
+            - row [ref=e1977]:
+              - cell [ref=e1978]:
+                - code [ref=e1979]: D-07 + O-01
+              - cell "DO" [ref=e1980]
+              - cell "fuerte" [ref=e1982]
+              - cell "3 · Fuerte" [ref=e1984]:
+                - combobox "Fuerza D-07 O-01" [ref=e1985]:
+                  - option "Pendiente"
+                  - option "0 · Sin relación"
+                  - option "1 · Débil"
+                  - option "2 · Moderada"
+                  - option "3 · Fuerte" [selected]
+              - cell [ref=e1986]:
+                - textbox "Por qué existe o no existe el vínculo" [ref=e1987]: Falta de automatización de procesos requiere corregir para aprovechar Transformación digital; la relación se valora con fuerza 3/3.
+              - cell [ref=e1988]:
+                - textbox "Fuente o evidencia" [ref=e1989]: "Tesis ETECSA: revisión documental y entrevistas (simulado)."
+              - cell [ref=e1990]:
+                - textbox "Evaluador" [ref=e1991]: Equipo metodológico
+              - cell [ref=e1992]:
+                - textbox "Fecha D-07 O-01" [ref=e1993]: 2026-07-31
+            - row [ref=e1994]:
+              - cell [ref=e1995]:
+                - code [ref=e1996]: D-07 + O-02
+              - cell "DO" [ref=e1997]
+              - cell "moderada" [ref=e1999]
+              - cell "2 · Moderada" [ref=e2001]:
+                - combobox "Fuerza D-07 O-02" [ref=e2002]:
+                  - option "Pendiente"
+                  - option "0 · Sin relación"
+                  - option "1 · Débil"
+                  - option "2 · Moderada" [selected]
+                  - option "3 · Fuerte"
+              - cell [ref=e2003]:
+                - textbox "Por qué existe o no existe el vínculo" [ref=e2004]: Falta de automatización de procesos requiere corregir para aprovechar Modernización del sector; la relación se valora con fuerza 2/3.
+              - cell [ref=e2005]:
+                - textbox "Fuente o evidencia" [ref=e2006]: "Tesis ETECSA: revisión documental y entrevistas (simulado)."
+              - cell [ref=e2007]:
+                - textbox "Evaluador" [ref=e2008]: Equipo metodológico
+              - cell [ref=e2009]:
+                - textbox "Fecha D-07 O-02" [ref=e2010]: 2026-07-31
+            - row [ref=e2011]:
+              - cell [ref=e2012]:
+                - code [ref=e2013]: D-07 + O-03
+              - cell "DO" [ref=e2014]
+              - cell "fuerte" [ref=e2016]
+              - cell "3 · Fuerte" [ref=e2018]:
+                - combobox "Fuerza D-07 O-03" [ref=e2019]:
+                  - option "Pendiente"
+                  - option "0 · Sin relación"
+                  - option "1 · Débil"
+                  - option "2 · Moderada"
+                  - option "3 · Fuerte" [selected]
+              - cell [ref=e2020]:
+                - textbox "Por qué existe o no existe el vínculo" [ref=e2021]: Falta de automatización de procesos requiere corregir para aprovechar Uso de la Inteligencia Artificial; la relación se valora con fuerza 3/3.
+              - cell [ref=e2022]:
+                - textbox "Fuente o evidencia" [ref=e2023]: "Tesis ETECSA: revisión documental y entrevistas (simulado)."
+              - cell [ref=e2024]:
+                - textbox "Evaluador" [ref=e2025]: Equipo metodológico
+              - cell [ref=e2026]:
+                - textbox "Fecha D-07 O-03" [ref=e2027]: 2026-07-31
+            - row [ref=e2028]:
+              - cell [ref=e2029]:
+                - code [ref=e2030]: D-07 + O-04
+              - cell "DO" [ref=e2031]
+              - cell "moderada" [ref=e2033]
+              - cell "2 · Moderada" [ref=e2035]:
+                - combobox "Fuerza D-07 O-04" [ref=e2036]:
+                  - option "Pendiente"
+                  - option "0 · Sin relación"
+                  - option "1 · Débil"
+                  - option "2 · Moderada" [selected]
+                  - option "3 · Fuerte"
+              - cell [ref=e2037]:
+                - textbox "Por qué existe o no existe el vínculo" [ref=e2038]: Falta de automatización de procesos requiere corregir para aprovechar Vínculo con la DCEG; la relación se valora con fuerza 2/3.
+              - cell [ref=e2039]:
+                - textbox "Fuente o evidencia" [ref=e2040]: "Tesis ETECSA: revisión documental y entrevistas (simulado)."
+              - cell [ref=e2041]:
+                - textbox "Evaluador" [ref=e2042]: Equipo metodológico
+              - cell [ref=e2043]:
+                - textbox "Fecha D-07 O-04" [ref=e2044]: 2026-07-31
+            - row [ref=e2045]:
+              - cell [ref=e2046]:
+                - code [ref=e2047]: D-07 + O-05
+              - cell "DO" [ref=e2048]
+              - cell "moderada" [ref=e2050]
+              - cell "2 · Moderada" [ref=e2052]:
+                - combobox "Fuerza D-07 O-05" [ref=e2053]:
+                  - option "Pendiente"
+                  - option "0 · Sin relación"
+                  - option "1 · Débil"
+                  - option "2 · Moderada" [selected]
+                  - option "3 · Fuerte"
+              - cell [ref=e2054]:
+                - textbox "Por qué existe o no existe el vínculo" [ref=e2055]: Falta de automatización de procesos requiere corregir para aprovechar Marco legal de país; la relación se valora con fuerza 2/3.
+              - cell [ref=e2056]:
+                - textbox "Fuente o evidencia" [ref=e2057]: "Tesis ETECSA: revisión documental y entrevistas (simulado)."
+              - cell [ref=e2058]:
+                - textbox "Evaluador" [ref=e2059]: Equipo metodológico
+              - cell [ref=e2060]:
+                - textbox "Fecha D-07 O-05" [ref=e2061]: 2026-07-31
+            - row [ref=e2062]:
+              - cell [ref=e2063]:
+                - code [ref=e2064]: D-07 + A-06
+              - cell "DA" [ref=e2065]
+              - cell "débil" [ref=e2067]
+              - cell "1 · Débil" [ref=e2069]:
+                - combobox "Fuerza D-07 A-06" [ref=e2070]:
+                  - option "Pendiente"
+                  - option "0 · Sin relación"
+                  - option "1 · Débil" [selected]
+                  - option "2 · Moderada"
+                  - option "3 · Fuerte"
+              - cell [ref=e2071]:
+                - textbox "Por qué existe o no existe el vínculo" [ref=e2072]: Falta de automatización de procesos incrementa la exposición ante Migración al extranjero; la relación se valora con fuerza 1/3.
+              - cell [ref=e2073]:
+                - textbox "Fuente o evidencia" [ref=e2074]: "Tesis ETECSA: revisión documental y entrevistas (simulado)."
+              - cell [ref=e2075]:
+                - textbox "Evaluador" [ref=e2076]: Equipo metodológico
+              - cell [ref=e2077]:
+                - textbox "Fecha D-07 A-06" [ref=e2078]: 2026-07-31
+            - row [ref=e2079]:
+              - cell [ref=e2080]:
+                - code [ref=e2081]: D-07 + A-07
+              - cell "DA" [ref=e2082]
+              - cell "débil" [ref=e2084]
+              - cell "1 · Débil" [ref=e2086]:
+                - combobox "Fuerza D-07 A-07" [ref=e2087]:
+                  - option "Pendiente"
+                  - option "0 · Sin relación"
+                  - option "1 · Débil" [selected]
+                  - option "2 · Moderada"
+                  - option "3 · Fuerte"
+              - cell [ref=e2088]:
+                - textbox "Por qué existe o no existe el vínculo" [ref=e2089]: Falta de automatización de procesos incrementa la exposición ante Bloqueo del gobierno de EE. UU.; la relación se valora con fuerza 1/3.
+              - cell [ref=e2090]:
+                - textbox "Fuente o evidencia" [ref=e2091]: "Tesis ETECSA: revisión documental y entrevistas (simulado)."
+              - cell [ref=e2092]:
+                - textbox "Evaluador" [ref=e2093]: Equipo metodológico
+              - cell [ref=e2094]:
+                - textbox "Fecha D-07 A-07" [ref=e2095]: 2026-07-31
+            - row [ref=e2096]:
+              - cell [ref=e2097]:
+                - code [ref=e2098]: D-07 + A-08
+              - cell "DA" [ref=e2099]
+              - cell "débil" [ref=e2101]
+              - cell "1 · Débil" [ref=e2103]:
+                - combobox "Fuerza D-07 A-08" [ref=e2104]:
+                  - option "Pendiente"
+                  - option "0 · Sin relación"
+                  - option "1 · Débil" [selected]
+                  - option "2 · Moderada"
+                  - option "3 · Fuerte"
+              - cell [ref=e2105]:
+                - textbox "Por qué existe o no existe el vínculo" [ref=e2106]: Falta de automatización de procesos incrementa la exposición ante Situación económica y financiera; la relación se valora con fuerza 1/3.
+              - cell [ref=e2107]:
+                - textbox "Fuente o evidencia" [ref=e2108]: "Tesis ETECSA: revisión documental y entrevistas (simulado)."
+              - cell [ref=e2109]:
+                - textbox "Evaluador" [ref=e2110]: Equipo metodológico
+              - cell [ref=e2111]:
+                - textbox "Fecha D-07 A-08" [ref=e2112]: 2026-07-31
+            - row [ref=e2113]:
+              - cell [ref=e2114]:
+                - code [ref=e2115]: D-07 + A-09
+              - cell "DA" [ref=e2116]
+              - cell "débil" [ref=e2118]
+              - cell "1 · Débil" [ref=e2120]:
+                - combobox "Fuerza D-07 A-09" [ref=e2121]:
+                  - option "Pendiente"
+                  - option "0 · Sin relación"
+                  - option "1 · Débil" [selected]
+                  - option "2 · Moderada"
+                  - option "3 · Fuerte"
+              - cell [ref=e2122]:
+                - textbox "Por qué existe o no existe el vínculo" [ref=e2123]: Falta de automatización de procesos incrementa la exposición ante Migración al sector privado; la relación se valora con fuerza 1/3.
+              - cell [ref=e2124]:
+                - textbox "Fuente o evidencia" [ref=e2125]: "Tesis ETECSA: revisión documental y entrevistas (simulado)."
+              - cell [ref=e2126]:
+                - textbox "Evaluador" [ref=e2127]: Equipo metodológico
+              - cell [ref=e2128]:
+                - textbox "Fecha D-07 A-09" [ref=e2129]: 2026-07-31
+            - row [ref=e2130]:
+              - cell [ref=e2131]:
+                - code [ref=e2132]: D-07 + A-10
+              - cell "DA" [ref=e2133]
+              - cell "débil" [ref=e2135]
+              - cell "1 · Débil" [ref=e2137]:
+                - combobox "Fuerza D-07 A-10" [ref=e2138]:
+                  - option "Pendiente"
+                  - option "0 · Sin relación"
+                  - option "1 · Débil" [selected]
+                  - option "2 · Moderada"
+                  - option "3 · Fuerte"
+              - cell [ref=e2139]:
+                - textbox "Por qué existe o no existe el vínculo" [ref=e2140]: Falta de automatización de procesos incrementa la exposición ante Inestabilidad energética; la relación se valora con fuerza 1/3.
+              - cell [ref=e2141]:
+                - textbox "Fuente o evidencia" [ref=e2142]: "Tesis ETECSA: revisión documental y entrevistas (simulado)."
+              - cell [ref=e2143]:
+                - textbox "Evaluador" [ref=e2144]: Equipo metodológico
+              - cell [ref=e2145]:
+                - textbox "Fecha D-07 A-10" [ref=e2146]: 2026-07-31
+            - row [ref=e2147]:
+              - cell [ref=e2148]:
+                - code [ref=e2149]: D-08 + O-01
+              - cell "DO" [ref=e2150]
+              - cell "fuerte" [ref=e2152]
+              - cell "3 · Fuerte" [ref=e2154]:
+                - combobox "Fuerza D-08 O-01" [ref=e2155]:
+                  - option "Pendiente"
+                  - option "0 · Sin relación"
+                  - option "1 · Débil"
+                  - option "2 · Moderada"
+                  - option "3 · Fuerte" [selected]
+              - cell [ref=e2156]:
+                - textbox "Por qué existe o no existe el vínculo" [ref=e2157]: Falta de integración de procesos requiere corregir para aprovechar Transformación digital; la relación se valora con fuerza 3/3.
+              - cell [ref=e2158]:
+                - textbox "Fuente o evidencia" [ref=e2159]: "Tesis ETECSA: revisión documental y entrevistas (simulado)."
+              - cell [ref=e2160]:
+                - textbox "Evaluador" [ref=e2161]: Equipo metodológico
+              - cell [ref=e2162]:
+                - textbox "Fecha D-08 O-01" [ref=e2163]: 2026-07-31
+            - row [ref=e2164]:
+              - cell [ref=e2165]:
+                - code [ref=e2166]: D-08 + O-02
+              - cell "DO" [ref=e2167]
+              - cell "fuerte" [ref=e2169]
+              - cell "3 · Fuerte" [ref=e2171]:
+                - combobox "Fuerza D-08 O-02" [ref=e2172]:
+                  - option "Pendiente"
+                  - option "0 · Sin relación"
+                  - option "1 · Débil"
+                  - option "2 · Moderada"
+                  - option "3 · Fuerte" [selected]
+              - cell [ref=e2173]:
+                - textbox "Por qué existe o no existe el vínculo" [ref=e2174]: Falta de integración de procesos requiere corregir para aprovechar Modernización del sector; la relación se valora con fuerza 3/3.
+              - cell [ref=e2175]:
+                - textbox "Fuente o evidencia" [ref=e2176]: "Tesis ETECSA: revisión documental y entrevistas (simulado)."
+              - cell [ref=e2177]:
+                - textbox "Evaluador" [ref=e2178]: Equipo metodológico
+              - cell [ref=e2179]:
+                - textbox "Fecha D-08 O-02" [ref=e2180]: 2026-07-31
+            - row [ref=e2181]:
+              - cell [ref=e2182]:
+                - code [ref=e2183]: D-08 + O-03
+              - cell "DO" [ref=e2184]
+              - cell "fuerte" [ref=e2186]
+              - cell "3 · Fuerte" [ref=e2188]:
+                - combobox "Fuerza D-08 O-03" [ref=e2189]:
+                  - option "Pendiente"
+                  - option "0 · Sin relación"
+                  - option "1 · Débil"
+                  - option "2 · Moderada"
+                  - option "3 · Fuerte" [selected]
+              - cell [ref=e2190]:
+                - textbox "Por qué existe o no existe el vínculo" [ref=e2191]: Falta de integración de procesos requiere corregir para aprovechar Uso de la Inteligencia Artificial; la relación se valora con fuerza 3/3.
+              - cell [ref=e2192]:
+                - textbox "Fuente o evidencia" [ref=e2193]: "Tesis ETECSA: revisión documental y entrevistas (simulado)."
+              - cell [ref=e2194]:
+                - textbox "Evaluador" [ref=e2195]: Equipo metodológico
+              - cell [ref=e2196]:
+                - textbox "Fecha D-08 O-03" [ref=e2197]: 2026-07-31
+            - row [ref=e2198]:
+              - cell [ref=e2199]:
+                - code [ref=e2200]: D-08 + O-04
+              - cell "DO" [ref=e2201]
+              - cell "moderada" [ref=e2203]
+              - cell "2 · Moderada" [ref=e2205]:
+                - combobox "Fuerza D-08 O-04" [ref=e2206]:
+                  - option "Pendiente"
+                  - option "0 · Sin relación"
+                  - option "1 · Débil"
+                  - option "2 · Moderada" [selected]
+                  - option "3 · Fuerte"
+              - cell [ref=e2207]:
+                - textbox "Por qué existe o no existe el vínculo" [ref=e2208]: Falta de integración de procesos requiere corregir para aprovechar Vínculo con la DCEG; la relación se valora con fuerza 2/3.
+              - cell [ref=e2209]:
+                - textbox "Fuente o evidencia" [ref=e2210]: "Tesis ETECSA: revisión documental y entrevistas (simulado)."
+              - cell [ref=e2211]:
+                - textbox "Evaluador" [ref=e2212]: Equipo metodológico
+              - cell [ref=e2213]:
+                - textbox "Fecha D-08 O-04" [ref=e2214]: 2026-07-31
+            - row [ref=e2215]:
+              - cell [ref=e2216]:
+                - code [ref=e2217]: D-08 + O-05
+              - cell "DO" [ref=e2218]
+              - cell "moderada" [ref=e2220]
+              - cell "2 · Moderada" [ref=e2222]:
+                - combobox "Fuerza D-08 O-05" [ref=e2223]:
+                  - option "Pendiente"
+                  - option "0 · Sin relación"
+                  - option "1 · Débil"
+                  - option "2 · Moderada" [selected]
+                  - option "3 · Fuerte"
+              - cell [ref=e2224]:
+                - textbox "Por qué existe o no existe el vínculo" [ref=e2225]: Falta de integración de procesos requiere corregir para aprovechar Marco legal de país; la relación se valora con fuerza 2/3.
+              - cell [ref=e2226]:
+                - textbox "Fuente o evidencia" [ref=e2227]: "Tesis ETECSA: revisión documental y entrevistas (simulado)."
+              - cell [ref=e2228]:
+                - textbox "Evaluador" [ref=e2229]: Equipo metodológico
+              - cell [ref=e2230]:
+                - textbox "Fecha D-08 O-05" [ref=e2231]: 2026-07-31
+            - row [ref=e2232]:
+              - cell [ref=e2233]:
+                - code [ref=e2234]: D-08 + A-06
+              - cell "DA" [ref=e2235]
+              - cell "débil" [ref=e2237]
+              - cell "1 · Débil" [ref=e2239]:
+                - combobox "Fuerza D-08 A-06" [ref=e2240]:
+                  - option "Pendiente"
+                  - option "0 · Sin relación"
+                  - option "1 · Débil" [selected]
+                  - option "2 · Moderada"
+                  - option "3 · Fuerte"
+              - cell [ref=e2241]:
+                - textbox "Por qué existe o no existe el vínculo" [ref=e2242]: Falta de integración de procesos incrementa la exposición ante Migración al extranjero; la relación se valora con fuerza 1/3.
+              - cell [ref=e2243]:
+                - textbox "Fuente o evidencia" [ref=e2244]: "Tesis ETECSA: revisión documental y entrevistas (simulado)."
+              - cell [ref=e2245]:
+                - textbox "Evaluador" [ref=e2246]: Equipo metodológico
+              - cell [ref=e2247]:
+                - textbox "Fecha D-08 A-06" [ref=e2248]: 2026-07-31
+            - row [ref=e2249]:
+              - cell [ref=e2250]:
+                - code [ref=e2251]: D-08 + A-07
+              - cell "DA" [ref=e2252]
+              - cell "débil" [ref=e2254]
+              - cell "1 · Débil" [ref=e2256]:
+                - combobox "Fuerza D-08 A-07" [ref=e2257]:
+                  - option "Pendiente"
+                  - option "0 · Sin relación"
+                  - option "1 · Débil" [selected]
+                  - option "2 · Moderada"
+                  - option "3 · Fuerte"
+              - cell [ref=e2258]:
+                - textbox "Por qué existe o no existe el vínculo" [ref=e2259]: Falta de integración de procesos incrementa la exposición ante Bloqueo del gobierno de EE. UU.; la relación se valora con fuerza 1/3.
+              - cell [ref=e2260]:
+                - textbox "Fuente o evidencia" [ref=e2261]: "Tesis ETECSA: revisión documental y entrevistas (simulado)."
+              - cell [ref=e2262]:
+                - textbox "Evaluador" [ref=e2263]: Equipo metodológico
+              - cell [ref=e2264]:
+                - textbox "Fecha D-08 A-07" [ref=e2265]: 2026-07-31
+            - row [ref=e2266]:
+              - cell [ref=e2267]:
+                - code [ref=e2268]: D-08 + A-08
+              - cell "DA" [ref=e2269]
+              - cell "débil" [ref=e2271]
+              - cell "1 · Débil" [ref=e2273]:
+                - combobox "Fuerza D-08 A-08" [ref=e2274]:
+                  - option "Pendiente"
+                  - option "0 · Sin relación"
+                  - option "1 · Débil" [selected]
+                  - option "2 · Moderada"
+                  - option "3 · Fuerte"
+              - cell [ref=e2275]:
+                - textbox "Por qué existe o no existe el vínculo" [ref=e2276]: Falta de integración de procesos incrementa la exposición ante Situación económica y financiera; la relación se valora con fuerza 1/3.
+              - cell [ref=e2277]:
+                - textbox "Fuente o evidencia" [ref=e2278]: "Tesis ETECSA: revisión documental y entrevistas (simulado)."
+              - cell [ref=e2279]:
+                - textbox "Evaluador" [ref=e2280]: Equipo metodológico
+              - cell [ref=e2281]:
+                - textbox "Fecha D-08 A-08" [ref=e2282]: 2026-07-31
+            - row [ref=e2283]:
+              - cell [ref=e2284]:
+                - code [ref=e2285]: D-08 + A-09
+              - cell "DA" [ref=e2286]
+              - cell "moderada" [ref=e2288]
+              - cell "2 · Moderada" [ref=e2290]:
+                - combobox "Fuerza D-08 A-09" [ref=e2291]:
+                  - option "Pendiente"
+                  - option "0 · Sin relación"
+                  - option "1 · Débil"
+                  - option "2 · Moderada" [selected]
+                  - option "3 · Fuerte"
+              - cell [ref=e2292]:
+                - textbox "Por qué existe o no existe el vínculo" [ref=e2293]: Falta de integración de procesos incrementa la exposición ante Migración al sector privado; la relación se valora con fuerza 2/3.
+              - cell [ref=e2294]:
+                - textbox "Fuente o evidencia" [ref=e2295]: "Tesis ETECSA: revisión documental y entrevistas (simulado)."
+              - cell [ref=e2296]:
+                - textbox "Evaluador" [ref=e2297]: Equipo metodológico
+              - cell [ref=e2298]:
+                - textbox "Fecha D-08 A-09" [ref=e2299]: 2026-07-31
+            - row [ref=e2300]:
+              - cell [ref=e2301]:
+                - code [ref=e2302]: D-08 + A-10
+              - cell "DA" [ref=e2303]
+              - cell "débil" [ref=e2305]
+              - cell "1 · Débil" [ref=e2307]:
+                - combobox "Fuerza D-08 A-10" [ref=e2308]:
+                  - option "Pendiente"
+                  - option "0 · Sin relación"
+                  - option "1 · Débil" [selected]
+                  - option "2 · Moderada"
+                  - option "3 · Fuerte"
+              - cell [ref=e2309]:
+                - textbox "Por qué existe o no existe el vínculo" [ref=e2310]: Falta de integración de procesos incrementa la exposición ante Inestabilidad energética; la relación se valora con fuerza 1/3.
+              - cell [ref=e2311]:
+                - textbox "Fuente o evidencia" [ref=e2312]: "Tesis ETECSA: revisión documental y entrevistas (simulado)."
+              - cell [ref=e2313]:
+                - textbox "Evaluador" [ref=e2314]: Equipo metodológico
+              - cell [ref=e2315]:
+                - textbox "Fecha D-08 A-10" [ref=e2316]: 2026-07-31
+            - row [ref=e2317]:
+              - cell [ref=e2318]:
+                - code [ref=e2319]: D-09 + O-01
+              - cell "DO" [ref=e2320]
+              - cell "moderada" [ref=e2322]
+              - cell "2 · Moderada" [ref=e2324]:
+                - combobox "Fuerza D-09 O-01" [ref=e2325]:
+                  - option "Pendiente"
+                  - option "0 · Sin relación"
+                  - option "1 · Débil"
+                  - option "2 · Moderada" [selected]
+                  - option "3 · Fuerte"
+              - cell [ref=e2326]:
+                - textbox "Por qué existe o no existe el vínculo" [ref=e2327]: Falta de evaluación del impacto de la capacitación requiere corregir para aprovechar Transformación digital; la relación se valora con fuerza 2/3.
+              - cell [ref=e2328]:
+                - textbox "Fuente o evidencia" [ref=e2329]: "Tesis ETECSA: revisión documental y entrevistas (simulado)."
+              - cell [ref=e2330]:
+                - textbox "Evaluador" [ref=e2331]: Equipo metodológico
+              - cell [ref=e2332]:
+                - textbox "Fecha D-09 O-01" [ref=e2333]: 2026-07-31
+            - row [ref=e2334]:
+              - cell [ref=e2335]:
+                - code [ref=e2336]: D-09 + O-02
+              - cell "DO" [ref=e2337]
+              - cell "moderada" [ref=e2339]
+              - cell "2 · Moderada" [ref=e2341]:
+                - combobox "Fuerza D-09 O-02" [ref=e2342]:
+                  - option "Pendiente"
+                  - option "0 · Sin relación"
+                  - option "1 · Débil"
+                  - option "2 · Moderada" [selected]
+                  - option "3 · Fuerte"
+              - cell [ref=e2343]:
+                - textbox "Por qué existe o no existe el vínculo" [ref=e2344]: Falta de evaluación del impacto de la capacitación requiere corregir para aprovechar Modernización del sector; la relación se valora con fuerza 2/3.
+              - cell [ref=e2345]:
+                - textbox "Fuente o evidencia" [ref=e2346]: "Tesis ETECSA: revisión documental y entrevistas (simulado)."
+              - cell [ref=e2347]:
+                - textbox "Evaluador" [ref=e2348]: Equipo metodológico
+              - cell [ref=e2349]:
+                - textbox "Fecha D-09 O-02" [ref=e2350]: 2026-07-31
+            - row [ref=e2351]:
+              - cell [ref=e2352]:
+                - code [ref=e2353]: D-09 + O-03
+              - cell "DO" [ref=e2354]
+              - cell "moderada" [ref=e2356]
+              - cell "2 · Moderada" [ref=e2358]:
+                - combobox "Fuerza D-09 O-03" [ref=e2359]:
+                  - option "Pendiente"
+                  - option "0 · Sin relación"
+                  - option "1 · Débil"
+                  - option "2 · Moderada" [selected]
+                  - option "3 · Fuerte"
+              - cell [ref=e2360]:
+                - textbox "Por qué existe o no existe el vínculo" [ref=e2361]: Falta de evaluación del impacto de la capacitación requiere corregir para aprovechar Uso de la Inteligencia Artificial; la relación se valora con fuerza 2/3.
+              - cell [ref=e2362]:
+                - textbox "Fuente o evidencia" [ref=e2363]: "Tesis ETECSA: revisión documental y entrevistas (simulado)."
+              - cell [ref=e2364]:
+                - textbox "Evaluador" [ref=e2365]: Equipo metodológico
+              - cell [ref=e2366]:
+                - textbox "Fecha D-09 O-03" [ref=e2367]: 2026-07-31
+            - row [ref=e2368]:
+              - cell [ref=e2369]:
+                - code [ref=e2370]: D-09 + O-04
+              - cell "DO" [ref=e2371]
+              - cell "moderada" [ref=e2373]
+              - cell "2 · Moderada" [ref=e2375]:
+                - combobox "Fuerza D-09 O-04" [ref=e2376]:
+                  - option "Pendiente"
+                  - option "0 · Sin relación"
+                  - option "1 · Débil"
+                  - option "2 · Moderada" [selected]
+                  - option "3 · Fuerte"
+              - cell [ref=e2377]:
+                - textbox "Por qué existe o no existe el vínculo" [ref=e2378]: Falta de evaluación del impacto de la capacitación requiere corregir para aprovechar Vínculo con la DCEG; la relación se valora con fuerza 2/3.
+              - cell [ref=e2379]:
+                - textbox "Fuente o evidencia" [ref=e2380]: "Tesis ETECSA: revisión documental y entrevistas (simulado)."
+              - cell [ref=e2381]:
+                - textbox "Evaluador" [ref=e2382]: Equipo metodológico
+              - cell [ref=e2383]:
+                - textbox "Fecha D-09 O-04" [ref=e2384]: 2026-07-31
+            - row [ref=e2385]:
+              - cell [ref=e2386]:
+                - code [ref=e2387]: D-09 + O-05
+              - cell "DO" [ref=e2388]
+              - cell "moderada" [ref=e2390]
+              - cell "2 · Moderada" [ref=e2392]:
+                - combobox "Fuerza D-09 O-05" [ref=e2393]:
+                  - option "Pendiente"
+                  - option "0 · Sin relación"
+                  - option "1 · Débil"
+                  - option "2 · Moderada" [selected]
+                  - option "3 · Fuerte"
+              - cell [ref=e2394]:
+                - textbox "Por qué existe o no existe el vínculo" [ref=e2395]: Falta de evaluación del impacto de la capacitación requiere corregir para aprovechar Marco legal de país; la relación se valora con fuerza 2/3.
+              - cell [ref=e2396]:
+                - textbox "Fuente o evidencia" [ref=e2397]: "Tesis ETECSA: revisión documental y entrevistas (simulado)."
+              - cell [ref=e2398]:
+                - textbox "Evaluador" [ref=e2399]: Equipo metodológico
+              - cell [ref=e2400]:
+                - textbox "Fecha D-09 O-05" [ref=e2401]: 2026-07-31
+            - row [ref=e2402]:
+              - cell [ref=e2403]:
+                - code [ref=e2404]: D-09 + A-06
+              - cell "DA" [ref=e2405]
+              - cell "débil" [ref=e2407]
+              - cell "1 · Débil" [ref=e2409]:
+                - combobox "Fuerza D-09 A-06" [ref=e2410]:
+                  - option "Pendiente"
+                  - option "0 · Sin relación"
+                  - option "1 · Débil" [selected]
+                  - option "2 · Moderada"
+                  - option "3 · Fuerte"
+              - cell [ref=e2411]:
+                - textbox "Por qué existe o no existe el vínculo" [ref=e2412]: Falta de evaluación del impacto de la capacitación incrementa la exposición ante Migración al extranjero; la relación se valora con fuerza 1/3.
+              - cell [ref=e2413]:
+                - textbox "Fuente o evidencia" [ref=e2414]: "Tesis ETECSA: revisión documental y entrevistas (simulado)."
+              - cell [ref=e2415]:
+                - textbox "Evaluador" [ref=e2416]: Equipo metodológico
+              - cell [ref=e2417]:
+                - textbox "Fecha D-09 A-06" [ref=e2418]: 2026-07-31
+            - row [ref=e2419]:
+              - cell [ref=e2420]:
+                - code [ref=e2421]: D-09 + A-07
+              - cell "DA" [ref=e2422]
+              - cell "sin relación" [ref=e2424]
+              - cell "0 · Sin relación" [ref=e2426]:
+                - combobox "Fuerza D-09 A-07" [ref=e2427]:
+                  - option "Pendiente"
+                  - option "0 · Sin relación" [selected]
+                  - option "1 · Débil"
+                  - option "2 · Moderada"
+                  - option "3 · Fuerte"
+              - cell [ref=e2428]:
+                - textbox "Por qué existe o no existe el vínculo" [ref=e2429]: El par D-09 + A-07 fue revisado y no presenta un vínculo directo en este escenario.
+              - cell [ref=e2430]:
+                - textbox "Fuente o evidencia" [ref=e2431]: Revisión del diagnóstico; vínculo no identificado (simulado).
+              - cell [ref=e2432]:
+                - textbox "Evaluador" [ref=e2433]: Equipo metodológico
+              - cell [ref=e2434]:
+                - textbox "Fecha D-09 A-07" [ref=e2435]: 2026-07-31
+            - row [ref=e2436]:
+              - cell [ref=e2437]:
+                - code [ref=e2438]: D-09 + A-08
+              - cell "DA" [ref=e2439]
+              - cell "débil" [ref=e2441]
+              - cell "1 · Débil" [ref=e2443]:
+                - combobox "Fuerza D-09 A-08" [ref=e2444]:
+                  - option "Pendiente"
+                  - option "0 · Sin relación"
+                  - option "1 · Débil" [selected]
+                  - option "2 · Moderada"
+                  - option "3 · Fuerte"
+              - cell [ref=e2445]:
+                - textbox "Por qué existe o no existe el vínculo" [ref=e2446]: Falta de evaluación del impacto de la capacitación incrementa la exposición ante Situación económica y financiera; la relación se valora con fuerza 1/3.
+              - cell [ref=e2447]:
+                - textbox "Fuente o evidencia" [ref=e2448]: "Tesis ETECSA: revisión documental y entrevistas (simulado)."
+              - cell [ref=e2449]:
+                - textbox "Evaluador" [ref=e2450]: Equipo metodológico
+              - cell [ref=e2451]:
+                - textbox "Fecha D-09 A-08" [ref=e2452]: 2026-07-31
+            - row [ref=e2453]:
+              - cell [ref=e2454]:
+                - code [ref=e2455]: D-09 + A-09
+              - cell "DA" [ref=e2456]
+              - cell "débil" [ref=e2458]
+              - cell "1 · Débil" [ref=e2460]:
+                - combobox "Fuerza D-09 A-09" [ref=e2461]:
+                  - option "Pendiente"
+                  - option "0 · Sin relación"
+                  - option "1 · Débil" [selected]
+                  - option "2 · Moderada"
+                  - option "3 · Fuerte"
+              - cell [ref=e2462]:
+                - textbox "Por qué existe o no existe el vínculo" [ref=e2463]: Falta de evaluación del impacto de la capacitación incrementa la exposición ante Migración al sector privado; la relación se valora con fuerza 1/3.
+              - cell [ref=e2464]:
+                - textbox "Fuente o evidencia" [ref=e2465]: "Tesis ETECSA: revisión documental y entrevistas (simulado)."
+              - cell [ref=e2466]:
+                - textbox "Evaluador" [ref=e2467]: Equipo metodológico
+              - cell [ref=e2468]:
+                - textbox "Fecha D-09 A-09" [ref=e2469]: 2026-07-31
+            - row [ref=e2470]:
+              - cell [ref=e2471]:
+                - code [ref=e2472]: D-09 + A-10
+              - cell "DA" [ref=e2473]
+              - cell "débil" [ref=e2475]
+              - cell "1 · Débil" [ref=e2477]:
+                - combobox "Fuerza D-09 A-10" [ref=e2478]:
+                  - option "Pendiente"
+                  - option "0 · Sin relación"
+                  - option "1 · Débil" [selected]
+                  - option "2 · Moderada"
+                  - option "3 · Fuerte"
+              - cell [ref=e2479]:
+                - textbox "Por qué existe o no existe el vínculo" [ref=e2480]: Falta de evaluación del impacto de la capacitación incrementa la exposición ante Inestabilidad energética; la relación se valora con fuerza 1/3.
+              - cell [ref=e2481]:
+                - textbox "Fuente o evidencia" [ref=e2482]: "Tesis ETECSA: revisión documental y entrevistas (simulado)."
+              - cell [ref=e2483]:
+                - textbox "Evaluador" [ref=e2484]: Equipo metodológico
+              - cell [ref=e2485]:
+                - textbox "Fecha D-09 A-10" [ref=e2486]: 2026-07-31
+            - row [ref=e2487]:
+              - cell [ref=e2488]:
+                - code [ref=e2489]: D-10 + O-01
+              - cell "DO" [ref=e2490]
+              - cell "moderada" [ref=e2492]
+              - cell "2 · Moderada" [ref=e2494]:
+                - combobox "Fuerza D-10 O-01" [ref=e2495]:
+                  - option "Pendiente"
+                  - option "0 · Sin relación"
+                  - option "1 · Débil"
+                  - option "2 · Moderada" [selected]
+                  - option "3 · Fuerte"
+              - cell [ref=e2496]:
+                - textbox "Por qué existe o no existe el vínculo" [ref=e2497]: Fluctuación de cuadros y reservas requiere corregir para aprovechar Transformación digital; la relación se valora con fuerza 2/3.
+              - cell [ref=e2498]:
+                - textbox "Fuente o evidencia" [ref=e2499]: "Tesis ETECSA: revisión documental y entrevistas (simulado)."
+              - cell [ref=e2500]:
+                - textbox "Evaluador" [ref=e2501]: Equipo metodológico
+              - cell [ref=e2502]:
+                - textbox "Fecha D-10 O-01" [ref=e2503]: 2026-07-31
+            - row [ref=e2504]:
+              - cell [ref=e2505]:
+                - code [ref=e2506]: D-10 + O-02
+              - cell "DO" [ref=e2507]
+              - cell "moderada" [ref=e2509]
+              - cell "2 · Moderada" [ref=e2511]:
+                - combobox "Fuerza D-10 O-02" [ref=e2512]:
+                  - option "Pendiente"
+                  - option "0 · Sin relación"
+                  - option "1 · Débil"
+                  - option "2 · Moderada" [selected]
+                  - option "3 · Fuerte"
+              - cell [ref=e2513]:
+                - textbox "Por qué existe o no existe el vínculo" [ref=e2514]: Fluctuación de cuadros y reservas requiere corregir para aprovechar Modernización del sector; la relación se valora con fuerza 2/3.
+              - cell [ref=e2515]:
+                - textbox "Fuente o evidencia" [ref=e2516]: "Tesis ETECSA: revisión documental y entrevistas (simulado)."
+              - cell [ref=e2517]:
+                - textbox "Evaluador" [ref=e2518]: Equipo metodológico
+              - cell [ref=e2519]:
+                - textbox "Fecha D-10 O-02" [ref=e2520]: 2026-07-31
+            - row [ref=e2521]:
+              - cell [ref=e2522]:
+                - code [ref=e2523]: D-10 + O-03
+              - cell "DO" [ref=e2524]
+              - cell "moderada" [ref=e2526]
+              - cell "2 · Moderada" [ref=e2528]:
+                - combobox "Fuerza D-10 O-03" [ref=e2529]:
+                  - option "Pendiente"
+                  - option "0 · Sin relación"
+                  - option "1 · Débil"
+                  - option "2 · Moderada" [selected]
+                  - option "3 · Fuerte"
+              - cell [ref=e2530]:
+                - textbox "Por qué existe o no existe el vínculo" [ref=e2531]: Fluctuación de cuadros y reservas requiere corregir para aprovechar Uso de la Inteligencia Artificial; la relación se valora con fuerza 2/3.
+              - cell [ref=e2532]:
+                - textbox "Fuente o evidencia" [ref=e2533]: "Tesis ETECSA: revisión documental y entrevistas (simulado)."
+              - cell [ref=e2534]:
+                - textbox "Evaluador" [ref=e2535]: Equipo metodológico
+              - cell [ref=e2536]:
+                - textbox "Fecha D-10 O-03" [ref=e2537]: 2026-07-31
+            - row [ref=e2538]:
+              - cell [ref=e2539]:
+                - code [ref=e2540]: D-10 + O-04
+              - cell "DO" [ref=e2541]
+              - cell "moderada" [ref=e2543]
+              - cell "2 · Moderada" [ref=e2545]:
+                - combobox "Fuerza D-10 O-04" [ref=e2546]:
+                  - option "Pendiente"
+                  - option "0 · Sin relación"
+                  - option "1 · Débil"
+                  - option "2 · Moderada" [selected]
+                  - option "3 · Fuerte"
+              - cell [ref=e2547]:
+                - textbox "Por qué existe o no existe el vínculo" [ref=e2548]: Fluctuación de cuadros y reservas requiere corregir para aprovechar Vínculo con la DCEG; la relación se valora con fuerza 2/3.
+              - cell [ref=e2549]:
+                - textbox "Fuente o evidencia" [ref=e2550]: "Tesis ETECSA: revisión documental y entrevistas (simulado)."
+              - cell [ref=e2551]:
+                - textbox "Evaluador" [ref=e2552]: Equipo metodológico
+              - cell [ref=e2553]:
+                - textbox "Fecha D-10 O-04" [ref=e2554]: 2026-07-31
+            - row [ref=e2555]:
+              - cell [ref=e2556]:
+                - code [ref=e2557]: D-10 + O-05
+              - cell "DO" [ref=e2558]
+              - cell "moderada" [ref=e2560]
+              - cell "2 · Moderada" [ref=e2562]:
+                - combobox "Fuerza D-10 O-05" [ref=e2563]:
+                  - option "Pendiente"
+                  - option "0 · Sin relación"
+                  - option "1 · Débil"
+                  - option "2 · Moderada" [selected]
+                  - option "3 · Fuerte"
+              - cell [ref=e2564]:
+                - textbox "Por qué existe o no existe el vínculo" [ref=e2565]: Fluctuación de cuadros y reservas requiere corregir para aprovechar Marco legal de país; la relación se valora con fuerza 2/3.
+              - cell [ref=e2566]:
+                - textbox "Fuente o evidencia" [ref=e2567]: "Tesis ETECSA: revisión documental y entrevistas (simulado)."
+              - cell [ref=e2568]:
+                - textbox "Evaluador" [ref=e2569]: Equipo metodológico
+              - cell [ref=e2570]:
+                - textbox "Fecha D-10 O-05" [ref=e2571]: 2026-07-31
+            - row [ref=e2572]:
+              - cell [ref=e2573]:
+                - code [ref=e2574]: D-10 + A-06
+              - cell "DA" [ref=e2575]
+              - cell "moderada" [ref=e2577]
+              - cell "2 · Moderada" [ref=e2579]:
+                - combobox "Fuerza D-10 A-06" [ref=e2580]:
+                  - option "Pendiente"
+                  - option "0 · Sin relación"
+                  - option "1 · Débil"
+                  - option "2 · Moderada" [selected]
+                  - option "3 · Fuerte"
+              - cell [ref=e2581]:
+                - textbox "Por qué existe o no existe el vínculo" [ref=e2582]: Fluctuación de cuadros y reservas incrementa la exposición ante Migración al extranjero; la relación se valora con fuerza 2/3.
+              - cell [ref=e2583]:
+                - textbox "Fuente o evidencia" [ref=e2584]: "Tesis ETECSA: revisión documental y entrevistas (simulado)."
+              - cell [ref=e2585]:
+                - textbox "Evaluador" [ref=e2586]: Equipo metodológico
+              - cell [ref=e2587]:
+                - textbox "Fecha D-10 A-06" [ref=e2588]: 2026-07-31
+            - row [ref=e2589]:
+              - cell [ref=e2590]:
+                - code [ref=e2591]: D-10 + A-07
+              - cell "DA" [ref=e2592]
+              - cell "débil" [ref=e2594]
+              - cell "1 · Débil" [ref=e2596]:
+                - combobox "Fuerza D-10 A-07" [ref=e2597]:
+                  - option "Pendiente"
+                  - option "0 · Sin relación"
+                  - option "1 · Débil" [selected]
+                  - option "2 · Moderada"
+                  - option "3 · Fuerte"
+              - cell [ref=e2598]:
+                - textbox "Por qué existe o no existe el vínculo" [ref=e2599]: Fluctuación de cuadros y reservas incrementa la exposición ante Bloqueo del gobierno de EE. UU.; la relación se valora con fuerza 1/3.
+              - cell [ref=e2600]:
+                - textbox "Fuente o evidencia" [ref=e2601]: "Tesis ETECSA: revisión documental y entrevistas (simulado)."
+              - cell [ref=e2602]:
+                - textbox "Evaluador" [ref=e2603]: Equipo metodológico
+              - cell [ref=e2604]:
+                - textbox "Fecha D-10 A-07" [ref=e2605]: 2026-07-31
+            - row [ref=e2606]:
+              - cell [ref=e2607]:
+                - code [ref=e2608]: D-10 + A-08
+              - cell "DA" [ref=e2609]
+              - cell "débil" [ref=e2611]
+              - cell "1 · Débil" [ref=e2613]:
+                - combobox "Fuerza D-10 A-08" [ref=e2614]:
+                  - option "Pendiente"
+                  - option "0 · Sin relación"
+                  - option "1 · Débil" [selected]
+                  - option "2 · Moderada"
+                  - option "3 · Fuerte"
+              - cell [ref=e2615]:
+                - textbox "Por qué existe o no existe el vínculo" [ref=e2616]: Fluctuación de cuadros y reservas incrementa la exposición ante Situación económica y financiera; la relación se valora con fuerza 1/3.
+              - cell [ref=e2617]:
+                - textbox "Fuente o evidencia" [ref=e2618]: "Tesis ETECSA: revisión documental y entrevistas (simulado)."
+              - cell [ref=e2619]:
+                - textbox "Evaluador" [ref=e2620]: Equipo metodológico
+              - cell [ref=e2621]:
+                - textbox "Fecha D-10 A-08" [ref=e2622]: 2026-07-31
+            - row [ref=e2623]:
+              - cell [ref=e2624]:
+                - code [ref=e2625]: D-10 + A-09
+              - cell "DA" [ref=e2626]
+              - cell "débil" [ref=e2628]
+              - cell "1 · Débil" [ref=e2630]:
+                - combobox "Fuerza D-10 A-09" [ref=e2631]:
+                  - option "Pendiente"
+                  - option "0 · Sin relación"
+                  - option "1 · Débil" [selected]
+                  - option "2 · Moderada"
+                  - option "3 · Fuerte"
+              - cell [ref=e2632]:
+                - textbox "Por qué existe o no existe el vínculo" [ref=e2633]: Fluctuación de cuadros y reservas incrementa la exposición ante Migración al sector privado; la relación se valora con fuerza 1/3.
+              - cell [ref=e2634]:
+                - textbox "Fuente o evidencia" [ref=e2635]: "Tesis ETECSA: revisión documental y entrevistas (simulado)."
+              - cell [ref=e2636]:
+                - textbox "Evaluador" [ref=e2637]: Equipo metodológico
+              - cell [ref=e2638]:
+                - textbox "Fecha D-10 A-09" [ref=e2639]: 2026-07-31
+            - row [ref=e2640]:
+              - cell [ref=e2641]:
+                - code [ref=e2642]: D-10 + A-10
+              - cell "DA" [ref=e2643]
+              - cell "débil" [ref=e2645]
+              - cell "1 · Débil" [ref=e2647]:
+                - combobox "Fuerza D-10 A-10" [ref=e2648]:
+                  - option "Pendiente"
+                  - option "0 · Sin relación"
+                  - option "1 · Débil" [selected]
+                  - option "2 · Moderada"
+                  - option "3 · Fuerte"
+              - cell [ref=e2649]:
+                - textbox "Por qué existe o no existe el vínculo" [ref=e2650]: Fluctuación de cuadros y reservas incrementa la exposición ante Inestabilidad energética; la relación se valora con fuerza 1/3.
+              - cell [ref=e2651]:
+                - textbox "Fuente o evidencia" [ref=e2652]: "Tesis ETECSA: revisión documental y entrevistas (simulado)."
+              - cell [ref=e2653]:
+                - textbox "Evaluador" [ref=e2654]: Equipo metodológico
+              - cell [ref=e2655]:
+                - textbox "Fecha D-10 A-10" [ref=e2656]: 2026-07-31

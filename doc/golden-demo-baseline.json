@@ -1,0 +1,39 @@
+{
+  "relations": {
+    "DA_index": 0.35340659340659325,
+    "FA_index": 0.34639455782312917,
+    "DO_index": 0.7518737672583824,
+    "FO_index": 0.3598534798534797,
+    "evaluated": 100
+  },
+  "dafo": {
+    "FO": 1.89,
+    "confidence": "alta",
+    "dominant": "DO",
+    "FA": 0.6825,
+    "DO": 1.98,
+    "coverage": 1,
+    "second": "FO",
+    "DA": 0.715
+  },
+  "efiTotal": 2.15,
+  "validation": {
+    "valid": true,
+    "warnings": 20,
+    "errors": 0
+  },
+  "counts": {
+    "internal": 10,
+    "external": 10,
+    "relationships": 100
+  },
+  "efeTotal": 2.45,
+  "qspm": {
+    "strategies": 6,
+    "selected": "EST-FO-01"
+  },
+  "came": {
+    "actions": 20,
+    "total": null
+  }
+}

@@ -1,0 +1,239 @@
+- generic [ref=e3]:
+  - banner [ref=e4]:
+    - generic [ref=e5]:
+      - generic [ref=e6]: E
+      - generic [ref=e7]:
+        - paragraph [ref=e8]: Mesa de evidencia estratégica
+        - heading "EFI / EFE / DAFO / QSPM / CAME" [level=1] [ref=e9]
+    - generic [ref=e10]:
+      - generic [ref=e11]: borrador
+      - button "Investigaciones" [ref=e13] [cursor=pointer]:
+        - generic [ref=e14]: ▦
+        - text: Investigaciones
+      - button "Nueva" [ref=e15] [cursor=pointer]:
+        - generic [ref=e16]: +
+        - text: Nueva
+      - button "Guía" [ref=e17] [cursor=pointer]:
+        - generic [ref=e18]: "?"
+        - text: Guía
+      - button "Exportar PDF" [ref=e19] [cursor=pointer]:
+        - generic [ref=e20]: ↓
+        - text: Exportar PDF
+  - generic [ref=e21]:
+    - complementary [ref=e22]:
+      - generic [ref=e23]:
+        - paragraph [ref=e24]: Caso activo
+        - heading "ETECSA" [level=2] [ref=e25]
+        - paragraph [ref=e26]: Sistema de Trabajo con los Cuadros y sus Reservas
+        - generic [ref=e27]: ETECSA-DEMO-01
+        - generic [ref=e28]: borrador · guardado local
+      - region "Estado de validación" [ref=e29]:
+        - generic [ref=e30]:
+          - text: Control de calidad
+          - strong [ref=e31]: 20 revisiones pendientes
+        - generic [ref=e32]:
+          - button "ContextoSin pendientes" [ref=e33] [cursor=pointer]: ContextoOK
+          - button "EFIRequiere revisión" [ref=e34] [cursor=pointer]: EFI!
+          - button "EFERequiere revisión" [ref=e35] [cursor=pointer]: EFE!
+          - button "DAFOSin pendientes" [ref=e36] [cursor=pointer]: DAFOOK
+          - button "QSPMSin pendientes" [ref=e37] [cursor=pointer]: QSPMOK
+          - button "CAMESin pendientes" [ref=e38] [cursor=pointer]: CAMEOK
+        - paragraph [ref=e39]: "Primera revisión: F-01: falta registrar evidencia o fuente."
+      - navigation "Etapas del análisis" [ref=e40]:
+        - button "00 Contexto Sin pendientes" [ref=e41] [cursor=pointer]:
+          - generic [ref=e42]: "00"
+          - strong [ref=e44]: Contexto
+          - generic "Sin pendientes" [ref=e45]: OK
+        - button "00 Resumen Requiere revisión" [ref=e46] [cursor=pointer]:
+          - generic [ref=e47]: "00"
+          - strong [ref=e49]: Resumen
+          - generic "Requiere revisión" [ref=e50]: "!"
+        - button "01 Factores internos (EFI) Requiere revisión" [ref=e51] [cursor=pointer]:
+          - generic [ref=e52]: "01"
+          - strong [ref=e54]: Factores internos (EFI)
+          - generic "Requiere revisión" [ref=e55]: "!"
+        - button "02 Factores externos (EFE) Requiere revisión" [ref=e56] [cursor=pointer]:
+          - generic [ref=e57]: "02"
+          - strong [ref=e59]: Factores externos (EFE)
+          - generic "Requiere revisión" [ref=e60]: "!"
+        - button "03 Cruces y relaciones (DAFO) Sin pendientes" [ref=e61] [cursor=pointer]:
+          - generic [ref=e62]: "03"
+          - strong [ref=e64]: Cruces y relaciones (DAFO)
+          - generic "Sin pendientes" [ref=e65]: OK
+        - button "04 Selección estratégica (QSPM) Sin pendientes" [ref=e66] [cursor=pointer]:
+          - generic [ref=e67]: "04"
+          - strong [ref=e69]: Selección estratégica (QSPM)
+          - generic "Sin pendientes" [ref=e70]: OK
+        - button "05 Plan de acción (CAME) Sin pendientes" [ref=e71] [cursor=pointer]:
+          - generic [ref=e72]: "05"
+          - strong [ref=e74]: Plan de acción (CAME)
+          - generic "Sin pendientes" [ref=e75]: OK
+    - main [ref=e76]:
+      - generic [ref=e77]:
+        - generic [ref=e78]:
+          - paragraph [ref=e79]: Lectura ejecutiva / 00
+          - heading "Interrelación de los procesos de cuadros y reservas" [level=2] [ref=e80]
+          - paragraph [ref=e81]: Una mesa de trabajo para convertir factores ponderados en decisiones justificadas y acciones verificables.
+        - generic [ref=e82]: demostrativo-simulado
+      - generic [ref=e83]:
+        - generic [ref=e84]:
+          - text: Hipótesis de trabajo
+          - heading "La debilidad de integración limita una oportunidad de modernización." [level=3] [ref=e85]
+          - paragraph [ref=e86]: "El escenario sugiere una orientación DO. La lectura es operativa, no una decisión automática: relaciones, QSPM y CAME deben revisarse con la evidencia institucional."
+        - generic [ref=e87]:
+          - generic [ref=e88]: Orientación sugerida
+          - strong [ref=e89]: DO
+          - generic [ref=e90]: Adaptativa · reorientación y desarrollo
+      - generic [ref=e91]:
+        - button "EFI 2.15 Capacidad interna" [ref=e92] [cursor=pointer]:
+          - generic [ref=e93]: EFI
+          - strong [ref=e94]: "2.15"
+          - generic [ref=e95]: Capacidad interna
+          - generic [ref=e96]: ↗
+        - button "EFE 2.45 Respuesta al entorno" [ref=e97] [cursor=pointer]:
+          - generic [ref=e98]: EFE
+          - strong [ref=e99]: "2.45"
+          - generic [ref=e100]: Respuesta al entorno
+          - generic [ref=e101]: ↗
+        - button "Relaciones 100/100 100 % de cobertura" [ref=e102] [cursor=pointer]:
+          - generic [ref=e103]: Relaciones
+          - strong [ref=e104]: 100/100
+          - generic [ref=e105]: 100 % de cobertura
+          - generic [ref=e106]: ↗
+        - button "Acciones CAME 20 0 críticas" [ref=e107] [cursor=pointer]:
+          - generic [ref=e108]: Acciones CAME
+          - strong [ref=e109]: "20"
+          - generic [ref=e110]: 0 críticas
+          - generic [ref=e111]: ↗
+      - generic [ref=e112]:
+        - generic [ref=e113]:
+          - generic [ref=e114]:
+            - generic [ref=e115]:
+              - paragraph [ref=e116]: Trazabilidad prioritaria
+              - heading "Del factor a la acción" [level=3] [ref=e117]
+            - generic [ref=e118]: Cadena demostrativa
+          - generic [ref=e119]:
+            - generic [ref=e120]:
+              - code [ref=e121]: D-08
+              - generic [ref=e122]: Debilidad
+              - strong [ref=e123]: Falta de integración de procesos
+            - generic [ref=e124]: →
+            - generic [ref=e125]:
+              - code [ref=e126]: DO
+              - generic [ref=e127]: Orientación
+              - strong [ref=e128]: Reorientar y desarrollar
+            - generic [ref=e129]: →
+            - generic [ref=e130]:
+              - code [ref=e131]: EST-DO-01
+              - generic [ref=e132]: Estrategia
+              - strong [ref=e133]: Integración formal de los procesos de cuadros y reservas
+            - generic [ref=e134]: →
+            - generic [ref=e135]:
+              - code [ref=e136]: ACC-D-08
+              - generic [ref=e137]: Acción
+              - strong [ref=e138]: Diseñar y aprobar el mapa integrado de procesos de cuadros y reservas.
+          - generic [ref=e139]:
+            - text: Relación D-08 + O-01
+            - paragraph [ref=e140]: Falta de integración de procesos requiere corregir para aprovechar Transformación digital; la relación se valora con fuerza 3/3.
+            - generic [ref=e141]: "Tesis ETECSA: revisión documental y entrevistas (simulado). · Evaluador: Equipo metodológico · 2026-07-31"
+        - generic [ref=e142]:
+          - generic [ref=e143]:
+            - generic [ref=e144]:
+              - paragraph [ref=e145]: Decisión pendiente
+              - heading "Selección QSPM" [level=3] [ref=e146]
+            - generic [ref=e147]: TAS 2.54
+          - generic [ref=e148]:
+            - text: EST-DO-01
+            - heading "Integración formal de los procesos de cuadros y reservas" [level=3] [ref=e149]
+            - paragraph [ref=e150]: Se selecciona EST-DO-01 porque ataca la debilidad crítica D-08 y crea las condiciones para aprovechar O-01 y O-02.
+          - button "Revisar alternativas" [ref=e151] [cursor=pointer]:
+            - text: Revisar alternativas
+            - generic [ref=e152]: →
+      - generic [ref=e153]:
+        - generic [ref=e154]:
+          - generic [ref=e155]:
+            - paragraph [ref=e156]: DAFO relacional
+            - heading "Intensidad por cuadrante" [level=3] [ref=e157]
+          - generic [ref=e158]: Confianza alta
+        - generic [ref=e159]:
+          - generic [ref=e160]:
+            - generic [ref=e161]: FO
+            - strong [ref=e164]: "0.36"
+            - generic [ref=e165]: 100 %
+          - generic [ref=e166]:
+            - generic [ref=e167]: DO
+            - strong [ref=e170]: "0.75"
+            - generic [ref=e171]: 100 %
+          - generic [ref=e172]:
+            - generic [ref=e173]: FA
+            - strong [ref=e176]: "0.35"
+            - generic [ref=e177]: 100 %
+          - generic [ref=e178]:
+            - generic [ref=e179]: DA
+            - strong [ref=e182]: "0.35"
+            - generic [ref=e183]: 100 %
+      - generic [ref=e184]:
+        - generic [ref=e185]:
+          - generic [ref=e186]:
+            - generic [ref=e187]:
+              - paragraph [ref=e188]: Lectura comparativa
+              - heading "Capacidad y respuesta" [level=3] [ref=e189]
+            - generic [ref=e190]: Escala máxima 4.00
+          - generic [ref=e191]:
+            - generic [ref=e193]:
+              - generic [ref=e194]: EFI · interno
+              - strong [ref=e195]: "2.15"
+            - generic [ref=e199]:
+              - generic [ref=e200]: EFE · entorno
+              - strong [ref=e201]: "2.45"
+            - generic [ref=e205]:
+              - generic [ref=e206]: Cobertura dominante
+              - strong [ref=e207]: 100 %
+        - generic [ref=e210]:
+          - generic [ref=e211]:
+            - generic [ref=e212]:
+              - paragraph [ref=e213]: Perfil del caso
+              - heading "Radar de lectura" [level=3] [ref=e214]
+            - generic [ref=e215]: Valores normalizados
+          - generic [ref=e216]:
+            - generic [ref=e217]:
+              - generic [ref=e218]: EFI
+              - generic [ref=e219]: EFE
+              - generic [ref=e220]: Cobertura
+              - generic [ref=e221]: QSPM
+              - generic [ref=e222]: CAME
+            - generic [ref=e223]:
+              - generic [ref=e224]: Perfil actual
+              - generic [ref=e226]: La forma combina desempeño, cobertura, selección y capacidad de acción.
+        - generic [ref=e227]:
+          - generic [ref=e228]:
+            - generic [ref=e229]:
+              - paragraph [ref=e230]: CAME · prioridad
+              - heading "Acciones que abren el plan" [level=3] [ref=e231]
+            - generic [ref=e232]: Top 5
+          - generic [ref=e233]:
+            - generic [ref=e234]:
+              - generic [ref=e235]:
+                - code [ref=e236]: ACC-D-06
+                - generic [ref=e237]: Diseñar medidas para corregir procesos burocráticos.
+              - strong [ref=e240]: "0.36"
+            - generic [ref=e243]:
+              - generic [ref=e244]:
+                - code [ref=e245]: ACC-D-07
+                - generic [ref=e246]: Diseñar medidas para corregir falta de automatización de procesos.
+              - strong [ref=e249]: "0.36"
+            - generic [ref=e252]:
+              - generic [ref=e253]:
+                - code [ref=e254]: ACC-D-08
+                - generic [ref=e255]: Diseñar y aprobar el mapa integrado de procesos de cuadros y reservas.
+              - strong [ref=e258]: "0.36"
+            - generic [ref=e261]:
+              - generic [ref=e262]:
+                - code [ref=e263]: ACC-D-09
+                - generic [ref=e264]: Diseñar medidas para corregir falta de evaluación del impacto de la capacitación.
+              - strong [ref=e267]: "0.32"
+            - generic [ref=e270]:
+              - generic [ref=e271]:
+                - code [ref=e272]: ACC-D-10
+                - generic [ref=e273]: Diseñar medidas para corregir fluctuación de cuadros y reservas.
+              - strong [ref=e276]: "0.32"

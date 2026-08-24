@@ -1285,3 +1285,303 @@ La salida ideal es:
 > “Se sugiere una orientación DO adaptativa porque las relaciones validadas entre las debilidades D-08 y D-07 y las oportunidades O-01 y O-02 presentan el mayor índice relativo, con una cobertura del 82 % y una diferencia del 14 % respecto a la segunda orientación. Esta recomendación es provisional hasta completar la QSPM. Entre las alternativas evaluadas, EST-DO-01 obtuvo el mayor TAS y fue seleccionada por el equipo responsable.”
 
 Ese es el nivel de explicación que permite utilizar la herramienta tanto para el análisis organizacional como para fundamentar una tesis.
+
+---
+
+## 20. Dashboard Estratégico de Investigaciones (Centro de Mando Multiexpediente)
+
+### 20.1. Propósito y Alcance
+
+El Dashboard Estratégico (`/dashboard/investigations`) constituye el centro neurálgico de inteligencia y analítica multi-investigación de NovaInvestigator. Su función es sintetizar en tiempo real el estado, la salud estratégica y la orientación dominante de todas las investigaciones y organizaciones analizadas en el tenant, permitiendo una visión panorámica y acceso ágil a cualquier expediente. El segmento raíz `/dashboard` redirige canónicamente a `/dashboard/investigations`.
+
+### 20.2. Arquitectura de Componentes
+
+1. **`src/app/(pages)/dashboard/investigations/page.tsx` (Capa 1: Routing & Auth):**
+   - Página Server Component que sirve la subruta canónica `/dashboard/investigations`.
+2. **`next.config.ts` (Redirección HTTP a nivel servidor):**
+   - Redirección automática permanente (308) de `/dashboard` a `/dashboard/investigations`, siguiendo la misma convención que `/apps/users` -> `/apps/users/list` sin necesidad de archivos dummy intermedios.
+3. **`src/views/dashboards/investigations/index.tsx` (Capa 2: View / Controller):**
+   - Controlador de cliente conectado al contexto unificado `useInvestigatorAnalysis`.
+   - Agrega métricas consolidadas a partir de la colección de `investigations` (remotas y locales).
+4. **Módulos Visuales y Analíticos:**
+   - **Tarjetas de KPIs Consolidados:**
+     - Total de expedientes registrados y desglose por estado (*En análisis*, *Validada*, *Borrador*, *Archivada*).
+     - Promedio global de evaluación interna **EFI** (1.0 - 4.0 con umbral de equilibrio 2.5).
+     - Promedio global de evaluación externa **EFE** (1.0 - 4.0 con umbral de respuesta 2.5).
+
+### Fase 5. CAME multicriterio
+
+- Crear fichas de acciones.
+- Configurar criterios y pesos.
+- Implementar índice continuo.
+- Implementar categorías configurables.
+- Prellenar severidad o urgencia como sugerencia, no como verdad.
+- Añadir responsables, plazos e indicadores.
+
+**Salida esperada:** CAME produce un plan priorizado y ejecutable.
+
+### Fase 6. Exportación y documentación
+
+- Actualizar exportación HTML/PDF.
+- Incluir fórmulas y supuestos.
+- Incluir advertencias.
+- Añadir versión metodológica.
+- Validar gráficos con los mismos resultados que la UI.
+- Actualizar el instructivo.
+
+### Fase 7. Validación con expertos
+
+- Presentar factores y relaciones a expertos.
+- Revisar pesos y calificaciones.
+- Validar alternativas QSPM.
+- Revisar prioridades CAME.
+- Registrar fecha, panel, consenso y cambios.
+
+---
+
+## 14. Pruebas y criterios de aceptación
+
+### 14.1. Pruebas EFI/EFE
+
+- Si todos los pesos suman `1.00`, la matriz es válida.
+- Si los pesos suman `0.94`, se muestra error y no se emite interpretación definitiva.
+- Si una calificación es `0` o `5`, se muestra error.
+- Si se modifica una calificación, se actualizan fila, subtotal, total, DAFO, QSPM y CAME.
+- El valor exportado coincide con el valor mostrado.
+- El redondeo visible no modifica la suma interna.
+
+### 14.2. Pruebas DAFO
+
+- Una relación con fuerza `0` no aporta al cuadrante.
+- Una relación sin evaluar no se interpreta como relación inexistente.
+- Una relación fuerte aporta más que una relación débil cuando los pesos son iguales.
+- El cuadrante dominante se explica mediante las relaciones principales.
+- Si dos cuadrantes tienen resultados cercanos, se muestra advertencia.
+- Si no existen relaciones válidas, no se recomienda una orientación definitiva.
+- La recomendación DO puede aparecer aunque no sea conveniente seleccionar una estrategia DO después de QSPM.
+
+### 14.3. Pruebas QSPM
+
+- Una puntuación AS fuera de `1` a `4` se rechaza.
+- Un factor no aplica puede quedar vacío o con `—`, pero se contabiliza como pendiente si la metodología exige evaluarlo.
+- El TAS es igual a peso QSPM por AS.
+- La suma de pesos QSPM es `1.00` después de normalizar.
+- Un empate se muestra como empate.
+- Se puede elegir manualmente una alternativa distinta, guardando justificación.
+
+### 14.4. Pruebas CAME
+
+- Una debilidad con calificación EFI `1` obtiene una señal de severidad mayor que una con calificación `4`, manteniendo iguales los demás criterios.
+- La prioridad no depende solamente de `peso × calificación`.
+- Cambiar un criterio actualiza el índice y el ranking.
+- Si se cambian los pesos de criterios, la suma debe validarse.
+- La acción “Falta de integración de procesos” puede adquirir prioridad alta cuando sus criterios y evidencia lo justifican.
+- Toda acción tiene responsable, plazo e indicador antes de marcarse como aprobada.
+
+### 14.5. Pruebas de exportación
+
+- El PDF contiene los mismos totales que la interfaz.
+- La orientación exportada coincide con la UI.
+- La QSPM exporta AS, TAS y ranking.
+- CAME exporta criterios, índice, categoría y responsables.
+- Se incluyen advertencias y limitaciones.
+
+---
+
+## 15. Criterios de aceptación funcional
+
+La implementación se considerará lista cuando:
+
+- EFI y EFE calculen y validen los resultados sin discrepancias.
+- La suma de pesos y el estado de cada matriz sean visibles.
+- DAFO no dependa de cruzar automáticamente todos los pares.
+- El usuario pueda evaluar y justificar relaciones relevantes.
+- La herramienta sugiera FO, DO, FA o DA con una explicación y nivel de confianza.
+- La herramienta pueda declarar que no existe una orientación concluyente.
+- QSPM compare al menos tres alternativas.
+- La estrategia seleccionada quede registrada con justificación.
+- CAME priorice acciones mediante criterios configurables.
+- Las debilidades graves no reciban prioridad media por una interpretación invertida del puntaje.
+- El caso de la falta de integración pueda quedar sustentado como prioridad alta por evidencia y criterios.
+- Las exportaciones contengan método, resultados, supuestos y advertencias.
+- Existan pruebas para los casos críticos descritos en este documento.
+
+---
+
+## 16. Redacción metodológica recomendada para la tesis
+
+La herramienta puede describirse de la siguiente manera:
+
+> La matriz EFI se utilizó para evaluar los factores internos mediante la asignación de pesos relativos y calificaciones de uno a cuatro, calculando para cada factor el producto entre el peso y la calificación. La matriz EFE se aplicó con el mismo procedimiento, interpretando la calificación como el nivel de respuesta de la organización frente a cada oportunidad o amenaza.
+>
+> El análisis DAFO se empleó como marco para organizar los factores internos y externos y generar alternativas estratégicas. Las relaciones entre factores se valoraron de manera explícita según su fuerza y se documentaron mediante justificaciones y evidencias. La orientación resultante se interpretó como una recomendación de tipo FO, DO, FA o DA, sin considerarla por sí sola una selección definitiva.
+>
+> Las alternativas estratégicas se compararon mediante una Matriz Cuantitativa de Planificación Estratégica, asignando puntuaciones de atractivo frente a los factores ponderados. La alternativa seleccionada se convirtió en un plan CAME con acciones, responsables, recursos, plazos, indicadores y criterios de prioridad. Las ponderaciones y prioridades de la propuesta operativa se sometieron a validación de expertos.
+
+Esta redacción evita afirmar que DAFO o CAME poseen una fórmula universal y deja claro qué parte corresponde al método clásico y qué parte corresponde al diseño operativo de la investigación.
+
+---
+
+## 17. Fuentes metodológicas de referencia
+
+1. **Instituto Tecnológico y de Estudios Superiores de Monterrey.** Nota técnica sobre matrices EFI y EFE. Explica pesos, calificaciones, puntajes ponderados y comparación de fortalezas/debilidades y oportunidades/amenazas.  
+   <https://cic.itesm.mx/DocumentosPrincipalAlumno/80e1373f-5a14-e8ea-aa85-76e0c4e7b468.pdf>
+
+2. **Universidad Nacional Autónoma de Nicaragua.** Repositorio con aplicación de matrices estratégicas y referencia al intervalo de 1.0 a 4.0 y al valor medio de 2.5.  
+   <https://repositorio.unan.edu.ni/id/eprint/8747/1/18793.pdf>
+
+3. **Generalitat de Catalunya / Consorci per a la Formació Contínua de Catalunya.** Material sobre análisis DAFO y CAME, con énfasis en relevancia, recursos, responsables, plazos, indicadores y seguimiento.  
+   <https://conforcat.gencat.cat/web/.content/documents/EMPRESA/HUB/EINES-Analisis-DAFO-CAME.pdf>
+
+4. **Gürel, E. y Tat, M.** *SWOT Analysis: A Theoretical Review*. Revisión teórica que caracteriza SWOT como un marco cualitativo y descriptivo.  
+   <https://www.sosyalarastirmalar.com/articles/swot-analysis-a-theoretical-review.pdf>
+
+5. **Kurttila, M., Pesonen, M., Kangas, J. y Kajanus, M.** *Utilizing the analytic hierarchy process (AHP) in SWOT analysis — a hybrid method and its application to a forest-certification case*. Explica que SWOT identifica factores, pero no ofrece por sí solo una medida analítica suficiente de importancia o atractivo de alternativas.  
+   <https://doi.org/10.1016/S1389-9341(99)00004-3>
+
+6. **David, M. E., David, F. R. y David, F. R.** *The Quantitative Strategic Planning Matrix Applied to a Retail Computer Store*. Presenta QSPM, sus pasos, ventajas y limitaciones.  
+   <https://digitalcommons.coastal.edu/cbj/vol8/iss1/4/>
+
+7. **David, M. E., David, F. R. y David, F. R.** *The quantitative strategic planning matrix: a new marketing tool*. Presenta el uso de QSPM para comparar el atractivo relativo de alternativas estratégicas.  
+   <https://doi.org/10.1080/0965254X.2016.1148763>
+
+Las fuentes deben citarse en la tesis conforme al estilo bibliográfico exigido por la institución. La herramienta debe guardar las URL y la fecha de consulta en la exportación metodológica.
+
+---
+
+## 18. Decisiones que deben quedar visibles en la aplicación
+
+La interfaz o el informe exportado debe declarar:
+
+- Qué factores fueron incluidos.
+- Cómo se obtuvieron los pesos.
+- Quién asignó las calificaciones.
+- Qué evidencias respaldan cada factor.
+- Qué relaciones DAFO fueron evaluadas.
+- Qué significa la escala de relación.
+- Qué criterios y pesos se usaron en CAME.
+- Qué alternativas entraron en QSPM.
+- Quién asignó las puntuaciones de atractivo.
+- Qué estrategia se seleccionó y por qué.
+- Qué decisiones fueron automáticas y cuáles fueron validadas manualmente.
+- Qué resultados son estándares metodológicos y cuáles son propuestas operativas.
+
+Esta trazabilidad es tan importante como el número final.
+
+---
+
+## 19. Regla de oro para la implementación
+
+La aplicación debe sugerir una orientación estratégica, pero nunca debe ocultar el camino que llevó a esa sugerencia.
+
+La salida ideal no es solamente:
+
+> “Estrategia DO recomendada”.
+
+La salida ideal es:
+
+> “Se sugiere una orientación DO adaptativa porque las relaciones validadas entre las debilidades D-08 y D-07 y las oportunidades O-01 y O-02 presentan el mayor índice relativo, con una cobertura del 82 % y una diferencia del 14 % respecto a la segunda orientación. Esta recomendación es provisional hasta completar la QSPM. Entre las alternativas evaluadas, EST-DO-01 obtuvo el mayor TAS y fue seleccionada por el equipo responsable.”
+
+Ese es el nivel de explicación que permite utilizar la herramienta tanto para el análisis organizacional como para fundamentar una tesis.
+
+---
+
+## 20. Dashboard Estratégico de Investigaciones (Centro de Mando Multiexpediente)
+
+### 20.1. Propósito y Alcance
+
+El Dashboard Estratégico (`/dashboard/investigations`) constituye el centro neurálgico de inteligencia y analítica multi-investigación de NovaInvestigator. Su función es sintetizar en tiempo real el estado, la salud estratégica y la orientación dominante de todas las investigaciones y organizaciones analizadas en el tenant, permitiendo una visión panorámica y acceso ágil a cualquier expediente. El segmento raíz `/dashboard` redirige canónicamente a `/dashboard/investigations`.
+
+### 20.2. Arquitectura de Componentes
+
+1. **`src/app/(pages)/dashboard/investigations/page.tsx` (Capa 1: Routing & Auth):**
+   - Página Server Component que sirve la subruta canónica `/dashboard/investigations`.
+2. **`next.config.ts` (Redirección HTTP a nivel servidor):**
+   - Redirección automática permanente (308) de `/dashboard` a `/dashboard/investigations`, siguiendo la misma convención que `/apps/users` -> `/apps/users/list` sin necesidad de archivos dummy intermedios.
+3. **`src/views/dashboards/investigations/index.tsx` (Capa 2: View / Controller):**
+   - Controlador de cliente conectado al contexto unificado `useInvestigatorAnalysis`.
+   - Agrega métricas consolidadas a partir de la colección de `investigations` (remotas y locales).
+4. **Módulos Visuales y Analíticos:**
+   - **Tarjetas de KPIs Consolidados:**
+     - Total de expedientes registrados y desglose por estado (*En análisis*, *Validada*, *Borrador*, *Archivada*).
+     - Promedio global de evaluación interna **EFI** (1.0 - 4.0 con umbral de equilibrio 2.5).
+     - Promedio global de evaluación externa **EFE** (1.0 - 4.0 con umbral de respuesta 2.5).
+     - Total de factores estratégicos identificados (F, D, O, A) y cruces DAFO establecidos.
+     - Tasa de avance del plan de acción CAME (acciones asignadas, pendientes y completadas).
+   - **Matriz de Posicionamiento Estratégico (EFI vs EFE / IE Matrix):**
+     - Gráfico interactivo de dispersión por cuadrantes (Recharts) que ubica los expedientes en los 4 cuadrantes metodológicos:
+       - **Cuadrante I (FO - Ofensivo / Crecer y Construir):** EFI > 2.5, EFE > 2.5.
+       - **Cuadrante II (DO - Adaptativo / Reorientar y Desarrollar):** EFI ≤ 2.5, EFE > 2.5.
+       - **Cuadrante III (FA - Defensivo / Proteger y Consolidar):** EFI > 2.5, EFE ≤ 2.5.
+       - **Cuadrante IV (DA - Supervivencia / Contener y Mitigar):** EFI ≤ 2.5, EFE ≤ 2.5.
+   - **Balance y Distribución de Factores DAFO:**
+     - Gráfico comparativo de pesos y cantidad de Fortalezas, Debilidades, Oportunidades y Amenazas.
+   - **Monitor de Planes CAME:**
+     - Desglose por tipo de acción (*Corregir*, *Afrontar*, *Mantener*, *Explotar*) y estado de prioridad.
+   - **Feed de Expedientes Recientes:**
+     - Tabla dinámica con filtrado rápido, badges semánticos, indicadores numéricos EFI/EFE, orientación sugerida y acceso directo mediante Sheet lateral o apertura en espacio de trabajo.
+   - **Sheet Lateral de Dictamen Académico y Plan de Intervención CAME (`InvestigationSummarySheet`):**
+      - Drawer deslizable lateral (`side='right'`, ancho generoso `sm:max-w-2xl md:max-w-3xl`) diseñado específicamente bajo un formato editorial de informe científico y fundamentación de tesis, estructurado en:
+        1. **Ficha Técnica y Protocolo:** Título de la investigación, organización objeto de estudio, unidad analizada, investigador responsable, fecha de corte y estado formal del dictamen (Validada, En análisis, Archivada).
+        2. **Dictamen y Fundamentación Matricial (Narrativa en Prosa):** Redacción continua y fundamentada del resultado cuantitativo de las matrices EFI y EFE respecto al umbral teórico de 2.50, explicando en lenguaje académico la posición interna (solidez vs vulnerabilidad), la respuesta al entorno (favorable vs adverso) y la orientación relacional DAFO dominante resultante.
+        3. **Decisión Estratégica Formal (Matriz QSPM):** Identificación de la alternativa seleccionada (`EST-...`), alcance operativo y fundamentación cualitativa registrada por el comité evaluador.
+        4. **Plan de Intervención CAME (Operacionalización de la Estrategia):** Fichas narrativas de propuesta de intervención clasificadas en Corregir (C) Debilidades, Afrontar (A) Amenazas, Mantener (M) Fortalezas y Explotar (E) Oportunidades, detallando para cada una: Acción formulada, Objetivo específico, Responsable institucional, Indicador de verificación, Meta medible y Nivel de prioridad.
+        5. **Navegación al Espacio de Trabajo:** Enlace directo para abrir la investigación completa en el entorno de edición.
+
+---
+
+## 21. Gating comercial del sidebar (candado + tag de plan)
+
+### 21.1. Propósito
+
+El sidebar debe anticipar el bloqueo comercial antes del clic: si un usuario no tiene acceso a una app del grupo **Apps** porque su plan no incluye el módulo que la habilita, la app **permanece visible pero bloqueada** con un candado y una etiqueta que muestra el **plan mínimo real** que la incluye (ej. `Team`). El clic conduce directamente a `/pages/pricing`, alineado con el guard de servidor existente en los layouts de las apps (`requireModuleAccess` → `redirect('/pages/pricing')`).
+
+Esto cierra el hueco detectado con la app `Projects`: el sidebar no tenía requisito declarado para ella, por lo que se mostraba siempre y el bloqueo solo ocurría en el clic.
+
+### 21.2. Estados del ítem de app en el sidebar
+
+| Estado | Condición | Render |
+| --- | --- | --- |
+| `allowed` | El ítem no exige módulo, o `snapshot.status === 'active'` y `snapshot.modules` incluye el módulo requerido. | Ítem normal, navegable. |
+| `locked` | El ítem declara `moduleKey` (o mapeo por label en `APP_ACCESS_BY_LABEL`) y el módulo **no** está en `snapshot.modules` (por plan, trial o `status` distinto de `active`). | Ítem visible con estilo atenuado, **candado**, **tag del plan mínimo** que incluye el módulo (si existe) y enlace a `/pages/pricing`. |
+| `hidden` | El ítem exige una `capability` RBAC y el usuario no la tiene. | Oculto (comportamiento histórico, sin cambiar). |
+
+Reglas de presentación:
+
+- Durante la carga inicial del snapshot (`loading` o `snapshot === null`) los ítems con requisito de módulo se ocultan para evitar parpadeo de candados.
+- Si el `status` es `expired`, todos los ítems comerciales aparecen `locked`, reflejando el mismo mensaje del `CommercialAccessGate`.
+- El tag muestra el **nombre del plan real** (dato del catálogo de `/api/billing/plans`), no el branding heredado del template `'Pro'`.
+- Si ningún plan activo incluye el módulo, se muestra solo el candado, sin tag.
+- La distinción candado-vs-oculto es un tema de **plan**; los ítems bloqueados por rol (`capability`) siguen ocultándose.
+
+### 21.3. Fuente de verdad y flujo de datos
+
+1. `snapshot.modules` (resuelto por `resolveEffectiveAccessSnapshot`, `/api/access/effective`) decide `allowed` vs `locked` por módulo. Los módulos que no existen en `public.platform_modules` con `is_active = true` se filtran en `filterInactiveModuleEntitlements`.
+2. El **plan mínimo por módulo** se calcula en el cliente a partir del catálogo público `/api/billing/plans` (`pickCheapestPlanForModule`): entre los planes activos cuyo `features` incluya `modules.<key>`, el de menor precio mensualizado (excluye `one_time`).
+3. La declaración del requisito por app vive en el propio ítem del menú (`moduleKey` en `src/configs/navConfig.tsx`), con respaldo del mapeo legacy `APP_ACCESS_BY_LABEL` (`src/configs/permissions.ts`).
+4. La UI **nunca** es la única barrera: el guard de dominio se ejecuta en el layout de cada app (`requireModuleAccess('kanban')` en `/apps/kanban/layout.tsx`), con redirect a `/pages/pricing`.
+
+### 21.4. Requisitos de catálogo (base de datos)
+
+- Toda app con gating requiere fila activa en `public.platform_modules` (`module_key`, `route_prefix`, `is_active`). La migración `2026-08-16T12-00-00_sidebar_module_gating.sql` garantiza la fila `kanban` (idempotente, `on conflict do nothing`).
+- Los entitlements `modules.<key>` por plan **son configuración de negocio** gestionada desde el panel de administración (`/apps/platform/billing`, pestaña Planes → Selector Inteligente de Módulos). Las migraciones **no** inyectan ni modifican entitlements de planes existentes.
+- Al desactivar/eliminar el entitlement `modules.<key>` de un plan (o del trial policy / one-time grant), el sidebar muestra automáticamente el candado del ítem correspondiente sin tocar código: el motor es 100 % gobernado por la base de datos, igual que el motor de pricing.
+
+### 21.5. Procedimiento para incorporar una app futura
+
+1. Crear la app y su ruta bajo `/apps/<key>`.
+2. Agregar fila activa en `public.platform_modules` (migración) con `route_prefix` correcto.
+3. Declarar `moduleKey: '<key>'` en el ítem del grupo Apps de `navConfig.tsx`.
+4. Añadir el guard `requireModuleAccess('<key>')` en el layout de la app (redirect a `/pages/pricing`).
+5. Habilitar `modules.<key>` en los planes correspondientes desde el panel de administración.
+
+Con esto, el candado, el tag del plan mínimo y el bloqueo de servidor quedan activos sin código adicional.
+
+### 21.6. Archivos implicados
+
+- `src/configs/navConfig.tsx` — tipo `MenuItem` con `moduleKey?: string`; ítems `Projects` (`kanban`) e `Investigator` (`investigator`).
+- `src/configs/permissions.ts` — `getAppItemAccess(item, hasCapability, hasModule): 'allowed' | 'locked' | 'hidden'`.
+- `src/lib/billing/plan-catalog.ts` — `pickCheapestPlanForModule(plans, moduleKey)` (función pura).
+- `src/hooks/use-plan-catalog.ts` — fetch del catálogo público de planes (`/api/billing/plans`).
+- `src/components/layout/Sidebar.tsx` — render de ítems bloqueados: candado (`LockKeyholeIcon`), badge con nombre del plan mínimo y enlace a `/pages/pricing`.
+- `supabase/migrations/2026-08-16T12-00-00_sidebar_module_gating.sql` — fila `kanban` en `public.platform_modules`.

@@ -1,0 +1,298 @@
+- generic [ref=e3]:
+  - banner [ref=e4]:
+    - generic [ref=e5]:
+      - generic [ref=e6]: E
+      - generic [ref=e7]:
+        - paragraph [ref=e8]: Mesa de evidencia estratégica
+        - heading "EFI / EFE / DAFO / QSPM / CAME" [level=1] [ref=e9]
+    - generic [ref=e10]:
+      - generic [ref=e11]: en análisis
+      - button "Investigaciones" [ref=e13] [cursor=pointer]:
+        - generic [ref=e14]: ▦
+        - text: Investigaciones
+      - button "Nueva" [ref=e15] [cursor=pointer]:
+        - generic [ref=e16]: +
+        - text: Nueva
+      - button "Guía" [ref=e17] [cursor=pointer]:
+        - generic [ref=e18]: "?"
+        - text: Guía
+      - button "Exportar PDF" [ref=e19] [cursor=pointer]:
+        - generic [ref=e20]: ↓
+        - text: Exportar PDF
+  - generic [ref=e21]:
+    - complementary [ref=e22]:
+      - generic [ref=e23]:
+        - paragraph [ref=e24]: Caso activo
+        - heading "Entidad por definir" [level=2] [ref=e2302]
+        - paragraph [ref=e26]: Unidad de análisis pendiente
+        - generic [ref=e27]: INV-157200
+        - generic [ref=e28]: en análisis · guardado local
+      - region "Estado de validación" [ref=e29]:
+        - generic [ref=e30]:
+          - text: Control de calidad
+          - strong [ref=e31]: 57 revisiones pendientes
+        - generic [ref=e32]:
+          - button "ContextoRequiere revisión" [ref=e2303] [cursor=pointer]: Contexto!
+          - button "EFIRequiere revisión" [ref=e34] [cursor=pointer]: EFI!
+          - button "EFERequiere revisión" [ref=e35] [cursor=pointer]: EFE!
+          - button "DAFORequiere revisión" [ref=e2304] [cursor=pointer]: DAFO!
+          - button "QSPMRequiere revisión" [ref=e2305] [cursor=pointer]: QSPM!
+          - button "CAMERequiere revisión" [ref=e2306] [cursor=pointer]: CAME!
+        - paragraph [ref=e39]: "Primera revisión: Falta completar: Organización."
+      - navigation "Etapas del análisis" [ref=e40]:
+        - button "00 Contexto Entidad y propósito Requiere revisión" [ref=e2307] [cursor=pointer]:
+          - generic [ref=e42]: "00"
+          - generic [ref=e43]:
+            - strong [ref=e44]: Contexto
+            - generic [ref=e45]: Entidad y propósito
+          - generic "Requiere revisión" [ref=e2308]: "!"
+          - generic [ref=e47]: ›
+        - button "00 Resumen Lectura ejecutiva Requiere revisión" [ref=e48] [cursor=pointer]:
+          - generic [ref=e49]: "00"
+          - generic [ref=e50]:
+            - strong [ref=e51]: Resumen
+            - generic [ref=e52]: Lectura ejecutiva
+          - generic "Requiere revisión" [ref=e53]: "!"
+          - generic [ref=e54]: ›
+        - button "01 EFI Factores internos Requiere revisión" [ref=e55] [cursor=pointer]:
+          - generic [ref=e56]: "01"
+          - generic [ref=e57]:
+            - strong [ref=e58]: EFI
+            - generic [ref=e59]: Factores internos
+          - generic "Requiere revisión" [ref=e60]: "!"
+          - generic [ref=e61]: ›
+        - button "02 EFE Entorno estratégico Requiere revisión" [ref=e62] [cursor=pointer]:
+          - generic [ref=e63]: "02"
+          - generic [ref=e64]:
+            - strong [ref=e65]: EFE
+            - generic [ref=e66]: Entorno estratégico
+          - generic "Requiere revisión" [ref=e67]: "!"
+          - generic [ref=e68]: ›
+        - button "03 DAFO Cruces y relaciones Requiere revisión" [ref=e2309] [cursor=pointer]:
+          - generic [ref=e70]: "03"
+          - generic [ref=e71]:
+            - strong [ref=e72]: DAFO
+            - generic [ref=e73]: Cruces y relaciones
+          - generic "Requiere revisión" [ref=e2310]: "!"
+          - generic [ref=e75]: ›
+        - button "04 QSPM Selección estratégica Requiere revisión" [ref=e2311] [cursor=pointer]:
+          - generic [ref=e77]: "04"
+          - generic [ref=e78]:
+            - strong [ref=e79]: QSPM
+            - generic [ref=e80]: Selección estratégica
+          - generic "Requiere revisión" [ref=e2312]: "!"
+          - generic [ref=e82]: ›
+        - button "05 CAME Plan de acción Requiere revisión" [ref=e2313] [cursor=pointer]:
+          - generic [ref=e84]: "05"
+          - generic [ref=e85]:
+            - strong [ref=e86]: CAME
+            - generic [ref=e87]: Plan de acción
+          - generic "Requiere revisión" [ref=e2314]: "!"
+          - generic [ref=e89]: ›
+      - generic [ref=e90]:
+        - generic [ref=e91]: Cadena de trazabilidad
+        - strong [ref=e92]: D-08 → DO → EST-DO-01
+        - generic [ref=e93]: → ACC-D-08
+      - generic [ref=e94]:
+        - button "Nueva investigación" [ref=e95] [cursor=pointer]:
+          - generic [ref=e96]: +
+          - text: Nueva investigación
+        - button "Abrir investigación" [ref=e97] [cursor=pointer]:
+          - generic [ref=e98]: ▦
+          - text: Abrir investigación
+        - button "Cargar demostrativo" [ref=e99] [cursor=pointer]:
+          - generic [ref=e100]: ↺
+          - text: Cargar demostrativo
+        - button "Limpiar análisis" [ref=e101] [cursor=pointer]
+    - main [ref=e102]:
+      - generic [ref=e2687]:
+        - generic [ref=e2688]:
+          - paragraph [ref=e2689]: Selección / 04
+          - heading "QSPM" [level=2] [ref=e2690]
+          - paragraph [ref=e2691]: La matriz cuantitativa compara alternativas. AS es el atractivo relativo; TAS es el producto entre peso normalizado y AS.
+        - generic [ref=e2692]: 6/6 completas
+      - generic [ref=e2693]:
+        - article [ref=e2694]:
+          - button "DO EST-DO-01 Alternativa 01 Añada una descripción operativa. TAS 0.00 0/0 factores" [active] [ref=e2695] [cursor=pointer]:
+            - generic [ref=e2696]:
+              - generic [ref=e2697]: DO
+              - code [ref=e2698]: EST-DO-01
+            - heading "Alternativa 01" [level=3] [ref=e2699]
+            - paragraph [ref=e2700]: Añada una descripción operativa.
+            - generic [ref=e2701]:
+              - strong [ref=e2702]: TAS 0.00
+              - generic [ref=e2703]: 0/0 factores
+          - group [ref=e2704]:
+            - generic "Editar alternativa" [ref=e2705]
+            - option "FO · Ofensiva"
+            - option "DO · Adaptativa" [selected]
+            - option "FA · Defensiva"
+            - option "DA · Supervivencia"
+        - article [ref=e2706]:
+          - button "DO EST-DO-02 Alternativa 02 Añada una descripción operativa. TAS 0.00 0/0 factores" [ref=e2707] [cursor=pointer]:
+            - generic [ref=e2708]:
+              - generic [ref=e2709]: DO
+              - code [ref=e2710]: EST-DO-02
+            - heading "Alternativa 02" [level=3] [ref=e2711]
+            - paragraph [ref=e2712]: Añada una descripción operativa.
+            - generic [ref=e2713]:
+              - strong [ref=e2714]: TAS 0.00
+              - generic [ref=e2715]: 0/0 factores
+          - group [ref=e2716]:
+            - generic "Editar alternativa" [ref=e2717]
+            - option "FO · Ofensiva"
+            - option "DO · Adaptativa" [selected]
+            - option "FA · Defensiva"
+            - option "DA · Supervivencia"
+        - article [ref=e2718]:
+          - button "FA EST-FA-01 Alternativa 03 Añada una descripción operativa. TAS 0.00 0/0 factores" [ref=e2719] [cursor=pointer]:
+            - generic [ref=e2720]:
+              - generic [ref=e2721]: FA
+              - code [ref=e2722]: EST-FA-01
+            - heading "Alternativa 03" [level=3] [ref=e2723]
+            - paragraph [ref=e2724]: Añada una descripción operativa.
+            - generic [ref=e2725]:
+              - strong [ref=e2726]: TAS 0.00
+              - generic [ref=e2727]: 0/0 factores
+          - group [ref=e2728]:
+            - generic "Editar alternativa" [ref=e2729]
+            - option "FO · Ofensiva"
+            - option "DO · Adaptativa"
+            - option "FA · Defensiva" [selected]
+            - option "DA · Supervivencia"
+        - article [ref=e2730]:
+          - button "DO EST-DO-03 Alternativa 04 Añada una descripción operativa. TAS 0.00 0/0 factores" [ref=e2731] [cursor=pointer]:
+            - generic [ref=e2732]:
+              - generic [ref=e2733]: DO
+              - code [ref=e2734]: EST-DO-03
+            - heading "Alternativa 04" [level=3] [ref=e2735]
+            - paragraph [ref=e2736]: Añada una descripción operativa.
+            - generic [ref=e2737]:
+              - strong [ref=e2738]: TAS 0.00
+              - generic [ref=e2739]: 0/0 factores
+          - group [ref=e2740]:
+            - generic "Editar alternativa" [ref=e2741]
+            - option "FO · Ofensiva"
+            - option "DO · Adaptativa" [selected]
+            - option "FA · Defensiva"
+            - option "DA · Supervivencia"
+        - article [ref=e2742]:
+          - button "DA EST-DA-01 Alternativa 05 Añada una descripción operativa. TAS 0.00 0/0 factores" [ref=e2743] [cursor=pointer]:
+            - generic [ref=e2744]:
+              - generic [ref=e2745]: DA
+              - code [ref=e2746]: EST-DA-01
+            - heading "Alternativa 05" [level=3] [ref=e2747]
+            - paragraph [ref=e2748]: Añada una descripción operativa.
+            - generic [ref=e2749]:
+              - strong [ref=e2750]: TAS 0.00
+              - generic [ref=e2751]: 0/0 factores
+          - group [ref=e2752]:
+            - generic "Editar alternativa" [ref=e2753]
+            - option "FO · Ofensiva"
+            - option "DO · Adaptativa"
+            - option "FA · Defensiva"
+            - option "DA · Supervivencia" [selected]
+        - article [ref=e2754]:
+          - button "FO EST-FO-01 Alternativa 06 Añada una descripción operativa. TAS 0.00 0/0 factores" [ref=e2755] [cursor=pointer]:
+            - generic [ref=e2756]:
+              - generic [ref=e2757]: FO
+              - code [ref=e2758]: EST-FO-01
+            - heading "Alternativa 06" [level=3] [ref=e2759]
+            - paragraph [ref=e2760]: Añada una descripción operativa.
+            - generic [ref=e2761]:
+              - strong [ref=e2762]: TAS 0.00
+              - generic [ref=e2763]: 0/0 factores
+          - group [ref=e2764]:
+            - generic "Editar alternativa" [ref=e2765]
+            - option "FO · Ofensiva" [selected]
+            - option "DO · Adaptativa"
+            - option "FA · Defensiva"
+            - option "DA · Supervivencia"
+      - generic [ref=e2766]:
+        - generic [ref=e2767]:
+          - generic [ref=e2768]:
+            - paragraph [ref=e2769]: Comparación completa
+            - heading "120 puntuaciones de atractivo" [level=3] [ref=e2770]
+          - generic [ref=e2771]: Todos los factores del caso están incluidos
+        - table [ref=e2773]:
+          - rowgroup [ref=e2774]:
+            - row [ref=e2775]:
+              - columnheader "Factor" [ref=e2776]
+              - columnheader "Peso QSPM" [ref=e2777]
+              - columnheader "EST-DO-01 AS / TAS" [ref=e2778]: EST-DO-01AS / TAS
+              - columnheader "EST-DO-02 AS / TAS" [ref=e2779]: EST-DO-02AS / TAS
+              - columnheader "EST-FA-01 AS / TAS" [ref=e2780]: EST-FA-01AS / TAS
+              - columnheader "EST-DO-03 AS / TAS" [ref=e2781]: EST-DO-03AS / TAS
+              - columnheader "EST-DA-01 AS / TAS" [ref=e2782]: EST-DA-01AS / TAS
+              - columnheader "EST-FO-01 AS / TAS" [ref=e2783]: EST-FO-01AS / TAS
+          - rowgroup
+          - rowgroup [ref=e2784]:
+            - row [ref=e2785]:
+              - cell "TAS total" [ref=e2786]
+              - cell "0.00" [ref=e2787]
+              - cell "0.00" [ref=e2788]
+              - cell "0.00" [ref=e2789]
+              - cell "0.00" [ref=e2790]
+              - cell "0.00" [ref=e2791]
+              - cell "0.00" [ref=e2792]
+      - generic [ref=e2793]:
+        - generic [ref=e2794]: "!"
+        - list [ref=e2795]:
+          - listitem [ref=e2796]: Existe un empate entre las primeras alternativas.
+      - generic [ref=e2797]:
+        - generic [ref=e2798]:
+          - generic [ref=e2799]:
+            - paragraph [ref=e2800]: Ranking QSPM
+            - heading "Orden de atractivo total" [level=3] [ref=e2801]
+          - generic [ref=e2802]: Empate en primer lugar
+        - list [ref=e2803]:
+          - listitem [ref=e2804]:
+            - text: "1"
+            - code [ref=e2805]: EST-DO-01
+            - strong [ref=e2806]: Alternativa 01
+            - text: 0.00Completa
+          - listitem [ref=e2807]:
+            - text: "2"
+            - code [ref=e2808]: EST-DO-02
+            - strong [ref=e2809]: Alternativa 02
+            - text: 0.00Completa
+          - listitem [ref=e2810]:
+            - text: "3"
+            - code [ref=e2811]: EST-FA-01
+            - strong [ref=e2812]: Alternativa 03
+            - text: 0.00Completa
+          - listitem [ref=e2813]:
+            - text: "4"
+            - code [ref=e2814]: EST-DO-03
+            - strong [ref=e2815]: Alternativa 04
+            - text: 0.00Completa
+          - listitem [ref=e2816]:
+            - text: "5"
+            - code [ref=e2817]: EST-DA-01
+            - strong [ref=e2818]: Alternativa 05
+            - text: 0.00Completa
+          - listitem [ref=e2819]:
+            - text: "6"
+            - code [ref=e2820]: EST-FO-01
+            - strong [ref=e2821]: Alternativa 06
+            - text: 0.00Completa
+      - generic [ref=e2822]:
+        - generic [ref=e2823]:
+          - paragraph [ref=e2824]: Decisión documentada
+          - heading "Alternativa seleccionada" [level=3] [ref=e2825]
+          - paragraph [ref=e2826]: El ranking orienta; la selección requiere criterio y justificación del equipo.
+        - generic [ref=e2827]:
+          - combobox [ref=e2828]:
+            - option "Seleccione una alternativa"
+            - option "EST-DO-01 · Alternativa 01" [selected]
+            - option "EST-DO-02 · Alternativa 02"
+            - option "EST-FA-01 · Alternativa 03"
+            - option "EST-DO-03 · Alternativa 04"
+            - option "EST-DA-01 · Alternativa 05"
+            - option "EST-FO-01 · Alternativa 06"
+          - textbox "Justifique la selección..." [ref=e2829]
+          - button "Confirmar selección" [ref=e2830] [cursor=pointer]
+      - generic [ref=e2831]:
+        - strong [ref=e2832]: EST-DO-01
+        - generic [ref=e2833]: Alternativa 01
+  - status [ref=e2360]: Nueva investigación creada como borrador.

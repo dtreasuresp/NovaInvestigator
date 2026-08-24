@@ -1,0 +1,206 @@
+- generic [ref=e3]:
+  - banner [ref=e4]:
+    - generic [ref=e5]:
+      - generic [ref=e6]: E
+      - generic [ref=e7]:
+        - paragraph [ref=e8]: Mesa de evidencia estratégica
+        - heading "EFI / EFE / DAFO / QSPM / CAME" [level=1] [ref=e9]
+    - generic [ref=e10]:
+      - generic [ref=e11]: en análisis
+      - button "Investigaciones" [ref=e13] [cursor=pointer]:
+        - generic [ref=e14]: ▦
+        - text: Investigaciones
+      - button "Nueva" [ref=e15] [cursor=pointer]:
+        - generic [ref=e16]: +
+        - text: Nueva
+      - button "Guía" [ref=e17] [cursor=pointer]:
+        - generic [ref=e18]: "?"
+        - text: Guía
+      - button "Exportar PDF" [ref=e19] [cursor=pointer]:
+        - generic [ref=e20]: ↓
+        - text: Exportar PDF
+  - generic [ref=e21]:
+    - complementary [ref=e22]:
+      - generic [ref=e23]:
+        - paragraph [ref=e24]: Caso activo
+        - heading "Entidad por definir" [level=2] [ref=e2302]
+        - paragraph [ref=e26]: Unidad de análisis pendiente
+        - generic [ref=e27]: INV-157200
+        - generic [ref=e28]: en análisis · guardado local
+      - region "Estado de validación" [ref=e29]:
+        - generic [ref=e30]:
+          - text: Control de calidad
+          - strong [ref=e31]: 57 revisiones pendientes
+        - generic [ref=e32]:
+          - button "ContextoRequiere revisión" [ref=e2303] [cursor=pointer]: Contexto!
+          - button "EFIRequiere revisión" [ref=e34] [cursor=pointer]: EFI!
+          - button "EFERequiere revisión" [ref=e35] [cursor=pointer]: EFE!
+          - button "DAFORequiere revisión" [ref=e2304] [cursor=pointer]: DAFO!
+          - button "QSPMRequiere revisión" [ref=e2305] [cursor=pointer]: QSPM!
+          - button "CAMERequiere revisión" [ref=e2306] [cursor=pointer]: CAME!
+        - paragraph [ref=e39]: "Primera revisión: Falta completar: Organización."
+      - navigation "Etapas del análisis" [ref=e40]:
+        - button "00 Contexto Entidad y propósito Requiere revisión" [ref=e2307] [cursor=pointer]:
+          - generic [ref=e42]: "00"
+          - generic [ref=e43]:
+            - strong [ref=e44]: Contexto
+            - generic [ref=e45]: Entidad y propósito
+          - generic "Requiere revisión" [ref=e2308]: "!"
+          - generic [ref=e47]: ›
+        - button "00 Resumen Lectura ejecutiva Requiere revisión" [ref=e48] [cursor=pointer]:
+          - generic [ref=e49]: "00"
+          - generic [ref=e50]:
+            - strong [ref=e51]: Resumen
+            - generic [ref=e52]: Lectura ejecutiva
+          - generic "Requiere revisión" [ref=e53]: "!"
+          - generic [ref=e54]: ›
+        - button "01 EFI Factores internos Requiere revisión" [ref=e55] [cursor=pointer]:
+          - generic [ref=e56]: "01"
+          - generic [ref=e57]:
+            - strong [ref=e58]: EFI
+            - generic [ref=e59]: Factores internos
+          - generic "Requiere revisión" [ref=e60]: "!"
+          - generic [ref=e61]: ›
+        - button "02 EFE Entorno estratégico Requiere revisión" [ref=e62] [cursor=pointer]:
+          - generic [ref=e63]: "02"
+          - generic [ref=e64]:
+            - strong [ref=e65]: EFE
+            - generic [ref=e66]: Entorno estratégico
+          - generic "Requiere revisión" [ref=e67]: "!"
+          - generic [ref=e68]: ›
+        - button "03 DAFO Cruces y relaciones Requiere revisión" [ref=e2309] [cursor=pointer]:
+          - generic [ref=e70]: "03"
+          - generic [ref=e71]:
+            - strong [ref=e72]: DAFO
+            - generic [ref=e73]: Cruces y relaciones
+          - generic "Requiere revisión" [ref=e2310]: "!"
+          - generic [ref=e75]: ›
+        - button "04 QSPM Selección estratégica Requiere revisión" [ref=e2311] [cursor=pointer]:
+          - generic [ref=e77]: "04"
+          - generic [ref=e78]:
+            - strong [ref=e79]: QSPM
+            - generic [ref=e80]: Selección estratégica
+          - generic "Requiere revisión" [ref=e2312]: "!"
+          - generic [ref=e82]: ›
+        - button "05 CAME Plan de acción Requiere revisión" [active] [ref=e2313] [cursor=pointer]:
+          - generic [ref=e84]: "05"
+          - generic [ref=e85]:
+            - strong [ref=e86]: CAME
+            - generic [ref=e87]: Plan de acción
+          - generic "Requiere revisión" [ref=e2314]: "!"
+          - generic [ref=e89]: ›
+      - generic [ref=e90]:
+        - generic [ref=e91]: Cadena de trazabilidad
+        - strong [ref=e92]: D-08 → DO → EST-DO-01
+        - generic [ref=e93]: → ACC-D-08
+      - generic [ref=e94]:
+        - button "Nueva investigación" [ref=e95] [cursor=pointer]:
+          - generic [ref=e96]: +
+          - text: Nueva investigación
+        - button "Abrir investigación" [ref=e97] [cursor=pointer]:
+          - generic [ref=e98]: ▦
+          - text: Abrir investigación
+        - button "Cargar demostrativo" [ref=e99] [cursor=pointer]:
+          - generic [ref=e100]: ↺
+          - text: Cargar demostrativo
+        - button "Limpiar análisis" [ref=e101] [cursor=pointer]
+    - main [ref=e102]:
+      - generic [ref=e2869]:
+        - generic [ref=e2870]:
+          - paragraph [ref=e2871]: Acción / 05
+          - heading "CAME operativo" [level=2] [ref=e2872]
+          - paragraph [ref=e2873]: Cada factor se convierte en una ficha con responsable, indicador, meta y prioridad multicriterio.
+        - generic [ref=e2874]: 0 fichas
+      - generic [ref=e2875]:
+        - generic [ref=e2876]:
+          - paragraph [ref=e2877]: Configuración de prioridad
+          - heading "Cinco criterios ponderados" [level=3] [ref=e2878]
+          - paragraph [ref=e2879]: La suma de pesos debe ser 1.00. La prioridad se expresa entre 0 y 1.
+        - generic [ref=e2880]:
+          - generic [ref=e2881]:
+            - generic [ref=e2882]: Impacto sobre el problema
+            - spinbutton "Impacto sobre el problema" [ref=e2883]: "0.2"
+          - generic [ref=e2884]:
+            - generic [ref=e2885]: Urgencia
+            - spinbutton "Urgencia" [ref=e2886]: "0.2"
+          - generic [ref=e2887]:
+            - generic [ref=e2888]: Severidad o evidencia
+            - spinbutton "Severidad o evidencia" [ref=e2889]: "0.2"
+          - generic [ref=e2890]:
+            - generic [ref=e2891]: Alineación estratégica
+            - spinbutton "Alineación estratégica" [ref=e2892]: "0.2"
+          - generic [ref=e2893]:
+            - generic [ref=e2894]: Factibilidad
+            - spinbutton "Factibilidad" [ref=e2895]: "0.2"
+        - strong [ref=e2896]: "Suma: 1.00"
+      - generic [ref=e2897]:
+        - generic [ref=e2898]:
+          - paragraph [ref=e2899]: Ficha transaccional
+          - heading "Editar una acción sin perder el contexto" [level=3] [ref=e2900]
+          - paragraph [ref=e2901]: El borrador se guarda sólo al confirmar; cancelar descarta todos los cambios de esta ficha.
+        - generic [ref=e2902]:
+          - generic [ref=e2903]:
+            - text: Ficha seleccionada
+            - combobox "Ficha seleccionada" [ref=e2904]
+          - button "Abrir ficha" [disabled] [ref=e2905] [cursor=pointer]
+      - generic [ref=e2906]:
+        - generic [ref=e2907]:
+          - generic [ref=e2908]: C
+          - strong [ref=e2909]: Corregir
+          - generic [ref=e2910]: 0 acciones
+        - generic [ref=e2911]:
+          - generic [ref=e2912]: A
+          - strong [ref=e2913]: Afrontar
+          - generic [ref=e2914]: 0 acciones
+        - generic [ref=e2915]:
+          - generic [ref=e2916]: M
+          - strong [ref=e2917]: Mantener
+          - generic [ref=e2918]: 0 acciones
+        - generic [ref=e2919]:
+          - generic [ref=e2920]: E
+          - strong [ref=e2921]: Explotar
+          - generic [ref=e2922]: 0 acciones
+      - generic [ref=e2923]:
+        - generic [ref=e2924]:
+          - generic [ref=e2925]:
+            - paragraph [ref=e2926]: Distribución de prioridades
+            - heading "Peso acumulado por tipo CAME" [level=3] [ref=e2927]
+          - generic [ref=e2928]: Suma de prioridades normalizadas
+        - generic [ref=e2929]:
+          - generic [ref=e2931]:
+            - generic [ref=e2932]: C
+            - strong [ref=e2933]: Corregir
+            - text: "0.00"
+          - generic [ref=e2937]:
+            - generic [ref=e2938]: A
+            - strong [ref=e2939]: Afrontar
+            - text: "0.00"
+          - generic [ref=e2943]:
+            - generic [ref=e2944]: M
+            - strong [ref=e2945]: Mantener
+            - text: "0.00"
+          - generic [ref=e2949]:
+            - generic [ref=e2950]: E
+            - strong [ref=e2951]: Explotar
+            - text: "0.00"
+      - generic [ref=e2955]:
+        - generic [ref=e2956]:
+          - paragraph [ref=e2957]: Primeras prioridades
+          - heading "Acciones que abren el plan" [level=3] [ref=e2958]
+        - generic [ref=e2959]: Ordenadas por prioridad
+      - generic [ref=e2960]:
+        - generic [ref=e2961]:
+          - generic [ref=e2962]:
+            - paragraph [ref=e2963]: Fichas operativas
+            - heading "20 acciones demostrativas" [level=3] [ref=e2964]
+          - generic [ref=e2965]: Expandir para revisar trazabilidad
+        - table [ref=e2967]:
+          - rowgroup [ref=e2968]:
+            - row [ref=e2969]:
+              - columnheader "Ficha" [ref=e2970]
+              - columnheader "Factor / acción" [ref=e2971]
+              - columnheader "Prioridad" [ref=e2972]
+              - columnheader "Estado" [ref=e2973]
+              - columnheader "Detalle operativo" [ref=e2974]
+          - rowgroup
+  - status [ref=e2360]: Nueva investigación creada como borrador.

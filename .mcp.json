@@ -1,0 +1,18 @@
+{
+  "mcpServers": {
+    "supabase": {
+      "command": "npx",
+      "args": ["-y", "mcp-remote", "https://mcp.supabase.com/mcp?project_ref=dryfaojqsamcnpgjacxn"]
+    },
+    "TestSprite": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@testsprite/testsprite-mcp@latest"
+      ],
+      "env": {
+        "API_KEY": "sk-user-zfPYncSWuR1bF-206a7PNz1vEpTbvVGknwDwmec5T1vVwd5I1PRkIfW2ENIOygZ-StjoIeh33zOgpNU4759He13NDBpM0CxKd9sRH4eIrWm_5RaPncnpGTvc1lrhr0z3Ufg"
+      }
+    }
+  }
+}

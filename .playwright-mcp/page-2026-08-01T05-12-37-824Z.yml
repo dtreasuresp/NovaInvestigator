@@ -1,0 +1,158 @@
+- generic [ref=e3]:
+  - banner [ref=e4]:
+    - generic [ref=e5]:
+      - generic [ref=e6]: E
+      - generic [ref=e7]:
+        - paragraph [ref=e8]: Mesa de evidencia estratégica
+        - heading "EFI / EFE / DAFO / QSPM / CAME" [level=1] [ref=e9]
+    - generic [ref=e10]:
+      - generic [ref=e11]: nueva
+      - button "Investigaciones" [ref=e13] [cursor=pointer]:
+        - generic [ref=e14]: ▦
+        - text: Investigaciones
+      - button "Nueva" [active] [ref=e15] [cursor=pointer]:
+        - generic [ref=e16]: +
+        - text: Nueva
+      - button "Guía" [ref=e17] [cursor=pointer]:
+        - generic [ref=e18]: "?"
+        - text: Guía
+      - button "Exportar PDF" [ref=e19] [cursor=pointer]:
+        - generic [ref=e20]: ↓
+        - text: Exportar PDF
+  - generic [ref=e21]:
+    - complementary [ref=e22]:
+      - generic [ref=e23]:
+        - paragraph [ref=e24]: Caso activo
+        - heading "Entidad por definir" [level=2] [ref=e2302]
+        - paragraph [ref=e26]: Unidad de análisis pendiente
+        - generic [ref=e27]: INV-157200
+        - generic [ref=e28]: nueva · guardado local
+      - region "Estado de validación" [ref=e29]:
+        - generic [ref=e30]:
+          - text: Control de calidad
+          - strong [ref=e31]: 58 revisiones pendientes
+        - generic [ref=e32]:
+          - button "ContextoRequiere revisión" [ref=e2303] [cursor=pointer]: Contexto!
+          - button "EFIRequiere revisión" [ref=e34] [cursor=pointer]: EFI!
+          - button "EFERequiere revisión" [ref=e35] [cursor=pointer]: EFE!
+          - button "DAFORequiere revisión" [ref=e2304] [cursor=pointer]: DAFO!
+          - button "QSPMRequiere revisión" [ref=e2305] [cursor=pointer]: QSPM!
+          - button "CAMERequiere revisión" [ref=e2306] [cursor=pointer]: CAME!
+        - paragraph [ref=e39]: "Primera revisión: Falta completar: Organización."
+      - navigation "Etapas del análisis" [ref=e40]:
+        - button "00 Contexto Entidad y propósito Requiere revisión" [ref=e2307] [cursor=pointer]:
+          - generic [ref=e42]: "00"
+          - generic [ref=e43]:
+            - strong [ref=e44]: Contexto
+            - generic [ref=e45]: Entidad y propósito
+          - generic "Requiere revisión" [ref=e2308]: "!"
+          - generic [ref=e47]: ›
+        - button "00 Resumen Lectura ejecutiva Requiere revisión" [ref=e48] [cursor=pointer]:
+          - generic [ref=e49]: "00"
+          - generic [ref=e50]:
+            - strong [ref=e51]: Resumen
+            - generic [ref=e52]: Lectura ejecutiva
+          - generic "Requiere revisión" [ref=e53]: "!"
+          - generic [ref=e54]: ›
+        - button "01 EFI Factores internos Requiere revisión" [ref=e55] [cursor=pointer]:
+          - generic [ref=e56]: "01"
+          - generic [ref=e57]:
+            - strong [ref=e58]: EFI
+            - generic [ref=e59]: Factores internos
+          - generic "Requiere revisión" [ref=e60]: "!"
+          - generic [ref=e61]: ›
+        - button "02 EFE Entorno estratégico Requiere revisión" [ref=e62] [cursor=pointer]:
+          - generic [ref=e63]: "02"
+          - generic [ref=e64]:
+            - strong [ref=e65]: EFE
+            - generic [ref=e66]: Entorno estratégico
+          - generic "Requiere revisión" [ref=e67]: "!"
+          - generic [ref=e68]: ›
+        - button "03 DAFO Cruces y relaciones Requiere revisión" [ref=e2309] [cursor=pointer]:
+          - generic [ref=e70]: "03"
+          - generic [ref=e71]:
+            - strong [ref=e72]: DAFO
+            - generic [ref=e73]: Cruces y relaciones
+          - generic "Requiere revisión" [ref=e2310]: "!"
+          - generic [ref=e75]: ›
+        - button "04 QSPM Selección estratégica Requiere revisión" [ref=e2311] [cursor=pointer]:
+          - generic [ref=e77]: "04"
+          - generic [ref=e78]:
+            - strong [ref=e79]: QSPM
+            - generic [ref=e80]: Selección estratégica
+          - generic "Requiere revisión" [ref=e2312]: "!"
+          - generic [ref=e82]: ›
+        - button "05 CAME Plan de acción Requiere revisión" [ref=e2313] [cursor=pointer]:
+          - generic [ref=e84]: "05"
+          - generic [ref=e85]:
+            - strong [ref=e86]: CAME
+            - generic [ref=e87]: Plan de acción
+          - generic "Requiere revisión" [ref=e2314]: "!"
+          - generic [ref=e89]: ›
+      - generic [ref=e90]:
+        - generic [ref=e91]: Cadena de trazabilidad
+        - strong [ref=e92]: D-08 → DO → EST-DO-01
+        - generic [ref=e93]: → ACC-D-08
+      - generic [ref=e94]:
+        - button "Nueva investigación" [ref=e95] [cursor=pointer]:
+          - generic [ref=e96]: +
+          - text: Nueva investigación
+        - button "Abrir investigación" [ref=e97] [cursor=pointer]:
+          - generic [ref=e98]: ▦
+          - text: Abrir investigación
+        - button "Cargar demostrativo" [ref=e99] [cursor=pointer]:
+          - generic [ref=e100]: ↺
+          - text: Cargar demostrativo
+        - button "Limpiar análisis" [ref=e101] [cursor=pointer]
+    - main [ref=e102]:
+      - generic [ref=e2315]:
+        - generic [ref=e2316]:
+          - paragraph [ref=e2317]: Expediente / 00
+          - heading "Contexto de la investigación" [level=2] [ref=e2318]
+          - paragraph [ref=e2319]: Identifique el caso antes de ponderar factores. Esta ficha acompaña el análisis y se conserva con el informe exportado.
+        - generic [ref=e2320]: nueva
+      - generic [ref=e2321]:
+        - generic [ref=e2322]:
+          - generic [ref=e2323]:
+            - paragraph [ref=e2324]: Ficha del expediente
+            - heading "Qué se está evaluando" [level=3] [ref=e2325]
+          - generic [ref=e2326]: INV-157200
+        - generic [ref=e2327]:
+          - generic [ref=e2328]:
+            - generic [ref=e2329]: Título de la investigación
+            - textbox "Título de la investigación" [ref=e2330]: Nueva investigación estratégica
+          - generic [ref=e2331]:
+            - generic [ref=e2332]: Organización
+            - textbox "Organización" [ref=e2333]
+          - generic [ref=e2334]:
+            - generic [ref=e2335]: Unidad analizada
+            - textbox "Unidad analizada" [ref=e2336]
+          - generic [ref=e2337]:
+            - generic [ref=e2338]: Autor o equipo
+            - textbox "Autor o equipo" [ref=e2339]
+          - generic [ref=e2340]:
+            - generic [ref=e2341]: Fecha de evaluación
+            - textbox "Fecha de evaluación" [ref=e2342]: 2026-08-01
+          - generic [ref=e2343]:
+            - generic [ref=e2344]: Versión metodológica
+            - textbox "Versión metodológica" [ref=e2345]: "2.0"
+          - generic [ref=e2346]:
+            - generic [ref=e2347]: Problema central
+            - textbox "Problema central" [ref=e2348]:
+              - /placeholder: ¿Qué situación requiere una lectura estratégica?
+          - generic [ref=e2349]:
+            - generic [ref=e2350]: Objetivo del análisis
+            - textbox "Objetivo del análisis" [ref=e2351]:
+              - /placeholder: ¿Qué decisión o mejora debe apoyar este estudio?
+          - generic [ref=e2352]:
+            - generic [ref=e2353]: Supuestos y observaciones
+            - textbox "Supuestos y observaciones" [ref=e2354]:
+              - /placeholder: Registre límites, fuentes, supuestos y notas de trabajo.
+        - generic [ref=e2355]:
+          - generic [ref=e2356]:
+            - strong [ref=e2357]: Guardado local
+            - text: · última actualización 1/8/2026, 1:12:37 a.m.
+          - button "Continuar a factores" [ref=e2358] [cursor=pointer]:
+            - text: Continuar a factores
+            - generic [ref=e2359]: →
+  - status [ref=e2360]: Nueva investigación creada como borrador.

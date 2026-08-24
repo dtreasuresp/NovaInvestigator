@@ -1,0 +1,236 @@
+- generic [active] [ref=f1e1]:
+  - banner [ref=f1e2]:
+    - heading "Análisis Estratégico EFI/EFE/DAFO/CAME" [level=1] [ref=f1e4]
+    - button "Cómo usar" [ref=f1e6] [cursor=pointer]
+  - generic [ref=f1e7]:
+    - generic [ref=f1e8]:
+      - heading "Proceso de Análisis Estratégico" [level=3] [ref=f1e9]
+      - generic [ref=f1e10]:
+        - generic [ref=f1e11]:
+          - generic [ref=f1e12]: "1"
+          - generic [ref=f1e13]: EFI
+          - generic [ref=f1e14]: Factores Internos
+        - generic [ref=f1e15]: →
+        - generic [ref=f1e16]:
+          - generic [ref=f1e17]: "2"
+          - generic [ref=f1e18]: EFE
+          - generic [ref=f1e19]: Factores Externos
+        - generic [ref=f1e20]: →
+        - generic [ref=f1e21]:
+          - generic [ref=f1e22]: "3"
+          - generic [ref=f1e23]: DAFO
+          - generic [ref=f1e24]: Análisis Cruzado
+        - generic [ref=f1e25]: →
+        - generic [ref=f1e26]:
+          - generic [ref=f1e27]: "4"
+          - generic [ref=f1e28]: CAME
+          - generic [ref=f1e29]: Plan de Acción
+    - generic [ref=f1e30]:
+      - 'heading "Paso 1: Matriz EFI (Evaluación de Factores Internos)" [level=2] [ref=f1e31]'
+      - paragraph [ref=f1e32]:
+        - text: Evalúa fortalezas y debilidades internas.
+        - strong [ref=f1e33]: "Calificación:"
+        - text: 1=Debilidad mayor, 2=Debilidad menor, 3=Fortaleza menor, 4=Fortaleza mayor
+      - table [ref=f1e35]:
+        - rowgroup [ref=f1e36]:
+          - row [ref=f1e37]:
+            - columnheader "#" [ref=f1e38]
+            - columnheader "Factor Interno" [ref=f1e39]
+            - columnheader "Tipo" [ref=f1e40]
+            - columnheader "Ponderación" [ref=f1e41]
+            - columnheader "Calificación (1-4)" [ref=f1e42]
+            - columnheader "Puntaje" [ref=f1e43]
+        - rowgroup [ref=f1e44]:
+          - row [ref=f1e45]:
+            - cell "1" [ref=f1e46]
+            - cell [ref=f1e47]:
+              - textbox [ref=f1e48]: Voluntad de la alta dirección
+            - cell "F (Fortaleza)" [ref=f1e49]:
+              - combobox [ref=f1e50]:
+                - option "F (Fortaleza)" [selected]
+                - option "D (Debilidad)"
+            - cell [ref=f1e51]:
+              - spinbutton "0.00" [ref=f1e52]
+            - cell "1 - Debilidad mayor" [ref=f1e53]:
+              - combobox [ref=f1e54]:
+                - option "1 - Debilidad mayor" [selected]
+                - option "2 - Debilidad menor"
+                - option "3 - Fortaleza menor"
+                - option "4 - Fortaleza mayor"
+            - cell "-" [ref=f1e55]
+          - row [ref=f1e56]:
+            - cell "2" [ref=f1e57]
+            - cell [ref=f1e58]:
+              - textbox [ref=f1e59]: Marco legal empresarial
+            - cell "F (Fortaleza)" [ref=f1e60]:
+              - combobox [ref=f1e61]:
+                - option "F (Fortaleza)" [selected]
+                - option "D (Debilidad)"
+            - cell [ref=f1e62]:
+              - spinbutton "0.00" [ref=f1e63]
+            - cell "1 - Debilidad mayor" [ref=f1e64]:
+              - combobox [ref=f1e65]:
+                - option "1 - Debilidad mayor" [selected]
+                - option "2 - Debilidad menor"
+                - option "3 - Fortaleza menor"
+                - option "4 - Fortaleza mayor"
+            - cell "-" [ref=f1e66]
+          - row [ref=f1e67]:
+            - cell "3" [ref=f1e68]
+            - cell [ref=f1e69]:
+              - textbox [ref=f1e70]: Indicadores de gestión
+            - cell "F (Fortaleza)" [ref=f1e71]:
+              - combobox [ref=f1e72]:
+                - option "F (Fortaleza)" [selected]
+                - option "D (Debilidad)"
+            - cell [ref=f1e73]:
+              - spinbutton "0.00" [ref=f1e74]
+            - cell "1 - Debilidad mayor" [ref=f1e75]:
+              - combobox [ref=f1e76]:
+                - option "1 - Debilidad mayor" [selected]
+                - option "2 - Debilidad menor"
+                - option "3 - Fortaleza menor"
+                - option "4 - Fortaleza mayor"
+            - cell "-" [ref=f1e77]
+          - row [ref=f1e78]:
+            - cell "4" [ref=f1e79]
+            - cell [ref=f1e80]:
+              - textbox [ref=f1e81]: Uso de herramientas
+            - cell "F (Fortaleza)" [ref=f1e82]:
+              - combobox [ref=f1e83]:
+                - option "F (Fortaleza)" [selected]
+                - option "D (Debilidad)"
+            - cell [ref=f1e84]:
+              - spinbutton "0.00" [ref=f1e85]
+            - cell "1 - Debilidad mayor" [ref=f1e86]:
+              - combobox [ref=f1e87]:
+                - option "1 - Debilidad mayor" [selected]
+                - option "2 - Debilidad menor"
+                - option "3 - Fortaleza menor"
+                - option "4 - Fortaleza mayor"
+            - cell "-" [ref=f1e88]
+          - row [ref=f1e89]:
+            - cell "5" [ref=f1e90]
+            - cell [ref=f1e91]:
+              - textbox [ref=f1e92]: Profesionalidad de los cuadros
+            - cell "F (Fortaleza)" [ref=f1e93]:
+              - combobox [ref=f1e94]:
+                - option "F (Fortaleza)" [selected]
+                - option "D (Debilidad)"
+            - cell [ref=f1e95]:
+              - spinbutton "0.00" [ref=f1e96]
+            - cell "1 - Debilidad mayor" [ref=f1e97]:
+              - combobox [ref=f1e98]:
+                - option "1 - Debilidad mayor" [selected]
+                - option "2 - Debilidad menor"
+                - option "3 - Fortaleza menor"
+                - option "4 - Fortaleza mayor"
+            - cell "-" [ref=f1e99]
+          - row [ref=f1e100]:
+            - cell "6" [ref=f1e101]
+            - cell [ref=f1e102]:
+              - textbox [ref=f1e103]: Procesos burocráticos
+            - cell "D (Debilidad)" [ref=f1e104]:
+              - combobox [ref=f1e105]:
+                - option "F (Fortaleza)"
+                - option "D (Debilidad)" [selected]
+            - cell [ref=f1e106]:
+              - spinbutton "0.00" [ref=f1e107]
+            - cell "1 - Debilidad mayor" [ref=f1e108]:
+              - combobox [ref=f1e109]:
+                - option "1 - Debilidad mayor" [selected]
+                - option "2 - Debilidad menor"
+                - option "3 - Fortaleza menor"
+                - option "4 - Fortaleza mayor"
+            - cell "-" [ref=f1e110]
+          - row [ref=f1e111]:
+            - cell "7" [ref=f1e112]
+            - cell [ref=f1e113]:
+              - textbox [ref=f1e114]: Falta de automatización de procesos
+            - cell "D (Debilidad)" [ref=f1e115]:
+              - combobox [ref=f1e116]:
+                - option "F (Fortaleza)"
+                - option "D (Debilidad)" [selected]
+            - cell [ref=f1e117]:
+              - spinbutton "0.00" [ref=f1e118]
+            - cell "1 - Debilidad mayor" [ref=f1e119]:
+              - combobox [ref=f1e120]:
+                - option "1 - Debilidad mayor" [selected]
+                - option "2 - Debilidad menor"
+                - option "3 - Fortaleza menor"
+                - option "4 - Fortaleza mayor"
+            - cell "-" [ref=f1e121]
+          - row [ref=f1e122]:
+            - cell "8" [ref=f1e123]
+            - cell [ref=f1e124]:
+              - textbox [ref=f1e125]: Falta de integración de procesos
+            - cell "D (Debilidad)" [ref=f1e126]:
+              - combobox [ref=f1e127]:
+                - option "F (Fortaleza)"
+                - option "D (Debilidad)" [selected]
+            - cell [ref=f1e128]:
+              - spinbutton "0.00" [ref=f1e129]
+            - cell "1 - Debilidad mayor" [ref=f1e130]:
+              - combobox [ref=f1e131]:
+                - option "1 - Debilidad mayor" [selected]
+                - option "2 - Debilidad menor"
+                - option "3 - Fortaleza menor"
+                - option "4 - Fortaleza mayor"
+            - cell "-" [ref=f1e132]
+          - row [ref=f1e133]:
+            - cell "9" [ref=f1e134]
+            - cell [ref=f1e135]:
+              - textbox [ref=f1e136]: Falta de evaluación del impacto de la capacitación
+            - cell "D (Debilidad)" [ref=f1e137]:
+              - combobox [ref=f1e138]:
+                - option "F (Fortaleza)"
+                - option "D (Debilidad)" [selected]
+            - cell [ref=f1e139]:
+              - spinbutton "0.00" [ref=f1e140]
+            - cell "1 - Debilidad mayor" [ref=f1e141]:
+              - combobox [ref=f1e142]:
+                - option "1 - Debilidad mayor" [selected]
+                - option "2 - Debilidad menor"
+                - option "3 - Fortaleza menor"
+                - option "4 - Fortaleza mayor"
+            - cell "-" [ref=f1e143]
+          - row [ref=f1e144]:
+            - cell "10" [ref=f1e145]
+            - cell [ref=f1e146]:
+              - textbox [ref=f1e147]: Fluctuación de cuadros y reservas
+            - cell "D (Debilidad)" [ref=f1e148]:
+              - combobox [ref=f1e149]:
+                - option "F (Fortaleza)"
+                - option "D (Debilidad)" [selected]
+            - cell [ref=f1e150]:
+              - spinbutton "0.00" [ref=f1e151]
+            - cell "1 - Debilidad mayor" [ref=f1e152]:
+              - combobox [ref=f1e153]:
+                - option "1 - Debilidad mayor" [selected]
+                - option "2 - Debilidad menor"
+                - option "3 - Fortaleza menor"
+                - option "4 - Fortaleza mayor"
+            - cell "-" [ref=f1e154]
+        - rowgroup [ref=f1e155]:
+          - row [ref=f1e156]:
+            - cell [ref=f1e157]:
+              - strong [ref=f1e158]: TOTALES
+            - cell "0.00" [ref=f1e159]
+            - cell "-" [ref=f1e160]
+            - cell "0.00" [ref=f1e161]
+      - generic [ref=f1e162]:
+        - generic [ref=f1e163]:
+          - heading "Puntaje EFI" [level=4] [ref=f1e164]
+          - paragraph [ref=f1e165]: "0.00"
+          - paragraph [ref=f1e166]: ⚠ Debilidad interna predominante
+        - generic [ref=f1e167]:
+          - heading "Fortalezas Identificadas" [level=4] [ref=f1e168]
+          - list
+        - generic [ref=f1e169]:
+          - heading "Debilidades Identificadas" [level=4] [ref=f1e170]
+          - list
+  - generic [ref=f1e171]:
+    - button "Cargar Ejemplo" [ref=f1e172] [cursor=pointer]
+    - button "Limpiar" [ref=f1e173] [cursor=pointer]
+    - button "Calcular Análisis" [ref=f1e174] [cursor=pointer]
+  - text: • • • • • → → → → • • • • → → → → • • • • • • • • • • • • • • • • • • • • • • • • • • • • • → → → →

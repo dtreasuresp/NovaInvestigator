@@ -1,0 +1,846 @@
+- generic [ref=e3]:
+  - banner [ref=e4]:
+    - generic [ref=e5]:
+      - generic [ref=e6]: E
+      - generic [ref=e7]:
+        - paragraph [ref=e8]: Mesa de evidencia estratégica
+        - heading "EFI / EFE / DAFO / QSPM / CAME" [level=1] [ref=e9]
+    - generic [ref=e10]:
+      - generic [ref=e11]: borrador
+      - button "Investigaciones" [ref=e13] [cursor=pointer]:
+        - generic [ref=e14]: ▦
+        - text: Investigaciones
+      - button "Nueva" [ref=e15] [cursor=pointer]:
+        - generic [ref=e16]: +
+        - text: Nueva
+      - button "Guía" [ref=e17] [cursor=pointer]:
+        - generic [ref=e18]: "?"
+        - text: Guía
+      - button "Exportar PDF" [ref=e19] [cursor=pointer]:
+        - generic [ref=e20]: ↓
+        - text: Exportar PDF
+  - generic [ref=e21]:
+    - complementary [ref=e22]:
+      - generic [ref=e23]:
+        - paragraph [ref=e24]: Caso activo
+        - heading "ETECSA" [level=2] [ref=e2975]
+        - paragraph [ref=e26]: Sistema de Trabajo con los Cuadros y sus Reservas
+        - generic [ref=e27]: ETECSA-DEMO-01
+        - generic [ref=e28]: borrador · guardado local
+      - region "Estado de validación" [ref=e29]:
+        - generic [ref=e30]:
+          - text: Control de calidad
+          - strong [ref=e31]: 20 revisiones pendientes
+        - generic [ref=e32]:
+          - button "ContextoSin pendientes" [ref=e2976] [cursor=pointer]: ContextoOK
+          - button "EFIRequiere revisión" [ref=e34] [cursor=pointer]: EFI!
+          - button "EFERequiere revisión" [ref=e35] [cursor=pointer]: EFE!
+          - button "DAFOSin pendientes" [ref=e2977] [cursor=pointer]: DAFOOK
+          - button "QSPMSin pendientes" [ref=e2978] [cursor=pointer]: QSPMOK
+          - button "CAMESin pendientes" [ref=e2979] [cursor=pointer]: CAMEOK
+        - paragraph [ref=e39]: "Primera revisión: F-01: falta registrar evidencia o fuente."
+      - navigation "Etapas del análisis" [ref=e40]:
+        - button "00 Contexto Entidad y propósito Sin pendientes" [ref=e2980] [cursor=pointer]:
+          - generic [ref=e42]: "00"
+          - generic [ref=e43]:
+            - strong [ref=e44]: Contexto
+            - generic [ref=e45]: Entidad y propósito
+          - generic "Sin pendientes" [ref=e2981]: OK
+          - generic [ref=e47]: ›
+        - button "00 Resumen Lectura ejecutiva Requiere revisión" [ref=e48] [cursor=pointer]:
+          - generic [ref=e49]: "00"
+          - generic [ref=e50]:
+            - strong [ref=e51]: Resumen
+            - generic [ref=e52]: Lectura ejecutiva
+          - generic "Requiere revisión" [ref=e53]: "!"
+          - generic [ref=e54]: ›
+        - button "01 EFI Factores internos Requiere revisión" [ref=e55] [cursor=pointer]:
+          - generic [ref=e56]: "01"
+          - generic [ref=e57]:
+            - strong [ref=e58]: EFI
+            - generic [ref=e59]: Factores internos
+          - generic "Requiere revisión" [ref=e60]: "!"
+          - generic [ref=e61]: ›
+        - button "02 EFE Entorno estratégico Requiere revisión" [ref=e62] [cursor=pointer]:
+          - generic [ref=e63]: "02"
+          - generic [ref=e64]:
+            - strong [ref=e65]: EFE
+            - generic [ref=e66]: Entorno estratégico
+          - generic "Requiere revisión" [ref=e67]: "!"
+          - generic [ref=e68]: ›
+        - button "03 DAFO Cruces y relaciones Sin pendientes" [ref=e2982] [cursor=pointer]:
+          - generic [ref=e70]: "03"
+          - generic [ref=e71]:
+            - strong [ref=e72]: DAFO
+            - generic [ref=e73]: Cruces y relaciones
+          - generic "Sin pendientes" [ref=e2983]: OK
+          - generic [ref=e75]: ›
+        - button "04 QSPM Selección estratégica Sin pendientes" [ref=e2984] [cursor=pointer]:
+          - generic [ref=e77]: "04"
+          - generic [ref=e78]:
+            - strong [ref=e79]: QSPM
+            - generic [ref=e80]: Selección estratégica
+          - generic "Sin pendientes" [ref=e2985]: OK
+          - generic [ref=e82]: ›
+        - button "05 CAME Plan de acción Sin pendientes" [ref=e2986] [cursor=pointer]:
+          - generic [ref=e84]: "05"
+          - generic [ref=e85]:
+            - strong [ref=e86]: CAME
+            - generic [ref=e87]: Plan de acción
+          - generic "Sin pendientes" [ref=e2987]: OK
+          - generic [ref=e89]: ›
+      - generic [ref=e90]:
+        - generic [ref=e91]: Cadena de trazabilidad
+        - strong [ref=e92]: D-08 → DO → EST-DO-01
+        - generic [ref=e93]: → ACC-D-08
+      - generic [ref=e94]:
+        - button "Nueva investigación" [ref=e95] [cursor=pointer]:
+          - generic [ref=e96]: +
+          - text: Nueva investigación
+        - button "Abrir investigación" [ref=e97] [cursor=pointer]:
+          - generic [ref=e98]: ▦
+          - text: Abrir investigación
+        - button "Cargar demostrativo" [ref=e99] [cursor=pointer]:
+          - generic [ref=e100]: ↺
+          - text: Cargar demostrativo
+        - button "Limpiar análisis" [ref=e101] [cursor=pointer]
+    - main [ref=e102]:
+      - generic [ref=e3190]:
+        - generic [ref=e3191]:
+          - paragraph [ref=e3192]: Acción / 05
+          - heading "CAME operativo" [level=2] [ref=e3193]
+          - paragraph [ref=e3194]: Cada factor se convierte en una ficha con responsable, indicador, meta y prioridad multicriterio.
+        - generic [ref=e3195]: 20 fichas
+      - generic [ref=e3196]:
+        - generic [ref=e3197]:
+          - paragraph [ref=e3198]: Configuración de prioridad
+          - heading "Cinco criterios ponderados" [level=3] [ref=e3199]
+          - paragraph [ref=e3200]: La suma de pesos debe ser 1.00. La prioridad se expresa entre 0 y 1.
+        - generic [ref=e3201]:
+          - generic [ref=e3202]:
+            - generic [ref=e3203]: Impacto sobre el problema
+            - spinbutton "Impacto sobre el problema" [ref=e3204]: "0.2"
+          - generic [ref=e3205]:
+            - generic [ref=e3206]: Urgencia
+            - spinbutton "Urgencia" [ref=e3207]: "0.2"
+          - generic [ref=e3208]:
+            - generic [ref=e3209]: Severidad o evidencia
+            - spinbutton "Severidad o evidencia" [ref=e3210]: "0.2"
+          - generic [ref=e3211]:
+            - generic [ref=e3212]: Alineación estratégica
+            - spinbutton "Alineación estratégica" [ref=e3213]: "0.2"
+          - generic [ref=e3214]:
+            - generic [ref=e3215]: Factibilidad
+            - spinbutton "Factibilidad" [ref=e3216]: "0.2"
+        - strong [ref=e3217]: "Suma: 1.00"
+      - generic [ref=e3218]:
+        - generic [ref=e3219]:
+          - paragraph [ref=e3220]: Ficha transaccional
+          - heading "Editar una acción sin perder el contexto" [level=3] [ref=e3221]
+          - paragraph [ref=e3222]: El borrador se guarda sólo al confirmar; cancelar descarta todos los cambios de esta ficha.
+        - generic [ref=e3223]:
+          - generic [ref=e3224]:
+            - text: Ficha seleccionada
+            - combobox "Ficha seleccionada" [ref=e3225]:
+              - option "ACC-F-01 · Voluntad de la alta dirección" [selected]
+              - option "ACC-F-02 · Marco legal empresarial"
+              - option "ACC-F-03 · Indicadores de gestión"
+              - option "ACC-F-04 · Uso de herramientas"
+              - option "ACC-F-05 · Profesionalidad de los cuadros"
+              - option "ACC-D-06 · Procesos burocráticos"
+              - option "ACC-D-07 · Falta de automatización de procesos"
+              - option "ACC-D-08 · Falta de integración de procesos"
+              - option "ACC-D-09 · Falta de evaluación del impacto de la capacitación"
+              - option "ACC-D-10 · Fluctuación de cuadros y reservas"
+              - option "ACC-O-01 · Transformación digital"
+              - option "ACC-O-02 · Modernización del sector"
+              - option "ACC-O-03 · Uso de la Inteligencia Artificial"
+              - option "ACC-O-04 · Vínculo con la DCEG"
+              - option "ACC-O-05 · Marco legal de país"
+              - option "ACC-A-06 · Migración al extranjero"
+              - option "ACC-A-07 · Bloqueo del gobierno de EE. UU."
+              - option "ACC-A-08 · Situación económica y financiera"
+              - option "ACC-A-09 · Migración al sector privado"
+              - option "ACC-A-10 · Inestabilidad energética"
+          - button "Abrir ficha" [active] [ref=e3226] [cursor=pointer]
+        - dialog [ref=e3634]:
+          - generic [ref=e3635]:
+            - generic [ref=e3636]:
+              - paragraph [ref=e3637]: ACC-F-01 · M
+              - heading "Ficha de acción" [level=2] [ref=e3638]
+              - paragraph [ref=e3639]: Voluntad de la alta dirección
+            - button "Cerrar ficha" [ref=e3640] [cursor=pointer]: ×
+          - generic [ref=e3641]:
+            - generic [ref=e3642]:
+              - text: Acción
+              - textbox "Acción" [ref=e3643]: Mantener y transferir la capacidad asociada a voluntad de la alta dirección.
+            - generic [ref=e3644]:
+              - text: Objetivo
+              - textbox "Objetivo" [ref=e3645]: Consolidar la capacidad asociada a voluntad de la alta dirección.
+            - generic [ref=e3646]:
+              - text: Responsable
+              - textbox "Responsable" [ref=e3647]: Equipo de planificación estratégica
+            - generic [ref=e3648]:
+              - text: Participantes
+              - textbox "Participantes" [ref=e3649]: Cuadros de procesos, RR. HH. y dirección de la unidad
+            - generic [ref=e3650]:
+              - text: Indicador
+              - textbox "Indicador" [ref=e3651]: Cumplimiento del plan de mantenimiento de F-01
+            - generic [ref=e3652]:
+              - text: Línea base
+              - textbox "Línea base" [ref=e3653]: Diagnóstico inicial disponible
+            - generic [ref=e3654]:
+              - text: Meta
+              - textbox "Meta" [ref=e3655]: Cumplimiento superior al 90 %
+            - generic [ref=e3656]:
+              - text: Inicio
+              - textbox "Inicio" [ref=e3657]: 2026-08-01
+            - generic [ref=e3658]:
+              - text: Fin
+              - textbox "Fin" [ref=e3659]: 2026-12-20
+            - generic [ref=e3660]:
+              - text: Frecuencia
+              - textbox "Frecuencia" [ref=e3661]: Mensual
+            - generic [ref=e3662]:
+              - text: Estrategia
+              - combobox "Estrategia" [ref=e3663]:
+                - option "Sin estrategia"
+                - option "EST-DO-01 · Integración formal de los procesos de cuadros y reservas"
+                - option "EST-DO-02 · Sistema digital de seguimiento del ciclo de cuadros y reservas"
+                - option "EST-FA-01 · Mecanismo permanente de coordinación interprocesos"
+                - option "EST-DO-03 · Programa de capacitación con evaluación de impacto"
+                - option "EST-DA-01 · Plan de continuidad y retención de cuadros y reservas"
+                - option "EST-FO-01 · Fortalecimiento de indicadores de gestión e integración" [selected]
+            - generic [ref=e3664]:
+              - text: Estado
+              - combobox "Estado" [ref=e3665]:
+                - option "Propuesta" [selected]
+                - option "En curso"
+                - option "Completada"
+                - option "Pausada"
+            - generic [ref=e3666]:
+              - text: Justificación
+              - textbox "Justificación" [ref=e3667]: Acción derivada del factor F-01 y vinculada con EST-FO-01. Ficha demostrativa pendiente de validación institucional.
+            - generic [ref=e3668]:
+              - text: Observaciones
+              - textbox "Observaciones" [ref=e3669]: Escenario demostrativo simulado para revisar la trazabilidad del método.
+          - generic [ref=e3670]:
+            - button "Cancelar" [ref=e3671] [cursor=pointer]
+            - button "Guardar ficha" [ref=e3672] [cursor=pointer]
+      - generic [ref=e3227]:
+        - generic [ref=e3228]:
+          - generic [ref=e3229]: C
+          - strong [ref=e3230]: Corregir
+          - generic [ref=e3231]: 5 acciones
+        - generic [ref=e3232]:
+          - generic [ref=e3233]: A
+          - strong [ref=e3234]: Afrontar
+          - generic [ref=e3235]: 5 acciones
+        - generic [ref=e3236]:
+          - generic [ref=e3237]: M
+          - strong [ref=e3238]: Mantener
+          - generic [ref=e3239]: 5 acciones
+        - generic [ref=e3240]:
+          - generic [ref=e3241]: E
+          - strong [ref=e3242]: Explotar
+          - generic [ref=e3243]: 5 acciones
+      - generic [ref=e3244]:
+        - generic [ref=e3245]:
+          - generic [ref=e3246]:
+            - paragraph [ref=e3247]: Distribución de prioridades
+            - heading "Peso acumulado por tipo CAME" [level=3] [ref=e3248]
+          - generic [ref=e3249]: Suma de prioridades normalizadas
+        - generic [ref=e3250]:
+          - generic [ref=e3252]:
+            - generic [ref=e3253]: C
+            - strong [ref=e3254]: Corregir
+            - text: "1.72"
+          - generic [ref=e3258]:
+            - generic [ref=e3259]: A
+            - strong [ref=e3260]: Afrontar
+            - text: "1.40"
+          - generic [ref=e3264]:
+            - generic [ref=e3265]: M
+            - strong [ref=e3266]: Mantener
+            - text: "1.40"
+          - generic [ref=e3270]:
+            - generic [ref=e3271]: E
+            - strong [ref=e3272]: Explotar
+            - text: "1.48"
+      - generic [ref=e3275]:
+        - generic [ref=e3276]:
+          - generic [ref=e3277]:
+            - paragraph [ref=e3278]: Primeras prioridades
+            - heading "Acciones que abren el plan" [level=3] [ref=e3279]
+          - generic [ref=e3280]: Ordenadas por prioridad
+        - generic [ref=e3281]:
+          - generic [ref=e3282]:
+            - code [ref=e3283]: ACC-D-06
+            - generic [ref=e3284]: Diseñar medidas para corregir procesos burocráticos.
+            - strong [ref=e3285]: "0.36"
+            - emphasis [ref=e3286]: Media
+          - generic [ref=e3287]:
+            - code [ref=e3288]: ACC-D-07
+            - generic [ref=e3289]: Diseñar medidas para corregir falta de automatización de procesos.
+            - strong [ref=e3290]: "0.36"
+            - emphasis [ref=e3291]: Media
+          - generic [ref=e3292]:
+            - code [ref=e3293]: ACC-D-08
+            - generic [ref=e3294]: Diseñar y aprobar el mapa integrado de procesos de cuadros y reservas.
+            - strong [ref=e3295]: "0.36"
+            - emphasis [ref=e3296]: Media
+      - generic [ref=e3297]:
+        - generic [ref=e3298]:
+          - generic [ref=e3299]:
+            - paragraph [ref=e3300]: Fichas operativas
+            - heading "20 acciones demostrativas" [level=3] [ref=e3301]
+          - generic [ref=e3302]: Expandir para revisar trazabilidad
+        - table [ref=e3304]:
+          - rowgroup [ref=e3305]:
+            - row [ref=e3306]:
+              - columnheader "Ficha" [ref=e3307]
+              - columnheader "Factor / acción" [ref=e3308]
+              - columnheader "Prioridad" [ref=e3309]
+              - columnheader "Estado" [ref=e3310]
+              - columnheader "Detalle operativo" [ref=e3311]
+          - rowgroup [ref=e3312]:
+            - row [ref=e3313]:
+              - cell "ACC-F-01 M" [ref=e3314]:
+                - code [ref=e3315]: ACC-F-01
+                - generic [ref=e3316]: M
+              - cell "F-01 Voluntad de la alta dirección Mantener y transferir la capacidad asociada a voluntad de la alta dirección." [ref=e3317]:
+                - strong [ref=e3318]: F-01
+                - generic [ref=e3319]: Voluntad de la alta dirección
+                - textbox [ref=e3320]: Mantener y transferir la capacidad asociada a voluntad de la alta dirección.
+              - cell "0.28 Media" [ref=e3321]:
+                - strong [ref=e3322]: "0.28"
+                - generic [ref=e3323]: Media
+              - cell "Propuesta" [ref=e3324]:
+                - combobox [ref=e3325]:
+                  - option "Propuesta" [selected]
+                  - option "En curso"
+                  - option "Completada"
+                  - option "Pausada"
+              - cell [ref=e3326]:
+                - group [ref=e3327]:
+                  - generic "Ver ficha" [ref=e3328] [cursor=pointer]
+                  - option "Sin estrategia"
+                  - option "EST-DO-01"
+                  - option "EST-DO-02"
+                  - option "EST-FA-01"
+                  - option "EST-DO-03"
+                  - option "EST-DA-01"
+                  - option "EST-FO-01" [selected]
+            - row [ref=e3329]:
+              - cell "ACC-F-02 M" [ref=e3330]:
+                - code [ref=e3331]: ACC-F-02
+                - generic [ref=e3332]: M
+              - cell "F-02 Marco legal empresarial Mantener y transferir la capacidad asociada a marco legal empresarial." [ref=e3333]:
+                - strong [ref=e3334]: F-02
+                - generic [ref=e3335]: Marco legal empresarial
+                - textbox [ref=e3336]: Mantener y transferir la capacidad asociada a marco legal empresarial.
+              - cell "0.28 Media" [ref=e3337]:
+                - strong [ref=e3338]: "0.28"
+                - generic [ref=e3339]: Media
+              - cell "Propuesta" [ref=e3340]:
+                - combobox [ref=e3341]:
+                  - option "Propuesta" [selected]
+                  - option "En curso"
+                  - option "Completada"
+                  - option "Pausada"
+              - cell [ref=e3342]:
+                - group [ref=e3343]:
+                  - generic "Ver ficha" [ref=e3344] [cursor=pointer]
+                  - option "Sin estrategia"
+                  - option "EST-DO-01"
+                  - option "EST-DO-02"
+                  - option "EST-FA-01"
+                  - option "EST-DO-03"
+                  - option "EST-DA-01"
+                  - option "EST-FO-01" [selected]
+            - row [ref=e3345]:
+              - cell "ACC-F-03 M" [ref=e3346]:
+                - code [ref=e3347]: ACC-F-03
+                - generic [ref=e3348]: M
+              - cell "F-03 Indicadores de gestión Mantener y transferir la capacidad asociada a indicadores de gestión." [ref=e3349]:
+                - strong [ref=e3350]: F-03
+                - generic [ref=e3351]: Indicadores de gestión
+                - textbox [ref=e3352]: Mantener y transferir la capacidad asociada a indicadores de gestión.
+              - cell "0.28 Media" [ref=e3353]:
+                - strong [ref=e3354]: "0.28"
+                - generic [ref=e3355]: Media
+              - cell "Propuesta" [ref=e3356]:
+                - combobox [ref=e3357]:
+                  - option "Propuesta" [selected]
+                  - option "En curso"
+                  - option "Completada"
+                  - option "Pausada"
+              - cell [ref=e3358]:
+                - group [ref=e3359]:
+                  - generic "Ver ficha" [ref=e3360] [cursor=pointer]
+                  - option "Sin estrategia"
+                  - option "EST-DO-01"
+                  - option "EST-DO-02"
+                  - option "EST-FA-01"
+                  - option "EST-DO-03"
+                  - option "EST-DA-01"
+                  - option "EST-FO-01" [selected]
+            - row [ref=e3361]:
+              - cell "ACC-F-04 M" [ref=e3362]:
+                - code [ref=e3363]: ACC-F-04
+                - generic [ref=e3364]: M
+              - cell "F-04 Uso de herramientas Mantener y transferir la capacidad asociada a uso de herramientas." [ref=e3365]:
+                - strong [ref=e3366]: F-04
+                - generic [ref=e3367]: Uso de herramientas
+                - textbox [ref=e3368]: Mantener y transferir la capacidad asociada a uso de herramientas.
+              - cell "0.28 Media" [ref=e3369]:
+                - strong [ref=e3370]: "0.28"
+                - generic [ref=e3371]: Media
+              - cell "Propuesta" [ref=e3372]:
+                - combobox [ref=e3373]:
+                  - option "Propuesta" [selected]
+                  - option "En curso"
+                  - option "Completada"
+                  - option "Pausada"
+              - cell [ref=e3374]:
+                - group [ref=e3375]:
+                  - generic "Ver ficha" [ref=e3376] [cursor=pointer]
+                  - option "Sin estrategia"
+                  - option "EST-DO-01"
+                  - option "EST-DO-02"
+                  - option "EST-FA-01"
+                  - option "EST-DO-03"
+                  - option "EST-DA-01"
+                  - option "EST-FO-01" [selected]
+            - row [ref=e3377]:
+              - cell "ACC-F-05 M" [ref=e3378]:
+                - code [ref=e3379]: ACC-F-05
+                - generic [ref=e3380]: M
+              - cell "F-05 Profesionalidad de los cuadros Mantener y transferir la capacidad asociada a profesionalidad de los cuadros." [ref=e3381]:
+                - strong [ref=e3382]: F-05
+                - generic [ref=e3383]: Profesionalidad de los cuadros
+                - textbox [ref=e3384]: Mantener y transferir la capacidad asociada a profesionalidad de los cuadros.
+              - cell "0.28 Media" [ref=e3385]:
+                - strong [ref=e3386]: "0.28"
+                - generic [ref=e3387]: Media
+              - cell "Propuesta" [ref=e3388]:
+                - combobox [ref=e3389]:
+                  - option "Propuesta" [selected]
+                  - option "En curso"
+                  - option "Completada"
+                  - option "Pausada"
+              - cell [ref=e3390]:
+                - group [ref=e3391]:
+                  - generic "Ver ficha" [ref=e3392] [cursor=pointer]
+                  - option "Sin estrategia"
+                  - option "EST-DO-01"
+                  - option "EST-DO-02"
+                  - option "EST-FA-01"
+                  - option "EST-DO-03" [selected]
+                  - option "EST-DA-01"
+                  - option "EST-FO-01"
+            - row [ref=e3393]:
+              - cell "ACC-D-06 C" [ref=e3394]:
+                - code [ref=e3395]: ACC-D-06
+                - generic [ref=e3396]: C
+              - cell "D-06 Procesos burocráticos Diseñar medidas para corregir procesos burocráticos." [ref=e3397]:
+                - strong [ref=e3398]: D-06
+                - generic [ref=e3399]: Procesos burocráticos
+                - textbox [ref=e3400]: Diseñar medidas para corregir procesos burocráticos.
+              - cell "0.36 Media" [ref=e3401]:
+                - strong [ref=e3402]: "0.36"
+                - generic [ref=e3403]: Media
+              - cell "Propuesta" [ref=e3404]:
+                - combobox [ref=e3405]:
+                  - option "Propuesta" [selected]
+                  - option "En curso"
+                  - option "Completada"
+                  - option "Pausada"
+              - cell [ref=e3406]:
+                - group [ref=e3407]:
+                  - generic "Ver ficha" [ref=e3408] [cursor=pointer]
+                  - option "Sin estrategia"
+                  - option "EST-DO-01" [selected]
+                  - option "EST-DO-02"
+                  - option "EST-FA-01"
+                  - option "EST-DO-03"
+                  - option "EST-DA-01"
+                  - option "EST-FO-01"
+            - row [ref=e3409]:
+              - cell "ACC-D-07 C" [ref=e3410]:
+                - code [ref=e3411]: ACC-D-07
+                - generic [ref=e3412]: C
+              - cell "D-07 Falta de automatización de procesos Diseñar medidas para corregir falta de automatización de procesos." [ref=e3413]:
+                - strong [ref=e3414]: D-07
+                - generic [ref=e3415]: Falta de automatización de procesos
+                - textbox [ref=e3416]: Diseñar medidas para corregir falta de automatización de procesos.
+              - cell "0.36 Media" [ref=e3417]:
+                - strong [ref=e3418]: "0.36"
+                - generic [ref=e3419]: Media
+              - cell "Propuesta" [ref=e3420]:
+                - combobox [ref=e3421]:
+                  - option "Propuesta" [selected]
+                  - option "En curso"
+                  - option "Completada"
+                  - option "Pausada"
+              - cell [ref=e3422]:
+                - group [ref=e3423]:
+                  - generic "Ver ficha" [ref=e3424] [cursor=pointer]
+                  - option "Sin estrategia"
+                  - option "EST-DO-01"
+                  - option "EST-DO-02" [selected]
+                  - option "EST-FA-01"
+                  - option "EST-DO-03"
+                  - option "EST-DA-01"
+                  - option "EST-FO-01"
+            - row [ref=e3425]:
+              - cell "ACC-D-08 C" [ref=e3426]:
+                - code [ref=e3427]: ACC-D-08
+                - generic [ref=e3428]: C
+              - cell "D-08 Falta de integración de procesos Diseñar y aprobar el mapa integrado de procesos de cuadros y reservas." [ref=e3429]:
+                - strong [ref=e3430]: D-08
+                - generic [ref=e3431]: Falta de integración de procesos
+                - textbox [ref=e3432]: Diseñar y aprobar el mapa integrado de procesos de cuadros y reservas.
+              - cell "0.36 Media" [ref=e3433]:
+                - strong [ref=e3434]: "0.36"
+                - generic [ref=e3435]: Media
+              - cell "Propuesta" [ref=e3436]:
+                - combobox [ref=e3437]:
+                  - option "Propuesta" [selected]
+                  - option "En curso"
+                  - option "Completada"
+                  - option "Pausada"
+              - cell [ref=e3438]:
+                - group [ref=e3439]:
+                  - generic "Ver ficha" [ref=e3440] [cursor=pointer]
+                  - option "Sin estrategia"
+                  - option "EST-DO-01" [selected]
+                  - option "EST-DO-02"
+                  - option "EST-FA-01"
+                  - option "EST-DO-03"
+                  - option "EST-DA-01"
+                  - option "EST-FO-01"
+            - row [ref=e3441]:
+              - cell "ACC-D-09 C" [ref=e3442]:
+                - code [ref=e3443]: ACC-D-09
+                - generic [ref=e3444]: C
+              - cell "D-09 Falta de evaluación del impacto de la capacitación Diseñar medidas para corregir falta de evaluación del impacto de la capacitación." [ref=e3445]:
+                - strong [ref=e3446]: D-09
+                - generic [ref=e3447]: Falta de evaluación del impacto de la capacitación
+                - textbox [ref=e3448]: Diseñar medidas para corregir falta de evaluación del impacto de la capacitación.
+              - cell "0.32 Media" [ref=e3449]:
+                - strong [ref=e3450]: "0.32"
+                - generic [ref=e3451]: Media
+              - cell "Propuesta" [ref=e3452]:
+                - combobox [ref=e3453]:
+                  - option "Propuesta" [selected]
+                  - option "En curso"
+                  - option "Completada"
+                  - option "Pausada"
+              - cell [ref=e3454]:
+                - group [ref=e3455]:
+                  - generic "Ver ficha" [ref=e3456] [cursor=pointer]
+                  - option "Sin estrategia"
+                  - option "EST-DO-01"
+                  - option "EST-DO-02"
+                  - option "EST-FA-01"
+                  - option "EST-DO-03" [selected]
+                  - option "EST-DA-01"
+                  - option "EST-FO-01"
+            - row [ref=e3457]:
+              - cell "ACC-D-10 C" [ref=e3458]:
+                - code [ref=e3459]: ACC-D-10
+                - generic [ref=e3460]: C
+              - cell "D-10 Fluctuación de cuadros y reservas Diseñar medidas para corregir fluctuación de cuadros y reservas." [ref=e3461]:
+                - strong [ref=e3462]: D-10
+                - generic [ref=e3463]: Fluctuación de cuadros y reservas
+                - textbox [ref=e3464]: Diseñar medidas para corregir fluctuación de cuadros y reservas.
+              - cell "0.32 Media" [ref=e3465]:
+                - strong [ref=e3466]: "0.32"
+                - generic [ref=e3467]: Media
+              - cell "Propuesta" [ref=e3468]:
+                - combobox [ref=e3469]:
+                  - option "Propuesta" [selected]
+                  - option "En curso"
+                  - option "Completada"
+                  - option "Pausada"
+              - cell [ref=e3470]:
+                - group [ref=e3471]:
+                  - generic "Ver ficha" [ref=e3472] [cursor=pointer]
+                  - option "Sin estrategia"
+                  - option "EST-DO-01"
+                  - option "EST-DO-02"
+                  - option "EST-FA-01"
+                  - option "EST-DO-03"
+                  - option "EST-DA-01" [selected]
+                  - option "EST-FO-01"
+            - row [ref=e3473]:
+              - cell "ACC-O-01 E" [ref=e3474]:
+                - code [ref=e3475]: ACC-O-01
+                - generic [ref=e3476]: E
+              - cell "O-01 Transformación digital Diseñar iniciativas para explotar transformación digital." [ref=e3477]:
+                - strong [ref=e3478]: O-01
+                - generic [ref=e3479]: Transformación digital
+                - textbox [ref=e3480]: Diseñar iniciativas para explotar transformación digital.
+              - cell "0.32 Media" [ref=e3481]:
+                - strong [ref=e3482]: "0.32"
+                - generic [ref=e3483]: Media
+              - cell "Propuesta" [ref=e3484]:
+                - combobox [ref=e3485]:
+                  - option "Propuesta" [selected]
+                  - option "En curso"
+                  - option "Completada"
+                  - option "Pausada"
+              - cell [ref=e3486]:
+                - group [ref=e3487]:
+                  - generic "Ver ficha" [ref=e3488] [cursor=pointer]
+                  - option "Sin estrategia"
+                  - option "EST-DO-01" [selected]
+                  - option "EST-DO-02"
+                  - option "EST-FA-01"
+                  - option "EST-DO-03"
+                  - option "EST-DA-01"
+                  - option "EST-FO-01"
+            - row [ref=e3489]:
+              - cell "ACC-O-02 E" [ref=e3490]:
+                - code [ref=e3491]: ACC-O-02
+                - generic [ref=e3492]: E
+              - cell "O-02 Modernización del sector Diseñar iniciativas para explotar modernización del sector." [ref=e3493]:
+                - strong [ref=e3494]: O-02
+                - generic [ref=e3495]: Modernización del sector
+                - textbox [ref=e3496]: Diseñar iniciativas para explotar modernización del sector.
+              - cell "0.32 Media" [ref=e3497]:
+                - strong [ref=e3498]: "0.32"
+                - generic [ref=e3499]: Media
+              - cell "Propuesta" [ref=e3500]:
+                - combobox [ref=e3501]:
+                  - option "Propuesta" [selected]
+                  - option "En curso"
+                  - option "Completada"
+                  - option "Pausada"
+              - cell [ref=e3502]:
+                - group [ref=e3503]:
+                  - generic "Ver ficha" [ref=e3504] [cursor=pointer]
+                  - option "Sin estrategia"
+                  - option "EST-DO-01" [selected]
+                  - option "EST-DO-02"
+                  - option "EST-FA-01"
+                  - option "EST-DO-03"
+                  - option "EST-DA-01"
+                  - option "EST-FO-01"
+            - row [ref=e3505]:
+              - cell "ACC-O-03 E" [ref=e3506]:
+                - code [ref=e3507]: ACC-O-03
+                - generic [ref=e3508]: E
+              - cell "O-03 Uso de la Inteligencia Artificial Diseñar iniciativas para explotar uso de la inteligencia artificial." [ref=e3509]:
+                - strong [ref=e3510]: O-03
+                - generic [ref=e3511]: Uso de la Inteligencia Artificial
+                - textbox [ref=e3512]: Diseñar iniciativas para explotar uso de la inteligencia artificial.
+              - cell "0.28 Media" [ref=e3513]:
+                - strong [ref=e3514]: "0.28"
+                - generic [ref=e3515]: Media
+              - cell "Propuesta" [ref=e3516]:
+                - combobox [ref=e3517]:
+                  - option "Propuesta" [selected]
+                  - option "En curso"
+                  - option "Completada"
+                  - option "Pausada"
+              - cell [ref=e3518]:
+                - group [ref=e3519]:
+                  - generic "Ver ficha" [ref=e3520] [cursor=pointer]
+                  - option "Sin estrategia"
+                  - option "EST-DO-01"
+                  - option "EST-DO-02"
+                  - option "EST-FA-01"
+                  - option "EST-DO-03" [selected]
+                  - option "EST-DA-01"
+                  - option "EST-FO-01"
+            - row [ref=e3521]:
+              - cell "ACC-O-04 E" [ref=e3522]:
+                - code [ref=e3523]: ACC-O-04
+                - generic [ref=e3524]: E
+              - cell "O-04 Vínculo con la DCEG Diseñar iniciativas para explotar vínculo con la dceg." [ref=e3525]:
+                - strong [ref=e3526]: O-04
+                - generic [ref=e3527]: Vínculo con la DCEG
+                - textbox [ref=e3528]: Diseñar iniciativas para explotar vínculo con la dceg.
+              - cell "0.28 Media" [ref=e3529]:
+                - strong [ref=e3530]: "0.28"
+                - generic [ref=e3531]: Media
+              - cell "Propuesta" [ref=e3532]:
+                - combobox [ref=e3533]:
+                  - option "Propuesta" [selected]
+                  - option "En curso"
+                  - option "Completada"
+                  - option "Pausada"
+              - cell [ref=e3534]:
+                - group [ref=e3535]:
+                  - generic "Ver ficha" [ref=e3536] [cursor=pointer]
+                  - option "Sin estrategia"
+                  - option "EST-DO-01"
+                  - option "EST-DO-02"
+                  - option "EST-FA-01"
+                  - option "EST-DO-03" [selected]
+                  - option "EST-DA-01"
+                  - option "EST-FO-01"
+            - row [ref=e3537]:
+              - cell "ACC-O-05 E" [ref=e3538]:
+                - code [ref=e3539]: ACC-O-05
+                - generic [ref=e3540]: E
+              - cell "O-05 Marco legal de país Diseñar iniciativas para explotar marco legal de país." [ref=e3541]:
+                - strong [ref=e3542]: O-05
+                - generic [ref=e3543]: Marco legal de país
+                - textbox [ref=e3544]: Diseñar iniciativas para explotar marco legal de país.
+              - cell "0.28 Media" [ref=e3545]:
+                - strong [ref=e3546]: "0.28"
+                - generic [ref=e3547]: Media
+              - cell "Propuesta" [ref=e3548]:
+                - combobox [ref=e3549]:
+                  - option "Propuesta" [selected]
+                  - option "En curso"
+                  - option "Completada"
+                  - option "Pausada"
+              - cell [ref=e3550]:
+                - group [ref=e3551]:
+                  - generic "Ver ficha" [ref=e3552] [cursor=pointer]
+                  - option "Sin estrategia"
+                  - option "EST-DO-01"
+                  - option "EST-DO-02"
+                  - option "EST-FA-01"
+                  - option "EST-DO-03"
+                  - option "EST-DA-01"
+                  - option "EST-FO-01" [selected]
+            - row [ref=e3553]:
+              - cell "ACC-A-06 A" [ref=e3554]:
+                - code [ref=e3555]: ACC-A-06
+                - generic [ref=e3556]: A
+              - cell "A-06 Migración al extranjero Definir medidas de contingencia para afrontar migración al extranjero." [ref=e3557]:
+                - strong [ref=e3558]: A-06
+                - generic [ref=e3559]: Migración al extranjero
+                - textbox [ref=e3560]: Definir medidas de contingencia para afrontar migración al extranjero.
+              - cell "0.28 Media" [ref=e3561]:
+                - strong [ref=e3562]: "0.28"
+                - generic [ref=e3563]: Media
+              - cell "Propuesta" [ref=e3564]:
+                - combobox [ref=e3565]:
+                  - option "Propuesta" [selected]
+                  - option "En curso"
+                  - option "Completada"
+                  - option "Pausada"
+              - cell [ref=e3566]:
+                - group [ref=e3567]:
+                  - generic "Ver ficha" [ref=e3568] [cursor=pointer]
+                  - option "Sin estrategia"
+                  - option "EST-DO-01"
+                  - option "EST-DO-02"
+                  - option "EST-FA-01"
+                  - option "EST-DO-03"
+                  - option "EST-DA-01" [selected]
+                  - option "EST-FO-01"
+            - row [ref=e3569]:
+              - cell "ACC-A-07 A" [ref=e3570]:
+                - code [ref=e3571]: ACC-A-07
+                - generic [ref=e3572]: A
+              - cell "A-07 Bloqueo del gobierno de EE. UU. Definir medidas de contingencia para afrontar bloqueo del gobierno de ee. uu.." [ref=e3573]:
+                - strong [ref=e3574]: A-07
+                - generic [ref=e3575]: Bloqueo del gobierno de EE. UU.
+                - textbox [ref=e3576]: Definir medidas de contingencia para afrontar bloqueo del gobierno de ee. uu..
+              - cell "0.28 Media" [ref=e3577]:
+                - strong [ref=e3578]: "0.28"
+                - generic [ref=e3579]: Media
+              - cell "Propuesta" [ref=e3580]:
+                - combobox [ref=e3581]:
+                  - option "Propuesta" [selected]
+                  - option "En curso"
+                  - option "Completada"
+                  - option "Pausada"
+              - cell [ref=e3582]:
+                - group [ref=e3583]:
+                  - generic "Ver ficha" [ref=e3584] [cursor=pointer]
+                  - option "Sin estrategia"
+                  - option "EST-DO-01"
+                  - option "EST-DO-02"
+                  - option "EST-FA-01" [selected]
+                  - option "EST-DO-03"
+                  - option "EST-DA-01"
+                  - option "EST-FO-01"
+            - row [ref=e3585]:
+              - cell "ACC-A-08 A" [ref=e3586]:
+                - code [ref=e3587]: ACC-A-08
+                - generic [ref=e3588]: A
+              - cell "A-08 Situación económica y financiera Definir medidas de contingencia para afrontar situación económica y financiera." [ref=e3589]:
+                - strong [ref=e3590]: A-08
+                - generic [ref=e3591]: Situación económica y financiera
+                - textbox [ref=e3592]: Definir medidas de contingencia para afrontar situación económica y financiera.
+              - cell "0.28 Media" [ref=e3593]:
+                - strong [ref=e3594]: "0.28"
+                - generic [ref=e3595]: Media
+              - cell "Propuesta" [ref=e3596]:
+                - combobox [ref=e3597]:
+                  - option "Propuesta" [selected]
+                  - option "En curso"
+                  - option "Completada"
+                  - option "Pausada"
+              - cell [ref=e3598]:
+                - group [ref=e3599]:
+                  - generic "Ver ficha" [ref=e3600] [cursor=pointer]
+                  - option "Sin estrategia"
+                  - option "EST-DO-01"
+                  - option "EST-DO-02"
+                  - option "EST-FA-01" [selected]
+                  - option "EST-DO-03"
+                  - option "EST-DA-01"
+                  - option "EST-FO-01"
+            - row [ref=e3601]:
+              - cell "ACC-A-09 A" [ref=e3602]:
+                - code [ref=e3603]: ACC-A-09
+                - generic [ref=e3604]: A
+              - cell "A-09 Migración al sector privado Definir medidas de contingencia para afrontar migración al sector privado." [ref=e3605]:
+                - strong [ref=e3606]: A-09
+                - generic [ref=e3607]: Migración al sector privado
+                - textbox [ref=e3608]: Definir medidas de contingencia para afrontar migración al sector privado.
+              - cell "0.28 Media" [ref=e3609]:
+                - strong [ref=e3610]: "0.28"
+                - generic [ref=e3611]: Media
+              - cell "Propuesta" [ref=e3612]:
+                - combobox [ref=e3613]:
+                  - option "Propuesta" [selected]
+                  - option "En curso"
+                  - option "Completada"
+                  - option "Pausada"
+              - cell [ref=e3614]:
+                - group [ref=e3615]:
+                  - generic "Ver ficha" [ref=e3616] [cursor=pointer]
+                  - option "Sin estrategia"
+                  - option "EST-DO-01"
+                  - option "EST-DO-02"
+                  - option "EST-FA-01"
+                  - option "EST-DO-03"
+                  - option "EST-DA-01" [selected]
+                  - option "EST-FO-01"
+            - row [ref=e3617]:
+              - cell "ACC-A-10 A" [ref=e3618]:
+                - code [ref=e3619]: ACC-A-10
+                - generic [ref=e3620]: A
+              - cell "A-10 Inestabilidad energética Definir medidas de contingencia para afrontar inestabilidad energética." [ref=e3621]:
+                - strong [ref=e3622]: A-10
+                - generic [ref=e3623]: Inestabilidad energética
+                - textbox [ref=e3624]: Definir medidas de contingencia para afrontar inestabilidad energética.
+              - cell "0.28 Media" [ref=e3625]:
+                - strong [ref=e3626]: "0.28"
+                - generic [ref=e3627]: Media
+              - cell "Propuesta" [ref=e3628]:
+                - combobox [ref=e3629]:
+                  - option "Propuesta" [selected]
+                  - option "En curso"
+                  - option "Completada"
+                  - option "Pausada"
+              - cell [ref=e3630]:
+                - group [ref=e3631]:
+                  - generic "Ver ficha" [ref=e3632] [cursor=pointer]
+                  - option "Sin estrategia"
+                  - option "EST-DO-01"
+                  - option "EST-DO-02"
+                  - option "EST-FA-01"
+                  - option "EST-DO-03"
+                  - option "EST-DA-01" [selected]
+                  - option "EST-FO-01"

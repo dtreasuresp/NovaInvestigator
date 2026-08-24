@@ -1,0 +1,32 @@
+src/features/billing/repository.ts(67,16): error TS2339: Property 'id' does not exist on type 'never'.
+src/features/billing/repository.ts(110,16): error TS2339: Property 'tenant_id' does not exist on type 'never'.
+src/features/billing/repository.ts(132,7): error TS2353: Object literal may only specify known properties, and 'tenant_id' does not exist in type 'never[]'.
+src/features/billing/repository.ts(183,7): error TS2353: Object literal may only specify known properties, and 'tenant_id' does not exist in type 'never[]'.
+src/features/billing/repository.ts(209,7): error TS2353: Object literal may only specify known properties, and 'tenant_id' does not exist in type 'never[]'.
+src/features/billing/repository.ts(285,7): error TS2353: Object literal may only specify known properties, and 'tenant_id' does not exist in type 'never[]'.
+src/features/billing/repository.ts(373,13): error TS2345: Argument of type '{ provider_checkout_id: string; updated_at: string; }' is not assignable to parameter of type 'never'.
+src/features/billing/repository.ts(402,13): error TS2345: Argument of type '{ status: string; starts_at: string; expires_at: string; provider_checkout_id: string; provider_payment_id: string | null; updated_at: string; }' is not assignable to parameter of type 'never'.
+src/features/billing/repository.ts(427,13): error TS2345: Argument of type '{ status: string; updated_at: string; }' is not assignable to parameter of type 'never'.
+src/features/billing/repository.ts(459,27): error TS2339: Property 'allow_pdf' does not exist on type 'never'.
+src/features/billing/repository.ts(459,58): error TS2339: Property 'allow_checkout' does not exist on type 'never'.
+src/features/billing/repository.ts(459,96): error TS2339: Property 'allow_conversion' does not exist on type 'never'.
+src/features/billing/repository.ts(481,16): error TS2339: Property 'status' does not exist on type 'never'.
+src/features/billing/repository.ts(498,5): error TS2353: Object literal may only specify known properties, and 'provider' does not exist in type 'never[]'.
+src/features/billing/repository.ts(513,13): error TS2345: Argument of type '{ status: string; processed_at: string; }' is not assignable to parameter of type 'never'.
+src/features/billing/repository.ts(529,13): error TS2345: Argument of type '{ status: string; error_code: string; }' is not assignable to parameter of type 'never'.
+src/features/billing/service.ts(548,5): error TS2322: Type 'Status' is not assignable to type 'SubscriptionStatus'.
+  Type 'OtherString' is not assignable to type 'SubscriptionStatus'.
+src/features/billing/service.ts(593,7): error TS2322: Type 'Status' is not assignable to type 'InvoiceStatus'.
+  Type 'OtherString' is not assignable to type 'InvoiceStatus'.
+src/lib/billing/server.ts(55,18): error TS2352: Conversion of type 'Subscription | Application | BankAccount | Card | Account | ApplicationFee | FeeRefund | ... 74 more ... | ReceivedDebit' to type 'Record<string, unknown>' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
+  Type 'ReceivedDebit' is not comparable to type 'Record<string, unknown>'.
+    Index signature for type 'string' is missing in type 'ReceivedDebit'.
+src/lib/investigations/_debug-schema-check.ts(48,7): error TS2322: Type 'true' is not assignable to type 'false'.
+src/lib/investigations/_debug-schema-check.ts(58,7): error TS2322: Type '"tables-ok"' is not assignable to type '"investigations" | "investigation_revisions"'.
+src/lib/investigations/_debug-schema-check.ts(72,3): error TS2322: Type '"row-ok"' is not assignable to type '"row-fail"'.
+src/lib/investigations/_debug-schema-check.ts(86,7): error TS2322: Type '"plain-ok"' is not assignable to type '"plain-fail"'.
+src/lib/investigations/repository.ts(106,7): error TS2353: Object literal may only specify known properties, and 'tenant_id' does not exist in type 'never[]'.
+src/lib/investigations/repository.ts(156,13): error TS2345: Argument of type '{ version: number; updated_by: string; title?: string; status?: string; archived_at?: string | null; state?: Json; }' is not assignable to parameter of type 'never'.
+src/lib/investigations/repository.ts(179,15): error TS2352: Conversion of type 'null' to type 'InvestigationRow' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
+src/lib/investigations/repository.ts(205,49): error TS2339: Property 'version' does not exist on type 'never'.
+src/lib/investigations/repository.ts(218,5): error TS2353: Object literal may only specify known properties, and 'investigation_id' does not exist in type 'never[]'.
