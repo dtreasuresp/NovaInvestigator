@@ -510,6 +510,7 @@ async function streamWithVercelAiSdk({
       system: systemPrompt,
       messages: coreMessages,
       tools: vercelTools,
+      maxOutputTokens: 8192,
       stopWhen: isStepCount(5),
       onError: (errPayload) => {
         const raw = (errPayload as { error?: unknown })?.error ?? errPayload
@@ -1323,11 +1324,11 @@ export async function streamAiReport({
   const org = state?.metadata?.organization || 'la organización'
 
   const reportPromptMap: Record<string, string> = {
-    es: `Genera un dictamen estratégico integral y fundamentación metodológica (${format}) para ${org}, estructurado en: 1. Diagnóstico Integral, 2. Posicionamiento Matricial y Vector Dominante, 3. Fundamentación Cuantitativa QSPM, 4. Despliegue Operativo CAME.`,
-    en: `Generate a comprehensive strategic report and methodological foundation (${format}) for ${org}, structured in: 1. Comprehensive Diagnosis, 2. Matrix Positioning & Dominant Vector, 3. Quantitative Foundation QSPM, 4. Operational Deployment CAME.`,
-    de: `Erstelle ein strategisches Gutachten (${format}) für ${org}.`,
-    ko: `${org}에 대한 종합 전략 진단 및 방법론적 총괄 보고서 (${format})를 작성해 주세요.`,
-    pt: `Gere um parecer estratégico abrangente (${format}) para ${org}.`
+    es: `Genera un dictamen estratégico integral y fundamentación metodológica (${format}) para ${org}, estructurado en: 1. Diagnóstico Integral (resumen ejecutivo de índices globales EFI y EFE, sin repetir el volcado de factores individuales crudos), 2. Posicionamiento Matricial y Vector Dominante (tabla de 4 cuadrantes con índices y justificación del vector dominante), 3. Fundamentación Cuantitativa QSPM (con fórmulas LaTeX normalizadas y cálculo del TAS comparativo), 4. Despliegue Operativo CAME (tabla con acciones, responsables e indicadores de desempeño propuestos), 5. Auditoría del Expediente y Dictamen Final (evaluación de consistencia, advertencias metodológicas y cierre formal). Completa íntegramente las 5 secciones hasta su conclusión.`,
+    en: `Generate a comprehensive strategic report and methodological foundation (${format}) for ${org}, structured in: 1. Comprehensive Diagnosis (executive summary of global EFI and EFE scores without raw factor dumping), 2. Matrix Positioning & Dominant Vector (4-quadrant table and dominant vector justification), 3. Quantitative Foundation QSPM (with normalized LaTeX formulas and comparative TAS calculation), 4. Operational Deployment CAME (table with actions, owners, and KPIs), 5. File Audit & Final Executive Ruling. Complete all 5 sections thoroughly to conclusion.`,
+    de: `Erstelle ein umfassendes strategisches Gutachten (${format}) für ${org} mit 5 Abschnitten inklusive QSPM-Formeln und CAME-Plan.`,
+    ko: `${org}에 대한 종합 전략 진단 및 방법론적 총괄 보고서 (${format})를 5개 항목(진단, DAFO 매트릭스, QSPM 수식, CAME 실행계획, 최종 감사)으로 완성해 주세요.`,
+    pt: `Gere um parecer estratégico abrangente e fundamentação metodológica (${format}) para ${org}, estruturado em 5 seções completas (Diagnóstico, Matriz DAFO, QSPM com fórmulas LaTeX, CAME com KPIs e Auditoria Final).`
   }
 
   const userPrompt = reportPromptMap[locale] || reportPromptMap.es

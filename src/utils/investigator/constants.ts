@@ -16,25 +16,29 @@ export interface RatingOption {
 
 export const INVESTIGATOR_BASE_PATH = '/apps/investigator'
 
+export const STEPPER_ITEMS: NavItem[] = [
+  { id: 'context', label: 'Contexto de la investigación', detail: 'Expediente del análisis', href: `${INVESTIGATOR_BASE_PATH}/context` },
+  { id: 'efi', label: 'Factores Internos (EFI)', detail: 'Matriz EFI', href: `${INVESTIGATOR_BASE_PATH}/efi` },
+  { id: 'efe', label: 'Factores Externos (EFE)', detail: 'Matriz EFE', href: `${INVESTIGATOR_BASE_PATH}/efe` },
+  { id: 'dafo', label: 'Matriz DAFO', detail: 'Cruces y relaciones', href: `${INVESTIGATOR_BASE_PATH}/dafo` },
+  { id: 'qspm', label: 'Matriz QSPM', detail: 'Selección estratégica', href: `${INVESTIGATOR_BASE_PATH}/qspm` },
+  { id: 'came', label: 'Plan de acción (CAME)', detail: 'Plan operativo', href: `${INVESTIGATOR_BASE_PATH}/came` },
+  { id: 'summary', label: 'Resumen y dictamen', detail: 'Lectura ejecutiva', href: `${INVESTIGATOR_BASE_PATH}/summary` }
+]
+
 export const NAV_ITEMS: NavItem[] = [
   { id: 'gestor', label: 'Gestor', detail: 'Investigaciones', href: `${INVESTIGATOR_BASE_PATH}/investigations` },
-  { id: 'context', label: 'Contexto', detail: 'Expediente del análisis' },
-  { id: 'summary', label: 'Resumen', detail: 'Lectura ejecutiva' },
-  { id: 'efi', label: 'EFI', detail: 'Factores internos' },
-  { id: 'efe', label: 'EFE', detail: 'Entorno estratégico' },
-  { id: 'dafo', label: 'DAFO', detail: 'Cruces y relaciones' },
-  { id: 'qspm', label: 'QSPM', detail: 'Selección estratégica' },
-  { id: 'came', label: 'CAME', detail: 'Plan de acción' }
+  ...STEPPER_ITEMS
 ]
 
 export const STAGE_ROUTES: Record<StageKey, string> = {
   context: `${INVESTIGATOR_BASE_PATH}/context`,
-  summary: `${INVESTIGATOR_BASE_PATH}/summary`,
   efi: `${INVESTIGATOR_BASE_PATH}/efi`,
   efe: `${INVESTIGATOR_BASE_PATH}/efe`,
   dafo: `${INVESTIGATOR_BASE_PATH}/dafo`,
   qspm: `${INVESTIGATOR_BASE_PATH}/qspm`,
-  came: `${INVESTIGATOR_BASE_PATH}/came`
+  came: `${INVESTIGATOR_BASE_PATH}/came`,
+  summary: `${INVESTIGATOR_BASE_PATH}/summary`
 }
 
 export const TYPE_LABELS: Record<FactorType, string> = {

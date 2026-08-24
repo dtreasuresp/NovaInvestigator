@@ -63,7 +63,7 @@ export class NovaiTokenBudget {
     if (model.includes('llama-3.3') || model.includes('llama-3.1') || model.includes('gpt-4o') || model.includes('qwen-2.5')) {
       return {
         maxTotalTokens: 32768, // Presupuesto de trabajo ágil con latencia óptima
-        reservedOutputTokens: 2048
+        reservedOutputTokens: 8192
       }
     }
 
@@ -71,14 +71,14 @@ export class NovaiTokenBudget {
     if (model.includes('mistral') || model.includes('qwen')) {
       return {
         maxTotalTokens: 16384,
-        reservedOutputTokens: 2048
+        reservedOutputTokens: 4096
       }
     }
 
     // Fallback conservador para modelos gratuitos o desconocidos
     return {
       maxTotalTokens: 12288,
-      reservedOutputTokens: 2048
+      reservedOutputTokens: 4096
     }
   }
 

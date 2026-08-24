@@ -220,17 +220,8 @@ export const navItems: NavItem[] = [
           {
             icon: 'ClipboardCheckIcon',
             label: 'Investigator',
-            moduleKey: 'investigator',
-            childItems: [
-              { label: 'Manager', href: `${INVESTIGATOR_BASE_PATH}/investigations` },
-              { label: 'Context', href: '/apps/investigator/context' },
-              { label: 'Summary', href: '/apps/investigator/summary' },
-              { label: 'Internal Environment', href: '/apps/investigator/efi' },
-              { label: 'External Environment', href: '/apps/investigator/efe' },
-              { label: 'SWOT Analysis', href: '/apps/investigator/dafo' },
-              { label: 'Quantitative Strategic', href: '/apps/investigator/qspm' },
-              { label: 'CAME Analysis', href: '/apps/investigator/came' }
-            ]
+            href: `${INVESTIGATOR_BASE_PATH}/investigations`,
+            moduleKey: 'investigator'
           }
         ]
       },

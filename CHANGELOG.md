@@ -4,6 +4,27 @@
 
 All notable changes to this template will be documented in this file
 
+## v0.0.39 (2026-08-24)
+
+### Added & UI/UX Architecture
+- **Navegación por Stepper Responsive en el Módulo de Investigaciones**:
+  - En [`src/app/(pages)/apps/investigator/layout-client.tsx`](file:///d:/03.%20MATRIZ%20DAFO/src/app/(pages)/apps/investigator/layout-client.tsx), sustituidos los tabs superiores por un componente `<Stepper />` interactivo y adaptativo en 7 etapas canónicas:
+    1. **Contexto de la investigación** (`/apps/investigator/context`)
+    2. **Factores Internos (EFI)** (`/apps/investigator/efi`)
+    3. **Factores Externos (EFE)** (`/apps/investigator/efe`)
+    4. **Matriz DAFO** (`/apps/investigator/dafo`)
+    5. **Matriz QSPM** (`/apps/investigator/qspm`)
+    6. **Plan de acción (CAME)** (`/apps/investigator/came`)
+    7. **Resumen y dictamen** (`/apps/investigator/summary`)
+  - Integrado soporte responsive completo: vista expandida con títulos y descripciones en desktop, y scroll suave horizontal con chips compactos en móviles y tablets.
+  - Ocultación automática del Stepper en la vista del Gestor de Investigaciones (`/apps/investigator/investigations`) para maximizar el área de trabajo.
+- **Simplificación del Menú Lateral (Sidebar)**:
+  - En [`src/configs/navConfig.tsx`](file:///d:/03.%20MATRIZ%20DAFO/src/configs/navConfig.tsx), simplificado el ítem de `investigator` para contener exclusivamente el enlace directo al **Gestor de Investigaciones** (`/apps/investigator/investigations`), limpiando el árbol de navegación.
+- **Ampliación de Capacidad y Eliminación de Truncamiento en Informes NovAi**:
+  - En [`src/features/novai/service.ts`](file:///d:/03.%20MATRIZ%20DAFO/src/features/novai/service.ts) y [`src/features/novai/token-budget.ts`](file:///d:/03.%20MATRIZ%20DAFO/src/features/novai/token-budget.ts), configurado `maxOutputTokens: 8192` y ampliado `reservedOutputTokens: 8192` para generación de reportes extensos.
+  - En [`src/app/api/investigations/ai/report/route.ts`](file:///d:/03.%20MATRIZ%20DAFO/src/app/api/investigations/ai/report/route.ts), [`src/app/api/ai/chat/route.ts`](file:///d:/03.%20MATRIZ%20DAFO/src/app/api/ai/chat/route.ts) y [`src/app/api/investigations/ai/chat/route.ts`](file:///d:/03.%20MATRIZ%20DAFO/src/app/api/investigations/ai/chat/route.ts), configurado `export const maxDuration = 60` y `export const dynamic = 'force-dynamic'` para evitar timeouts de serverless en Vercel.
+  - Calibrado el prompt del dictamen metodológico estructurado en 5 secciones completas con fórmulas LaTeX ($$...$$), tablas ejecutivas y auditoría final sin truncamiento.
+
 ## v0.0.38 (2026-08-24)
 
 ### Fixed & Cloud Infrastructure

@@ -46,7 +46,9 @@ next-env.d.ts
 
 # Skills
 .agent/
+.agents/
 .claude/
+.continue/
 
 
 #Ignore vscode AI rules
