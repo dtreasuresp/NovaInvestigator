@@ -249,14 +249,31 @@ const UpgradeWizard = ({ initialPlanCode }: UpgradeWizardProps) => {
 
           const availablePlans = payload.plans ?? []
           const matchedInitial = availablePlans.find((plan: BillingPlan) => plan.code === initialPlanCode)
+          const currentPlanCode = payload.currentPlan?.code
+          const matchedCurrent = availablePlans.find((plan: BillingPlan) => plan.code === currentPlanCode)
 
+          let targetCode = ''
           if (matchedInitial) {
-            setPlanCode(matchedInitial.code)
+            targetCode = matchedInitial.code
+          } else if (matchedCurrent) {
+            targetCode = matchedCurrent.code
           } else {
-            const firstPurchasable = availablePlans.find((plan: BillingPlan) => plan.providerPriceId !== null)
+            const firstPaid = availablePlans.find(
+              (plan: BillingPlan) => plan.providerPriceId !== null && plan.code !== 'try_demo'
+            )
+            const firstPurchasable = firstPaid || availablePlans.find((plan: BillingPlan) => plan.providerPriceId !== null)
 
             if (firstPurchasable) {
-              setPlanCode(firstPurchasable.code)
+              targetCode = firstPurchasable.code
+            }
+          }
+
+          if (targetCode) {
+            setPlanCode(targetCode)
+            if (typeof window !== 'undefined') {
+              const url = new URL(window.location.href)
+              url.searchParams.set('plan', targetCode)
+              window.history.replaceState(null, '', url.toString())
             }
           }
         }
@@ -299,6 +316,16 @@ const UpgradeWizard = ({ initialPlanCode }: UpgradeWizardProps) => {
   const isDelegated = context?.authorization ? context.authorization.source !== 'owner' : false
   const hasValidPlan = Boolean(selectedPlan && selectedPlan.providerPriceId)
   const checkoutWorkspaceId = context?.authorization?.workspaceId
+  const hasActivePlan = Boolean(context?.currentPlan)
+
+  const handleSelectPlan = (code: string) => {
+    setPlanCode(code)
+    if (typeof window !== 'undefined') {
+      const url = new URL(window.location.href)
+      url.searchParams.set('plan', code)
+      window.history.replaceState(null, '', url.toString())
+    }
+  }
 
   const completePurchase = async (forceBypassDowngradeWarning = false) => {
     if (!selectedPlan || !selectedPlan.providerPriceId) {
@@ -593,30 +620,7 @@ const UpgradeWizard = ({ initialPlanCode }: UpgradeWizardProps) => {
         {/* Step 3: Select Plan & Billing */}
         <StepperContent value='confirm' className='border-none bg-transparent p-0 shadow-none'>
           <div className='space-y-8'>
-            <div>
-              <h3 className='text-xl font-bold tracking-tight text-foreground'>
-                {t('pricingPage.pricingPlans') || 'Planes Disponibles'}
-              </h3>
-              <p className='text-sm text-muted-foreground'>
-                {t('pricingPage.headerSubtitle') || 'Selecciona el plan ideal para potenciar tu espacio de trabajo.'}
-              </p>
-            </div>
 
-            {/* Current Workspace Plan Status Banner */}
-            {context.currentPlan ? (
-              <div className='flex items-center justify-between rounded-lg border border-border bg-muted/40 p-4 text-sm'>
-                <div className='flex items-center gap-3'>
-                  <ShieldCheckIcon className='size-5 text-primary shrink-0' />
-                  <div>
-                    <span className='text-muted-foreground'>{t('platform.activePlan') || 'Plan activo'}: </span>
-                    <span className='font-semibold text-foreground'>{context.currentPlan.name}</span>
-                    <span className='ml-1 text-xs text-muted-foreground'>
-                      ({context.currentPlan.interval === 'one_time' ? 'Acceso puntual' : `Suscripción ${context.currentPlan.interval}`})
-                    </span>
-                  </div>
-                </div>
-              </div>
-            ) : null}
 
             {/* Selected Plan Context Alerts (Same Plan / Upgrade / Downgrade) */}
             {selectedPlan && selectedPlanTransition.type === 'same_plan' ? (
@@ -652,23 +656,29 @@ const UpgradeWizard = ({ initialPlanCode }: UpgradeWizardProps) => {
             ) : null}
 
             {/* Vertical Plan Cards Centered (Matching Template Screenshot + Badges) */}
-            <RadioGroup value={planCode} onValueChange={value => setPlanCode(value ?? '')}>
-              <div className='grid grid-cols-1 gap-5 sm:grid-cols-2 md:grid-cols-5'>
+            <RadioGroup value={planCode} onValueChange={value => value && handleSelectPlan(value)}>
+              <div className='grid grid-cols-1 gap-5 sm:grid-cols-2 md:grid-cols-6'>
                 {plans.map((plan: BillingPlan) => {
                   const isSelected = planCode === plan.code
-                  const hasPrice = plan.providerPriceId !== null
-                  const isCurrent = plan.code === context.currentPlan?.code
+                  const isCurrent = plan.code === context?.currentPlan?.code
+                  const isDemo = plan.code === 'try_demo' || plan.amountMinor === 0
+                  const isDemoDisabled = isDemo && hasActivePlan
+                  const hasPrice = plan.providerPriceId !== null && !isDemoDisabled
                   const transition = getPlanTransition(currentActivePlan, plan)
 
                   return (
                     <div
                       key={plan.id}
-                      onClick={() => hasPrice && setPlanCode(plan.code)}
-                      className={`relative flex cursor-pointer flex-col items-center justify-between rounded-xl border p-6 text-center transition-all ${
-                        isSelected
-                          ? 'border-foreground bg-card text-foreground ring-1 ring-foreground/20 shadow-lg'
-                          : 'border-border/60 bg-card/40 text-foreground/80 hover:border-border hover:bg-card/70'
-                      } ${!hasPrice ? 'opacity-50 cursor-not-allowed' : ''}`}
+                      onClick={() => hasPrice && handleSelectPlan(plan.code)}
+                      className={`relative flex flex-col items-center justify-between rounded-xl border p-6 text-center transition-all ${
+                        isDemoDisabled
+                          ? 'opacity-40 cursor-not-allowed border-border/40 bg-muted/20 grayscale-[20%]'
+                          : isSelected
+                            ? 'cursor-pointer border-foreground bg-card text-foreground ring-1 ring-foreground/20 shadow-lg'
+                            : hasPrice
+                              ? 'cursor-pointer border-border/60 bg-card/40 text-foreground/80 hover:border-border hover:bg-card/70'
+                              : 'opacity-50 cursor-not-allowed border-border/40'
+                      }`}
                     >
                       <RadioGroupItem
                         value={plan.code}
@@ -679,7 +689,11 @@ const UpgradeWizard = ({ initialPlanCode }: UpgradeWizardProps) => {
 
                       {/* Top: Status Badge */}
                       <div className='mb-3 h-6 flex items-center justify-center'>
-                        {isCurrent ? (
+                        {isDemoDisabled ? (
+                          <Badge variant='outline' className='border-muted-foreground/30 bg-muted/40 text-muted-foreground text-[10px] font-medium py-0.5 px-2'>
+                            No disponible
+                          </Badge>
+                        ) : isCurrent ? (
                           <Badge variant='outline' className='border-sky-500/40 bg-sky-500/10 text-sky-700 dark:text-sky-300 text-[10px] font-medium py-0.5 px-2'>
                             Plan actual / Renovar
                           </Badge>
@@ -697,7 +711,7 @@ const UpgradeWizard = ({ initialPlanCode }: UpgradeWizardProps) => {
                       {/* Name & Description */}
                       <div className='w-full'>
                         <h4 className='text-base font-bold text-foreground'>{plan.name}</h4>
-                        <p className='mt-1 text-xs text-muted-foreground line-clamp-2 min-h-[32px]'>
+                        <p className='mt-1 text-xs text-muted-foreground line-clamp-5 min-h-[32px]'>
                           {plan.description ?? 'Plan de acceso para tu espacio.'}
                         </p>
                       </div>
@@ -715,12 +729,14 @@ const UpgradeWizard = ({ initialPlanCode }: UpgradeWizardProps) => {
                       <div className='mt-auto flex items-center justify-center pt-2'>
                         <div
                           className={`size-6 rounded-full border-2 transition-all flex items-center justify-center ${
-                            isSelected
-                              ? 'border-foreground'
-                              : 'border-muted-foreground/40'
+                            isDemoDisabled
+                              ? 'border-muted-foreground/20'
+                              : isSelected
+                                ? 'border-foreground'
+                                : 'border-muted-foreground/40'
                           }`}
                         >
-                          {isSelected ? (
+                          {isSelected && !isDemoDisabled ? (
                             <div className='size-3 rounded-full bg-foreground' />
                           ) : null}
                         </div>

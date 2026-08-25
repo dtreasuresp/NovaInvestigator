@@ -4,6 +4,16 @@
 
 All notable changes to this template will be documented in this file
 
+## v0.0.45 (2026-08-25)
+
+### Added & Billing Experience
+- **Pre-selección Automática de Plan, Deep-linking en URL y Bloqueo de Try Demo**:
+  - En [`src/views/pages/pricing/billing/upgrade/index.tsx`](file:///d:/03.%20MATRIZ%20DAFO/src/views/pages/pricing/billing/upgrade/index.tsx):
+    - Al cargar el asistente de upgrade, se auto-selecciona el plan actualmente activo en el espacio de trabajo (`payload.currentPlan.code`) y se sincroniza reactivamente la URL en el navegador (`/pages/billing/upgrade?plan=...`) sin recarga de página.
+    - Al hacer clic en cualquier tarjeta de plan, se actualiza el estado y el parámetro `?plan=` en la URL en tiempo real para soportar deep-linking, marcadores y compartir enlaces.
+    - Bloqueada la tarjeta `Try Demo` para espacios de trabajo con suscripciones o planes de pago activos (`opacity-40 pointer-events-none cursor-not-allowed` y badge `"Ya utilizado"`).
+    - Eliminado el banner redundante de "Plan Activo" del Paso 3 de selección de planes.
+
 ## v0.0.44 (2026-08-25)
 
 ### Fixed & UI Design System
