@@ -1,7 +1,7 @@
 'use client'
 
 // React & Next Imports
-import { Suspense, useState } from 'react'
+import { Suspense, useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import {
   CloudCheckIcon,
@@ -20,14 +20,15 @@ import { useI18n } from '@/hooks/use-i18n'
 
 // Subcomponent Imports
 import KpiCards from './components/kpi-cards'
-import PositioningMatrix from './components/positioning-matrix'
+import { StrategicPositionMatrix, type StrategicMatrixPoint } from '@/components/ui/strategic-position-matrix'
 import FactorsDistributionChart from './components/factors-distribution-chart'
 import CameActionsChart from './components/came-actions-chart'
 import RecentInvestigationsTable from './components/recent-investigations-table'
-import InvestigationSummarySheet from './components/investigation-summary-sheet'
+import InvestigationSummarySheet from '@/components/ui/investigation-summary-sheet'
 
-// Type Imports
+// Type & Domain Imports
 import type { InvestigationState } from '@/types/apps/investigator-types'
+import { calculateAnalysis } from '@/utils/investigator/domain'
 
 const InvestigatorDashboardContent = () => {
   const router = useRouter()
@@ -40,6 +41,21 @@ const InvestigatorDashboardContent = () => {
 
   const [summaryInvestigation, setSummaryInvestigation] = useState<InvestigationState | null>(null)
   const [isSummaryOpen, setIsSummaryOpen] = useState(false)
+
+  const strategicPoints = useMemo<Array<StrategicMatrixPoint & { rawItem: InvestigationState }>>(() => {
+    return investigations.map(item => {
+      const analysis = calculateAnalysis(item)
+
+      return {
+        id: item.metadata?.id || '',
+        title: item.metadata?.title || 'Sin título',
+        efi: Number((analysis?.efi?.total ?? 0).toFixed(2)),
+        efe: Number((analysis?.efe?.total ?? 0).toFixed(2)),
+        status: item.metadata?.status,
+        rawItem: item
+      }
+    })
+  }, [investigations])
 
   const handleOpenResearch = (research: Parameters<typeof openResearch>[0]) => {
     openResearch(research)
@@ -85,9 +101,13 @@ const InvestigatorDashboardContent = () => {
       <div className='grid grid-cols-1 gap-6 lg:grid-cols-12'>
         {/* Left: Strategic Positioning Matrix (EFI vs EFE) */}
         <div className='lg:col-span-7 flex flex-col'>
-          <PositioningMatrix
-            investigations={investigations}
-            onSelectInvestigation={handleShowSummary}
+          <StrategicPositionMatrix
+            points={strategicPoints}
+            onSelectPoint={point => {
+              const item = (point as { rawItem?: InvestigationState }).rawItem || investigations.find(i => i.metadata?.id === point.id)
+              if (item) handleShowSummary(item)
+            }}
+            className='h-full'
           />
         </div>
 

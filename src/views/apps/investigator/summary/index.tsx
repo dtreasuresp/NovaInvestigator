@@ -16,6 +16,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Progress } from '@/components/ui/progress'
 import { Skeleton } from '@/components/ui/skeleton'
 import { StrategicPositionMatrix, type StrategicMatrixPoint } from '@/components/ui/strategic-position-matrix'
+import { InvestigationSummarySheet } from '@/components/ui/investigation-summary-sheet'
+import { DafoQuadrantIndices } from '@/components/ui/dafo-quadrant-indices'
+import { CameActionsIndices } from '@/components/ui/came-actions-indices'
 
 // Icon Imports
 
@@ -41,6 +44,7 @@ export const InvestigatorSummaryView = () => {
 
   const [aiReportText, setAiReportText] = useState<string>('')
   const [activeReportTab, setActiveReportTab] = useState<'standard' | 'ai'>('standard')
+  const [isSummarySheetOpen, setIsSummarySheetOpen] = useState(false)
 
   const investigationId = state.metadata?.id
 
@@ -240,28 +244,29 @@ export const InvestigatorSummaryView = () => {
         />
       </div>
 
-      {/* Central Section: Strategic Positioning Matrix (Left) + Diagnostic & DAFO Breakdown (Right) */}
-      <div className='grid gap-5 lg:grid-cols-12 items-stretch'>
+      {/* Central Section: Strategic Positioning Matrix (Left) + 2-Column Right Panel (IE/DAFO + Validation/CAME) */}
+      <div className='grid gap-4 xl:grid-cols-12 items-stretch'>
         {/* Left Column: Interactive Strategic Position Matrix */}
-        <div className='lg:col-span-7 xl:col-span-8 flex flex-col'>
+        <div className='xl:col-span-6 flex flex-col'>
           <StrategicPositionMatrix
             points={strategicPoints}
             activeId={state.metadata?.id || 'active-investigation'}
+            onSelectPoint={() => setIsSummarySheetOpen(true)}
             className='h-full'
-            footerHint='Haz clic en el punto para inspeccionar las coordenadas del expediente'
+            footerHint='Haz clic en el punto para inspeccionar el expediente completo'
           />
         </div>
 
-        {/* Right Column: Diagnostic Interpretation & DAFO Crossings */}
-        <div className='lg:col-span-5 xl:col-span-4 flex flex-col gap-4'>
-          {/* Card: Posicionamiento e Interpretación Metodológica */}
-          <div className='rounded-2xl border border-border/80 bg-card p-5 shadow-xs space-y-3.5'>
+        {/* Right Panel (4 Cards in a uniform 2x2 Grid with equal heights) */}
+        <div className='xl:col-span-6 grid grid-cols-1 md:grid-cols-2 gap-4 items-stretch'>
+          {/* 1. Posición Interna-Externa (Top-Left) */}
+          <div className='rounded-2xl border border-border/80 bg-card p-4 shadow-xs flex flex-col justify-between space-y-3 h-full'>
             <div className='space-y-1'>
-              <div className='flex items-center justify-between'>
-                <h4 className='font-bold text-sm text-foreground'>
-                  {t('investigator.ieMatrixPosition') || 'Posicionamiento Estratégico'}
+              <div className='flex items-center justify-between gap-2'>
+                <h4 className='font-semibold text-sm text-foreground truncate'>
+                  {t('investigator.ieMatrixPosition') || 'Posición Interna-Externa (IE Matrix)'}
                 </h4>
-                <Badge variant='outline' className='text-[10px] uppercase font-bold text-primary'>
+                <Badge variant='outline' className='text-[10px] uppercase font-bold text-primary shrink-0'>
                   {iePosition.efiCategory} / {iePosition.efeCategory}
                 </Badge>
               </div>
@@ -270,142 +275,71 @@ export const InvestigatorSummaryView = () => {
               </p>
             </div>
 
-            <div className='p-3 rounded-xl border bg-muted/30 space-y-1'>
-              <span className='text-xs font-semibold text-foreground block'>Prescripción Metodológica:</span>
-              <p className='text-xs text-muted-foreground leading-relaxed'>
-                {iePosition.prescription}
-              </p>
-            </div>
-
-            {orientation && (
-              <div className='p-3 rounded-xl border bg-primary/5 border-primary/20 text-xs space-y-1'>
-                <span className='font-semibold text-foreground block'>
-                  Vector Dominante: {analysis.relations.dominant} ({orientation.name})
-                </span>
-                <p className='text-muted-foreground text-[11px] leading-relaxed'>{orientation.action}</p>
+            <div className='space-y-2'>
+              <div className='p-2.5 rounded-xl border bg-muted/30 space-y-0.5'>
+                <span className='text-[11px] font-semibold text-foreground block'>Prescripción Metodológica:</span>
+                <p className='text-xs text-muted-foreground leading-relaxed line-clamp-2'>
+                  {iePosition.prescription}
+                </p>
               </div>
-            )}
+
+              {orientation && (
+                <div className='p-2.5 rounded-xl border bg-primary/5 border-primary/20 text-xs space-y-0.5'>
+                  <span className='font-semibold text-foreground block text-[11px]'>
+                    Vector Dominante: {analysis.relations.dominant} ({orientation.name})
+                  </span>
+                  <p className='text-muted-foreground text-[11px] leading-relaxed line-clamp-2'>{orientation.action}</p>
+                </div>
+              )}
+            </div>
           </div>
 
-          {/* Card: Aportes Quinquenales DAFO */}
-          <div className='rounded-2xl border border-border/80 bg-card p-5 shadow-xs space-y-3 flex-1 flex flex-col justify-between'>
+          {/* 2. Estado de Validación (Top-Right) */}
+          <div className='rounded-2xl border border-border/80 bg-card p-4 shadow-xs flex flex-col justify-between space-y-3 h-full'>
             <div className='space-y-0.5'>
-              <h4 className='font-bold text-sm text-foreground'>
-                {t('investigator.quinquennialIndices') || 'Distribución de Cruces DAFO'}
+              <h4 className='font-semibold text-sm text-foreground truncate'>
+                {t('investigator.validationStatus')}
               </h4>
               <p className='text-xs text-muted-foreground'>
-                Aporte relativo ({analysis.relations.evaluatedCount} cruces calificados)
+                {validation.errors} errores · {validation.warnings} advertencias · {readyStages}/{stageTotal} etapas listas
               </p>
             </div>
 
-            <div className='space-y-2.5 pt-1'>
-              {Object.entries(analysis.relations.summary).map(([quadrant, summary]) => {
-                const isDominant = analysis.relations.dominant === quadrant
-
-                return (
-                  <div key={quadrant} className='flex items-center gap-3'>
-                    <span className={`font-mono text-xs font-bold w-8 ${isDominant ? 'text-primary' : 'text-muted-foreground'}`}>
-                      {quadrant}
-                    </span>
-                    <Progress value={Math.min(100, summary.index * 40)} className='flex-1 h-2' />
-                    <span className='w-12 text-right font-mono text-xs font-medium'>
-                      {formatNumber(summary.index)}
-                    </span>
-                  </div>
-                )
-              })}
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Grid: Validation Status & CAME Summary */}
-      <div className='grid items-stretch gap-4 md:grid-cols-2'>
-        {/* 1. Validation Status */}
-        <Card>
-          <CardHeader>
-            <CardTitle>{t('investigator.validationStatus')}</CardTitle>
-            <CardDescription>
-              {validation.errors} errores · {validation.warnings} advertencias · {readyStages}/{stageTotal} etapas listas
-            </CardDescription>
-          </CardHeader>
-          <CardContent className='flex h-full flex-col justify-between gap-3'>
-            <div className='grid grid-cols-2 gap-x-4 gap-y-2.5'>
+            <div className='grid grid-cols-2 gap-x-3 gap-y-2 pt-1'>
               {Object.entries(validation.stageStatus).map(([stage, status]) => (
                 <div key={stage} className='space-y-1'>
-                  <div className='flex items-center justify-between gap-1.5'>
-                    <span className='truncate text-xs font-medium capitalize'>{stage}</span>
+                  <div className='flex items-center justify-between gap-1'>
+                    <span className='truncate text-[11px] font-medium capitalize'>{stage}</span>
                     <Badge
                       variant={status === 'ready' ? 'secondary' : status === 'warning' ? 'outline' : 'destructive'}
-                      className='px-1.5 py-0 text-[10px]'
+                      className='px-1 py-0 text-[9px]'
                     >
                       {status}
                     </Badge>
                   </div>
-                  <Progress value={status === 'ready' ? 100 : status === 'warning' ? 50 : 25} className='h-1.5' />
+                  <Progress value={status === 'ready' ? 100 : status === 'warning' ? 50 : 25} className='h-1' />
                 </div>
               ))}
             </div>
-          </CardContent>
-        </Card>
+          </div>
 
-        {/* 2. Plan de Acción CAME Summary */}
-        <Card>
-          <CardHeader>
-            <CardTitle>{t('investigator.cameSummaryTitle') || 'Plan de Acción CAME'}</CardTitle>
-            <CardDescription>
-              {analysis.came.actions.length} {t('investigator.cameSummaryDesc') || 'acciones'} · multicriterio
-            </CardDescription>
-          </CardHeader>
-          <CardContent className='space-y-3'>
-            {hasData && analysis.came.actions.length > 0 ? (
-              <>
-                {(
-                  [
-                    ['C', t('investigator.cameTypeC') || 'Corregir'],
-                    ['A', t('investigator.cameTypeA') || 'Afrontar'],
-                    ['M', t('investigator.cameTypeM') || 'Mantener'],
-                    ['E', t('investigator.cameTypeE') || 'Explotar']
-                  ] as const
-                ).map(([type, label]) => {
-                  const count = analysis.came.byType[type].length
-                  const pct = analysis.came.actions.length > 0 ? (count / analysis.came.actions.length) * 100 : 0
+          {/* 3. Índices DAFO por Cuadrante (Bottom-Left) */}
+          <DafoQuadrantIndices
+            summary={analysis.relations.summary}
+            dominant={analysis.relations.dominant}
+            evaluatedCount={analysis.relations.evaluatedCount}
+            title={t('investigator.quinquennialIndices') || 'Índices DAFO por Cuadrante'}
+            className='h-full'
+          />
 
-                  return (
-                    <div key={type} className='flex items-center gap-3'>
-                      <span className='w-24 shrink-0 text-xs font-medium truncate'>{label}</span>
-                      <Progress value={pct} className='flex-1' />
-                      <span className='w-6 text-right text-xs font-semibold'>{count}</span>
-                    </div>
-                  )
-                })}
-
-                {/* Franja de prioridades — chips inline */}
-                <div className='flex flex-wrap items-center gap-x-3 gap-y-1 rounded-lg border bg-muted/20 px-2.5 py-2'>
-                  {(['critica', 'alta', 'media', 'baja'] as const).map(cat => {
-                    const count = analysis.came.actions.filter(a => a.category === cat).length
-
-                    return (
-                      <span key={cat} className='flex items-center gap-1 text-xs font-medium text-muted-foreground'>
-                        <Badge
-                          variant={cat === 'critica' ? 'destructive' : cat === 'media' && count > 0 ? 'secondary' : 'outline'}
-                          className='px-1.5 py-0 text-[10px]'
-                        >
-                          {t(`investigator.camePriority${cat.charAt(0).toUpperCase()}${cat.slice(1)}`) || cat}
-                        </Badge>
-                        {count}
-                      </span>
-                    )
-                  })}
-                </div>
-              </>
-            ) : (
-              <p className='text-xs text-muted-foreground py-4 text-center'>
-                No hay acciones CAME registradas en esta investigación.
-              </p>
-            )}
-          </CardContent>
-        </Card>
+          {/* 4. Plan de Acción CAME (Bottom-Right) */}
+          <CameActionsIndices
+            actions={analysis.came.actions}
+            byType={analysis.came.byType}
+            title={t('investigator.cameSummaryTitle') || 'Plan de Acción CAME'}
+            className='h-full'
+          />
+        </div>
       </div>
 
       {/* Full Academic Report & Thesis Defense Synthesis (Section 19) */}
@@ -484,6 +418,13 @@ export const InvestigatorSummaryView = () => {
           )}
         </div>
       </div>
+      {/* Full Executive Diagnosis Sheet */}
+      <InvestigationSummarySheet
+        investigation={state}
+        open={isSummarySheetOpen}
+        onOpenChange={setIsSummarySheetOpen}
+        onOpenFull={() => router.push('/apps/investigator/context')}
+      />
     </div>
   )
 }

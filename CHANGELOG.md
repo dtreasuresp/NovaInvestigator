@@ -4,6 +4,35 @@
 
 All notable changes to this template will be documented in this file
 
+## v0.0.51 (2026-08-25)
+
+### Added & UI Polish
+- **Componente Global `CameActionsIndices` con Tooltips Flotantes de shadcn/ui**:
+  - Creado componente global [`src/components/ui/came-actions-indices.tsx`](file:///d:/03.%20MATRIZ%20DAFO/src/components/ui/came-actions-indices.tsx) con la misma simetría y estructura que `DafoQuadrantIndices`.
+  - Eliminados los chips fijos inferiores de prioridades para brindar una visualización 100% limpia y equilibrada en el panel 2×2.
+  - Implementados tooltips flotantes oficiales de shadcn/ui (`@/components/ui/tooltip`) interactivos por tipo de medida CAME (*Corrección*, *Afrontamiento*, *Mantenimiento*, *Explotación*), detallando el desglose exacto de criticidad (Crítica, Alta, Media, Baja) al pasar el cursor.
+  - En [`src/views/apps/investigator/summary/index.tsx`](file:///d:/03.%20MATRIZ%20DAFO/src/views/apps/investigator/summary/index.tsx):
+    - Integrado el componente global `<CameActionsIndices />` en la tarjeta inferior derecha del dashboard.
+
+## v0.0.50 (2026-08-25)
+
+### Added & UI Polish
+- **Componente Global `DafoQuadrantIndices` y Simetría 2×2 en Panel Central de Summary**:
+  - Creado componente global [`src/components/ui/dafo-quadrant-indices.tsx`](file:///d:/03.%20MATRIZ%20DAFO/src/components/ui/dafo-quadrant-indices.tsx) para renderizar los aportes relativos de los 4 cruces metodológicos DAFO (*Cruce Fortalezas × Oportunidades*, *Cruce Debilidades × Oportunidades*, *Cruce Fortalezas × Amenazas*, *Cruce Debilidades × Amenazas*) con barras de progreso estilizadas, valores numéricos exactos alineados y badge de vector dominante.
+  - En [`src/views/apps/investigator/summary/index.tsx`](file:///d:/03.%20MATRIZ%20DAFO/src/views/apps/investigator/summary/index.tsx):
+    - Reestructurado el panel derecho en una cuadrícula CSS 2×2 unificada (`grid grid-cols-1 md:grid-cols-2 gap-4 items-stretch`) garantizando dimensiones, alturas y alineaciones simétricas exactas entre las 4 tarjetas (*Posición IE*, *Estado de Validación*, *Índices DAFO por Cuadrante* y *Plan de Acción CAME*).
+
+## v0.0.49 (2026-08-25)
+
+### Added & UI Polish
+- **Componente Global `InvestigationSummarySheet` y Conexión Interactiva del Punto Matriz**:
+  - Creado componente global [`src/components/ui/investigation-summary-sheet.tsx`](file:///d:/03.%20MATRIZ%20DAFO/src/components/ui/investigation-summary-sheet.tsx) con dictamen académico integral, fundamentación matricial EFI/EFE, decisión estratégica QSPM y plan de intervención CAME detallado con navegación directa al expediente.
+  - En [`src/views/apps/investigator/summary/index.tsx`](file:///d:/03.%20MATRIZ%20DAFO/src/views/apps/investigator/summary/index.tsx):
+    - Conectado el handler `onSelectPoint` en la `StrategicPositionMatrix` para abrir el `InvestigationSummarySheet` al hacer clic en el punto flotante de la investigación.
+    - Reorganizada la sección central en una cuadrícula equilibrada de 3 columnas (Matriz a la izquierda, Posición IE e Índices DAFO al centro, y Estado de Validación y Plan CAME a la derecha).
+  - En [`src/views/dashboards/investigations/index.tsx`](file:///d:/03.%20MATRIZ%20DAFO/src/views/dashboards/investigations/index.tsx):
+    - Unificada la vista del Dashboard de Investigaciones para reutilizar el componente global `StrategicPositionMatrix` y el `InvestigationSummarySheet`.
+
 ## v0.0.48 (2026-08-25)
 
 ### Added & UI Polish

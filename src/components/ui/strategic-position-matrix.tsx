@@ -108,12 +108,12 @@ export const StrategicPositionMatrix: React.FC<StrategicPositionMatrixProps> = (
       )}
     >
       {/* Header */}
-      <div className='flex items-start gap-3.5 mb-2'>
-        <div className='p-2 rounded-xl bg-muted/60 text-foreground border border-border/60 shrink-0'>
-          <Compass className='size-5 text-foreground/80' />
+      <div className='flex items-start gap-3 mb-2'>
+        <div className='p-1.5 rounded-xl bg-muted/60 text-foreground border border-border/60 shrink-0'>
+          <Compass className='size-4 text-foreground/80' />
         </div>
         <div className='space-y-0.5 min-w-0'>
-          <h3 className='font-bold text-base sm:text-lg text-foreground tracking-tight'>{title}</h3>
+          <h3 className='font-semibold text-sm text-foreground tracking-tight'>{title}</h3>
           <p className='text-xs text-muted-foreground'>{subtitle}</p>
         </div>
       </div>
@@ -267,8 +267,11 @@ export const StrategicPositionMatrix: React.FC<StrategicPositionMatrixProps> = (
             textAnchor='middle'
             dominantBaseline='central'
             fill='#f59e0b'
-            className='font-bold text-xs tracking-wider font-sans'
-            fillOpacity='0.85'
+            fontSize='10.5'
+            fontWeight='600'
+            letterSpacing='0.04em'
+            fillOpacity='0.8'
+            fontFamily='var(--font-sans)'
           >
             II · DO REORIENTACIÓN (DO)
           </text>
@@ -280,8 +283,11 @@ export const StrategicPositionMatrix: React.FC<StrategicPositionMatrixProps> = (
             textAnchor='middle'
             dominantBaseline='central'
             fill='#10b981'
-            className='font-bold text-xs tracking-wider font-sans'
-            fillOpacity='0.85'
+            fontSize='10.5'
+            fontWeight='600'
+            letterSpacing='0.04em'
+            fillOpacity='0.8'
+            fontFamily='var(--font-sans)'
           >
             I · FO OFENSIVA (FO)
           </text>
@@ -293,8 +299,11 @@ export const StrategicPositionMatrix: React.FC<StrategicPositionMatrixProps> = (
             textAnchor='middle'
             dominantBaseline='central'
             fill='#f43f5e'
-            className='font-bold text-xs tracking-wider font-sans'
-            fillOpacity='0.85'
+            fontSize='10.5'
+            fontWeight='600'
+            letterSpacing='0.04em'
+            fillOpacity='0.8'
+            fontFamily='var(--font-sans)'
           >
             IV · DA SUPERVIVENCIA (DA)
           </text>
@@ -306,8 +315,11 @@ export const StrategicPositionMatrix: React.FC<StrategicPositionMatrixProps> = (
             textAnchor='middle'
             dominantBaseline='central'
             fill='#0ea5e9'
-            className='font-bold text-xs tracking-wider font-sans'
-            fillOpacity='0.85'
+            fontSize='10.5'
+            fontWeight='600'
+            letterSpacing='0.04em'
+            fillOpacity='0.8'
+            fontFamily='var(--font-sans)'
           >
             III · FA DEFENSIVA (FA)
           </text>
@@ -320,9 +332,12 @@ export const StrategicPositionMatrix: React.FC<StrategicPositionMatrixProps> = (
               <text
                 key={`tick-x-${tick}`}
                 x={x}
-                y={height - padding.bottom + 18}
+                y={height - padding.bottom + 16}
                 textAnchor='middle'
-                className='text-xs font-mono font-medium fill-muted-foreground'
+                fontSize='9'
+                fill='currentColor'
+                fillOpacity='0.6'
+                fontFamily='var(--font-mono)'
               >
                 {tick.toFixed(1)}
               </text>
@@ -336,10 +351,13 @@ export const StrategicPositionMatrix: React.FC<StrategicPositionMatrixProps> = (
             return (
               <text
                 key={`tick-y-${tick}`}
-                x={padding.left - 10}
-                y={y + 4}
+                x={padding.left - 8}
+                y={y + 3.5}
                 textAnchor='end'
-                className='text-xs font-mono font-medium fill-muted-foreground'
+                fontSize='9'
+                fill='currentColor'
+                fillOpacity='0.6'
+                fontFamily='var(--font-mono)'
               >
                 {tick.toFixed(1)}
               </text>
@@ -350,9 +368,14 @@ export const StrategicPositionMatrix: React.FC<StrategicPositionMatrixProps> = (
           {/* X-Axis Title */}
           <text
             x={padding.left + plotWidth / 2}
-            y={height - 10}
+            y={height - 12}
             textAnchor='middle'
-            className='text-xs font-semibold tracking-wide fill-muted-foreground font-sans'
+            fontSize='9.5'
+            fontWeight='500'
+            letterSpacing='0.04em'
+            fill='currentColor'
+            fillOpacity='0.65'
+            fontFamily='var(--font-sans)'
           >
             EFI (1.00 - 4.00)
           </text>
@@ -363,7 +386,12 @@ export const StrategicPositionMatrix: React.FC<StrategicPositionMatrixProps> = (
             x={-(padding.top + plotHeight / 2)}
             y={16}
             textAnchor='middle'
-            className='text-xs font-semibold tracking-wide fill-muted-foreground font-sans'
+            fontSize='9.5'
+            fontWeight='500'
+            letterSpacing='0.04em'
+            fill='currentColor'
+            fillOpacity='0.65'
+            fontFamily='var(--font-sans)'
           >
             EFE (1.00 - 4.00)
           </text>
