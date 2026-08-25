@@ -594,18 +594,22 @@ const UpgradeWizard = ({ initialPlanCode }: UpgradeWizardProps) => {
         <StepperContent value='confirm' className='border-none bg-transparent p-0 shadow-none'>
           <div className='space-y-8'>
             <div>
-              <h3 className='text-xl font-bold tracking-tight text-foreground'>{t('billing.viewPlans')}</h3>
-              <p className='text-sm text-muted-foreground'>{t('pricing.subtitle')}</p>
+              <h3 className='text-xl font-bold tracking-tight text-foreground'>
+                {t('pricingPage.pricingPlans') || 'Planes Disponibles'}
+              </h3>
+              <p className='text-sm text-muted-foreground'>
+                {t('pricingPage.headerSubtitle') || 'Selecciona el plan ideal para potenciar tu espacio de trabajo.'}
+              </p>
             </div>
 
             {/* Current Workspace Plan Status Banner */}
             {context.currentPlan ? (
-              <div className='flex items-center justify-between rounded-lg border border-primary/20 bg-primary/5 p-4 text-sm'>
+              <div className='flex items-center justify-between rounded-lg border border-border bg-muted/40 p-4 text-sm'>
                 <div className='flex items-center gap-3'>
                   <ShieldCheckIcon className='size-5 text-primary shrink-0' />
                   <div>
-                    <span className='text-muted-foreground'>{t('userSettings.activePlan')}: </span>
-                    <span className='font-bold text-foreground'>{context.currentPlan.name}</span>
+                    <span className='text-muted-foreground'>{t('platform.activePlan') || 'Plan activo'}: </span>
+                    <span className='font-semibold text-foreground'>{context.currentPlan.name}</span>
                     <span className='ml-1 text-xs text-muted-foreground'>
                       ({context.currentPlan.interval === 'one_time' ? 'Acceso puntual' : `Suscripción ${context.currentPlan.interval}`})
                     </span>
@@ -616,31 +620,31 @@ const UpgradeWizard = ({ initialPlanCode }: UpgradeWizardProps) => {
 
             {/* Selected Plan Context Alerts (Same Plan / Upgrade / Downgrade) */}
             {selectedPlan && selectedPlanTransition.type === 'same_plan' ? (
-              <div className='flex items-start gap-3 rounded-lg border border-sky-500/30 bg-sky-500/10 p-4 text-sm text-sky-200'>
-                <InfoIcon className='size-5 text-sky-400 shrink-0 mt-0.5' />
+              <div className='flex items-start gap-3 rounded-lg border border-sky-500/30 bg-sky-500/10 p-4 text-sm text-sky-950 dark:text-sky-200'>
+                <InfoIcon className='size-5 text-sky-600 dark:text-sky-400 shrink-0 mt-0.5' />
                 <div className='space-y-1'>
-                  <p className='font-semibold text-sky-300'>{t('userSettings.renewPlan') || 'Renovación del plan actual'}</p>
-                  <p className='text-xs text-sky-200/90 leading-relaxed'>
+                  <p className='font-semibold text-sky-900 dark:text-sky-300'>{t('userSettings.renewPlan') || 'Renovación del plan actual'}</p>
+                  <p className='text-xs text-sky-900/90 dark:text-sky-200/90 leading-relaxed'>
                     Estás seleccionando el mismo plan <strong>{selectedPlan.name}</strong> que actualmente tiene contratado tu espacio de trabajo. Al completar el pago, la suscripción se renovará a tu cargo y se desvinculará el cobro automático anterior en Stripe para que no se generen cargos dobles al propietario.
                   </p>
                 </div>
               </div>
             ) : selectedPlan && selectedPlanTransition.type === 'downgrade' ? (
-              <div className='flex items-start gap-3 rounded-lg border border-amber-500/30 bg-amber-500/10 p-4 text-sm text-amber-200'>
-                <AlertTriangleIcon className='size-5 text-amber-400 shrink-0 mt-0.5' />
+              <div className='flex items-start gap-3 rounded-lg border border-amber-500/30 bg-amber-500/10 p-4 text-sm text-amber-950 dark:text-amber-200'>
+                <AlertTriangleIcon className='size-5 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5' />
                 <div className='space-y-1'>
-                  <p className='font-semibold text-amber-300'>{t('platform.entitlementPlan')}</p>
-                  <p className='text-xs text-amber-200/90 leading-relaxed'>
+                  <p className='font-semibold text-amber-900 dark:text-amber-300'>{t('platform.entitlementPlan') || 'Plan de menor capacidad'}</p>
+                  <p className='text-xs text-amber-900/90 dark:text-amber-200/90 leading-relaxed'>
                     El plan seleccionado <strong>{selectedPlan.name}</strong> cuenta con menores características o límites de investigación que el plan activo actual. Al continuar, se te solicitará una confirmación explícita.
                   </p>
                 </div>
               </div>
             ) : selectedPlan && selectedPlanTransition.type === 'upgrade' ? (
-              <div className='flex items-start gap-3 rounded-lg border border-emerald-500/30 bg-emerald-500/10 p-4 text-sm text-emerald-200'>
-                <TrendingUpIcon className='size-5 text-emerald-400 shrink-0 mt-0.5' />
+              <div className='flex items-start gap-3 rounded-lg border border-emerald-500/30 bg-emerald-500/10 p-4 text-sm text-emerald-950 dark:text-emerald-200'>
+                <TrendingUpIcon className='size-5 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5' />
                 <div className='space-y-1'>
-                  <p className='font-semibold text-emerald-300'>{t('platform.entitlementPlan')}</p>
-                  <p className='text-xs text-emerald-200/90 leading-relaxed'>
+                  <p className='font-semibold text-emerald-900 dark:text-emerald-300'>{t('platform.entitlementPlan') || 'Ampliación de capacidades'}</p>
+                  <p className='text-xs text-emerald-900/90 dark:text-emerald-200/90 leading-relaxed'>
                     Estás ampliando las capacidades y límites de tu espacio de trabajo con el plan <strong>{selectedPlan.name}</strong>.
                   </p>
                 </div>
@@ -676,15 +680,15 @@ const UpgradeWizard = ({ initialPlanCode }: UpgradeWizardProps) => {
                       {/* Top: Status Badge */}
                       <div className='mb-3 h-6 flex items-center justify-center'>
                         {isCurrent ? (
-                          <Badge variant='outline' className='border-sky-500/40 bg-sky-500/10 text-sky-400 text-[10px] font-medium py-0.5 px-2'>
+                          <Badge variant='outline' className='border-sky-500/40 bg-sky-500/10 text-sky-700 dark:text-sky-300 text-[10px] font-medium py-0.5 px-2'>
                             Plan actual / Renovar
                           </Badge>
                         ) : transition.type === 'upgrade' ? (
-                          <Badge variant='outline' className='border-emerald-500/40 bg-emerald-500/10 text-emerald-400 text-[10px] font-medium py-0.5 px-2'>
+                          <Badge variant='outline' className='border-emerald-500/40 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 text-[10px] font-medium py-0.5 px-2'>
                             Upgrade
                           </Badge>
                         ) : transition.type === 'downgrade' ? (
-                          <Badge variant='outline' className='border-amber-500/40 bg-amber-500/10 text-amber-400 text-[10px] font-medium py-0.5 px-2'>
+                          <Badge variant='outline' className='border-amber-500/40 bg-amber-500/10 text-amber-700 dark:text-amber-300 text-[10px] font-medium py-0.5 px-2'>
                             Downgrade
                           </Badge>
                         ) : null}
@@ -728,39 +732,39 @@ const UpgradeWizard = ({ initialPlanCode }: UpgradeWizardProps) => {
             </RadioGroup>
 
             {/* Order Summary & Fiscal Note */}
-            <div className='space-y-3 rounded-lg border border-border/40 bg-muted/20 p-4'>
+            <div className='space-y-3 rounded-lg border border-border/60 bg-muted/20 p-4'>
               {context.currentPlan ? (
                 <div className='flex items-center justify-between text-sm'>
-                  <span className='text-muted-foreground'>{t('pricingPage.btnCurrentPlan')}</span>
+                  <span className='text-muted-foreground'>{t('pricingPage.btnCurrentPlan') || 'Plan actual'}</span>
                   <span className='font-medium text-foreground'>{context.currentPlan.name}</span>
                 </div>
               ) : null}
               <div className='flex items-center justify-between text-sm'>
-                <span className='text-muted-foreground'>{t('platform.entitlementPlan')}</span>
+                <span className='text-muted-foreground'>{t('platform.entitlementPlan') || 'Plan'}</span>
                 <div className='flex items-center gap-2'>
                   <span className='font-semibold text-foreground'>{selectedPlan?.name ?? '—'}</span>
                   {selectedPlanTransition.type === 'same_plan' ? (
-                    <Badge variant='outline' className='border-sky-500/40 bg-sky-500/10 text-sky-400 text-[10px] py-0 px-1.5'>
-                      Renovación / Asunción
+                    <Badge variant='outline' className='border-sky-500/40 bg-sky-500/10 text-sky-700 dark:text-sky-300 text-[10px] py-0 px-1.5'>
+                      Renovación
                     </Badge>
                   ) : selectedPlanTransition.type === 'upgrade' ? (
-                    <Badge variant='outline' className='border-emerald-500/40 bg-emerald-500/10 text-emerald-400 text-[10px] py-0 px-1.5'>
+                    <Badge variant='outline' className='border-emerald-500/40 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 text-[10px] py-0 px-1.5'>
                       Upgrade
                     </Badge>
                   ) : selectedPlanTransition.type === 'downgrade' ? (
-                    <Badge variant='outline' className='border-amber-500/40 bg-amber-500/10 text-amber-400 text-[10px] py-0 px-1.5'>
+                    <Badge variant='outline' className='border-amber-500/40 bg-amber-500/10 text-amber-700 dark:text-amber-300 text-[10px] py-0 px-1.5'>
                       Downgrade
                     </Badge>
                   ) : null}
                 </div>
               </div>
               <div className='flex items-center justify-between text-sm'>
-                <span className='text-muted-foreground'>{t('userSettings.paidBy') || 'Comprador'}:</span>
+                <span className='text-muted-foreground'>{t('userSettings.paidBy') || 'Pagado por'}:</span>
                 <span className='font-medium text-foreground'>{context.profile.email ?? '—'}</span>
               </div>
               <Separator />
               <div className='flex items-center justify-between text-base font-bold'>
-                <span>{t('userSettings.colTotal')}</span>
+                <span>{t('userSettings.colTotal') || 'Total'}</span>
                 <span className='text-foreground'>
                   {selectedPlan ? formatAmountMinor(selectedPlan.amountMinor, selectedPlan.currency) : '—'}
                   {selectedPlan ? (
@@ -797,14 +801,12 @@ const UpgradeWizard = ({ initialPlanCode }: UpgradeWizardProps) => {
       <Dialog open={downgradeModalOpen} onOpenChange={setDowngradeModalOpen}>
         <DialogContent className='sm:max-w-lg'>
           <DialogHeader>
-            <div className='flex items-center gap-3 text-amber-400'>
+            <div className='flex items-center gap-3 text-amber-500'>
               <AlertTriangleIcon className='size-6 shrink-0' />
-              <DialogTitle className='text-lg font-bold text-foreground'>
-                Confirmación de Reducción de Plan (Downgrade)
-              </DialogTitle>
+              <DialogTitle>{t('platform.downgradeWarningTitle') || 'Confirmación de Downgrade'}</DialogTitle>
             </div>
-            <DialogDescription className='text-sm text-muted-foreground pt-1'>
-              {t('billing.downgradeDesc', { plan: selectedPlan?.name ?? '', current: currentActivePlan?.name ?? '' }) || `El plan seleccionado (${selectedPlan?.name}) ofrece menores capacidades o límites que el plan actualmente activo en tu espacio de trabajo (${currentActivePlan?.name}).`}
+            <DialogDescription className='pt-2 text-sm text-muted-foreground leading-relaxed'>
+              Estás por cambiar al plan <strong>{selectedPlan?.name}</strong>, el cual reduce los límites y cuotas operativas de tu espacio de trabajo. ¿Deseas continuar hacia el portal de pago?
             </DialogDescription>
           </DialogHeader>
 
@@ -854,24 +856,23 @@ const UpgradeWizard = ({ initialPlanCode }: UpgradeWizardProps) => {
 
           <DialogFooter className='gap-2 sm:gap-0'>
             <Button
+              type='button'
               variant='outline'
-              onClick={() => {
-                setDowngradeModalOpen(false)
-                setDowngradeAgreed(false)
-              }}
+              onClick={() => setDowngradeModalOpen(false)}
               disabled={checkingOut}
             >
-              Cancelar
+              {t('common.cancel') || 'Cancelar'}
             </Button>
             <Button
-              disabled={!downgradeAgreed || checkingOut}
-              className='bg-amber-600 hover:bg-amber-500 text-white'
+              type='button'
+              variant='destructive'
+              disabled={checkingOut}
               onClick={() => {
                 setDowngradeModalOpen(false)
                 void completePurchase(true)
               }}
             >
-              {checkingOut ? 'Redirigiendo a Stripe...' : 'Confirmar y Proceder al Pago'}
+              Confirmar y Proceder al Pago
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -889,13 +890,13 @@ function CustomStepperHeader() {
   const { value, currentIndex } = useStepper()
 
   const stepMetaMap: Record<(typeof STEP_ORDER)[number], { label: string; description: string; icon: typeof HomeIcon }> = {
-    account: { label: t('userSettings.profileDetails'), description: t('userSettings.accountManagementDesc'), icon: HomeIcon },
-    personal: { label: t('userSettings.personalInfo'), description: t('userSettings.personalInfoDesc'), icon: UserIcon },
-    confirm: { label: t('userSettings.tabBilling'), description: t('userSettings.paymentMethodsTitle'), icon: CreditCardIcon }
+    account: { label: t('userSettings.profileDetails') || 'Detalles del Perfil', description: t('userSettings.accountManagementDesc') || 'Configuración y cuenta', icon: HomeIcon },
+    personal: { label: t('userSettings.personalInfo') || 'Información Personal', description: t('userSettings.personalInfoDesc') || 'Información personal y rol', icon: UserIcon },
+    confirm: { label: t('userSettings.tabBilling') || 'Facturación y Plan', description: t('userSettings.paymentMethodsTitle') || 'Selección de plan y pago', icon: CreditCardIcon }
   }
 
   return (
-    <StepperList className='flex w-full items-center justify-between gap-6 sm:gap-8 md:gap-12 lg:gap-16 border-none bg-transparent p-0 shadow-none'>
+    <StepperList className='flex w-full items-center justify-between gap-4 sm:gap-6 md:gap-8 border-none bg-transparent p-0 shadow-none'>
       {STEP_ORDER.map((step, index) => {
         const meta = stepMetaMap[step]
         const StepIcon = meta.icon
@@ -910,14 +911,14 @@ function CustomStepperHeader() {
               separator={false}
               className='data-[orientation=horizontal]:flex-row data-[orientation=horizontal]:items-center data-[orientation=horizontal]:justify-start data-[orientation=horizontal]:flex-initial flex flex-row items-center gap-3.5 bg-transparent p-0 hover:bg-transparent focus:bg-transparent data-active:bg-transparent group cursor-pointer'
             >
-              {/* Circle Icon Container */}
+              {/* Circle Icon Container with Semantic Tokens */}
               <div
                 className={`size-10 rounded-full flex items-center justify-center shrink-0 transition-all duration-200 ${
                   isCurrent
-                    ? 'bg-white text-black shadow-md ring-1 ring-white/20'
+                    ? 'bg-primary text-primary-foreground shadow-sm ring-2 ring-primary/20'
                     : isCompleted
-                      ? 'bg-white text-black shadow-sm'
-                      : 'bg-zinc-800 text-zinc-400 border border-zinc-700/50'
+                      ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/40'
+                      : 'bg-muted text-muted-foreground border border-border/50 group-hover:border-border'
                 }`}
               >
                 <StepIcon className='size-5 shrink-0' />
@@ -926,10 +927,12 @@ function CustomStepperHeader() {
               {/* Title & Subtitle */}
               <div className='flex flex-col text-left'>
                 <span
-                  className={`text-sm font-semibold tracking-tight transition-colors ${
-                    isCurrent || isCompleted
-                      ? 'text-white font-bold'
-                      : 'text-zinc-400 font-medium'
+                  className={`text-sm tracking-tight transition-colors ${
+                    isCurrent
+                      ? 'text-foreground font-semibold'
+                      : isCompleted
+                        ? 'text-foreground/90 font-medium'
+                        : 'text-muted-foreground font-normal group-hover:text-foreground'
                   }`}
                 >
                   {meta.label}
@@ -942,7 +945,7 @@ function CustomStepperHeader() {
 
             {/* Separator Chevron between steps */}
             {index < STEP_ORDER.length - 1 ? (
-              <div className='flex items-center justify-center text-zinc-600 shrink-0'>
+              <div className='flex items-center justify-center text-muted-foreground/30 shrink-0'>
                 <ChevronRightIcon className='size-4' />
               </div>
             ) : null}
@@ -971,17 +974,17 @@ function WizardFooter({
   const isLast = currentIndex === totalSteps - 1
 
   return (
-    <div className='flex items-center justify-between border-t border-border/40 pt-6 mt-8'>
+    <div className='flex items-center justify-between border-t border-border pt-6 mt-8'>
       {/* Previous Button */}
       <Button
         type='button'
         variant='outline'
         onClick={goPrevious}
         disabled={!canGoPrevious || checkingOut}
-        className='gap-2 text-xs font-semibold uppercase tracking-wider'
+        className='gap-2'
       >
         <ArrowLeftIcon className='size-4' />
-        {t('users.prev')}
+        {t('common.previous') || 'Anterior'}
       </Button>
 
       {/* Next / Proceed Button */}
@@ -990,9 +993,9 @@ function WizardFooter({
           type='button'
           disabled={!hasValidPlan || checkingOut}
           onClick={onCompletePurchase}
-          className='gap-2 bg-emerald-600 hover:bg-emerald-500 text-white shadow-md text-xs font-semibold uppercase tracking-wider px-6'
+          className='gap-2 px-6'
         >
-          {checkingOut ? 'Redirigiendo a Stripe...' : t('billing.upgradePlan')}
+          {checkingOut ? 'Redirigiendo a Stripe...' : t('billing.upgradePlan') || 'Mejorar Plan'}
           <CreditCardIcon className='size-4' />
         </Button>
       ) : (
@@ -1000,9 +1003,9 @@ function WizardFooter({
           type='button'
           onClick={goNext}
           disabled={!canGoNext || checkingOut}
-          className='gap-2 bg-foreground text-background hover:bg-foreground/90 text-xs font-semibold uppercase tracking-wider px-6'
+          className='gap-2 px-6'
         >
-          {t('users.next')}
+          {t('common.next') || 'Siguiente'}
           <ArrowRightIcon className='size-4' />
         </Button>
       )}

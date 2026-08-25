@@ -4,6 +4,32 @@
 
 All notable changes to this template will be documented in this file
 
+## v0.0.44 (2026-08-25)
+
+### Fixed & UI Design System
+- **Estandarización 100% de Tokens Semánticos shadcn/ui en Asistente de Planes e Investigaciones**:
+  - En [`src/views/pages/pricing/billing/upgrade/index.tsx`](file:///d:/03.%20MATRIZ%20DAFO/src/views/pages/pricing/billing/upgrade/index.tsx):
+    - Reemplazados todos los colores fijos (`zinc-800`, `text-white`, `text-amber-200`) por tokens semánticos adaptativos (`bg-primary`, `text-primary-foreground`, `bg-muted`, `text-foreground`, `text-muted-foreground`, `border-border`).
+    - Corregido el contraste de alertas contextuales para modo claro y oscuro (`text-amber-950 dark:text-amber-200`, `text-sky-950 dark:text-sky-200`, `text-emerald-950 dark:text-emerald-200`).
+    - Resueltas las claves i18n pendientes de traducción (`billing.viewPlans`, `pricing.subtitle`, `userSettings.activePlan`, `users.prev`, `users.next`).
+    - Estandarizados los botones de navegación inferior con componentes nativos de shadcn/ui (`variant='outline'` y `variant='default'`).
+  - En [`src/app/(pages)/apps/investigator/layout-client.tsx`](file:///d:/03.%20MATRIZ%20DAFO/src/app/(pages)/apps/investigator/layout-client.tsx):
+    - Alineado el botón **"Gestor"** en la esquina superior derecha (`items-start` con alineación limpia a la primera línea del título).
+
+## v0.0.43 (2026-08-25)
+
+### Added & UI Tokens
+- **Calibración de Tipografía de Cabeceras y Sistema de Semáforo para Stepper**:
+  - En [`src/app/(pages)/apps/investigator/layout-client.tsx`](file:///d:/03.%20MATRIZ%20DAFO/src/app/(pages)/apps/investigator/layout-client.tsx), alineados los tokens de tipografía de cabecera con el estándar oficial de `StageHeader`:
+    - Kicker: `text-muted-foreground mb-1 text-xs font-semibold tracking-widest uppercase`.
+    - Título: `font-heading text-2xl font-semibold` idéntico a la pantalla del Gestor de Investigaciones.
+    - Subtítulo: `text-muted-foreground mt-1 text-sm`.
+    - Contenedor de cabecera: `flex flex-wrap items-end justify-between gap-4`.
+  - Implementado el sistema de 3 colores para los indicadores del Stepper:
+    1. **Verde (Todo OK)**: Borde e icono verde esmeralda (`border-emerald-500/60 text-emerald-400`) y punto esmeralda (`bg-emerald-500`) cuando `stageStatus === 'ready'`.
+    2. **Naranja (Revisar / Pendiente)**: Borde e icono naranja ámbar (`border-amber-500/60 text-amber-400`) y punto ámbar (`bg-amber-500`) cuando la etapa tiene información pendiente o advertencias (`stageStatus !== 'ready'`).
+    3. **Blanco (Activo / Pestaña abierta)**: Fondo blanco sólido con texto negro (`bg-white text-black ring-2 ring-white/20`) y título en negrita para la pestaña activa en primer plano.
+
 ## v0.0.42 (2026-08-25)
 
 ### Added & UI Architecture
