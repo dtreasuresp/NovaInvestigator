@@ -4,6 +4,15 @@
 
 All notable changes to this template will be documented in this file
 
+## v0.0.46 (2026-08-25)
+
+### UI & Aesthetics Polish
+- **Limpieza y Transparencia del Formulario de Contexto de Investigación**:
+  - En [`src/views/apps/investigator/context/index.tsx`](file:///d:/03.%20MATRIZ%20DAFO/src/views/apps/investigator/context/index.tsx):
+    - Eliminado el contenedor `<Card>` con fondo y bordes para renderizar el formulario sobre fondo transparente con espaciado natural.
+    - Simplificada la cabecera de datos de expediente (`state.metadata.title`, ID y estado operativo).
+    - Ajustado el estado de carga (`Skeleton`) para coincidir con la disposición limpia y transparente sin contenedor de tarjeta.
+
 ## v0.0.45 (2026-08-25)
 
 ### Added & Billing Experience

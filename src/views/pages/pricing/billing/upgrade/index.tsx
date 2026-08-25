@@ -56,7 +56,7 @@ const STEP_ORDER = ['account', 'personal', 'confirm'] as const
 const intervalLabel = (plan: BillingPlan): string => {
   if (plan.interval === 'one_time') {
     if (plan.durationSeconds === null || plan.durationSeconds === undefined) {
-      return '/pago único'
+      return '/único'
     }
 
     const hours = Math.round(plan.durationSeconds / 3600)
@@ -719,7 +719,7 @@ const UpgradeWizard = ({ initialPlanCode }: UpgradeWizardProps) => {
                       {/* Center: Big Price Centered */}
                       <div className='my-6 flex items-baseline justify-center gap-0.5'>
                         <span className='text-base font-semibold text-foreground'>$</span>
-                        <span className='text-4xl font-extrabold tracking-tight text-foreground'>
+                        <span className='text-3xl font-extrabold tracking-tight text-foreground'>
                           {formatPlanPrice(plan.amountMinor)}
                         </span>
                         <span className='text-xs text-muted-foreground'>{intervalLabel(plan)}</span>
@@ -748,7 +748,7 @@ const UpgradeWizard = ({ initialPlanCode }: UpgradeWizardProps) => {
             </RadioGroup>
 
             {/* Order Summary & Fiscal Note */}
-            <div className='space-y-3 rounded-lg border border-border/60 bg-muted/20 p-4'>
+            <div className='space-y-3'>
               {context.currentPlan ? (
                 <div className='flex items-center justify-between text-sm'>
                   <span className='text-muted-foreground'>{t('pricingPage.btnCurrentPlan') || 'Plan actual'}</span>
