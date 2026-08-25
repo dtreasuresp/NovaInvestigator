@@ -4,9 +4,27 @@
 
 All notable changes to this template will be documented in this file
 
+## v0.0.47 (2026-08-25)
+
+### UI & Aesthetics Polish
+- **Estandarización de Layouts Limpios y Transparentes en Toda la Suite de Investigación y Gestor**:
+  - En [`src/views/apps/investigator/investigations/index.tsx`](file:///d:/03.%20MATRIZ%20DAFO/src/views/apps/investigator/investigations/index.tsx):
+    - Eliminado el contenedor `<Card>` general del listado para integrar la barra de conteos y ordenamiento directamente sobre el fondo con sus tarjetas individuales limpias.
+  - En [`src/views/apps/investigator/shared/factor-editor.tsx`](file:///d:/03.%20MATRIZ%20DAFO/src/views/apps/investigator/shared/factor-editor.tsx) (EFI y EFE):
+    - Eliminados los contenedores `<Card>` de `FactorEditor` y `RatingScale`, integrando las tablas de fortalezas/oportunidades y debilidades/amenazas de forma transparente y fluida.
+  - En [`src/views/apps/investigator/dafo/index.tsx`](file:///d:/03.%20MATRIZ%20DAFO/src/views/apps/investigator/dafo/index.tsx):
+    - Eliminado el contenedor `<Card>` del panel principal de cruces y simplificado el esqueleto de carga.
+  - En [`src/views/apps/investigator/qspm/index.tsx`](file:///d:/03.%20MATRIZ%20DAFO/src/views/apps/investigator/qspm/index.tsx):
+    - Eliminado el contenedor `<Card>` envolvente de la tabla matriz cuantitativa.
+  - En [`src/views/apps/investigator/came/index.tsx`](file:///d:/03.%20MATRIZ%20DAFO/src/views/apps/investigator/came/index.tsx):
+    - Eliminados los contenedores `<Card>` de la configuración de ponderación de criterios y del panel de fichas de acciones CAME.
+  - En [`src/views/apps/investigator/summary/index.tsx`](file:///d:/03.%20MATRIZ%20DAFO/src/views/apps/investigator/summary/index.tsx):
+    - Eliminado el contenedor `<Card>` del reporte académico final.
+
 ## v0.0.46 (2026-08-25)
 
 ### UI & Aesthetics Polish
+
 - **Limpieza y Transparencia del Formulario de Contexto de Investigación**:
   - En [`src/views/apps/investigator/context/index.tsx`](file:///d:/03.%20MATRIZ%20DAFO/src/views/apps/investigator/context/index.tsx):
     - Eliminado el contenedor `<Card>` con fondo y bordes para renderizar el formulario sobre fondo transparente con espaciado natural.
@@ -16,6 +34,7 @@ All notable changes to this template will be documented in this file
 ## v0.0.45 (2026-08-25)
 
 ### Added & Billing Experience
+
 - **Pre-selección Automática de Plan, Deep-linking en URL y Bloqueo de Try Demo**:
   - En [`src/views/pages/pricing/billing/upgrade/index.tsx`](file:///d:/03.%20MATRIZ%20DAFO/src/views/pages/pricing/billing/upgrade/index.tsx):
     - Al cargar el asistente de upgrade, se auto-selecciona el plan actualmente activo en el espacio de trabajo (`payload.currentPlan.code`) y se sincroniza reactivamente la URL en el navegador (`/pages/billing/upgrade?plan=...`) sin recarga de página.
@@ -26,6 +45,7 @@ All notable changes to this template will be documented in this file
 ## v0.0.44 (2026-08-25)
 
 ### Fixed & UI Design System
+
 - **Estandarización 100% de Tokens Semánticos shadcn/ui en Asistente de Planes e Investigaciones**:
   - En [`src/views/pages/pricing/billing/upgrade/index.tsx`](file:///d:/03.%20MATRIZ%20DAFO/src/views/pages/pricing/billing/upgrade/index.tsx):
     - Reemplazados todos los colores fijos (`zinc-800`, `text-white`, `text-amber-200`) por tokens semánticos adaptativos (`bg-primary`, `text-primary-foreground`, `bg-muted`, `text-foreground`, `text-muted-foreground`, `border-border`).
@@ -38,6 +58,7 @@ All notable changes to this template will be documented in this file
 ## v0.0.43 (2026-08-25)
 
 ### Added & UI Tokens
+
 - **Calibración de Tipografía de Cabeceras y Sistema de Semáforo para Stepper**:
   - En [`src/app/(pages)/apps/investigator/layout-client.tsx`](file:///d:/03.%20MATRIZ%20DAFO/src/app/(pages)/apps/investigator/layout-client.tsx), alineados los tokens de tipografía de cabecera con el estándar oficial de `StageHeader`:
     - Kicker: `text-muted-foreground mb-1 text-xs font-semibold tracking-widest uppercase`.
@@ -52,6 +73,7 @@ All notable changes to this template will be documented in this file
 ## v0.0.42 (2026-08-25)
 
 ### Added & UI Architecture
+
 - **Jerarquía Visual de Cabecera y Stepper en Investigaciones**:
   - En [`src/app/(pages)/apps/investigator/layout-client.tsx`](file:///d:/03.%20MATRIZ%20DAFO/src/app/(pages)/apps/investigator/layout-client.tsx), reestructurada la disposición de elementos:
     - Cabecera superior con kicker temático (`01 · Contexto`, `02 · Diagnóstico interno`, etc.), título principal grande y subtítulo a la izquierda.
@@ -63,6 +85,7 @@ All notable changes to this template will be documented in this file
 ## v0.0.41 (2026-08-25)
 
 ### Added & UI Polish
+
 - **Alineación Visual del Stepper con el Patrón de "Mejorar Plan"**:
   - En [`src/app/(pages)/apps/investigator/layout-client.tsx`](file:///d:/03.%20MATRIZ%20DAFO/src/app/(pages)/apps/investigator/layout-client.tsx), eliminado el contenedor tipo card para adoptar el diseño limpio, transparente y horizontal del wizard de "Mejorar Plan":
     - Contenedores circulares con iconos de dominio (`FileText`, `SlidersHorizontal`, `Globe`, `LayoutGrid`, `Calculator`, `ListTodo`, `Award`).
@@ -74,16 +97,19 @@ All notable changes to this template will be documented in this file
 ## v0.0.40 (2026-08-24)
 
 ### Added & UI Components
+
 - **Integración del Componente Stepper Canónico basado en `@stepperize/react`**:
   - Instalado `@stepperize/react` e integrado en [`src/components/ui/stepper.tsx`](file:///d:/03.%20MATRIZ%20DAFO/src/components/ui/stepper.tsx) con soporte reactivo completo para navegación, indicadores personalizables (`indicators.completed`), orientación responsive automática y accesibilidad WAI-ARIA para tabs.
   - Creado el componente variante [`src/components/shadcn-studio/stepper/stepper-07.tsx`](file:///d:/03.%20MATRIZ%20DAFO/src/components/shadcn-studio/stepper/stepper-07.tsx) con la estética Shadcn Studio.
   - Actualizado [`src/app/(pages)/apps/investigator/layout-client.tsx`](file:///d:/03.%20MATRIZ%20DAFO/src/app/(pages)/apps/investigator/layout-client.tsx) para renderizar el nuevo Stepper en las 7 etapas canónicas del análisis estratégico.
 
 ### Fixed & Navigation
+
 - **Navegación al Paso 1 al Abrir o Crear Investigaciones**:
   - En [`src/views/apps/investigator/investigations/index.tsx`](file:///d:/03.%20MATRIZ%20DAFO/src/views/apps/investigator/investigations/index.tsx), corregido el botón "Abrir expediente", el botón "+ Nueva Investigación" y "Cargar demo" para ejecutar `router.push('/apps/investigator/context')` tras cargar el estado, redirigiendo de inmediato al usuario al primer paso del expediente.
 
 ### Refactored & API Architecture
+
 - **Migración Integral de Rutas `/api/ai` a `/api/novai`**:
   - Migrados todos los Route Handlers de IA al prefijo canónico de dominio `/api/novai`:
     - `/api/novai/chat` (streaming de chat con contexto y roles)
@@ -97,6 +123,7 @@ All notable changes to this template will be documented in this file
 ## v0.0.39 (2026-08-24)
 
 ### Added & UI/UX Architecture
+
 - **Navegación por Stepper Responsive en el Módulo de Investigaciones**:
   - En [`src/app/(pages)/apps/investigator/layout-client.tsx`](file:///d:/03.%20MATRIZ%20DAFO/src/app/(pages)/apps/investigator/layout-client.tsx), sustituidos los tabs superiores por un componente `<Stepper />` interactivo y adaptativo en 7 etapas canónicas:
     1. **Contexto de la investigación** (`/apps/investigator/context`)
@@ -118,6 +145,7 @@ All notable changes to this template will be documented in this file
 ## v0.0.38 (2026-08-24)
 
 ### Fixed & Cloud Infrastructure
+
 - **Corrección de Enlace 404 en Botón Flotante de Upgrade**:
   - En [`UpgradePro.tsx`](file:///d:/03.%20MATRIZ%20DAFO/src/components/layout/UpgradePro.tsx), corregida la ruta de navegación de `/pages/pricing/billing/upgrade/` a la ruta canónica de Next.js App Router [`/pages/billing/upgrade`](file:///d:/03.%20MATRIZ%20DAFO/src/app/(pages)/pages/billing/upgrade/page.tsx).
   - En [`next.config.ts`](file:///d:/03.%20MATRIZ%20DAFO/next.config.ts), agregado redireccionamiento permanente 308 desde `/pages/pricing/billing/upgrade` hacia `/pages/billing/upgrade` para capturar cualquier prefetch o enlace residual.
@@ -128,6 +156,7 @@ All notable changes to this template will be documented in this file
 ## v0.0.37 (2026-08-24)
 
 ### Added & Production Infrastructure
+
 - **Integración Oficial de `@vercel/analytics`**:
   - Instalado `@vercel/analytics` e integrado el componente `<Analytics />` en [`src/app/layout.tsx`](file:///d:/03.%20MATRIZ%20DAFO/src/app/layout.tsx) para captura de analíticas y Core Web Vitals en tiempo real en Vercel.
 - **Pipeline de Despliegue en 2 Fases (Preview $\rightarrow$ Production)**:
@@ -141,6 +170,7 @@ All notable changes to this template will be documented in this file
 ## v0.0.36 (2026-08-24)
 
 ### Fixed & Cognitive AI Governance
+
 - **Aislamiento Hermético de Organizaciones y Erradicación de Alucinaciones Cruzadas**:
   - En [`context-engine.ts`](file:///d:/03.%20MATRIZ%20DAFO/src/features/novai/context-engine.ts) y [`general.ts`](file:///d:/03.%20MATRIZ%20DAFO/src/features/novai/adapters/general.ts), eliminado el volcado masivo de títulos de investigaciones en el System Prompt general, delegando el acceso a expedientes en herramientas gobernadas (`list_investigations`, `get_investigation_details`).
   - Blindada la confidencialidad entre expedientes prohibiendo inferencias o vínculos operativos entre empresas distintas.
@@ -159,6 +189,7 @@ All notable changes to this template will be documented in this file
 ## v0.0.35 (2026-08-24)
 
 ### Added & UI Modernization
+
 - **Instalación Oficial y Completa de la Suite Vercel AI Elements (`@ai-elements/all`)**:
   - Instalados los 49 componentes oficiales intactos en [`src/components/ai-elements/`](file:///d:/03.%20MATRIZ%20DAFO/src/components/ai-elements/) sin alteraciones directas a los archivos fuente del paquete oficial.
   - Conservado el ecosistema completo de librerías para uso futuro (`streamdown`, `@xyflow/react`, `tokenlens`, `shiki`, `media-chrome`, `embla-carousel-react`, etc.).
@@ -172,8 +203,8 @@ All notable changes to this template will be documented in this file
 
 ## v0.0.34 (2026-08-24)
 
-
 ### Added & UI Modernization
+
 - **Migración a la Suite Oficial Vercel `@ai-elements`**:
   - Extraídos e integrados los componentes oficiales de `@ai-elements` en [`src/components/ai-elements/`](file:///d:/03.%20MATRIZ%20DAFO/src/components/ai-elements/) (`Conversation`, `Message`, `PromptInput`, `Reasoning`, `Tool`, `Suggestions`, `Artifact`, `Shimmer`, `Attachments`, `Agent`).
   - Creada la skill canónica en [`.agents/skills/ai-elements/SKILL.md`](file:///d:/03.%20MATRIZ%20DAFO/.agents/skills/ai-elements/SKILL.md) y su espejo en [`.claude/skills/ai-elements/SKILL.md`](file:///d:/03.%20MATRIZ%20DAFO/.claude/skills/ai-elements/SKILL.md).
@@ -186,13 +217,14 @@ All notable changes to this template will be documented in this file
     - [`index.tsx`](file:///d:/03.%20MATRIZ%20DAFO/src/views/apps/novai/index.tsx): Contenedor de streaming anclado con `<Conversation>` y `<ConversationScrollButton>`.
 
 ### Fixed
+
 - **Corrección de Rebote Infinito en Gráfico de Posicionamiento Estratégico**:
   - En [`positioning-matrix.tsx`](file:///d:/03.%20MATRIZ%20DAFO/src/views/dashboards/investigations/components/positioning-matrix.tsx): aplicado `pointer-events-none select-none` y `wrapperStyle={{ pointerEvents: 'none' }}` en `<Tooltip />`, desactivada la animación de coordenadas (`isAnimationActive={false}`), retirado el `hover:scale-125` en SVG a favor de transición de opacidad y memoizado el cálculo de coordenadas de cuadrante con `useMemo`.
 
 ## v0.0.33 (2026-08-24)
 
-
 ### Added & Architecture Modernization
+
 - **Adopción de Vercel AI SDK Core (`ai`, `@ai-sdk/openai`, `@ai-sdk/google`)**:
   - Implementado `streamText` con Tool Calling Loop autónomo y gobernado (`stopWhen: isStepCount(5)`) en [`src/features/novai/service.ts`](file:///d:/03.%20MATRIZ%20DAFO/src/features/novai/service.ts).
   - Creado el adaptador de herramientas `getNovaiVercelTools` en [`src/features/novai/tools.ts`](file:///d:/03.%20MATRIZ%20DAFO/src/features/novai/tools.ts) tipado con Zod (`inputSchema`) para ejecución segura de queries ReBAC/RLS.
@@ -206,6 +238,7 @@ All notable changes to this template will be documented in this file
 ## v0.0.32 (2026-08-24)
 
 ### Added
+
 - **Presupuesto y Ventana Deslizante Inteligente de Tokens para NovAi (`src/features/novai/token-budget.ts`)**:
   - Implementada la clase `NovaiTokenBudget` con estimación heurística multilingüe y de código/JSON (`estimateTokens`, `estimateMessagesTokens`).
   - Algoritmo de recorte inteligente (`trimConversationHistory`): preserva el System Prompt intacto, ancla el primer mensaje del usuario (objetivo/tema original de la conversación) y mantiene una ventana deslizante de los mensajes más recientes respetando la integridad de pares `tool_calls` y resultados de `tool`.
@@ -220,6 +253,7 @@ All notable changes to this template will be documented in this file
 ## v0.0.31 (2026-08-23)
 
 ### Fixed & Improved
+
 - **Auditoría de Calidad de Software y Tipado Estricto Cero `any`**:
   - **Erradicación de `z.any()`**: Reemplazados los tipos laxos en `dafoProposalRequestSchema` y `qspmProposalRequestSchema` por `z.custom<InvestigationState>()` en [`src/features/novai/schema.ts`](file:///d:/03.%20MATRIZ%20DAFO/src/features/novai/schema.ts).
   - **Tipado Estricto de Repositorios y Memoria**: Definidas interfaces `NovaiConversationRow`, `NovaiMessageRow` y `NovaiMemoryRow` en [`src/features/novai/conversations-repository.ts`](file:///d:/03.%20MATRIZ%20DAFO/src/features/novai/conversations-repository.ts) y [`src/features/novai/memory-engine.ts`](file:///d:/03.%20MATRIZ%20DAFO/src/features/novai/memory-engine.ts), erradicando el uso de `r: any`, `m: any` y `row: any`.
@@ -232,6 +266,7 @@ All notable changes to this template will be documented in this file
 ## v0.0.30 (2026-08-23)
 
 ### Removed & Consolidated
+
 - **Unificación Arquitectural Completa de IA en `src/features/novai/`**:
   - Eliminada totalmente la carpeta obsoleta y duplicada `src/features/ai/`.
   - Migrados todos los esquemas (`AiMessage`, `AiQuotaInfo`, `PREDEFINED_PROMPTS`, `aiChatRequestSchema`, `aiReportRequestSchema`) a [`src/features/novai/schema.ts`](file:///d:/03.%20MATRIZ%20DAFO/src/features/novai/schema.ts).
@@ -242,6 +277,7 @@ All notable changes to this template will be documented in this file
 ## v0.0.29 (2026-08-23)
 
 ### Fixed & Improved
+
 - **Blindaje de System Prompt Anti-Prompt-Leaking y Cero Fuga de UUIDs (`src/features/novai/methodology-knowledge.ts`)**:
   - Eliminados ejemplos textuales literales del System Prompt para erradicar el *meta-prompt leaking* (cuando modelos como Nemotron citaban las directivas internas literalmente).
   - Incorporada directiva canónica de **Confidencialidad Técnica**: prohibición estricta de citar o exponer UUIDs o hashes de base de datos (`c9b5ad15`, `f3fcc658`, etc.), obligando al modelo a usar títulos de negocio y etiquetas legibles.
@@ -258,6 +294,7 @@ All notable changes to this template will be documented in this file
 ## v0.0.28 (2026-08-23)
 
 ### Added
+
 - **Plataforma de Agentes NovAi Pro y 7 Modos Canónicos (`src/features/novai/modes.ts`, `src/features/novai/schema.ts`)**:
   - Definidos los 7 modos operativos especializados: `CHAT`, `CONSULTANT`, `ANALYST`, `RESEARCHER`, `DEVELOPER`, `ARCHITECT`, `OPERATOR`, cada uno con directivas de sistema especializadas, asignación de herramientas y perfiles de riesgo.
 - **Model Router Inteligente por Tareas y Modelos (`src/features/novai/model-router.ts`, `src/features/novai/service.ts`)**:
@@ -274,6 +311,7 @@ All notable changes to this template will be documented in this file
 ## v0.0.27 (2026-08-23)
 
 ### Added
+
 - **Base de Conocimiento Maestra de Metodología y Diagnóstico Estratégico (`doc/plans/BASE_CONOCIMIENTO_METODOLOGIA_ESTRATEGICA_NOVAI.md`, `src/features/novai/methodology-knowledge.ts`)**:
   - Documento canónico maestro que formaliza el marco epistemológico y matemático para matrices EFI, EFE, DAFO de impacto cruzado ($FO, DO, FA, DA$), matrices cuantitativas QSPM y planes de acción CAME.
   - Compilación tipada en TypeScript (`methodology-knowledge.ts`) con axiomas matemáticos ($\sum w_i = 1.00$, escalas $0-3$ y $1-4$), directivas críticas de consultoría senior y reglas de discriminación causal.
@@ -291,6 +329,7 @@ All notable changes to this template will be documented in this file
 ## v0.0.26 (2026-08-23)
 
 ### Fixed
+
 - **Eliminación de Polling de 15s y Arquitectura Reactiva en Tiempo Real (`src/views/apps/novai/index.tsx`, `src/hooks/use-investigator-analysis.tsx`)**:
   - Eliminados los timers continuos de `setInterval(..., 15000)` que consultaban `/api/ai/quota` cada 15 segundos sin necesidad de tráfico.
   - Sincronización multi-pestaña 100% reactiva mediante `BroadcastChannel('novastore:ai-quota')` en 0ms y con cero peticiones de red al interactuar con la IA, complementado con re-sincronización pasiva en eventos de foco de ventana (`focus`) y cambio de visibilidad (`visibilitychange`).
@@ -309,6 +348,7 @@ All notable changes to this template will be documented in this file
   - Sincronizada la proyección de `tenant_entitlements` con las cuotas del plan activo actual.
 
 ### Added
+
 - **Rediseño Estructural de la UI de NovAi y Menú Lateral Sub-Sidebar (`src/views/apps/novai/index.tsx`, `src/views/apps/novai/components/novai-sidebar.tsx`, `src/views/apps/novai/components/novai-composer.tsx`)**:
   - Reubicado el sidebar de chats de NovAi como un sub-sidebar adosado a la izquierda del área de trabajo, maximizando el espacio central disponible para las respuestas de la IA.
   - Diseñado el composer de redacción con comportamiento `sticky bottom-0 z-20` respaldado por un acabado traslúcido glassmorphic (`bg-background/80 backdrop-blur-xl`), manteniendo el campo de texto inmóvil en el borde inferior mientras el historial de chats se desplaza suavemente en el área central.
@@ -332,6 +372,7 @@ All notable changes to this template will be documented in this file
 ## v0.0.25 (2026-08-22)
 
 ### Fixed
+
 - **Optimización de Auto-Guardado y Estabilidad de Foco en la UI (`use-investigator-analysis.tsx`, `factor-editor.tsx`, `came/index.tsx`, `qspm/index.tsx`, `dafo/index.tsx`)**:
   - Calibrado el temporizador de auto-guardado a 3500ms (en lugar de 500ms), reduciendo drásticamente la proliferación de versiones innecesarias en base de datos durante la redacción continua.
   - Implementada actualización de estado no destructiva al completar el guardado remoto: preserva los inputs en caliente sin clobbering de arrays ni desmontaje de elementos activos en el DOM.
@@ -340,6 +381,7 @@ All notable changes to this template will be documented in this file
 - **Generación Resiliente de Idempotency Key en el Cliente (`src/lib/investigations/client.ts`)**: Se implementó la función helper `generateClientUuid()` con fallback multinivel (`crypto.randomUUID()` -> `crypto.getRandomValues()` -> generador RFC4122 determinista) para la creación de investigaciones en el cliente. Esto elimina el error `crypto.randomUUID is not a function` que ocurría cuando usuarios o miembros del equipo accedían desde otras máquinas por red local / IP HTTP (contextos no seguros) o navegadores sin soporte directo de Web Crypto.
 
 ### Added
+
 - **Diálogo Modal para CRUD de Alternativas Estratégicas (`src/views/apps/investigator/qspm/strategy-modal-dialog.tsx`)**: Nuevo componente accesible `StrategyModalDialog` que permite crear y editar alternativas estratégicas con selector de cuadrantes DAFO (`FO`, `DO`, `FA`, `DA`), orientación metodológica explicada, inputs de nombre y descripción validados, eliminando los inputs directos apretados del layout anterior.
 - **Claves i18n para Modal y Métricas QSPM (`src/locales/{es,en,de,ko,pt}.ts`)**: Sincronizadas las 15 nuevas claves (`editAlternative`, `newAlternative`, `strategyModalTitle`, `strategyModalDesc`, `strategyCode`, `strategyName`, `strategyQuadrant`, `strategyDescription`, `selectAsWinner`, `selectedAsWinner`, `totalAlternatives`, `evaluationProgress`, `strategyWinnerBadge`, `qspmTas`) en los 5 idiomas con tipos verificados en TypeScript.
 - **Renderizador Matemático Universal con KaTeX (`src/views/apps/novai/components/markdown-renderer.tsx` y `src/app/globals.css`)**: Integración completa del motor tipográfico KaTeX para renderizar fórmulas matemáticas elegantes tanto en bloque (`$$...$$`, `\[...\]`) como en línea (`$...$`, `\(...\)`), eliminando el texto crudo tipo código o regex.
@@ -347,6 +389,7 @@ All notable changes to this template will be documented in this file
 - **Directiva Global de Formato Matemático Pedagógico (`src/features/ai/context-builder.ts` y `src/features/novai/adapters/general.ts`)**: Estandarización obligatoria para NovAi en cualquier cálculo o fórmula de la plataforma (EFI/EFE, DAFO, QSPM, CAME, métricas SaaS, financieras y consultas cuantitativas), estructurando las respuestas con: *1) Encabezado temático con emoji, 2) Fórmula matemática formal en LaTeX, 3) Sección "Donde:" con desglose de cada variable, y 4) Sustitución numérica paso a paso*.
 
 ### Updated
+
 - **Rediseño Completo de UX/UI en la Matriz QSPM (`src/views/apps/investigator/qspm/index.tsx`)**:
   - **Visualización Continua Sin Pestañas (Full-Width Dashboard)**: La tabla matricial QSPM ocupa el 100% del ancho del viewport en la sección superior, permitiendo evaluar cómodamente todas las alternativas frente a los 20 factores sin forzar scrolls horizontales apretados.
   - **Separadores Visuales de Grupo con Subtotales Dinámicos**: Inserción de filas divisorias limpias para *Factores Internos (EFI)* y *Factores Externos (EFE)* con sus subtotales de pesos y puntuaciones de atractivo ponderado.
@@ -359,13 +402,16 @@ All notable changes to this template will be documented in this file
 - **Documentación Maestra Actualizada (`doc/plans/PLAN_MAESTRO_NOVASTORE_FULL_2026-08-07.md`)**: Registrada la Decisión de Arquitectura 42 que formaliza el rediseño continuo a ancho completo y el CRUD exclusivo en modal para QSPM.
 
 ### Added
+
 - **Card Resumen del Plan de Acción CAME (`src/views/apps/investigator/summary/index.tsx`)**: Nueva tarjeta dedicada que reemplaza a la eliminada "Radiografía del expediente", con desglose visual de acciones CAME por tipo (Correctivas / Preventivas / De Mejora / Adaptativas) y por prioridad multicriterio (Crítica / Alta / Media / Baja) usando barras `Progress` y `Badge`, consistente con el lenguaje visual existente. Consume `analysis.came` ya calculado — sin fetch adicional.
 - **Claves i18n CAME (`src/locales/{es,en,de,ko,pt}.ts`)**: 12 claves nuevas (`cameSummaryTitle`, `cameSummaryDesc`, `cameByType`, `cameByPriority`, `cameTypeC/A/M/E`, `camePriorityCritica/Alta/Media/Baja`) sincronizadas al 100% en los 5 idiomas, con tipos declarados en el catálogo canónico `es.ts`.
 
 ### Removed
+
 - **Sección "Radiografía del expediente" (`summary/index.tsx`)**: Eliminada por duplicación visual con las cards superiores (Estado de Validación, Índices DAFO, IE Matrix). Sin impacto analítico: la IA consume las estadísticas server-side vía `buildQualityInsights()` en el prompt, no desde la UI.
 
 ### Updated
+
 - **Tipografía shadcn y alturas uniformes en el Resumen (`src/views/apps/investigator/summary/index.tsx`)**: Eliminados los `font-mono` indebidos de la card CAME (descripción, contadores y franja de prioridades) para respetar la fuente sans del design system (§9.1). Card "Estado de Validación" rediseñada a layout compacto en 2 columnas internas (etapa + Badge + mini-barra) con pie destacado "N/M etapas listas", igualando la altura vertical de las 4 cards del grid (`items-stretch` + `h-full`).
 - **Rediseño Card CAME y Skeleton del Resumen (`src/views/apps/investigator/summary/index.tsx`)**: La card "Plan de Acción CAME" se integra como 4ª columna del grid (`lg:grid-cols-4`), alineada en la misma fila que Validación, Índices DAFO e IE Matrix. Nuevo diseño compacto según mockup aprobado: lista vertical de tipos (Correctivas/Preventivas/Mejora/Adaptativas) con barra proporcional + contador, y franja inferior de prioridades como chips inline (Badge + cifra). El skeleton de carga ahora renderiza 4 cards en grid `lg:grid-cols-4`, reflejando el layout real. Clave i18n `cameSummaryDesc` simplificada a "acciones" en los 5 idiomas.
 - **Migración `investigation_ai_reports` aplicada a Supabase vía MCP**: Tabla de persistencia del último dictamen IA aplicada y verificada en la base remota (RLS + 4 políticas, PK, índice tenant, 2 triggers). Security Advisor sin hallazgos nuevos.
@@ -373,6 +419,7 @@ All notable changes to this template will be documented in this file
 ## v0.0.23 (2026-08-22)
 
 ### Added
+
 - **Enriquecimiento del Dictamen IA con Estadística Real y Auditoría de Calidad (`src/features/ai/context-builder.ts`, `src/features/ai/service.ts`)**:
   - Nueva función `buildQualityInsights()` que inyecta al System Prompt un bloque de métricas calculadas del expediente: DAFO evaluadas/pendientes/cobertura/dominante/confianza, QSPM ganadora + TAS + diff con 2ª, CAME por tipo y prioridad, pesos EFI/EFE ≠1.00 y factores sin evidencia por ID.
   - Capítulo 5 del reporte ("Auditoría de Calidad, Vacíos y Recomendaciones de Mejora") en los 5 idiomas: exige citar números exactos y proponer correcciones accionables por ID ante datos ambiguos o incompletos.
@@ -388,6 +435,7 @@ All notable changes to this template will be documented in this file
   - Tras el primario `openai/gpt-4o-mini`, se prueban automáticamente los fallbacks `:free` sin tarjeta: `llama-3.3-70b-instruct`, `qwen-3-coder`, `mistral-small-3.2-24b-instruct` y `gemma-3-27b-it` (configurable vía `OPENROUTER_FREE_MODELS`). Aplicado en chat, NovAi (con tool-calling) y generación de reportes.
 
 ### Fixed
+
 - **Lint y tipos del slice AI/Investigator**: eliminados imports no usados (`removeFactor`, `AiQuotaInfo`, `PanelLeftClose`, `Sparkles`), corregida firma de `streamAiConsultation` para aceptar `inventory`, restaurada la cadena multi-proveedor de `service.ts` (OpenRouter → Zen → GitHub → Pollinations → Cerebras → Groq → Gemini) reemplazando `console.warn` por `logger` estructurado (§15).
 - **Descuento de Cuota Mensual de IA (`consume_billing_entitlement_usage` & `get_billing_entitlement_usage`)**:
   - **Corrección de Capability en Postgres (`2026-08-25T00-00-00_fix_ai_capability_and_rpcs.sql`)**: Corregido el guard interno de la RPC `consume_billing_entitlement_usage` que validaba erróneamente la capability inexistente `investigations.ai_copilot` en lugar de la capability canónica `ai.chat` / `ai.free_chat`.
@@ -400,18 +448,21 @@ All notable changes to this template will be documented in this file
 ## v0.0.22 (2026-08-22)
 
 ### Added
+
 - **NovAi Tool Calling Engine con ReBAC y Consulta en Tiempo Real (Decisión 45 — `PLAN_MAESTRO_COPILOT_IA §8`)**:
   - **Catálogo de 7 Herramientas ReBAC (`src/features/novai/tools.ts`)**: Implementación server-side de `list_investigations`, `get_investigation_details`, `get_investigations_stats`, `list_kanban_tasks`, `get_kanban_board_summary`, `list_workspace_members_and_teams` y `get_tenant_billing_and_quota_info`.
   - **Triple Validación ReBAC y Aislamiento RLS**: Todas las consultas operan bajo el `tenant_id` y permisos de equipo/workspace del Principal autenticado. Recursos privados o de otros teams quedan estrictamente restringidos.
   - **Hidratación Automática del Resumen del Tenant (`fetchTenantLiveOverview`)**: Inyección instantánea en el System Prompt de investigaciones activas, tareas de Kanban y equipos, permitiendo a NovAi responder preguntas transversales sin latencia adicional y eliminando respuestas que alegaban falta de acceso en tiempo real.
 
 ### Fixed
+
 - **Depuración de Módulo Legacy en Modal de Planes**: Eliminado el registro residual `ai_copilot` de `public.platform_modules` en Supabase, dejando activos exclusivamente los 3 módulos canónicos (`Investigator`, `Kanban`, `NovAi`).
 - **Claridad Visual en Contador de Cuotas (`novai-sidebar.tsx`)**: Actualizada la UI para mostrar con total transparencia la cuota mensual (`X / Y mes`) y el tope diario (`Z de W disponibles`).
 
 ## v0.0.21 (2026-08-22)
 
 ### Fixed
+
 - **Sincronización Completa de Migraciones Supabase PostgreSQL**:
   - Aplicadas las 20 migraciones pendientes del repositorio a la base de datos de producción/desarrollo (`NovaStore`), abarcando: configuración de duración de planes (`plan_duration_seconds`), tablas y RLS de proyectos (`kanban_foundation`), gestión de equipos y avatares (`workspace_teams_schema`, `teams_tags_column`, `reorganize_avatars_storage`), triggers y políticas de perfiles (`handle_new_user_trigger`, `profiles_update_policy`, `profiles_tenant_read_policy`), actualización de permisos de workspaces/tenants (`workspaces_tenants_update_policies`), RPCs de facturación y direcciones (`fix_purchase_delegation_rpc_ambiguity`, `billing_purchase_address`, `billing_purchase_personal_info`), unificación de trials (`trial_entitlements_unification`), transiciones de investigaciones (`fix_investigations_lock_transition_trigger`), y arquitectura RBAC/ReBAC + NovAi Copilot (`ai_copilot_entitlements_and_usage`, `register_ai_platform_module_and_capabilities`, `rbac_scope_and_rebac`, `ai_daily_policy_and_tenant_entitlements`, `fix_consume_monthly_tenant_entitlements`).
   - Verificación exitosa del 100% de la suite con `pnpm check-types` (0 errores) y `pnpm test` (136 tests pasados en 36 suites).
@@ -419,6 +470,7 @@ All notable changes to this template will be documented in this file
 ## v0.0.20 (2026-08-21)
 
 ### Updated
+
 - **Instrucciones Canónicas para Asistentes de IA (`AGENTS.md`)**:
   - Actualización integral del documento rector de IA para alinearlo al 100% con la arquitectura real de NovaStore (Next.js 16.2.11 App Router, React 19.2.4, Supabase PostgreSQL con RLS nativo, Stripe Billing 22.4, Tailwind CSS v4, i18n en 5 idiomas y NovAi Copilot).
   - Eliminadas todas las referencias obsoletas a Prisma, Jest, NextAuth, Pino y rutas legacy (`docs/`, `src/styles/globals.css`).
@@ -427,12 +479,14 @@ All notable changes to this template will be documented in this file
 ## v0.0.19 (2026-08-22)
 
 ### Fixed
+
 - **Platform Billing — Modal entitlements no salta a página 1 al editar (TanStack autoResetPageIndex)** (`src/views/apps/platform/platform-billing/index.tsx:212-310`): causa verificada `autoResetPageIndex:true` por defecto → cada `setPlanForm` (Input `limitValue`/`Switch`/`Remove`) disparaba `onPaginationChange({pageIndex:0})`. Fix SODA `src/views`: `useMemo` para `columns`, `getRowId: row=>row.entitlementKey`, `autoResetPageIndex:false`/`autoResetExpanded:false`, reset explícito `{pageIndex:0}` solo al abrir modal y clamp `pageIndex` al eliminar fila; `§14.3` paginación cliente. (`doc/plans/PLAN_MAESTRO_COPILOT_IA §7.1`)
 - **AI Quota mensual `limits.ai_queries_monthly` no descontaba — quedaba en `10` tras usos** (`src/features/ai/service.ts:23-216`, `supabase/migrations/2026-08-22T03-00-00_fix_consume_monthly_tenant_entitlements.sql`): causa verificada inconsistencia fuentes — `get_billing_entitlement_usage` (fix `2026-08-22:52-108`) resuelve 3 fuentes `override→subscription→tenant_entitlements`, pero `consume_billing_entitlement_usage` (`2026-08-19:80-113`) solo 2 (`override→subscription`) → límite hidratado vía `tenant_entitlements` (seed `2026-08-21`) nunca incrementaba `billing_entitlement_usage` (`usage_count` 0 → `remaining 10`). Migración alinea `consume` con 3er bloque `tenant_entitlements`, corrige matriz `missing→0 denied` vs `null→unlimited`, y `FOR UPDATE` transaccional. Service usa `logger` (`§15`) en lugar de `console.*`, log `warn` si `allowed===false` y fallback `getAiQuotaInfo` ya no enmascara error con `usage 0`. (`doc/plans/PLAN_MAESTRO_COPILOT_IA §7.2`)
 
 ## v0.0.18 (2026-08-23)
 
 ### Added
+
 - **NovAi Workspace Conversacional Estilo Claude / ChatGPT y Botón Flotante Global (Decisión 44)**:
   - **Workspace Dedicado `/apps/novai`**: Rediseño integral de la UI en `src/views/apps/novai/` con sidebar de historial de conversaciones (`ChatThread`), agrupación por fecha (*Hoy*, *Ayer*, *Últimos 7 días*, *Anteriores*), búsqueda, renombrado y persistencia local (`novai_threads_v2`).
   - **Empty State Hero con Capability Cards**: Sugerencias de prompt interactivas clasificadas por módulo (EFI/EFE, DAFO/CAME, QSPM, Kanban).
@@ -441,12 +495,14 @@ All notable changes to this template will be documented in this file
   - **Botón Flotante de IA Universal (`GlobalAiCopilot`)**: Incorporado a nivel global en `src/app/(pages)/layout.tsx` para permitir acceso al asistente en cualquier pantalla de NovaStore, ocultándose automáticamente en `/apps/novai`.
 
 ### Fixed
+
 - **Modelos Canónicos Gemini y Conmutación Resiliente**: Actualizado `DEFAULT_GEMINI_MODELS` en `src/features/ai/gemini-client.ts` a modelos activos (`gemini-2.5-flash`, `gemini-flash-latest`, `gemini-2.5-flash-lite`, `gemini-2.5-pro`), resolviendo errores 404/503.
 - **Prevención de Excepciones en WritableStream SSE**: Implementado helper `safeWrite` y `safeClose` en `/api/ai/chat`, `/api/investigations/ai/chat` y `/api/ai/report`, eliminando fallos `Invalid state: WritableStream is closed`.
 
 ## v0.0.17 (2026-08-23)
 
 ### Added
+
 - **NovAi — Módulo IA Independiente con `ai.*` y Chat Página + Flotante Preservado (Decisión 43)**:
   - **Módulo Plataforma `novai`**: `platform_modules(module_key='novai', route_prefix='/apps/novai', display_order 12)` en `2026-08-23T03-37-55_ai_independent_novai.sql`. Capabilities nuevas `ai.chat / ai.free_chat / ai.report` (`resource='ai'`) otorgadas a `owner/admin/analyst` (alias `investigations.ai_*` se mantiene 1 versión para compat). SODA: `src/features/novai/` independiente (`schema.ts`, `service.ts`, `adapters/investigator|kanban|general`).
   - **API Genérica Compartida**: `src/app/api/ai/(quota|chat|report)/route.ts` con `NovaiContext` discriminado (`investigator|kanban|general`) + Zod, reutiliza quota tenant-global `limits.ai_queries_monthly/daily` (compartida). Alias `src/app/api/investigations/ai/*` preservado para compatibilidad Investigador.
@@ -454,12 +510,14 @@ All notable changes to this template will be documented in this file
   - **Vínculo Investigador**: `adapters/investigator.ts` delega a `buildInvestigationSystemPrompt` existente; Investigador sigue siendo un consumidor de NovAi, no su dueño. Kanban `kanbanAdapter` y `generalAdapter` listos para expansión.
 
 ### Fixed
+
 - **Daniel (plan `basic`/Individual sin IA) ya no ve `∞`**: `service.ts` ahora exige `limits.ai_queries_monthly` (AND, no OR) y `2026-08-22T02-50-40` distingue falta (`0`) vs explícito ilimitado (`null` desde UI en blanco). Admin configura todo vía `platform-billing`.
 - **Sincronización y consistencia de tipos i18n en todos los idiomas (`src/locales/`)**: Sincronizadas las claves faltantes en `es.ts` (`platform.aiDailyQueries10Preset`, `platform.entitlementsCount`) y en los diccionarios `en.ts`, `de.ts`, `pt.ts`, `ko.ts` (`common.of`, `common.page`, migración de `investigator.ai*` al namespace `novai.*`, namespaces `forms` y `userSettings`), garantizando 100% de cumplimiento estricto con `TranslationSchema` y resolviendo todos los errores de `tsc --noEmit`.
 
 ## v0.0.16 (2026-08-21)
 
 ### Added
+
 - **Authorization Engine Híbrido RBAC + ReBAC + ABAC/Entitlements (Decisión 42 — PLAN_REFACTOR_RBAC)**:
   - **PDP central `src/features/access/authorization-engine.ts`**: implementa la fórmula `ACCESS = Tenant AND Role AND Relationship AND Entitlement AND Policy` (§11) con la regla de oro *Roles determine responsibility. Relationships determine reach. Entitlements determine availability. Policies determine conditions.* (§20). Expone `authorize({ subject, action, resource, context }) → { allowed, reason }` (§18) distinguendo `AUTHORIZATION_DENIED` (403) vs `ENTITLEMENT_REQUIRED` (402) vs `POLICY_DENIED` (429) (§13), evolutivo a OpenFGA/Cedar sin reescribir callers.
   - **Base de Datos — `role_scope` y ReBAC (§15-16, §5-6)**: migración `2026-08-21T01-26-50_rbac_scope_and_rebac.sql` añade `public.roles.scope` (`tenant|workspace|team|platform`), FK `team_members.role_id` hacia `roles(scope=team)` (roles `team_leader/analyst/viewer/member`), tabla `resource_relationships` (`member_of / belongs_to`) y proyección local `tenant_entitlements` (Stripe como source-of-truth, NovaStore proyección local §20). Respeta tenant como frontera sagrada (§2).
@@ -469,11 +527,13 @@ All notable changes to this template will be documented in this file
   - **UI SODA**: `AiCopilotSheet` muestra `mes: X/Y` + `Hoy: A/B` y bloquea envío si diario agotado; `use-investigator-analysis` expone quota extendida (`AiQuotaInfo` con `daily*` y `monthly/daily` anidados); `.env.example:46` documenta `GEMINI_API_KEY` + `GROQ_API_KEY` opcional.
 
 ### Updated
+
 - **Arquitectura SODA verificada**: ningún cambio crea carpetas regadas; `src/app` solo rutas, `src/views` solo controllers, `src/features` contiene toda la lógica, `src/domain`/`src/infrastructure` intactos. MCP Supabase ya configurado en `.mcp.json:3` (`https://mcp.supabase.com/mcp`, `mcp-remote`); migraciones siguen patrón imperativo `supabase migration new` + `supabase db push` tras `supabase link` / dashboard.
 
 ## v0.0.15 (2026-08-20)
 
 ### Added
+
 - **Registro de Módulo de Plataforma `ai_copilot` y Capacidades Granulares de IA (Decisión 41.3)**:
   - **Módulo de Plataforma en Base de Datos (`platform_modules`)**:
     - Registrado formalmente el módulo `ai_copilot` en `public.platform_modules` (`display_order: 15`, `route_prefix: '/apps/investigator'`) para permitir la validación comercial nativa de `modules.ai_copilot` en planes de suscripción.
@@ -483,6 +543,7 @@ All notable changes to this template will be documented in this file
     - Migración SQL `supabase/migrations/2026-08-20T02-00-00_register_ai_platform_module_and_capabilities.sql` ejecutada y sincronizada, vinculando las nuevas capacidades a los roles `owner`, `admin` y `analyst`.
 
 ### Fixed
+
 - **Gobernanza Estricta de Entitlements de IA y Refactorización del Selector en Planes (Decisión 41.2)**:
   - **Gobernanza 100% Basada en Plataforma (Sin Fallbacks Hardcodeados)**:
     - Eliminadas todas las suposiciones y valores por defecto en código en `src/features/ai/service.ts` (`getAiQuotaInfo`).
@@ -496,6 +557,7 @@ All notable changes to this template will be documented in this file
 ## v0.0.14 (2026-08-19)
 
 ### Added
+
 - **Refinamiento de Copiloto IA: Carga Anticipada de Entitlements, Prevención de Flickering, Soporte Multilingüe Completo (5 Idiomas) y Botón Flotante (Decisión 41.1)**:
   - **Carga Anticipada de Políticas y Cuota en Proveedor Global (`useInvestigatorAnalysis`)**:
     - Centralización de `aiQuota`, `isLoadingAiQuota` y `refreshAiQuota` en el contexto `InvestigatorAnalysisProvider`, disparando la consulta de cuotas y entitlements al montar el workspace.
@@ -513,6 +575,7 @@ All notable changes to this template will be documented in this file
 ## v0.0.13 (2026-08-19)
 
 ### Added
+
 - **Copiloto Estratégico de IA y Redacción Inteligente de Dictámenes Metodológicos (Decisión 41)**:
   - **Motor de Inteligencia Artificial Multi-proveedor con Streaming SSE**: Integración con Google Gemini API (`gemini-2.5-flash` / `gemini-2.0-flash` vía Google AI Studio) con cuota de alta escala (1,500 solicitudes/día gratuitas y 1M de tokens de contexto) y fallback automático a Groq Cloud (`llama-3.3-70b-versatile`).
   - **Gobernanza Comercial de Entitlements y Cuotas Mensuales**:
@@ -585,6 +648,7 @@ All notable changes to this template will be documented in this file
   - Internacionalización de etiquetas de auditoría en tarjetas de investigación (`investigator.author`, `investigator.modifiedBy`, etc.).
 
 ### Fixed
+
 - **Corrección de Trigger PostgreSQL en Bloqueo de Expedientes (`PATCH /api/investigations/:id`)**:
   - Publicada la migración forward `supabase/migrations/2026-08-19T13-45-00_fix_investigations_lock_transition_trigger.sql` corrigiendo la función trigger `public.validate_investigation_transition()`.
   - Reconocimiento de `is_locked` y `access_level` como modificaciones válidas de negocio bajo control de versiones optimista (`new.version = old.version + 1`), eliminando el error PostgreSQL `22023 (investigation update must change a business field)` y el timeout de 18.4s en peticiones `PATCH`.
@@ -606,6 +670,7 @@ All notable changes to this template will be documented in this file
 ## v0.0.12 (2026-08-18)
 
 ### Added
+
 - **Mecanismo Automatizado de Auditoría y Escaneo Estático de Cadenas Sin Traducir (`pnpm run i18n:scan`)** ([i18n-audit-views.ts](/scripts/i18n-audit-views.ts), `package.json`):
   - Herramienta de detección que analiza sintácticamente todas las vistas JSX/TSX en `src/views/` y componentes de `src/components/layout` y `src/components/shared`.
   - Detección de nodos de texto JSX huérfanos y propiedades de texto de interfaz (`placeholder`, `title`, `aria-label`, `description`, `label`, `alt`) no encapsuladas en llamadas a `t()`.
@@ -626,6 +691,7 @@ All notable changes to this template will be documented in this file
 ## v0.0.11 (2026-08-18)
 
 ### Added
+
 - **Internacionalización Integral de Vistas de Gestión de Usuarios y Accesos (`/apps/users`, `/apps/roles`, `/apps/permissions`)**:
   - `/apps/users/list` ([user-table-filters.tsx](/src/views/apps/users/list/user-table-filters.tsx), [user-table-toolbar.tsx](/src/views/apps/users/list/user-table-toolbar.tsx), [user-table-columns.tsx](/src/views/apps/users/list/user-table-columns.tsx), [user-pagination.tsx](/src/views/apps/users/list/user-pagination.tsx)):
     - Conexión de todos los filtros de rol y estado (`Activo`, `Pendiente`, `Suspendido`, `Inactivo`, `Todos`), barra de herramientas (búsqueda, exportaciones CSV/Excel/JSON, importación, botón `Añadir Nuevo Usuario`), columnas de la tabla y controles de paginación (`Mostrando {from} a {to} de {total} registros`, `Anterior`, `Siguiente`).
@@ -653,6 +719,7 @@ All notable changes to this template will be documented in this file
 ## v0.0.10 (2026-08-18)
 
 ### Added
+
 - **Internacionalización Integral de la Página de Planes Comerciales (`/pages/pricing`)** ([pricing/index.tsx](/src/views/pages/pricing/index.tsx)):
   - Traducción al 100% de la interfaz fija, encabezados, kickers, subtítulos, badges de planes (`Actual`, `Vitalicio`, `Gratis`), intervalos (`/mes`, `/año`, `/{hours}h demo`, `/{hours}h pase`) y botones de acción (`Plan actual`, `Gestionar plan`, `Iniciar prueba`, `Comprar acceso`, `Elegir plan`, `A consultar`).
   - Matriz comparativa de capacidades y límites conectada a `useI18n()` con formateadores numéricos parametrizados: `Ilimitado` / `Unlimited` / `무제한`, `Hasta {count} proyectos`, `Hasta {count} miembros`, `1 usuario`, `{count} activas`.
@@ -670,6 +737,7 @@ All notable changes to this template will be documented in this file
 ## v0.0.9 (2026-08-18)
 
 ### Added
+
 - **Pipeline Automatizado de Traducción con Inteligencia Artificial (Google Gemini API)** ([scripts/i18n-sync.ts](/scripts/i18n-sync.ts), `package.json`):
   - Herramienta de sincronización CLI impulsada por modelos Gemini (`gemini-flash-latest`, `gemini-flash-lite-latest`, `gemini-pro-latest`) con prompt de dominio estratégico y extracción JSON estricta.
   - Detección automática de claves faltantes en diccionarios derivados (`en`, `de`, `pt`, `ko`) tomando `src/locales/es.ts` como fuente canónica de verdad.
@@ -700,6 +768,7 @@ All notable changes to this template will be documented in this file
 ## v0.0.8 (2026-08-18)
 
 ### Added
+
 - **Sincronización en Tiempo Real y Auto-Recuperación de Conflictos de Concurrencia (HTTP 409)** ([use-investigator-analysis.tsx](/src/hooks/use-investigator-analysis.tsx), [client.ts](/src/lib/investigations/client.ts)):
   - Canal reactivo de Supabase Realtime (`postgres_changes` en `public.investigations`) que propaga automáticamente ediciones de otros miembros del equipo si el cliente local no tiene cambios pendientes de guardado.
   - Mecanismo de re-negociación y reconciliación optimista ante colisiones de guardado concurrente (HTTP 409 `VERSION_CONFLICT`), recuperando la versión más reciente del servidor y sincronizando el estado sin interrupciones.
@@ -718,11 +787,13 @@ All notable changes to this template will be documented in this file
   - Alineación estricta de columnas para peso, calificación y puntaje con ancho fijo, y consolidación del total general en `TableFooter`.
 
 ### Fixed
+
 - **Validación de Tipos y Prevención de Desbordamiento de Columnas**: Estabilizado ancho de columna para fuente de evidencia (`w-[30rem]`) y corregidos tipos en formulario de metadatos de contexto.
 
 ## v0.0.7 (2026-08-17)
 
 ### Added
+
 - **Arquitectura Zero-State y Sincronización Dinámica de Dimensiones Arbitrarias ($M \times N$)** ([domain.ts](/src/utils/investigator/domain.ts), [use-investigator-analysis.tsx](/src/hooks/use-investigator-analysis.tsx), [demo.ts](/src/utils/investigator/demo.ts)):
   - Función `createBlankState()` que inicializa nuevas investigaciones en cero absoluto ($0$ factores internos, $0$ factores externos, $0$ relaciones, $0$ estrategias y $0$ fichas CAME), eliminando cualquier pre-población forzada de 5 factores.
   - Sincronizador puro `syncRelationships(internal, external, existing)` que calcula y sincroniza de forma reactiva la matriz de cruces $|Internal| \times |External|$ ante la inserción, edición de tipo o eliminación de factores arbitrarios (ej. 2 F, 1 D, 3 O, 2 A), preservando evaluaciones preexistentes y depurando relaciones huérfanas.
@@ -758,6 +829,7 @@ All notable changes to this template will be documented in this file
   - Tarjeta de Posicionamiento Estratégico Interno-Externo (IE Matrix 3×3) con prescripción metodológica y vector dominante.
 
 ### Fixed
+
 - **Validación de Tipos TypeScript y Control de Nulos**: Corregidos tipos en `Select` de ShadCN y definiciones de columnas en `@tanstack/react-table` en las vistas DAFO, QSPM y CAME.
 
 ## v0.0.6 (2026-08-16)
@@ -1066,12 +1138,3 @@ All notable changes to this template will be documented in this file
   - User Profile
   - Login Page
   - Register Page
-  - Forgot Password Page
-  - Verify Email Page
-  - Reset Password Page
-  - Two Steps Verification Page
-  - Error Page
-- Forms & Tables
-  - Form Layouts
-  - Form Validation
-  - Data Table

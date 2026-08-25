@@ -47,7 +47,7 @@ export const InvestigatorContextView = () => {
   }
 
   return (
-    <div className='flex flex-col gap-6'>
+    <div className='flex flex-col gap-6 mt-10'>
       {/* Title & Metadata Details */}
       <div className='space-y-1'>
         <h3 className='text-lg font-semibold text-foreground'>

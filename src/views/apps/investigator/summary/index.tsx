@@ -375,13 +375,13 @@ export const InvestigatorSummaryView = () => {
       </div>
 
       {/* Full Academic Report & Thesis Defense Synthesis (Section 19) */}
-      <Card>
-        <CardHeader className='flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 space-y-0 pb-4'>
+      <div className='space-y-4'>
+        <div className='flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-1'>
           <div className='space-y-1'>
-            <CardTitle>{t('investigator.academicReportTitle')}</CardTitle>
-            <CardDescription>
+            <h3 className='text-lg font-semibold text-foreground'>{t('investigator.academicReportTitle')}</h3>
+            <p className='text-xs text-muted-foreground'>
               {t('investigator.academicReportDesc')}
-            </CardDescription>
+            </p>
           </div>
           {hasData && (
             <div className='flex flex-wrap items-center gap-2 shrink-0'>
@@ -417,8 +417,8 @@ export const InvestigatorSummaryView = () => {
               </Button>
             </div>
           )}
-        </CardHeader>
-        <CardContent>
+        </div>
+        <div>
           {hasData ? (
             <div className='rounded-xl border bg-muted/20 p-4 text-xs leading-relaxed text-foreground/90 max-h-150 overflow-y-auto'>
               <MarkdownRenderer content={currentDisplayReport} />
@@ -448,8 +448,8 @@ export const InvestigatorSummaryView = () => {
               </div>
             </div>
           )}
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </div>
   )
 }

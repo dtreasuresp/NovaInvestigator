@@ -599,93 +599,92 @@ export const InvestigatorInvestigationsView = () => {
         </Card>
       )}
 
-      <Card>
-        <CardHeader>
-          <div className='flex flex-wrap items-center justify-between gap-3'>
-            <CardTitle className='text-base'>
-              {isLoading ? (
-                <Skeleton className='h-5 w-64' />
-              ) : (
-                <div className='flex flex-wrap items-center gap-2 text-sm'>
-                  <span className='font-semibold text-foreground'>
-                    {totalCount} {t('investigator.totalFiles')}
-                  </span>
-                  <span className='text-muted-foreground'>·</span>
-                  <span className='text-foreground font-medium'>
-                    {activeCount} {t('investigator.activeFiles')}
-                  </span>
-                  {closedCount > 0 && (
-                    <>
-                      <span className='text-muted-foreground'>·</span>
-                      <span className='text-muted-foreground'>
-                        {closedCount} {t('investigator.closedFiles')}
-                      </span>
-                    </>
-                  )}
-                  {archivedCount > 0 && (
-                    <>
-                      <span className='text-muted-foreground'>·</span>
-                      <span className='text-muted-foreground'>
-                        {archivedCount} {t('investigator.archivedFiles')}
-                      </span>
-                    </>
-                  )}
-                </div>
-              )}
-            </CardTitle>
-
-            <div className='flex items-center gap-2'>
-              {/* Sort Dropdown */}
-              <Select
-                value={sortBy}
-                onValueChange={(val: SortOption | null) => {
-                  if (val) handleSortChange(val)
-                }}
-              >
-                <SelectTrigger className='h-8 text-xs gap-1.5 w-auto min-w-[190px]'>
-                  <ArrowUpDown className='size-3.5 text-muted-foreground shrink-0' />
-                  <SelectValue>
-                    {sortBy === 'updated_desc' && t('investigator.sortUpdatedDesc')}
-                    {sortBy === 'updated_asc' && t('investigator.sortUpdatedAsc')}
-                    {sortBy === 'title_asc' && t('investigator.sortTitleAsc')}
-                    {sortBy === 'title_desc' && t('investigator.sortTitleDesc')}
-                    {sortBy === 'created_desc' && t('investigator.sortCreatedDesc')}
-                    {sortBy === 'last_opened_desc' && t('investigator.sortLastOpenedDesc')}
-                  </SelectValue>
-                </SelectTrigger>
-                <SelectContent align='end'>
-                  <SelectItem value='updated_desc' className='text-xs'>
-                    {t('investigator.sortUpdatedDesc')}
-                  </SelectItem>
-                  <SelectItem value='updated_asc' className='text-xs'>
-                    {t('investigator.sortUpdatedAsc')}
-                  </SelectItem>
-                  <SelectItem value='title_asc' className='text-xs'>
-                    {t('investigator.sortTitleAsc')}
-                  </SelectItem>
-                  <SelectItem value='title_desc' className='text-xs'>
-                    {t('investigator.sortTitleDesc')}
-                  </SelectItem>
-                  <SelectItem value='created_desc' className='text-xs'>
-                    {t('investigator.sortCreatedDesc')}
-                  </SelectItem>
-                  <SelectItem value='last_opened_desc' className='text-xs'>
-                    {t('investigator.sortLastOpenedDesc')}
-                  </SelectItem>
-                </SelectContent>
-              </Select>
-
-              <Badge
-                variant={syncStatus === 'error' ? 'destructive' : 'outline'}
-                aria-live='polite'
-                aria-label={`Sincronización: ${syncStatusLabels[syncStatus] || syncStatus}`}
-              >
-                {syncStatusLabels[syncStatus] || syncStatus}
-              </Badge>
-            </div>
+      <div className='space-y-4'>
+        <div className='flex flex-wrap items-center justify-between gap-3'>
+          <div>
+            {isLoading ? (
+              <Skeleton className='h-5 w-64' />
+            ) : (
+              <div className='flex flex-wrap items-center gap-2 text-sm'>
+                <span className='font-semibold text-foreground'>
+                  {totalCount} {t('investigator.totalFiles')}
+                </span>
+                <span className='text-muted-foreground'>·</span>
+                <span className='text-foreground font-medium'>
+                  {activeCount} {t('investigator.activeFiles')}
+                </span>
+                {closedCount > 0 && (
+                  <>
+                    <span className='text-muted-foreground'>·</span>
+                    <span className='text-muted-foreground'>
+                      {closedCount} {t('investigator.closedFiles')}
+                    </span>
+                  </>
+                )}
+                {archivedCount > 0 && (
+                  <>
+                    <span className='text-muted-foreground'>·</span>
+                    <span className='text-muted-foreground'>
+                      {archivedCount} {t('investigator.archivedFiles')}
+                    </span>
+                  </>
+                )}
+              </div>
+            )}
           </div>
-        </CardHeader>
-        <CardContent className='space-y-3'>
+
+          <div className='flex items-center gap-2'>
+            {/* Sort Dropdown */}
+            <Select
+              value={sortBy}
+              onValueChange={(val: SortOption | null) => {
+                if (val) handleSortChange(val)
+              }}
+            >
+              <SelectTrigger className='h-8 text-xs gap-1.5 w-auto min-w-[190px]'>
+                <ArrowUpDown className='size-3.5 text-muted-foreground shrink-0' />
+                <SelectValue>
+                  {sortBy === 'updated_desc' && t('investigator.sortUpdatedDesc')}
+                  {sortBy === 'updated_asc' && t('investigator.sortUpdatedAsc')}
+                  {sortBy === 'title_asc' && t('investigator.sortTitleAsc')}
+                  {sortBy === 'title_desc' && t('investigator.sortTitleDesc')}
+                  {sortBy === 'created_desc' && t('investigator.sortCreatedDesc')}
+                  {sortBy === 'last_opened_desc' && t('investigator.sortLastOpenedDesc')}
+                </SelectValue>
+              </SelectTrigger>
+              <SelectContent align='end'>
+                <SelectItem value='updated_desc' className='text-xs'>
+                  {t('investigator.sortUpdatedDesc')}
+                </SelectItem>
+                <SelectItem value='updated_asc' className='text-xs'>
+                  {t('investigator.sortUpdatedAsc')}
+                </SelectItem>
+                <SelectItem value='title_asc' className='text-xs'>
+                  {t('investigator.sortTitleAsc')}
+                </SelectItem>
+                <SelectItem value='title_desc' className='text-xs'>
+                  {t('investigator.sortTitleDesc')}
+                </SelectItem>
+                <SelectItem value='created_desc' className='text-xs'>
+                  {t('investigator.sortCreatedDesc')}
+                </SelectItem>
+                <SelectItem value='last_opened_desc' className='text-xs'>
+                  {t('investigator.sortLastOpenedDesc')}
+                </SelectItem>
+              </SelectContent>
+            </Select>
+
+            <Badge
+              variant={syncStatus === 'error' ? 'destructive' : 'outline'}
+              aria-live='polite'
+              aria-label={`Sincronización: ${syncStatusLabels[syncStatus] || syncStatus}`}
+            >
+              {syncStatusLabels[syncStatus] || syncStatus}
+            </Badge>
+          </div>
+        </div>
+
+        <div className='space-y-3'>
           {isLoading ? (
             Array.from({ length: 3 }).map((_, idx) => (
               <div key={idx} className='rounded-xl border p-4 space-y-3'>
@@ -745,8 +744,8 @@ export const InvestigatorInvestigationsView = () => {
               )
             })
           )}
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
       <ShareInvestigationDialog
         open={Boolean(sharingItem)}

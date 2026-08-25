@@ -1214,7 +1214,7 @@ export const es: TranslationSchema = {
   },
   nav: {
     dashboard: 'Dashboard',
-    investigations: 'Investigaciones',
+    investigations: 'Expediente de las investigaciones',
     investigator: 'Investigador',
     projects: 'Proyectos',
     calendar: 'Calendario',

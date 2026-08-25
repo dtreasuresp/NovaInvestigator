@@ -290,15 +290,15 @@ export const InvestigatorQspmView = () => {
       </div>
 
       {/* SECTION 1 (FULL WIDTH): Complete QSPM Matrix Table */}
-      <Card className='w-full shadow-xs border'>
-        <CardHeader className='flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-4 border-b'>
+      <div className='w-full space-y-4'>
+        <div className='flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-2'>
           <div>
-            <CardTitle className='text-lg font-heading font-semibold flex items-center gap-2'>
+            <h3 className='text-lg font-heading font-semibold text-foreground flex items-center gap-2'>
               {t('investigator.quantitativeMatrix')}
-            </CardTitle>
-            <CardDescription className='text-xs mt-0.5'>
+            </h3>
+            <p className='text-xs text-muted-foreground mt-0.5'>
               {t('investigator.quantitativeMatrixDesc')}
-            </CardDescription>
+            </p>
           </div>
 
           <div className='flex flex-wrap items-center gap-2 self-start sm:self-auto'>
@@ -341,9 +341,9 @@ export const InvestigatorQspmView = () => {
               </Button>
             </div>
           </div>
-        </CardHeader>
+        </div>
 
-        <CardContent className='p-0'>
+        <div className='rounded-xl border overflow-hidden'>
           <QspmTableView
             factors={displayedFactors}
             internalFactors={internalFactors}
@@ -357,8 +357,8 @@ export const InvestigatorQspmView = () => {
             onScoreChange={updateQspmScore}
             onEditStrategy={handleOpenEditStrategy}
           />
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
       {/* SECTION 2 (2-COLUMN GRID): Strategic Alternatives (Full Height) + Ranking & Decision */}
       <div className='grid gap-6 lg:grid-cols-2 items-stretch'>

@@ -13,7 +13,6 @@ import { flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-tabl
 // Component Imports
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
@@ -455,17 +454,15 @@ export const FactorEditor = ({
 
   if (isLoading) {
     return (
-      <Card aria-busy='true'>
-        <CardHeader>
-          <div className='flex flex-wrap items-center justify-between gap-2'>
-            <div className='space-y-2'>
-              <Skeleton className='h-6 w-48' />
-              <Skeleton className='h-4 w-72' />
-            </div>
-            <Skeleton className='h-6 w-32' />
+      <div className='space-y-4' aria-busy='true'>
+        <div className='flex justify-between items-center'>
+          <div className='space-y-2'>
+            <Skeleton className='h-6 w-48' />
+            <Skeleton className='h-4 w-64' />
           </div>
-        </CardHeader>
-        <CardContent className='space-y-4'>
+          <Skeleton className='h-6 w-32' />
+        </div>
+        <div className='space-y-4'>
           <div className='flex justify-between items-center'>
             <Skeleton className='h-4 w-36' />
             <div className='flex gap-2'>
@@ -479,40 +476,39 @@ export const FactorEditor = ({
               <Skeleton key={i} className='h-12 w-full' />
             ))}
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     )
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <div className='flex flex-wrap items-center justify-between gap-2'>
-          <div>
-            <div className='flex items-center gap-2'>
-              <CardTitle>
-                {title} · {t('investigator.totalScore')} {formatNumber(result.total)}
-              </CardTitle>
-              {isReadOnly && (
-                <Badge
-                  variant='outline'
-                  className='bg-amber-100 text-amber-800 dark:bg-amber-950/40 dark:text-amber-300 border-amber-300 gap-1 text-xs'
-                >
-                  <Lock className='w-3 h-3' /> {t('common.readOnlyMode')}
-                </Badge>
-              )}
-            </div>
-            <CardDescription>{description}</CardDescription>
+    <div className='space-y-4'>
+      <div className='flex flex-wrap items-center justify-between gap-3'>
+        <div>
+          <div className='flex items-center gap-2'>
+            <h3 className='text-lg font-semibold text-foreground'>
+              {title} · {t('investigator.totalScore')} {formatNumber(result.total)}
+            </h3>
+            {isReadOnly && (
+              <Badge
+                variant='outline'
+                className='bg-amber-100 text-amber-800 dark:bg-amber-950/40 dark:text-amber-300 border-amber-300 gap-1 text-xs'
+              >
+                <Lock className='w-3 h-3' /> {t('common.readOnlyMode')}
+              </Badge>
+            )}
           </div>
-          <Badge
-            variant={isWeightValid ? 'secondary' : 'destructive'}
-            className='font-mono text-xs'
-          >
-            {t('investigator.weightSumLabel')}: {formatNumber(weightTotal)} / 1.00 {isWeightValid ? '✓' : `(${t('investigator.weightRequiresOne')})`}
-          </Badge>
+          <p className='text-xs text-muted-foreground'>{description}</p>
         </div>
-      </CardHeader>
-      <CardContent className='space-y-4'>
+        <Badge
+          variant={isWeightValid ? 'secondary' : 'destructive'}
+          className='font-mono text-xs'
+        >
+          {t('investigator.weightSumLabel')}: {formatNumber(weightTotal)} / 1.00 {isWeightValid ? '✓' : `(${t('investigator.weightRequiresOne')})`}
+        </Badge>
+      </div>
+
+      <div className='space-y-4'>
         <div className='flex flex-wrap items-center justify-between gap-2'>
           <div className='flex items-center gap-2'>
             {!isWeightValid && factors.length > 0 && !isReadOnly && (
@@ -557,25 +553,26 @@ export const FactorEditor = ({
             </TableHeader>
             <TableBody>
               {/* SECTION 1: PRIMARY FACTORS (FORTALEZAS / OPORTUNIDADES) */}
-              <TableRow className='bg-primary/5 hover:bg-primary/10 border-y border-border/80 font-semibold'>
+              <TableRow className='bg-muted/60 hover:bg-muted/60 font-bold border-y-2 border-border'>
                 <TableCell colSpan={columns.length} className='py-2 px-3'>
                   <div className='flex items-center justify-between'>
                     <div className='flex items-center gap-2'>
-                      <Badge variant='outline' className='bg-primary/10 text-primary border-primary/20 text-xs font-bold'>
-                        {primaryType}
-                      </Badge>
-                      <span className='text-xs font-bold text-foreground'>
-                        {TYPE_LABELS[primaryType]} ({primaryType}) · {primaryFactors.length} {primaryFactors.length === 1 ? 'factor' : 'factores'}
+                      <span className='font-bold text-xs uppercase tracking-wider text-foreground'>
+                        {group === 'internal' ? t('investigator.strengths') : t('investigator.opportunities')} ({primaryType})
                       </span>
+                      <Badge variant='outline' className='text-[10px] h-5 px-1.5 font-mono'>
+                        {primaryFactors.length}
+                      </Badge>
                     </div>
                     {!isReadOnly && (
                       <Button
-                        size='sm'
+                        size='icon-xs'
                         variant='ghost'
-                        className='h-7 text-xs text-primary hover:text-primary hover:bg-primary/10'
                         onClick={() => addFactor(group, primaryType)}
+                        className='h-6 w-6 text-primary hover:bg-primary/10'
+                        title={`+ ${t('common.create')} ${TYPE_LABELS[primaryType]}`}
                       >
-                        + {t('common.create')} {TYPE_LABELS[primaryType]}
+                        +
                       </Button>
                     )}
                   </div>
@@ -618,25 +615,26 @@ export const FactorEditor = ({
               </TableRow>
 
               {/* SECTION 2: SECONDARY FACTORS (DEBILIDADES / AMENAZAS) */}
-              <TableRow className='bg-amber-500/5 hover:bg-amber-500/10 dark:bg-amber-950/20 border-y border-border/80 font-semibold'>
+              <TableRow className='bg-muted/60 hover:bg-muted/60 font-bold border-y-2 border-border mt-2'>
                 <TableCell colSpan={columns.length} className='py-2 px-3'>
                   <div className='flex items-center justify-between'>
                     <div className='flex items-center gap-2'>
-                      <Badge variant='outline' className='bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20 text-xs font-bold'>
-                        {secondaryType}
-                      </Badge>
-                      <span className='text-xs font-bold text-foreground'>
-                        {TYPE_LABELS[secondaryType]} ({secondaryType}) · {secondaryFactors.length} {secondaryFactors.length === 1 ? 'factor' : 'factores'}
+                      <span className='font-bold text-xs uppercase tracking-wider text-foreground'>
+                        {group === 'internal' ? t('investigator.weaknesses') : t('investigator.threats')} ({secondaryType})
                       </span>
+                      <Badge variant='outline' className='text-[10px] h-5 px-1.5 font-mono'>
+                        {secondaryFactors.length}
+                      </Badge>
                     </div>
                     {!isReadOnly && (
                       <Button
-                        size='sm'
+                        size='icon-xs'
                         variant='ghost'
-                        className='h-7 text-xs text-amber-600 dark:text-amber-400 hover:bg-amber-500/10'
                         onClick={() => addFactor(group, secondaryType)}
+                        className='h-6 w-6 text-primary hover:bg-primary/10'
+                        title={`+ ${t('common.create')} ${TYPE_LABELS[secondaryType]}`}
                       >
-                        + {t('common.create')} {TYPE_LABELS[secondaryType]}
+                        +
                       </Button>
                     )}
                   </div>
@@ -697,8 +695,8 @@ export const FactorEditor = ({
             </TableFooter>
           </Table>
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   )
 }
 
@@ -718,20 +716,20 @@ export const RatingScale = ({ group }: { group: FactorGroup }) => {
   ]
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>{t('investigator.ratingScaleTitle')}</CardTitle>
-        <CardDescription>
+    <div className='space-y-3 pt-2'>
+      <div className='space-y-1'>
+        <h4 className='text-sm font-semibold text-foreground'>{t('investigator.ratingScaleTitle')}</h4>
+        <p className='text-xs text-muted-foreground'>
           {group === 'internal' ? t('investigator.ratingScaleInternalDesc') : t('investigator.ratingScaleExternalDesc')}
-        </CardDescription>
-      </CardHeader>
-      <CardContent className='grid gap-2 sm:grid-cols-2'>
+        </p>
+      </div>
+      <div className='grid gap-2 sm:grid-cols-2'>
         {scaleOptions.map(option => (
-          <div key={option.value} className='rounded-lg border p-3 bg-card'>
+          <div key={option.value} className='rounded-lg border border-border/70 p-3 bg-muted/20'>
             <p className='text-foreground font-medium text-xs'>{option.label}</p>
           </div>
         ))}
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   )
 }

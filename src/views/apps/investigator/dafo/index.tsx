@@ -129,26 +129,24 @@ export const InvestigatorDafoView = () => {
           ))}
         </div>
 
-        <Card>
-          <CardHeader className='space-y-2'>
+        <div className='space-y-4'>
+          <div className='space-y-2'>
             <Skeleton className='h-6 w-48' />
             <Skeleton className='h-4 w-96' />
-          </CardHeader>
-          <CardContent>
-            <div className='grid gap-4 md:grid-cols-2'>
-              {Array.from({ length: 4 }).map((_, i) => (
-                <div key={i} className='rounded-xl border p-4 space-y-3'>
-                  <Skeleton className='h-5 w-32' />
-                  <div className='grid grid-cols-2 gap-2'>
-                    {Array.from({ length: 4 }).map((_, j) => (
-                      <Skeleton key={j} className='h-20 rounded-lg' />
-                    ))}
-                  </div>
+          </div>
+          <div className='grid gap-4 md:grid-cols-2'>
+            {Array.from({ length: 4 }).map((_, i) => (
+              <div key={i} className='rounded-xl border p-4 space-y-3'>
+                <Skeleton className='h-5 w-32' />
+                <div className='grid grid-cols-2 gap-2'>
+                  {Array.from({ length: 4 }).map((_, j) => (
+                    <Skeleton key={j} className='h-20 rounded-lg' />
+                  ))}
                 </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
     )
   }
@@ -193,13 +191,13 @@ export const InvestigatorDafoView = () => {
       </div>
 
       {/* Main Working Panel */}
-      <Card>
-        <CardHeader className='flex-col gap-3 sm:flex-row sm:items-center sm:justify-between space-y-0'>
+      <div className='space-y-4'>
+        <div className='flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between'>
           <div>
-            <CardTitle>{t('investigator.dafoCrossAnalysis')}</CardTitle>
-            <CardDescription>
+            <h3 className='text-lg font-semibold text-foreground'>{t('investigator.dafoCrossAnalysis')}</h3>
+            <p className='text-xs text-muted-foreground'>
               Haz clic en cualquier cruce para evaluar su fuerza (0 a 3), justificación y evidencia documental.
-            </CardDescription>
+            </p>
           </div>
           <div className='flex flex-wrap items-center gap-2'>
             {!isReadOnly && (
@@ -220,7 +218,7 @@ export const InvestigatorDafoView = () => {
                 className='h-7 text-xs'
                 onClick={() => setViewMode('matrix')}
               >
-                Matriz 2×2
+                {t('investigator.matrix2x2Tab')}
               </Button>
               <Button
                 size='sm'
@@ -228,15 +226,16 @@ export const InvestigatorDafoView = () => {
                 className='h-7 text-xs'
                 onClick={() => setViewMode('list')}
               >
-                Lista detallada
+                {t('investigator.allCrossingsTab')} ({state.relationships.length})
               </Button>
             </div>
           </div>
-        </CardHeader>
-        <CardContent className='space-y-4'>
-          {/* Filters Bar */}
-          <div className='flex flex-wrap items-center gap-1.5 border-b pb-3 text-xs'>
-            <span className='text-muted-foreground mr-1 font-medium'>{t('common.filter')}</span>
+        </div>
+
+        <div className='space-y-4'>
+          {/* Quick Filter Bar */}
+          <div className='flex flex-wrap items-center gap-1.5'>
+            <span className='text-xs font-medium text-muted-foreground mr-1'>Filtrar cuadrante:</span>
             {[
               { id: 'all', label: 'Todos los cruces' },
               { id: 'FO', label: 'FO (Ofensivo)' },
@@ -301,16 +300,16 @@ export const InvestigatorDafoView = () => {
                               onClick={() => handleOpenEdit(relation)}
                             >
                               <div className='flex items-center justify-between gap-1 w-full'>
-                                                              <span className='font-mono text-xs font-semibold text-primary'>
-                                                                {relation.internalId} × {relation.externalId}
-                                                              </span>
-                                                              <Badge
-                                                                variant='outline'
-                                                                className={`text-[10px] px-1.5 py-0 ${strengthOpt?.color || 'bg-muted text-muted-foreground'}`}
-                                                              >
-                                                                {relation.strength === null ? 'Pendiente' : `Fuerza ${relation.strength}`}
-                                                              </Badge>
-                                                            </div>
+                                <span className='font-mono text-xs font-semibold text-primary'>
+                                  {relation.internalId} × {relation.externalId}
+                                </span>
+                                <Badge
+                                  variant='outline'
+                                  className={`text-[10px] px-1.5 py-0 ${strengthOpt?.color || 'bg-muted text-muted-foreground'}`}
+                                >
+                                  {relation.strength === null ? 'Pendiente' : `Fuerza ${relation.strength}`}
+                                </Badge>
+                              </div>
                               <p className='text-xs font-medium truncate mt-1 text-foreground'>
                                 {internal?.name || relation.internalId}
                               </p>
@@ -334,8 +333,8 @@ export const InvestigatorDafoView = () => {
               onEdit={handleOpenEdit}
             />
           )}
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
       {/* Modal Dialog for Relationship Evaluation */}
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>

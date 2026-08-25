@@ -119,23 +119,23 @@ export const InvestigatorCameView = () => {
           <Skeleton className='h-4 w-96' />
         </div>
 
-        <Card>
-          <CardHeader className='space-y-2'>
+        <div className='space-y-3'>
+          <div className='space-y-2'>
             <Skeleton className='h-6 w-48' />
             <Skeleton className='h-4 w-72' />
-          </CardHeader>
-          <CardContent className='grid gap-3 sm:grid-cols-2 lg:grid-cols-5'>
+          </div>
+          <div className='grid gap-3 sm:grid-cols-2 lg:grid-cols-5'>
             {Array.from({ length: 5 }).map((_, i) => (
               <div key={i} className='p-3 rounded-lg border space-y-2'>
                 <Skeleton className='h-4 w-20' />
                 <Skeleton className='h-8 w-full' />
               </div>
             ))}
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
-        <Card>
-          <CardHeader className='flex justify-between items-center'>
+        <div className='space-y-4'>
+          <div className='flex justify-between items-center'>
             <div className='space-y-2'>
               <Skeleton className='h-6 w-48' />
               <Skeleton className='h-4 w-72' />
@@ -144,39 +144,39 @@ export const InvestigatorCameView = () => {
               <Skeleton className='h-8 w-32' />
               <Skeleton className='h-8 w-28' />
             </div>
-          </CardHeader>
-          <CardContent className='space-y-3'>
+          </div>
+          <div className='space-y-3'>
             <Skeleton className='h-10 w-full' />
             {Array.from({ length: 6 }).map((_, i) => (
               <Skeleton key={i} className='h-12 w-full' />
             ))}
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </div>
     )
   }
 
   return (
-    <div className='flex flex-col gap-5'>
-      {/* Criteria Weight Config Card */}
-      <Card>
-        <CardHeader className='flex-col sm:flex-row sm:items-center sm:justify-between space-y-2 sm:space-y-0'>
+    <div className='flex flex-col gap-6'>
+      {/* Criteria Weight Config */}
+      <div className='space-y-3'>
+        <div className='flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2'>
           <div>
-            <CardTitle>{t('investigator.cameWeighting')}</CardTitle>
-            <CardDescription>
+            <h3 className='text-lg font-semibold text-foreground'>{t('investigator.cameWeighting')}</h3>
+            <p className='text-xs text-muted-foreground'>
               Ajusta el peso relativo de cada dimensión. La suma debe totalizar exactamente 1.00.
-            </CardDescription>
+            </p>
           </div>
           <Badge
             variant={isWeightSumValid ? 'secondary' : 'destructive'}
-            className='font-mono text-xs'
+            className='font-mono text-xs self-start sm:self-auto'
           >
             Suma de criterios: {formatNumber(totalCriteriaWeight)} / 1.00 {isWeightSumValid ? '✓' : '(Ajustar)'}
           </Badge>
-        </CardHeader>
-        <CardContent className='grid gap-3 sm:grid-cols-2 lg:grid-cols-5'>
+        </div>
+        <div className='grid gap-3 sm:grid-cols-2 lg:grid-cols-5'>
           {state.cameCriteria.map(criterion => (
-            <div key={criterion.id} className='rounded-lg border p-2.5 bg-card space-y-1'>
+            <div key={criterion.id} className='rounded-lg border border-border/70 p-2.5 bg-muted/20 space-y-1'>
               <div className='flex items-center justify-between'>
                 <p className='text-xs font-semibold text-foreground'>{criterion.name}</p>
                 <span className='font-mono text-xs text-muted-foreground'>
@@ -195,17 +195,17 @@ export const InvestigatorCameView = () => {
               />
             </div>
           ))}
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
       {/* Main Actions Panel */}
-      <Card>
-        <CardHeader className='flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0'>
+      <div className='space-y-4'>
+        <div className='flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3'>
           <div>
-            <CardTitle>{t('investigator.cameActionStrategy')}</CardTitle>
-            <CardDescription>
+            <h3 className='text-lg font-semibold text-foreground'>{t('investigator.cameActionStrategy')}</h3>
+            <p className='text-xs text-muted-foreground'>
               {analysis.came.actions.length} acciones registradas · Prioridad calculada por modelo multicriterio continuo.
-            </CardDescription>
+            </p>
           </div>
           {!isReadOnly && (
             <div className='flex flex-wrap items-center gap-2'>
@@ -217,8 +217,8 @@ export const InvestigatorCameView = () => {
               </Button>
             </div>
           )}
-        </CardHeader>
-        <CardContent className='space-y-4'>
+        </div>
+        <div className='space-y-4'>
           {/* Quick Filter Tabs */}
           <div className='flex flex-wrap items-center gap-1.5 border-b pb-3 text-xs'>
             <span className='text-muted-foreground mr-1 font-medium'>{t('common.filter')}</span>
@@ -251,8 +251,8 @@ export const InvestigatorCameView = () => {
             onDelete={deleteCameAction}
             onOpenDetail={handleOpenDetail}
           />
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
       {/* Modal Dialog for Expanded CAME Action Sheet */}
       <Dialog open={detailDialogOpen} onOpenChange={setDetailDialogOpen}>
