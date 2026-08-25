@@ -158,22 +158,6 @@ export const InvestigatorCameView = () => {
 
   return (
     <div className='flex flex-col gap-5'>
-      <StageHeader
-        kicker={`06 · ${t('investigator.came')}`}
-        title={t('investigator.came')}
-        description={t('investigator.subtitle')}
-        action={
-          isReadOnly ? (
-            <Badge
-              variant='outline'
-              className='bg-amber-100 text-amber-800 dark:bg-amber-950/40 dark:text-amber-300 border-amber-300 gap-1 text-xs py-1 px-2.5'
-            >
-              <Lock className='w-3.5 h-3.5' /> {t('common.readOnlyMode')}
-            </Badge>
-          ) : undefined
-        }
-      />
-
       {/* Criteria Weight Config Card */}
       <Card>
         <CardHeader className='flex-col sm:flex-row sm:items-center sm:justify-between space-y-2 sm:space-y-0'>

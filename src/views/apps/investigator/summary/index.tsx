@@ -209,12 +209,6 @@ export const InvestigatorSummaryView = () => {
 
   return (
     <div className='flex flex-col gap-5'>
-      <StageHeader
-        kicker={t('investigator.summary')}
-        title={t('dashboard.subtitle')}
-        description={`${state.metadata.title || t('investigator.newInvestigation')} · ${state.metadata.organization || '—'} · ${state.metadata.unit || '—'}`}
-      />
-
       <div className='grid gap-4 sm:grid-cols-2 lg:grid-cols-4'>
         <MetricCard
           label={t('investigator.efiInternalLabel') || 'EFI · Interno'}

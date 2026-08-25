@@ -4,6 +4,17 @@
 
 All notable changes to this template will be documented in this file
 
+## v0.0.42 (2026-08-25)
+
+### Added & UI Architecture
+- **Jerarquía Visual de Cabecera y Stepper en Investigaciones**:
+  - En [`src/app/(pages)/apps/investigator/layout-client.tsx`](file:///d:/03.%20MATRIZ%20DAFO/src/app/(pages)/apps/investigator/layout-client.tsx), reestructurada la disposición de elementos:
+    - Cabecera superior con kicker temático (`01 · Contexto`, `02 · Diagnóstico interno`, etc.), título principal grande y subtítulo a la izquierda.
+    - Botón **"Volver al gestor"** y modo solo lectura unificados en el extremo superior derecho.
+    - Componente `<Stepper />` posicionado directamente debajo de la cabecera sobre fondo transparente.
+    - Estados visuales de color: resalte de alto contraste (`bg-white text-black`) exclusivo para el paso activo (`isCurrent`), indicadores completados con acento verde/esmeralda sutil, y pasos inactivos en tono apagado.
+  - Eliminados los encabezados `<StageHeader />` duplicados en las 7 vistas del módulo (`context`, `efi`, `efe`, `dafo`, `qspm`, `came`, `summary`).
+
 ## v0.0.41 (2026-08-25)
 
 ### Added & UI Polish

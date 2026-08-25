@@ -155,22 +155,6 @@ export const InvestigatorDafoView = () => {
 
   return (
     <div className='flex flex-col gap-5'>
-      <StageHeader
-        kicker={`04 · ${t('investigator.dafo')}`}
-        title={t('investigator.dafo')}
-        description={t('investigator.subtitle')}
-        action={
-          isReadOnly ? (
-            <Badge
-              variant='outline'
-              className='bg-amber-100 text-amber-800 dark:bg-amber-950/40 dark:text-amber-300 border-amber-300 gap-1 text-xs py-1 px-2.5'
-            >
-              <Lock className='w-3.5 h-3.5' /> {t('common.readOnlyMode')}
-            </Badge>
-          ) : undefined
-        }
-      />
-
       {/* Top 4 Quadrant KPI Cards */}
       <div className='grid gap-4 sm:grid-cols-2 lg:grid-cols-4'>
         {(['FO', 'DO', 'FA', 'DA'] as Quadrant[]).map(quadrant => {

@@ -230,23 +230,6 @@ export const InvestigatorQspmView = () => {
 
   return (
     <div className='flex flex-col gap-6'>
-      {/* Stage Header (sin botón duplicado) */}
-      <StageHeader
-        kicker={t('investigator.qspmKicker')}
-        title={t('investigator.qspmTitle')}
-        description={t('investigator.qspmDesc')}
-        action={
-          isReadOnly ? (
-            <Badge
-              variant='outline'
-              className='bg-amber-100 text-amber-800 dark:bg-amber-950/40 dark:text-amber-300 border-amber-300 gap-1.5 text-xs py-1 px-3'
-            >
-              <Lock className='w-3.5 h-3.5' /> {t('common.readOnlyMode')}
-            </Badge>
-          ) : undefined
-        }
-      />
-
       {/* Top Metric Cards / KPIs */}
       <div className='grid grid-cols-2 md:grid-cols-4 gap-3.5'>
         <MetricCard
