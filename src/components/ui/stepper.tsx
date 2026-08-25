@@ -21,7 +21,7 @@ export type StepDefinition = {
   id: string
   title?: string
   description?: string
-  icon?: React.ReactElement
+  icon?: React.ReactNode | React.ComponentType<{ className?: string }>
 }
 
 export interface StepperContextValue {
@@ -434,7 +434,15 @@ function StepperIndicator({ children, className, variant = 'default' }: StepperI
     <div data-slot='stepper-indicator' data-state={state} className={cn(classes, className)}>
       <div className='absolute'>
         {(isLoading ? indicators?.loading : indicators?.[state]) ??
-          (step?.icon ? <span className='*:[svg]:size-4'>{step.icon}</span> : children)}
+          (step?.icon ? (
+            <span className='*:[svg]:size-4'>
+              {typeof step.icon === 'function'
+                ? React.createElement(step.icon, { className: 'size-4' })
+                : step.icon}
+            </span>
+          ) : (
+            children
+          ))}
       </div>
     </div>
   )

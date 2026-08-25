@@ -17,7 +17,7 @@ export interface RatingOption {
 export const INVESTIGATOR_BASE_PATH = '/apps/investigator'
 
 export const STEPPER_ITEMS: NavItem[] = [
-  { id: 'context', label: 'Contexto de la investigación', detail: 'Expediente del análisis', href: `${INVESTIGATOR_BASE_PATH}/context` },
+  { id: 'context', label: 'Contexto', detail: 'Detalles del expediente', href: `${INVESTIGATOR_BASE_PATH}/context` },
   { id: 'efi', label: 'Factores Internos (EFI)', detail: 'Matriz EFI', href: `${INVESTIGATOR_BASE_PATH}/efi` },
   { id: 'efe', label: 'Factores Externos (EFE)', detail: 'Matriz EFE', href: `${INVESTIGATOR_BASE_PATH}/efe` },
   { id: 'dafo', label: 'Matriz DAFO', detail: 'Cruces y relaciones', href: `${INVESTIGATOR_BASE_PATH}/dafo` },

@@ -1,18 +1,25 @@
 'use client'
 
-import { Suspense, useMemo } from 'react'
+import { Fragment, Suspense, useMemo } from 'react'
 import type { ReactNode } from 'react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
-import { ArrowLeft, CircleCheckBigIcon } from 'lucide-react'
+import {
+  ArrowLeft,
+  Award,
+  Calculator,
+  ChevronRight,
+  FileText,
+  Globe,
+  LayoutGrid,
+  ListTodo,
+  SlidersHorizontal
+} from 'lucide-react'
 
 import {
   Stepper,
-  StepperIndicator,
   StepperItem,
-  StepperNav,
-  StepperSeparator,
-  StepperTrigger
+  StepperList
 } from '@/components/ui/stepper'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -23,13 +30,55 @@ import {
 import { useI18n } from '@/hooks/use-i18n'
 
 const STEP_DEFINITIONS = [
-  { id: 'context', title: 'Contexto de la investigación', description: 'Expediente del análisis', href: '/apps/investigator/context' },
-  { id: 'efi', title: 'Factores Internos (EFI)', description: 'Matriz EFI', href: '/apps/investigator/efi' },
-  { id: 'efe', title: 'Factores Externos (EFE)', description: 'Matriz EFE', href: '/apps/investigator/efe' },
-  { id: 'dafo', title: 'Matriz DAFO', description: 'Cruces y relaciones', href: '/apps/investigator/dafo' },
-  { id: 'qspm', title: 'Matriz QSPM', description: 'Selección estratégica', href: '/apps/investigator/qspm' },
-  { id: 'came', title: 'Plan de acción (CAME)', description: 'Plan operativo', href: '/apps/investigator/came' },
-  { id: 'summary', title: 'Resumen y dictamen', description: 'Lectura ejecutiva', href: '/apps/investigator/summary' }
+  {
+    id: 'context',
+    title: 'Contexto de la investigación',
+    description: 'Expediente del análisis',
+    href: '/apps/investigator/context',
+    icon: FileText
+  },
+  {
+    id: 'efi',
+    title: 'Factores Internos (EFI)',
+    description: 'Matriz EFI',
+    href: '/apps/investigator/efi',
+    icon: SlidersHorizontal
+  },
+  {
+    id: 'efe',
+    title: 'Factores Externos (EFE)',
+    description: 'Matriz EFE',
+    href: '/apps/investigator/efe',
+    icon: Globe
+  },
+  {
+    id: 'dafo',
+    title: 'Matriz DAFO',
+    description: 'Cruces y relaciones',
+    href: '/apps/investigator/dafo',
+    icon: LayoutGrid
+  },
+  {
+    id: 'qspm',
+    title: 'Matriz QSPM',
+    description: 'Selección estratégica',
+    href: '/apps/investigator/qspm',
+    icon: Calculator
+  },
+  {
+    id: 'came',
+    title: 'Plan de acción (CAME)',
+    description: 'Plan operativo',
+    href: '/apps/investigator/came',
+    icon: ListTodo
+  },
+  {
+    id: 'summary',
+    title: 'Resumen y dictamen',
+    description: 'Lectura ejecutiva',
+    href: '/apps/investigator/summary',
+    icon: Award
+  }
 ]
 
 const STEP_I18N_MAP: Record<string, string> = {
@@ -53,25 +102,20 @@ const InvestigatorLayoutInner = ({ children }: Readonly<{ children: ReactNode }>
     pathname === '/apps/investigator' ||
     pathname === '/apps/investigator/'
 
-  const currentStepId = useMemo(() => {
-    const found = STEP_DEFINITIONS.find(item => {
+  const currentStepIndex = useMemo(() => {
+    const idx = STEP_DEFINITIONS.findIndex(item => {
       const href = item.href ?? `/apps/investigator/${item.id}`
 
       return pathname === href
     })
 
-    return found?.id ?? 'context'
+    return idx !== -1 ? idx : 0
   }, [pathname])
 
-  const handleStepChange = (value: string) => {
-    if (!value) return
-    const item = STEP_DEFINITIONS.find(i => i.id === value)
+  const currentStepId = STEP_DEFINITIONS[currentStepIndex]?.id ?? 'context'
 
-    if (item) {
-      const href = item.href ?? `/apps/investigator/${item.id}`
-
-      router.push(href)
-    }
+  const handleStepClick = (href: string) => {
+    router.push(href)
   }
 
   const investigationTitle =
@@ -80,69 +124,93 @@ const InvestigatorLayoutInner = ({ children }: Readonly<{ children: ReactNode }>
     'Expediente de Investigación'
 
   return (
-    <div className='flex flex-col gap-4 sm:gap-5'>
+    <div className='flex flex-col gap-6'>
       {!isManagerView && (
-        <div className='bg-card/90 backdrop-blur-md shadow-xs border border-border/80 rounded-2xl p-3 sm:p-4 transition-all'>
-          <div className='flex items-center justify-between gap-3 mb-3 pb-2 border-b border-border/40'>
+        <div className='flex flex-col gap-4 w-full'>
+          {/* Top Bar: Back to Manager & Investigation Name */}
+          <div className='flex items-center justify-between gap-3'>
             <Button
               variant='ghost'
               size='sm'
               render={<Link href='/apps/investigator/investigations' />}
               nativeButton={false}
-              className='h-7 sm:h-8 px-2 sm:px-2.5 text-xs text-muted-foreground hover:text-foreground transition-colors'
+              className='h-8 px-2 text-xs text-muted-foreground hover:text-foreground transition-colors'
             >
               <ArrowLeft className='size-3.5 mr-1.5' />
               <span>Gestor de investigaciones</span>
             </Button>
-            <div className='flex items-center gap-2 max-w-[50%] truncate'>
-              <Badge variant='outline' className='text-[11px] font-normal truncate px-2 py-0.5 border-primary/30 text-primary bg-primary/5'>
-                {investigationTitle}
-              </Badge>
-            </div>
+
+            <Badge
+              variant='outline'
+              className='text-xs font-normal max-w-[60%] truncate px-3 py-1 border-border/80 text-foreground bg-muted/30'
+            >
+              {investigationTitle}
+            </Badge>
           </div>
 
-          <Stepper
-            steps={STEP_DEFINITIONS}
-            value={currentStepId}
-            onValueChange={handleStepChange}
-            className='w-full'
-            indicators={{
-              completed: <CircleCheckBigIcon className='size-4 text-primary-foreground' />
-            }}
-          >
-            <StepperNav className='w-full flex items-center justify-between overflow-x-auto py-1 px-1 no-scrollbar scroll-smooth gap-1 sm:gap-2'>
-              {STEP_DEFINITIONS.map((step, idx) => {
-                const isCompleted = validation?.stageStatus?.[step.id as keyof typeof validation.stageStatus] === 'ready'
+          {/* Stepper Header (Same Pattern as Upgrade / Mejorar Plan) */}
+          <Stepper steps={STEP_DEFINITIONS} value={currentStepId} className='w-full'>
+            <StepperList className='flex w-full items-center justify-between gap-2 sm:gap-4 overflow-x-auto no-scrollbar py-2 border-none bg-transparent p-0 shadow-none'>
+              {STEP_DEFINITIONS.map((step, index) => {
+                const StepIcon = step.icon
+                const isCurrent = currentStepIndex === index
+                const isCompleted =
+                  currentStepIndex > index ||
+                  validation?.stageStatus?.[step.id as keyof typeof validation.stageStatus] === 'ready'
                 const i18nKey = STEP_I18N_MAP[step.id]
                 const displayTitle = i18nKey ? t(i18nKey) || step.title : step.title
 
                 return (
-                  <StepperItem
-                    key={step.id}
-                    stepId={step.id}
-                    completed={isCompleted}
-                    className='flex-1 min-w-[95px] sm:min-w-[125px]'
-                  >
-                    <StepperTrigger className='p-1.5 sm:p-2 cursor-pointer flex flex-col items-center gap-1 sm:gap-1.5 w-full rounded-xl hover:bg-muted/50 transition-all'>
-                      <StepperIndicator className='flex items-center justify-center font-semibold text-xs sm:text-sm size-8 rounded-lg'>
-                        {idx + 1}
-                      </StepperIndicator>
-                      <div className='flex flex-col items-center text-center w-full'>
-                        <span className='text-[11px] sm:text-xs font-semibold leading-tight line-clamp-2 px-1'>
+                  <Fragment key={step.id}>
+                    <StepperItem
+                      value={step.id}
+                      defaultTrigger={false}
+                      separator={false}
+                      onClick={() => handleStepClick(step.href)}
+                      className='flex flex-row items-center gap-2.5 sm:gap-3 bg-transparent p-0 hover:bg-transparent focus:bg-transparent data-active:bg-transparent group cursor-pointer shrink-0'
+                    >
+                      {/* Circle Icon Container */}
+                      <div
+                        className={`size-9 sm:size-10 rounded-full flex items-center justify-center shrink-0 transition-all duration-200 ${
+                          isCurrent
+                            ? 'bg-foreground text-background shadow-md ring-2 ring-primary/30'
+                            : isCompleted
+                              ? 'bg-foreground/90 text-background shadow-xs'
+                              : 'bg-muted text-muted-foreground border border-border/60 group-hover:border-foreground/40'
+                        }`}
+                      >
+                        <StepIcon className='size-4 sm:size-5 shrink-0' />
+                      </div>
+
+                      {/* Title & Subtitle */}
+                      <div className='flex flex-col text-left'>
+                        <span
+                          className={`text-xs sm:text-sm font-semibold tracking-tight transition-colors whitespace-nowrap ${
+                            isCurrent
+                              ? 'text-foreground font-bold'
+                              : isCompleted
+                                ? 'text-foreground/90 font-medium'
+                                : 'text-muted-foreground font-normal group-hover:text-foreground/80'
+                          }`}
+                        >
                           {displayTitle}
                         </span>
-                        <span className='text-[10px] text-muted-foreground hidden lg:block line-clamp-1 mt-0.5'>
+                        <span className='text-[10px] sm:text-xs text-muted-foreground whitespace-nowrap hidden xl:block'>
                           {step.description}
                         </span>
                       </div>
-                    </StepperTrigger>
-                    {idx < STEP_DEFINITIONS.length - 1 && (
-                      <StepperSeparator className='h-0.5 flex-1 mx-1' />
-                    )}
-                  </StepperItem>
+                    </StepperItem>
+
+                    {/* Separator Chevron between steps */}
+                    {index < STEP_DEFINITIONS.length - 1 ? (
+                      <div className='flex items-center justify-center text-muted-foreground/40 shrink-0 mx-1'>
+                        <ChevronRight className='size-4' />
+                      </div>
+                    ) : null}
+                  </Fragment>
                 )
               })}
-            </StepperNav>
+            </StepperList>
           </Stepper>
         </div>
       )}

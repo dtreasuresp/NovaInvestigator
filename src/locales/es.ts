@@ -1266,7 +1266,7 @@ export const es: TranslationSchema = {
   investigator: {
     title: 'Investigador',
     subtitle: 'Suite de análisis y formulación estratégica empresarial',
-    context: 'Contexto de la investigación',
+    context: 'Contexto',
     summary: 'Resumen y Dictamen',
     efi: 'Matriz EFI',
     efe: 'Matriz EFE',

@@ -4,6 +4,17 @@
 
 All notable changes to this template will be documented in this file
 
+## v0.0.41 (2026-08-25)
+
+### Added & UI Polish
+- **Alineación Visual del Stepper con el Patrón de "Mejorar Plan"**:
+  - En [`src/app/(pages)/apps/investigator/layout-client.tsx`](file:///d:/03.%20MATRIZ%20DAFO/src/app/(pages)/apps/investigator/layout-client.tsx), eliminado el contenedor tipo card para adoptar el diseño limpio, transparente y horizontal del wizard de "Mejorar Plan":
+    - Contenedores circulares con iconos de dominio (`FileText`, `SlidersHorizontal`, `Globe`, `LayoutGrid`, `Calculator`, `ListTodo`, `Award`).
+    - Título y subtítulo alineados horizontalmente al lado derecho de cada icono.
+    - Separadores tipo chevron (`ChevronRight`) entre pasos.
+    - Estados visuales activos, completados e inactivos de alto contraste y soporte responsive con desplazamiento horizontal suave.
+  - Creado el componente [`src/components/shadcn-studio/stepper/stepper-05.tsx`](file:///d:/03.%20MATRIZ%20DAFO/src/components/shadcn-studio/stepper/stepper-05.tsx).
+
 ## v0.0.40 (2026-08-24)
 
 ### Added & UI Components
