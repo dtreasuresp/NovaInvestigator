@@ -126,6 +126,7 @@ export const pt: TranslationSchema = {
   },
   "investigator": {
     "title": "NovaPesquisador",
+    "titlemodule": "Expediente de Investigações",
     "subtitle": "Suite de Análise Estratégica Integral (SWOT, EFI, EFE, QSPM, CAME)",
     "context": "Contexto",
     "summary": "Resumo",

@@ -388,6 +388,7 @@ const ResearchCard = ({
 export const InvestigatorInvestigationsView = () => {
   const router = useRouter()
   const { t } = useI18n()
+  
   const {
     state,
     investigations,
@@ -428,6 +429,7 @@ export const InvestigatorInvestigationsView = () => {
   const [sortBy, setSortBy] = useState<SortOption>('updated_desc')
 
   useEffect(() => {
+    
     setHydrated(true)
 
     try {
@@ -494,6 +496,7 @@ export const InvestigatorInvestigationsView = () => {
         }
 
         case 'updated_desc':
+
         default: {
           const tA = new Date(a.metadata.updatedAt || 0).getTime()
           const tB = new Date(b.metadata.updatedAt || 0).getTime()
@@ -505,15 +508,18 @@ export const InvestigatorInvestigationsView = () => {
   }, [investigations, sortBy])
 
   const totalCount = investigations.length
+
   const activeCount = investigations.filter(
     item =>
       !item.metadata.archivedAt &&
       item.metadata.status !== 'cerrada' &&
       item.metadata.status !== 'archivada'
   ).length
+
   const closedCount = investigations.filter(
     item => !item.metadata.archivedAt && item.metadata.status === 'cerrada'
   ).length
+
   const archivedCount = investigations.filter(item => Boolean(item.metadata.archivedAt)).length
 
   const syncStatusLabels: Record<string, string> = {
@@ -527,8 +533,8 @@ export const InvestigatorInvestigationsView = () => {
   return (
     <div className='flex flex-col gap-5'>
       <StageHeader
-        kicker={t('nav.manager')}
-        title={t('nav.investigations')}
+        kicker={t('investigator.manager')}
+        title={t('investigator.titlemodule')}
         description={t('investigator.subtitle')}
         action={
           <div className='flex gap-2'>

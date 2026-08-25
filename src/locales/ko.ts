@@ -126,6 +126,7 @@ export const ko: TranslationSchema = {
   },
   "investigator": {
     "title": "Nova연구자",
+    "titlemodule": "전략 조사 파일 및 관리",
     "subtitle": "종합 전략 분석 스위트 (SWOT, IFE, EFE, QSPM, CAME)",
     "context": "컨텍스트",
     "summary": "요약",

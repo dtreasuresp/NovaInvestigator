@@ -126,6 +126,7 @@ export const de: TranslationSchema = {
   },
   "investigator": {
     "title": "NovaForscher",
+    "titlemodule": "Strategische Akte & Untersuchungen",
     "subtitle": "Umfassende strategische Analyseschnittstelle (SWOT, IFE, EFE, QSPM, TOWS)",
     "context": "Kontext",
     "summary": "Zusammenfassung",

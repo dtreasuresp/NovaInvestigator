@@ -4,6 +4,16 @@
 
 All notable changes to this template will be documented in this file
 
+## v0.0.48 (2026-08-25)
+
+### Added & UI Polish
+- **Componente Global `StrategicPositionMatrix` e Integración en Dashboard Summary**:
+  - Creado componente global [`src/components/ui/strategic-position-matrix.tsx`](file:///d:/03.%20MATRIZ%20DAFO/src/components/ui/strategic-position-matrix.tsx) con renderizado vectorial SVG de los 4 cuadrantes metodológicos (FO, DO, FA, DA), ejes graduados EFI/EFE (1.00 a 4.00), umbral 2.50, puntos interactivos, halo dinámico y tooltips informativos respetando estrictamente los tokens tipográficos (`font-sans`, `font-mono`, `text-xs`).
+  - En [`src/views/apps/investigator/summary/index.tsx`](file:///d:/03.%20MATRIZ%20DAFO/src/views/apps/investigator/summary/index.tsx):
+    - Integrada la Matriz de Posicionamiento Estratégico en la sección central protagónica junto al panel de diagnóstico y prescripción metodológica.
+    - Reorganizada la sección inferior con el estado de validación y el resumen de acciones CAME en un grid equilibrado.
+  - Sincronizada la clave `titlemodule` en todos los catálogos i18n (`en.ts`, `de.ts`, `ko.ts`, `pt.ts`).
+
 ## v0.0.47 (2026-08-25)
 
 ### UI & Aesthetics Polish

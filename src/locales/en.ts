@@ -126,6 +126,7 @@ export const en: TranslationSchema = {
   },
   "investigator": {
     "title": "NovaResearch",
+    "titlemodule": "Strategic Dossier & Investigations",
     "subtitle": "Comprehensive Strategic Analysis Suite (SWOT, IFE, EFE, QSPM, TOWS)",
     "context": "Context",
     "summary": "Summary",

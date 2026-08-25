@@ -128,6 +128,7 @@ export interface TranslationSchema {
   }
   investigator: {
     title: string
+    titlemodule: string
     subtitle: string
     context: string
     summary: string
@@ -1214,7 +1215,7 @@ export const es: TranslationSchema = {
   },
   nav: {
     dashboard: 'Dashboard',
-    investigations: 'Expediente de las investigaciones',
+    investigations: 'Dashboard estratégico',
     investigator: 'Investigador',
     projects: 'Proyectos',
     calendar: 'Calendario',
@@ -1265,6 +1266,8 @@ export const es: TranslationSchema = {
   },
   investigator: {
     title: 'Investigador',
+    manager: 'Gestor de investigaciones',
+    titlemodule: 'Expediente de las investigaciones',
     subtitle: 'Suite de análisis y formulación estratégica empresarial',
     context: 'Contexto',
     summary: 'Resumen y Dictamen',
@@ -1273,7 +1276,7 @@ export const es: TranslationSchema = {
     dafo: 'Matriz DAFO',
     qspm: 'Matriz QSPM',
     came: 'Plan de Acciones',
-    manager: 'Gestor',
+
     factors: 'Factores Estratégicos',
     strengths: 'Fortalezas',
     weaknesses: 'Debilidades',
