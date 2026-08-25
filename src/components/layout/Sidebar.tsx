@@ -34,7 +34,8 @@ import {
   SidebarMenuItem,
   SidebarMenuSub,
   SidebarMenuSubButton,
-  SidebarMenuSubItem
+  SidebarMenuSubItem,
+  useSidebar
 } from '@/components/ui/sidebar'
 
 // Config Imports
@@ -194,6 +195,7 @@ function isLinkActive(
 
 const LockedAppMenuItem = ({ item, planName }: { item: MenuItem; planName?: string }) => {
   const { t } = useI18n()
+  const { isMobile, setOpenMobile } = useSidebar()
   const Tag = item.icon ? (Icon[item.icon] as ComponentType) : null
   const displayLabel = NAV_LABEL_MAP[item.label] ? t(NAV_LABEL_MAP[item.label]) : item.label
   const badgeText = planName ?? item.badge
@@ -203,6 +205,9 @@ const LockedAppMenuItem = ({ item, planName }: { item: MenuItem; planName?: stri
     <SidebarMenuItem>
       <SidebarMenuButton
         tooltip={tooltip}
+        onClick={() => {
+          if (isMobile) setOpenMobile(false)
+        }}
         render={<Link href='/pages/pricing' />}
         className='text-sidebar-foreground/50 hover:text-sidebar-foreground/75!'
       >
@@ -236,6 +241,14 @@ const SidebarGroupedMenuItems = ({
   planForModule: (moduleKey: string | undefined) => BillingPlan | null
 }) => {
   const { t } = useI18n()
+  const { isMobile, setOpenMobile } = useSidebar()
+
+  const handleLinkClick = () => {
+    if (isMobile) {
+      setOpenMobile(false)
+    }
+  }
+  
   const displayGroupLabel = groupLabel && NAV_LABEL_MAP[groupLabel] ? t(NAV_LABEL_MAP[groupLabel]) : groupLabel
 
   return (
@@ -322,6 +335,7 @@ const SidebarGroupedMenuItems = ({
                                       <SidebarMenuSubItem key={leaf.label}>
                                         <SidebarMenuSubButton
                                           className='data-active:bg-primary/10! justify-between'
+                                          onClick={handleLinkClick}
                                           render={<Link href={leaf.href} target={leaf.target} />}
                                           isActive={isLinkActive(leaf.href, leaf.activePath, pathname, searchParams)}
                                         >
@@ -361,6 +375,7 @@ const SidebarGroupedMenuItems = ({
                           <SidebarMenuSubItem key={subItem.label}>
                             <SidebarMenuSubButton
                               className='data-active:bg-primary/10! justify-between'
+                              onClick={handleLinkClick}
                               render={<Link href={subItem.href} target={subItem.target} />}
                               isActive={isLinkActive(subItem.href, subItem.activePath, pathname, searchParams)}
                             >
@@ -400,6 +415,7 @@ const SidebarGroupedMenuItems = ({
               <SidebarMenuItem key={item.label}>
                 <SidebarMenuButton
                   tooltip={displayItemLabel}
+                  onClick={handleLinkClick}
                   render={<Link href={item.href} target={item.target} />}
                   isActive={pathname === item.href}
                   className='data-active:bg-primary/10!'
@@ -445,6 +461,7 @@ const SidebarLayout = () => {
   const searchParams = useSearchParams()
   const { has, hasModule, platformCapabilities, snapshot, loading } = usePermissions()
   const { planForModule } = usePlanCatalog()
+  const { isMobile, setOpenMobile } = useSidebar()
 
   // Remove this state when the nav-apps API is removed. Until then, this state is used to hold the external nav-apps fetched from the API JSON.
   const [externalApps, setExternalApps] = useState<MenuItem[]>([])
@@ -521,6 +538,9 @@ const SidebarLayout = () => {
             <SidebarMenuButton
               size='lg'
               className='gap-2.5 bg-transparent!'
+              onClick={() => {
+                if (isMobile) setOpenMobile(false)
+              }}
               render={<Link href={`${themeConfig.homePageUrl}`} />}
             >
               <LogoSvg className='size-8' />

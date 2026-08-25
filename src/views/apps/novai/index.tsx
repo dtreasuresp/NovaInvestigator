@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react'
 
-import { PanelLeft, RefreshCw } from 'lucide-react'
+import { PanelLeft, Plus, RefreshCw } from 'lucide-react'
 import { toast } from 'sonner'
 
 import { Button } from '@/components/ui/button'
@@ -46,8 +46,12 @@ export default function NovAiView() {
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const abortControllerRef = useRef<AbortController | null>(null)
 
-  // 1. Load threads from localStorage on mount
+  // 1. Load threads from localStorage on mount and collapse sidebar on mobile
   useEffect(() => {
+    if (typeof window !== 'undefined' && window.innerWidth < 768) {
+      setIsSidebarCollapsed(true)
+    }
+
     try {
       const raw = localStorage.getItem(STORAGE_KEY)
 
@@ -202,6 +206,10 @@ export default function NovAiView() {
 
     saveThreads(nextThreads)
     setActiveThreadId(newThread.id)
+
+    if (typeof window !== 'undefined' && window.innerWidth < 768) {
+      setIsSidebarCollapsed(true)
+    }
   }
 
   const handleSelectThread = (id: string) => {
@@ -215,6 +223,10 @@ export default function NovAiView() {
 
     if (selected) {
       setContextApp(selected.context.app)
+    }
+
+    if (typeof window !== 'undefined' && window.innerWidth < 768) {
+      setIsSidebarCollapsed(true)
     }
   }
 
@@ -509,11 +521,13 @@ export default function NovAiView() {
     // Validate quota before regenerating
     if (quota && !quota.allowed) {
       toast.error('NovAi no está habilitado para tu plan. Contacta al administrador.')
+
       return
     }
 
     if (quota && quota.limitValue !== null && quota.remaining !== null && quota.remaining <= 0) {
       toast.error('Has alcanzado el límite mensual de NovAi.')
+
       return
     }
 
@@ -522,11 +536,13 @@ export default function NovAiView() {
 
     if (dailyLim !== null && dailyRem !== null && dailyRem <= 0) {
       toast.error('Has alcanzado el límite diario de NovAi. Se renueva en 24h.')
+
       return
     }
 
     // Keep history up to the user message, and place an empty assistant placeholder in-place
     const baseMessages = messages.slice(0, lastAssistantIdx)
+
     const assistantPlaceholder: ChatMessage = {
       id: generateId(),
       role: 'assistant',
@@ -536,6 +552,7 @@ export default function NovAiView() {
     }
 
     const updatedMessages = [...baseMessages, assistantPlaceholder]
+
     const updatedThread: ChatThread = {
       ...activeThread,
       updatedAt: new Date().toISOString(),
@@ -543,14 +560,17 @@ export default function NovAiView() {
     }
 
     const nextThreads = threads.map(t => (t.id === activeThread.id ? updatedThread : t))
+
     saveThreads(nextThreads)
     setIsLoading(true)
 
     const controller = new AbortController()
+
     abortControllerRef.current = controller
 
     try {
       const contextPayload: NovaiContext = { app: contextApp, mode: selectedMode }
+
       const apiMessages = baseMessages
         .filter(m => m.content || m.role === 'user')
         .map(m => ({ role: m.role, content: m.content }))
@@ -569,6 +589,7 @@ export default function NovAiView() {
 
       if (!response.ok) {
         const errData = await response.json().catch(() => ({}))
+
         throw new Error(errData.error || 'Error al conectar con NovAi.')
       }
 
@@ -580,6 +601,7 @@ export default function NovAiView() {
 
       while (true) {
         const { done, value } = await reader.read()
+
         if (done) break
 
         const chunkStr = decoder.decode(value, { stream: true })
@@ -587,10 +609,12 @@ export default function NovAiView() {
 
         for (const line of lines) {
           const trimmed = line.trim()
+
           if (!trimmed.startsWith('data: ')) continue
 
           try {
             const data = JSON.parse(trimmed.slice(6))
+
             if (data.chunk) {
               accumulatedText += data.chunk
 
@@ -700,6 +724,38 @@ export default function NovAiView() {
 
       {/* 2. Área Principal de Chat (Máximo espacio central) */}
       <main className='flex flex-1 flex-col overflow-hidden bg-background/50 relative min-w-0'>
+        {/* Mobile Header Bar (ChatGPT style) */}
+        <div className='flex md:hidden items-center justify-between px-3 py-2 border-b border-border/40 bg-background/90 backdrop-blur-md shrink-0 z-10'>
+          <div className='flex items-center gap-2 min-w-0'>
+            <Button
+              size='icon'
+              variant='ghost'
+              onClick={() => setIsSidebarCollapsed(false)}
+              className='size-8 rounded-lg text-foreground hover:bg-muted shrink-0'
+              aria-label='Abrir historial'
+            >
+              <PanelLeft className='size-4' />
+            </Button>
+            <div className='flex items-center gap-1.5 min-w-0'>
+              <span className='font-bold text-xs tracking-tight truncate'>NovAi</span>
+              <Badge variant='outline' className='text-[10px] px-1.5 py-0 font-normal shrink-0'>
+                {selectedMode}
+              </Badge>
+            </div>
+          </div>
+          <div className='flex items-center gap-1 shrink-0'>
+            <Button
+              size='icon'
+              variant='ghost'
+              onClick={handleNewThread}
+              className='size-8 rounded-lg text-foreground hover:bg-muted'
+              aria-label='Nuevo chat'
+            >
+              <Plus className='size-4' />
+            </Button>
+          </div>
+        </div>
+
         {/* Messages Stream or Empty State with AI Elements Conversation */}
         {messages.length === 0 ? (
             <NovaiEmptyState

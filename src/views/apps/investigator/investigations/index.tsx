@@ -171,7 +171,7 @@ const ResearchCard = ({
       )}
     >
       {/* Top Row: Title on Left, Badges + Open Button + 3-dots Menu on Right */}
-      <div className='flex items-center justify-between gap-4'>
+      <div className='flex flex-col sm:flex-row sm:items-center justify-between gap-3'>
         <div className='min-w-0 flex-1'>
           <p className='truncate font-semibold text-base text-foreground'>
             {item.metadata.title || (
@@ -180,82 +180,85 @@ const ResearchCard = ({
           </p>
         </div>
 
-        {/* Right side: Fixed alignment for badges, action button, and 3-dots menu */}
-        <div className='flex items-center gap-2 shrink-0'>
-          {isActive && (
-            <Badge variant='default' className='text-xs'>
-              {t('common.active')}
-            </Badge>
-          )}
+        {/* Badges and actions container */}
+        <div className='flex flex-wrap items-center justify-between sm:justify-end gap-2 w-full sm:w-auto'>
+          <div className='flex flex-wrap items-center gap-1.5 min-w-0'>
+            {isActive && (
+              <Badge variant='default' className='text-xs shrink-0'>
+                {t('common.active')}
+              </Badge>
+            )}
 
-          <Badge
-            variant='outline'
-            className={cn('shrink-0 text-xs font-medium', STATUS_CLASS[statusLabel] || '')}
-          >
-            {statusLabel}
-          </Badge>
-
-          {/* Protection / Collaboration Badge */}
-          {isLocked ? (
             <Badge
               variant='outline'
-              className='bg-muted text-foreground border-border gap-1 text-xs'
+              className={cn('shrink-0 text-xs font-medium', STATUS_CLASS[statusLabel] || '')}
             >
-              <Lock className='w-3 h-3' /> {t('investigator.protectedFiles')}
+              {statusLabel}
             </Badge>
-          ) : accessLevel === 'private' ? (
-            <Badge
-              variant='outline'
-              className='bg-muted text-foreground border-border gap-1 text-xs'
-            >
-              <Lock className='w-3 h-3' /> {t('investigator.accessPrivate')}
-            </Badge>
-          ) : accessLevel === 'team_read' ? (
-            <Badge
-              variant='outline'
-              className='bg-muted text-foreground border-border gap-1 text-xs'
-            >
-              <Eye className='w-3 h-3' /> {t('investigator.accessTeamRead')}
-            </Badge>
-          ) : (
-            <Badge
-              variant='outline'
-              className='bg-muted text-foreground border-border gap-1 text-xs'
-            >
-              <Users className='w-3 h-3' /> {t('investigator.accessCollaborative')}
-            </Badge>
-          )}
 
-          {/* Collaborators Count Badge */}
-          {collaborators.length > 0 && (
-            <Badge
-              variant='outline'
-              className='bg-muted text-foreground border-border gap-1 text-xs'
-            >
-              <Users className='w-3 h-3' /> {collaborators.length}{' '}
-              {collaborators.length === 1 ? 'colaborador' : 'colaboradores'}
-            </Badge>
-          )}
+            {/* Protection / Collaboration Badge */}
+            {isLocked ? (
+              <Badge
+                variant='outline'
+                className='bg-muted text-foreground border-border gap-1 text-xs shrink-0'
+              >
+                <Lock className='w-3 h-3' /> {t('investigator.protectedFiles')}
+              </Badge>
+            ) : accessLevel === 'private' ? (
+              <Badge
+                variant='outline'
+                className='bg-muted text-foreground border-border gap-1 text-xs shrink-0'
+              >
+                <Lock className='w-3 h-3' /> {t('investigator.accessPrivate')}
+              </Badge>
+            ) : accessLevel === 'team_read' ? (
+              <Badge
+                variant='outline'
+                className='bg-muted text-foreground border-border gap-1 text-xs shrink-0'
+              >
+                <Eye className='w-3 h-3' /> {t('investigator.accessTeamRead')}
+              </Badge>
+            ) : (
+              <Badge
+                variant='outline'
+                className='bg-muted text-foreground border-border gap-1 text-xs shrink-0'
+              >
+                <Users className='w-3 h-3' /> {t('investigator.accessCollaborative')}
+              </Badge>
+            )}
 
-          {/* Primary Action: Open */}
-          <Button size='sm' variant='default' onClick={onOpen} className='text-xs h-8'>
-            {t('investigator.actionOpen')}
-          </Button>
+            {/* Collaborators Count Badge */}
+            {collaborators.length > 0 && (
+              <Badge
+                variant='outline'
+                className='bg-muted text-foreground border-border gap-1 text-xs shrink-0'
+              >
+                <Users className='w-3 h-3' /> {collaborators.length}{' '}
+                {collaborators.length === 1 ? 'colaborador' : 'colaboradores'}
+              </Badge>
+            )}
+          </div>
 
-          {/* 3-Dots Context Menu */}
-          <DropdownMenu>
-            <DropdownMenuTrigger
-              render={
-                <Button
-                  size='icon'
-                  variant='ghost'
-                  className='size-8 text-muted-foreground hover:text-foreground'
-                  aria-label={t('common.actions')}
-                >
-                  <MoreVertical className='size-4' />
-                </Button>
-              }
-            />
+          <div className='flex items-center gap-1.5 shrink-0 ml-auto sm:ml-0'>
+            {/* Primary Action: Open */}
+            <Button size='sm' variant='default' onClick={onOpen} className='text-xs h-8'>
+              {t('investigator.actionOpen')}
+            </Button>
+
+            {/* 3-Dots Context Menu */}
+            <DropdownMenu>
+              <DropdownMenuTrigger
+                render={
+                  <Button
+                    size='icon'
+                    variant='ghost'
+                    className='size-8 text-muted-foreground hover:text-foreground'
+                    aria-label={t('common.actions')}
+                  >
+                    <MoreVertical className='size-4' />
+                  </Button>
+                }
+              />
             <DropdownMenuContent align='end' className='w-48'>
               <DropdownMenuGroup>
                 <DropdownMenuItem
@@ -319,6 +322,7 @@ const ResearchCard = ({
           </DropdownMenu>
         </div>
       </div>
+    </div>
 
       {/* Bottom Row: Full-width Audit metadata grid spanning edge-to-edge */}
       <div className='mt-3 w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs text-muted-foreground bg-muted/30 p-3 rounded-lg border border-border/50'>
@@ -537,11 +541,11 @@ export const InvestigatorInvestigationsView = () => {
         title={t('investigator.titlemodule')}
         description={t('investigator.subtitle')}
         action={
-          <div className='flex gap-2'>
-            <Button variant='outline' size='sm' onClick={handleLoadDemo}>
+          <div className='flex flex-wrap items-center gap-2 w-full sm:w-auto'>
+            <Button variant='outline' size='sm' onClick={handleLoadDemo} className='flex-1 sm:flex-initial'>
               {t('investigator.loadDemo')}
             </Button>
-            <Button size='sm' onClick={handleCreateNew}>
+            <Button size='sm' onClick={handleCreateNew} className='flex-1 sm:flex-initial'>
               + {t('investigator.newInvestigation')}
             </Button>
           </div>

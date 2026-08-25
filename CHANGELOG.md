@@ -4,6 +4,22 @@
 
 All notable changes to this template will be documented in this file
 
+## v0.0.52 (2026-08-25)
+
+### Added & Mobile / UX Enhancements
+- **Auto-cierre de Sidebar Móvil y Responsividad Global**:
+  - En [`src/components/layout/Sidebar.tsx`](file:///d:/03.%20MATRIZ%20DAFO/src/components/layout/Sidebar.tsx): Inyectado hook `useSidebar()` para cerrar automáticamente el drawer móvil (`setOpenMobile(false)`) al pulsar sobre cualquier enlace de navegación o en el logotipo principal, eliminando la persistencia indebida del sidebar sobre la vista en smartphones y tablets.
+  - En [`src/components/layout/UpgradePro.tsx`](file:///d:/03.%20MATRIZ%20DAFO/src/components/layout/UpgradePro.tsx): Desacoplado el botón flotante en pantallas móviles (`hidden md:inline-flex`) y en rutas full-bleed como `/apps/novai`, evitando colisiones visuales con el área de redacción inferior.
+  - En [`src/views/apps/investigator/investigations/index.tsx`](file:///d:/03.%20MATRIZ%20DAFO/src/views/apps/investigator/investigations/index.tsx): Adaptadas las cabeceras `StageHeader` y las tarjetas `ResearchCard` a un diseño flex responsivo (`flex-col sm:flex-row`, `flex-wrap`) para títulos, badges y acciones.
+
+- **Tooltips Flotantes de Diagnóstico Metodológico en "Estado de Validación" & Cruces DAFO**:
+  - En [`src/views/apps/investigator/summary/index.tsx`](file:///d:/03.%20MATRIZ%20DAFO/src/views/apps/investigator/summary/index.tsx): Integrados tooltips interactivos de shadcn/ui (`TooltipProvider`, `Tooltip`, `TooltipTrigger`, `TooltipContent`) en la tarjeta *Estado de Validación*. Al pasar el ratón sobre cada etapa (*Contexto*, *Factores Internos (EFI)*, *Factores Externos (EFE)*, *Matriz DAFO*, *Matriz QSPM*, *Plan de Acción CAME*), se despliega un popover flotante con el desglose exacto de observaciones, advertencias o criterios validados.
+  - En [`src/utils/investigator/domain.ts`](file:///d:/03.%20MATRIZ%20DAFO/src/utils/investigator/domain.ts): Refinado el validador metodológico para advertir de forma explícita sobre relaciones DAFO pendientes o no calificadas.
+
+- **NovAi Chat Layout Móvil Estilo ChatGPT & Control de Historial**:
+  - En [`src/views/apps/novai/components/novai-sidebar.tsx`](file:///d:/03.%20MATRIZ%20DAFO/src/views/apps/novai/components/novai-sidebar.tsx): El sub-sidebar de hilos ahora se oculta al 100% en pantallas móviles cuando está colapsado (`hidden md:flex`), cediendo todo el ancho de pantalla al chat. Al expandirse, se despliega como Drawer modal con backdrop oscuro translúcido interactivo (`fixed inset-0 z-40 bg-black/60`).
+  - En [`src/views/apps/novai/index.tsx`](file:///d:/03.%20MATRIZ%20DAFO/src/views/apps/novai/index.tsx): Incorporada barra de cabecera superior específica para móviles con botón toggle de historial (`PanelLeft`), badge de modo activo y botón de nuevo chat (`Plus`), además de auto-cierre del panel al seleccionar o crear una conversación en dispositivos móviles.
+
 ## v0.0.51 (2026-08-25)
 
 ### Added & UI Polish

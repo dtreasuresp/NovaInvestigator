@@ -3,8 +3,8 @@
 **Proyecto:** NovaInvestigator — análisis estratégico EFI/EFE/DAFO/QSPM/CAME  
 **Documento:** Arquitectura técnica para autenticación, acceso, suscripciones y persistencia online  
 **Fecha:** 2026-08-07  
-**Estado:** Implementación incremental avanzada; el backend de acceso, entitlements, usuarios y roles, las pantallas internas de Roles y Permissions, la administración global de módulos, planes y trial y el Centro Único multiámbito ya están implementados en código. Las migraciones del Centro Único y sus correcciones forward fueron aplicadas y verificadas contra Supabase, incluyendo la función de asignación de capacidades, el límite RLS contra `platform.*` en roles tenant, sus grants y el estado platform de Daniel. Quedan la validación visual con sesión real, la comprobación end-to-end de Checkout/Billing y el cierre del error de typecheck preexistente.
-**Última decisión funcional:** 2026-08-14
+**Estado:** Implementación incremental avanzada; componentes globales estratégicos (StrategicPositionMatrix, InvestigationSummarySheet, DafoQuadrantIndices, CameActionsIndices) integrados, arquitectura móvil responsive, tooltips flotantes en validación y persistencia de chat NovAi.
+**Última decisión funcional:** 2026-08-25
 **Alcance:** NovaStore como plataforma + Investigator como aplicación, Supabase Auth + Supabase Postgres + RLS + Stripe Billing + usuarios + roles + capacidades + entitlements de módulos + investigaciones remotas  
 **Principio rector:** conservar la UI y el shell de NovaInvestigator; implementar la funcionalidad detrás de las pantallas actuales
 
@@ -2960,6 +2960,25 @@ validaciones futuras:
     - **CRUD Exclusivo en Diálogo Modal (`StrategyModalDialog`):** La creación (`+ Añadir alternativa`) y edición de alternativas estratégicas se traslada a un diálogo modal espacioso y accesible con validación de campos (código, cuadrante, nombre, descripción).
     - **Ranking de Atractivo Visual con Barras Proporcionales:** El panel de ranking incorpora barras de progreso (`Progress`) relativas al puntaje TAS líder, ofreciendo una comparación instantánea del atractivo cuantitativo entre opciones.
     - **Barra de Métricas y KPIs de Cabecera:** Indicadores clave en la parte superior (total de alternativas, alternativa líder TAS, alternativa seleccionada y progreso de evaluación de factores).
+
+43. **Resuelta (2026-08-25): Arquitectura de Responsividad Móvil, Cierre Automático de Sidebar y Desacoplamiento de Botones Flotantes:**
+    - **Cierre Automático del Sidebar en Móvil al Navegar:** En `src/components/layout/Sidebar.tsx`, los enlaces de navegación consumen el setter `setOpenMobile(false)` del contexto `useSidebar()`. Al hacer clic en cualquier ítem del menú en dispositivos móviles o pantallas táctiles, el Drawer del sidebar se oculta automáticamente, permitiendo visualizar la pantalla de destino sin bloqueos.
+    - **Desacoplamiento del Botón Flotante "Upgrade your plan":** El componente global `src/components/layout/UpgradePro.tsx` se elimina de la posición fija flotante inferior (`fixed right-15 bottom-8 z-50`) en vistas móviles y en aplicaciones de pantalla completa como NovAi (`/apps/novai`), evitando que cubra los elementos interactivos o el composer de texto. La llamada a la acción de Upgrade se traslada a la barra superior (`Header`) y al menú de usuario.
+    - **Ajuste Responsive en Gestor de Investigaciones (`StageHeader` y `ResearchCard`):** En `src/views/apps/investigator/investigations/index.tsx`, se reestructuran los contenedores flexibles con `flex-wrap`, `min-w-0` y saltos de línea automáticos. Los botones de acción (`Cargar Demo`, `+ Nueva investigación`, `Abrir expediente`) y los badges de estado/colaboración se adaptan fluidamente a pantallas pequeñas sin desbordamiento horizontal ni truncamiento forzado de textos.
+
+44. **Resuelta (2026-08-25): Tooltips Flotantes Detallados en Estado de Validación y Sincronización de Cruces DAFO Pendientes:**
+    - **Tooltips Flotantes de Diagnóstico en la Tarjeta Estado de Validación:** En `src/views/apps/investigator/summary/index.tsx`, la tarjeta de validación se moderniza incorporando componentes flotantes de shadcn/ui (`@/components/ui/tooltip`). Al posicionar el cursor sobre cualquiera de las 6 etapas estratégicas (`Contexto`, `EFI`, `EFE`, `DAFO`, `QSPM`, `CAME`):
+      - Si la etapa está completa (`ready`), se muestra una confirmación afirmativa en verde: *«Todos los criterios metodológicos completados correctamente.»*
+      - Si la etapa presenta errores o advertencias (`error` / `warning`), el tooltip despliega un desglose detallado con viñetas de cada issue detectado por el motor de validación (ej. *«Quedan 4 cruces por calificar»*, *«La alternativa QSPM no tiene justificación»*, *«Los pesos CAME suman 0.90; deben sumar 1.00»*).
+    - **Sincronización del Validador con Cruces DAFO Pendientes:** Se actualiza `validateInvestigationState` en `src/utils/investigator/domain.ts` para que reconozca con precisión los cruces en estado `pending` o sin calificar según los nuevos 5 niveles de fuerza (`pending`, `0`, `1`, `2`, `3`), indicando exactamente al usuario qué parejas de factores requieren calificación.
+
+45. **Resuelta (2026-08-25): Arquitectura de NovAi Móvil (Estándar ChatGPT), Drawer Overlay y Persistencia Centralizada en PostgreSQL:**
+    - **Diseño Móvil Estilo ChatGPT en NovAi:** En `src/views/apps/novai/index.tsx` y `src/views/apps/novai/components/novai-sidebar.tsx`:
+      - En pantallas móviles (`< 768px`), el sub-sidebar de hilos de chat se oculta al 100% al estar colapsado (ancho 0), entregando todo el viewport al hilo de mensajes y al composer.
+      - Al pulsar el botón de historial en la cabecera superior, el sub-sidebar se despliega como un Sheet/Drawer flotante con fondo translúcido (`backdrop-blur`) y animación lateral suave.
+      - El botón de Upgrade / Estado del Plan se ubica en la cabecera superior o al pie del drawer, manteniendo el área inferior despejada exclusivamente para el composer.
+    - **Persistencia Centralizada Multi-Dispositivo con Supabase PostgreSQL:** La gestión de hilos y mensajes de NovAi se sincroniza de forma transparente con las tablas `public.novai_conversations` y `public.novai_messages` mediante `conversations-repository.ts` y Route Handlers server-side. Se mantiene `localStorage` exclusivamente como caché local optimista y soporte offline, permitiendo al usuario acceder a su historial completo de conversaciones desde cualquier navegador o dispositivo.
+    - **Integración Completa con Primitives `@ai-elements`:** Composición de estados visuales de razonamiento (`<Reasoning>` / `<ChainOfThought>`) y ejecución de herramientas en vivo (`<Tool>` / `<ToolCall>`) durante las auditorías matriciales y análisis estratégicos de NovAi.
 
 Estas decisiones sustituyen las reglas comerciales anteriores y deben gobernar las
 migraciones, contratos API y validaciones futuras. Las migraciones ya aplicadas

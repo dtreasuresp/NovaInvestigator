@@ -849,13 +849,12 @@ export const validateInvestigation = (
 
   const expectedRelations = (state.internal?.length || 0) * (state.external?.length || 0)
   const evaluatedRelations = analysis.relations.evaluatedCount
-
-  if (expectedRelations > 0 && evaluatedRelations < expectedRelations) {
-    addIssue('dafo', 'relations-pending', `Quedan ${expectedRelations - evaluatedRelations} relaciones sin evaluar.`)
-  }
+  const missingRelations = Math.max(0, expectedRelations - evaluatedRelations)
 
   if (expectedRelations > 0 && evaluatedRelations === 0) {
     addIssue('dafo', 'relations-empty', 'No hay relaciones DAFO evaluadas con fuerza y evidencia.')
+  } else if (missingRelations > 0) {
+    addIssue('dafo', 'relations-pending', `Quedan ${missingRelations} relaciones DAFO sin calificar o en estado pendiente.`)
   }
 
   if (analysis.relations.warnings.length > 0) {

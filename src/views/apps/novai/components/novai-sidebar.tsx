@@ -100,7 +100,7 @@ export function NovaiSidebar({
 
   if (isCollapsed) {
     return (
-      <div className='absolute inset-y-0 left-0 z-30 flex flex-col items-center border-r border-border/60 bg-card/85 backdrop-blur-md py-4 px-2 w-14 shrink-0 justify-between h-full transition-all duration-200'>
+      <div className='hidden md:flex absolute inset-y-0 left-0 z-30 flex-col items-center border-r border-border/60 bg-card/85 backdrop-blur-md py-4 px-2 w-14 shrink-0 justify-between h-full transition-all duration-200'>
         <div className='flex flex-col items-center gap-3'>
           <TooltipProvider>
             <Tooltip>
@@ -148,7 +148,15 @@ export function NovaiSidebar({
   }
 
   return (
-    <aside className='absolute inset-y-0 left-0 z-30 flex w-72 md:w-80 flex-col border-r border-border/60 bg-card/95 backdrop-blur-xl shadow-2xl shrink-0 h-full justify-between transition-all duration-200 select-none'>
+    <>
+      {/* Mobile Backdrop Overlay */}
+      <div
+        className='fixed inset-0 z-40 bg-black/60 backdrop-blur-xs md:hidden'
+        onClick={onToggleCollapse}
+        aria-hidden='true'
+      />
+
+      <aside className='fixed md:absolute inset-y-0 left-0 z-50 md:z-30 flex w-72 md:w-80 flex-col border-r border-border/60 bg-card/95 backdrop-blur-xl shadow-2xl shrink-0 h-full justify-between transition-all duration-200 select-none'>
       {/* Header & New Chat */}
       <div className='p-3.5 space-y-3 shrink-0'>
         <div className='flex items-center justify-between'>
@@ -259,6 +267,7 @@ export function NovaiSidebar({
         )}
       </div>
     </aside>
+  </>
   )
 }
 

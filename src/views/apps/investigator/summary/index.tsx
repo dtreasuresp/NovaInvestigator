@@ -19,6 +19,12 @@ import { StrategicPositionMatrix, type StrategicMatrixPoint } from '@/components
 import { InvestigationSummarySheet } from '@/components/ui/investigation-summary-sheet'
 import { DafoQuadrantIndices } from '@/components/ui/dafo-quadrant-indices'
 import { CameActionsIndices } from '@/components/ui/came-actions-indices'
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger
+} from '@/components/ui/tooltip'
 
 // Icon Imports
 
@@ -27,8 +33,18 @@ import { useInvestigatorAnalysis } from '@/hooks/use-investigator-analysis'
 import { useI18n } from '@/hooks/use-i18n'
 
 // Util Imports
+import { cn } from '@/lib/utils'
 import { ORIENTATIONS, formatNumber } from '@/utils/investigator/domain'
 import { buildLocalizedAcademicReport } from '@/utils/investigator/academic-report'
+
+const STAGE_LABELS: Record<string, string> = {
+  context: 'Contexto',
+  efi: 'Factores Internos (EFI)',
+  efe: 'Factores Externos (EFE)',
+  dafo: 'Matriz DAFO',
+  qspm: 'Matriz QSPM',
+  came: 'Plan de Acción CAME'
+}
 
 // View Imports
 import { MetricCard, StageHeader } from '../shared/primitives'
@@ -295,33 +311,109 @@ export const InvestigatorSummaryView = () => {
           </div>
 
           {/* 2. Estado de Validación (Top-Right) */}
-          <div className='rounded-2xl border border-border/80 bg-card p-4 shadow-xs flex flex-col justify-between space-y-3 h-full'>
-            <div className='space-y-0.5'>
-              <h4 className='font-semibold text-sm text-foreground truncate'>
-                {t('investigator.validationStatus')}
-              </h4>
-              <p className='text-xs text-muted-foreground'>
-                {validation.errors} errores · {validation.warnings} advertencias · {readyStages}/{stageTotal} etapas listas
-              </p>
-            </div>
+          <TooltipProvider delay={150}>
+            <div className='rounded-2xl border border-border/80 bg-card p-4 shadow-xs flex flex-col justify-between space-y-3 h-full'>
+              <div className='space-y-0.5'>
+                <h4 className='font-semibold text-sm text-foreground truncate'>
+                  {t('investigator.validationStatus')}
+                </h4>
+                <p className='text-xs text-muted-foreground'>
+                  {validation.errors} errores · {validation.warnings} advertencias · {readyStages}/{stageTotal} etapas listas
+                </p>
+              </div>
 
-            <div className='grid grid-cols-2 gap-x-3 gap-y-2 pt-1'>
-              {Object.entries(validation.stageStatus).map(([stage, status]) => (
-                <div key={stage} className='space-y-1'>
-                  <div className='flex items-center justify-between gap-1'>
-                    <span className='truncate text-[11px] font-medium capitalize'>{stage}</span>
-                    <Badge
-                      variant={status === 'ready' ? 'secondary' : status === 'warning' ? 'outline' : 'destructive'}
-                      className='px-1 py-0 text-[9px]'
-                    >
-                      {status}
-                    </Badge>
-                  </div>
-                  <Progress value={status === 'ready' ? 100 : status === 'warning' ? 50 : 25} className='h-1' />
-                </div>
-              ))}
+              <div className='grid grid-cols-2 gap-x-3 gap-y-2 pt-1'>
+                {Object.entries(validation.stageStatus).map(([stage, status]) => {
+                  const stageIssues = validation.byStage[stage as keyof typeof validation.byStage] || []
+                  const stageLabel = STAGE_LABELS[stage] || stage
+                  const isReady = status === 'ready'
+
+                  return (
+                    <Tooltip key={stage}>
+                      <TooltipTrigger className='w-full text-left'>
+                        <div className='space-y-1 cursor-pointer rounded-lg p-1 -m-1 hover:bg-muted/40 transition-colors select-none'>
+                          <div className='flex items-center justify-between gap-1'>
+                            <span className='truncate text-[11px] font-medium'>{stageLabel}</span>
+                            <Badge
+                              variant={isReady ? 'secondary' : status === 'warning' ? 'outline' : 'destructive'}
+                              className={cn(
+                                'px-1 py-0 text-[9px] capitalize',
+                                isReady && 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20',
+                                status === 'warning' && 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20'
+                              )}
+                            >
+                              {isReady ? 'Listo' : status === 'warning' ? 'Aviso' : 'Incompleto'}
+                            </Badge>
+                          </div>
+                          <Progress
+                            value={isReady ? 100 : status === 'warning' ? 50 : 25}
+                            className={cn(
+                              'h-1',
+                              isReady && '[&>div]:bg-emerald-500',
+                              status === 'warning' && '[&>div]:bg-amber-500',
+                              status === 'error' && '[&>div]:bg-destructive'
+                            )}
+                          />
+                        </div>
+                      </TooltipTrigger>
+                      <TooltipContent
+                        side='top'
+                        align='center'
+                        className='p-3 min-w-64 max-w-80 shadow-xl border bg-popover text-popover-foreground rounded-xl'
+                      >
+                        <div className='space-y-2 text-xs'>
+                          <div className='border-b border-border/60 pb-1.5 flex items-center justify-between gap-2'>
+                            <p className='font-bold text-foreground'>{stageLabel}</p>
+                            <span
+                              className={cn(
+                                'text-[10px] font-semibold px-1.5 py-0.5 rounded-full',
+                                isReady && 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400',
+                                status === 'warning' && 'bg-amber-500/10 text-amber-600 dark:text-amber-400',
+                                status === 'error' && 'bg-rose-500/10 text-rose-600 dark:text-rose-400'
+                              )}
+                            >
+                              {isReady
+                                ? 'Validado'
+                                : `${stageIssues.length} ${stageIssues.length === 1 ? 'observación' : 'observaciones'}`}
+                            </span>
+                          </div>
+
+                          {isReady ? (
+                            <div className='flex items-center gap-2 text-emerald-600 dark:text-emerald-400 text-[11px] pt-0.5'>
+                              <span className='size-1.5 rounded-full bg-emerald-500 shrink-0' />
+                              <span>Todos los criterios metodológicos completados correctamente.</span>
+                            </div>
+                          ) : (
+                            <ul className='space-y-1.5 pt-0.5 max-h-48 overflow-y-auto pr-1'>
+                              {stageIssues.map((issue, idx) => (
+                                <li key={idx} className='flex items-start gap-1.5 text-[11px] leading-tight'>
+                                  <span
+                                    className={cn(
+                                      'size-1.5 rounded-full shrink-0 mt-1',
+                                      issue.severity === 'error' ? 'bg-rose-500' : 'bg-amber-500'
+                                    )}
+                                  />
+                                  <span
+                                    className={
+                                      issue.severity === 'error'
+                                        ? 'text-foreground font-medium'
+                                        : 'text-muted-foreground'
+                                    }
+                                  >
+                                    {issue.message}
+                                  </span>
+                                </li>
+                              ))}
+                            </ul>
+                          )}
+                        </div>
+                      </TooltipContent>
+                    </Tooltip>
+                  )
+                })}
+              </div>
             </div>
-          </div>
+          </TooltipProvider>
 
           {/* 3. Índices DAFO por Cuadrante (Bottom-Left) */}
           <DafoQuadrantIndices
