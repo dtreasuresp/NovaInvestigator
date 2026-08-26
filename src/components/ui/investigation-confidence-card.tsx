@@ -9,10 +9,12 @@ import {
   CheckCircle2,
   Sliders,
   Compass,
-  FileCheck2
+  FileCheck2,
+  Layers
 } from 'lucide-react'
 
 import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
 import { Progress } from '@/components/ui/progress'
 import { cn } from '@/lib/utils'
 import type { RelationsAnalysis, InvestigationState, ValidationResult } from '@/types/apps/investigator-types'
@@ -24,7 +26,8 @@ export interface InvestigationConfidenceCardProps {
   }
   state: InvestigationState
   validation: ValidationResult
-  onOpenAiReport?: () => void
+  onAuditCame?: () => void
+  onJustifyMixedStrategy?: () => void
   className?: string
 }
 
@@ -32,34 +35,50 @@ export function InvestigationConfidenceCard({
   analysis,
   state,
   validation,
-  onOpenAiReport,
+  onAuditCame,
+  onJustifyMixedStrategy,
   className
 }: InvestigationConfidenceCardProps) {
   const { relations } = analysis
   const { confidence, coverage, difference, dominant, second } = relations
 
+  const dominantName = dominant ? (ORIENTATIONS[dominant]?.name ?? dominant) : '—'
+  const secondName = second ? (ORIENTATIONS[second]?.name ?? second) : '—'
+
   // 1. Calculate numerical confidence score (0 - 100)
   const confidenceScore = React.useMemo(() => {
     if (relations.evaluatedCount === 0 || !dominant) return 15
 
-    let score = 30 // Base
+    let score = 25 // Base
 
-    // Coverage factor (up to 35 pts)
-    score += Math.min(35, Math.round(coverage * 35))
+    // Coverage factor (up to 40 pts)
+    score += Math.min(40, Math.round(coverage * 40))
 
     // Difference / Vector clarity factor (up to 20 pts)
     if (difference >= 0.2) score += 20
-    else if (difference >= 0.1) score += 12
-    else score += 5 // Ambivalent
+    else if (difference >= 0.1) score += 15
+    else score += 8 // Paridad / Empate técnico con datos
 
     // Validation factor (up to 15 pts)
     if (validation.valid) score += 15
-    else if (validation.errors === 0) score += 8
+    else if (validation.errors === 0) score += 10
 
     return Math.min(100, Math.max(10, score))
   }, [relations.evaluatedCount, dominant, coverage, difference, validation.valid, validation.errors])
 
-  // 2. CAME coverage check (critical weaknesses and threats covered by actions)
+  // 2. Status & Color Hierarchy Resolution
+  const isAmbivalent = difference < 0.1 && Boolean(second)
+  const isHigh = confidenceScore >= 70 && !isAmbivalent && coverage >= 0.65
+  const isMedium = (confidenceScore >= 40 || isAmbivalent) && coverage >= 0.35 && !isHigh
+  const isLow = !isHigh && !isMedium
+
+  const statusLabel = isHigh
+    ? 'Confianza Alta'
+    : isMedium
+      ? 'Confianza Media (Estrategia Mixta)'
+      : 'Confianza Baja (Incompleta)'
+
+  // 3. CAME coverage check
   const cameCoverage = React.useMemo(() => {
     const internal = Array.isArray(state.internal) ? state.internal : []
     const external = Array.isArray(state.external) ? state.external : []
@@ -71,7 +90,6 @@ export function InvestigationConfidenceCard({
 
     if (totalCritical === 0) return { covered: 0, total: 0, percentage: 100, unmitigatedCount: 0 }
 
-    // Count factors mentioned or linked in actions
     const actionFactorIds = new Set<string>()
     cameActions.forEach(a => {
       if (a.factorId) actionFactorIds.add(a.factorId)
@@ -98,13 +116,10 @@ export function InvestigationConfidenceCard({
     }
   }, [state.internal, state.external, state.cameActions])
 
-  // 3. Status configuration
-  const isHigh = confidence === 'alta'
-  const isMedium = confidence === 'media'
-  const isAmbivalent = difference < 0.1 && Boolean(second)
-
-  const dominantName = dominant ? (ORIENTATIONS[dominant]?.name ?? dominant) : '—'
-  const secondName = second ? (ORIENTATIONS[second]?.name ?? second) : '—'
+  // SVG Radial Gauge parameters
+  const radius = 38
+  const circumference = 2 * Math.PI * radius
+  const strokeDashoffset = circumference - (confidenceScore / 100) * circumference
 
   return (
     <div
@@ -121,7 +136,7 @@ export function InvestigationConfidenceCard({
               'size-8 rounded-xl flex items-center justify-center border shadow-xs',
               isHigh && 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20',
               isMedium && 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20',
-              !isHigh && !isMedium && 'bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/20'
+              isLow && 'bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/20'
             )}
           >
             {isHigh ? (
@@ -146,51 +161,76 @@ export function InvestigationConfidenceCard({
             isMedium && 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20'
           )}
         >
-          {isHigh ? 'Confianza Alta' : isMedium ? 'Confianza Media' : 'Confianza Baja'}
+          {statusLabel}
         </Badge>
       </div>
 
-      {/* Main Score & Diagnosis Grid */}
-      <div className='grid grid-cols-1 md:grid-cols-3 gap-4 items-center'>
-        {/* Metric Gauge Box */}
-        <div className='flex flex-col items-center justify-center p-3.5 rounded-xl bg-muted/30 border border-border/50 text-center space-y-1.5'>
-          <div className='relative flex items-center justify-center'>
-            <span
-              className={cn(
-                'text-3xl font-extrabold tracking-tight font-mono',
-                isHigh && 'text-emerald-600 dark:text-emerald-400',
-                isMedium && 'text-amber-600 dark:text-amber-400',
-                !isHigh && !isMedium && 'text-rose-600 dark:text-rose-400'
-              )}
-            >
-              {confidenceScore} %
-            </span>
+      {/* Main Grid: Radial Gauge on Left, 4 Pillars on Right */}
+      <div className='grid grid-cols-1 md:grid-cols-12 gap-5 items-center'>
+        {/* Radial Gauge Box (4 cols) */}
+        <div className='md:col-span-4 flex flex-col items-center justify-center p-4 rounded-xl bg-muted/20 border border-border/50 text-center space-y-2'>
+          <div className='relative flex items-center justify-center size-28'>
+            <svg className='size-full -rotate-90' viewBox='0 0 96 96'>
+              {/* Background Circle */}
+              <circle
+                cx='48'
+                cy='48'
+                r={radius}
+                className='stroke-muted/40'
+                strokeWidth='7'
+                fill='none'
+              />
+              {/* Progress Circle */}
+              <circle
+                cx='48'
+                cy='48'
+                r={radius}
+                className={cn(
+                  'transition-all duration-700 ease-out',
+                  isHigh && 'stroke-emerald-500',
+                  isMedium && 'stroke-amber-500',
+                  isLow && 'stroke-rose-500'
+                )}
+                strokeWidth='7'
+                strokeDasharray={circumference}
+                strokeDashoffset={strokeDashoffset}
+                strokeLinecap='round'
+                fill='none'
+              />
+            </svg>
+            <div className='absolute flex flex-col items-center justify-center'>
+              <span
+                className={cn(
+                  'text-2xl font-extrabold font-mono tracking-tight leading-none',
+                  isHigh && 'text-emerald-600 dark:text-emerald-400',
+                  isMedium && 'text-amber-600 dark:text-amber-400',
+                  isLow && 'text-rose-600 dark:text-rose-400'
+                )}
+              >
+                {confidenceScore}%
+              </span>
+              <span className='text-[9px] uppercase tracking-wider font-semibold text-muted-foreground mt-0.5'>
+                {isHigh ? 'Alta' : isMedium ? 'Media' : 'Baja'}
+              </span>
+            </div>
           </div>
-          <Progress
-            value={confidenceScore}
-            className={cn(
-              'h-1.5 w-28',
-              isHigh && '[&>div]:bg-emerald-500',
-              isMedium && '[&>div]:bg-amber-500',
-              !isHigh && !isMedium && '[&>div]:bg-rose-500'
-            )}
-          />
-          <span className='text-[10px] text-muted-foreground font-medium'>
+
+          <p className='text-[11px] text-muted-foreground leading-tight px-1 font-medium'>
             {isHigh
-              ? 'Conclusión robusta y concluyente'
+              ? 'Conclusión robusta y vector directo'
               : isMedium
-                ? 'Se sugiere formular Estrategia Mixta'
-                : 'Requiere completar relaciones DAFO'}
-          </span>
+                ? 'Se recomienda formular Estrategia Mixta'
+                : 'Muestra DAFO incompleta o provisional'}
+          </p>
         </div>
 
-        {/* 4 Pillars Summary */}
-        <div className='md:col-span-2 grid grid-cols-2 gap-3 text-xs'>
+        {/* 4 Pillars Summary (8 cols) */}
+        <div className='md:col-span-8 grid grid-cols-2 gap-3 text-xs'>
           {/* Pillar 1: Cobertura DAFO */}
-          <div className='space-y-1 p-2 rounded-lg bg-background/60 border border-border/40'>
+          <div className='space-y-1.5 p-2.5 rounded-xl bg-background/60 border border-border/40'>
             <div className='flex items-center justify-between'>
-              <span className='text-muted-foreground text-[11px] font-medium flex items-center gap-1'>
-                <Compass className='size-3 text-primary' /> Cobertura DAFO
+              <span className='text-muted-foreground text-[11px] font-medium flex items-center gap-1.5'>
+                <Compass className='size-3.5 text-primary' /> Cobertura DAFO
               </span>
               <span className='font-mono font-bold'>{Math.round(coverage * 100)} %</span>
             </div>
@@ -201,10 +241,10 @@ export function InvestigationConfidenceCard({
           </div>
 
           {/* Pillar 2: Nitidez de Vector */}
-          <div className='space-y-1 p-2 rounded-lg bg-background/60 border border-border/40'>
+          <div className='space-y-1.5 p-2.5 rounded-xl bg-background/60 border border-border/40'>
             <div className='flex items-center justify-between'>
-              <span className='text-muted-foreground text-[11px] font-medium flex items-center gap-1'>
-                <Sliders className='size-3 text-primary' /> Nitidez Vector
+              <span className='text-muted-foreground text-[11px] font-medium flex items-center gap-1.5'>
+                <Sliders className='size-3.5 text-primary' /> Nitidez Vector
               </span>
               <span className={cn('font-mono font-bold', isAmbivalent ? 'text-amber-600 dark:text-amber-400' : '')}>
                 {Math.round(difference * 100)} % brecha
@@ -217,28 +257,29 @@ export function InvestigationConfidenceCard({
           </div>
 
           {/* Pillar 3: Balance EFI/EFE */}
-          <div className='space-y-1 p-2 rounded-lg bg-background/60 border border-border/40'>
+          <div className='space-y-1.5 p-2.5 rounded-xl bg-background/60 border border-border/40'>
             <div className='flex items-center justify-between'>
-              <span className='text-muted-foreground text-[11px] font-medium flex items-center gap-1'>
-                <CheckCircle2 className='size-3 text-emerald-500' /> Matrices EFI / EFE
+              <span className='text-muted-foreground text-[11px] font-medium flex items-center gap-1.5'>
+                <CheckCircle2 className='size-3.5 text-emerald-500' /> Matrices EFI / EFE
               </span>
               <span className='font-mono font-bold text-emerald-600 dark:text-emerald-400'>
                 {validation.errors === 0 ? 'Válido' : `${validation.errors} err`}
               </span>
             </div>
             <p className='text-[10px] text-muted-foreground truncate'>
-              {state.internal?.length || 0} int · {state.external?.length || 0} ext
+              {state.internal?.length || 0} int · {state.external?.length || 0} ext (Σ=1.00)
             </p>
           </div>
 
           {/* Pillar 4: Mitigación CAME */}
-          <div className='space-y-1 p-2 rounded-lg bg-background/60 border border-border/40'>
+          <div className='space-y-1.5 p-2.5 rounded-xl bg-background/60 border border-border/40'>
             <div className='flex items-center justify-between'>
-              <span className='text-muted-foreground text-[11px] font-medium flex items-center gap-1'>
-                <FileCheck2 className='size-3 text-primary' /> Mitigación CAME
+              <span className='text-muted-foreground text-[11px] font-medium flex items-center gap-1.5'>
+                <FileCheck2 className='size-3.5 text-primary' /> Mitigación CAME
               </span>
               <span className='font-mono font-bold'>{cameCoverage.percentage} %</span>
             </div>
+            <Progress value={cameCoverage.percentage} className='h-1' />
             <p className='text-[10px] text-muted-foreground truncate'>
               {cameCoverage.unmitigatedCount === 0
                 ? 'Todos los riesgos cubiertos'
@@ -248,35 +289,54 @@ export function InvestigationConfidenceCard({
         </div>
       </div>
 
-      {/* Ambiguity or Warning Alert Message if any */}
+      {/* Ambiguity or Mixed Strategy Strategic Banner */}
       {isAmbivalent && (
-        <div className='flex items-start gap-2.5 p-2.5 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-800 dark:text-amber-300 text-xs leading-relaxed'>
-          <AlertTriangle className='size-4 shrink-0 mt-0.5 text-amber-600 dark:text-amber-400' />
-          <div>
-            <span className='font-semibold'>Orientación Estratégica Híbrida Recomendada:</span>{' '}
-            La diferencia entre {dominant} ({dominantName}) y {second} ({secondName}) es de solo el{' '}
-            {Math.round(difference * 100)} % (&lt; 10 %). Se aconseja combinar acciones ofensivas/adaptativas con
-            medidas preventivas de contención.
+        <div className='flex items-start gap-2.5 p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-800 dark:text-amber-300 text-xs leading-relaxed'>
+          <Layers className='size-4 shrink-0 mt-0.5 text-amber-600 dark:text-amber-400' />
+          <div className='space-y-1'>
+            <p className='font-semibold text-foreground'>
+              Dictamen: Estrategia Mixta Recomendada ({dominant} × {second})
+            </p>
+            <p className='text-muted-foreground'>
+              La paridad cuantitativa entre {dominant} ({dominantName}) y {second} ({secondName}) con una brecha de solo el{' '}
+              {Math.round(difference * 100)} % indica que la organización no debe optar por una postura única pura, sino
+              adoptar un enfoque dual: aprovechar oportunidades emergentes mientras se blindan las vulnerabilidades y amenazas activas.
+            </p>
           </div>
         </div>
       )}
 
-      {/* Action footer */}
-      {onOpenAiReport && (
-        <div className='flex items-center justify-between pt-1'>
-          <p className='text-[11px] text-muted-foreground'>
-            NovAi puede auditar la coherencia total de tus acciones CAME frente a estos factores.
-          </p>
-          <button
-            type='button'
-            onClick={onOpenAiReport}
-            className='inline-flex items-center gap-1.5 text-xs font-semibold text-primary hover:underline shrink-0'
-          >
-            <Sparkles className='size-3.5' />
-            <span>Auditar con NovAi</span>
-          </button>
+      {/* Action Footer with AI Buttons */}
+      <div className='flex flex-wrap items-center justify-between gap-2 pt-1 border-t border-border/40'>
+        <p className='text-[11px] text-muted-foreground'>
+          NovAi puede analizar la solidez de tu expediente y generar la fundamentación ejecutiva.
+        </p>
+        <div className='flex flex-wrap items-center gap-2'>
+          {onJustifyMixedStrategy && isAmbivalent && (
+            <Button
+              size='sm'
+              variant='outline'
+              onClick={onJustifyMixedStrategy}
+              className='h-8 text-xs gap-1.5'
+            >
+              <Sparkles className='size-3.5 text-amber-500' />
+              <span>Justificar Estrategia Mixta con NovAi</span>
+            </Button>
+          )}
+
+          {onAuditCame && (
+            <Button
+              size='sm'
+              variant='default'
+              onClick={onAuditCame}
+              className='h-8 text-xs gap-1.5'
+            >
+              <Sparkles className='size-3.5' />
+              <span>Auditar Cobertura CAME con NovAi</span>
+            </Button>
+          )}
         </div>
-      )}
+      </div>
     </div>
   )
 }

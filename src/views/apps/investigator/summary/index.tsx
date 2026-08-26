@@ -62,6 +62,7 @@ export const InvestigatorSummaryView = () => {
   const [aiReportText, setAiReportText] = useState<string>('')
   const [activeReportTab, setActiveReportTab] = useState<'standard' | 'ai'>('standard')
   const [isSummarySheetOpen, setIsSummarySheetOpen] = useState(false)
+  const [isAiDialogOpen, setIsAiDialogOpen] = useState(false)
 
   const investigationId = state.metadata?.id
 
@@ -108,14 +109,13 @@ export const InvestigatorSummaryView = () => {
   }, [hydrated, investigationId, isUuid])
 
   const isLoading = !hydrated || syncStatus === 'loading'
-  const hasData = (state.internal?.length || 0) > 0 || (state.external?.length || 0) > 0
-
-  const orientation = analysis.relations.dominant ? ORIENTATIONS[analysis.relations.dominant] : null
-  const readyStages = Object.values(validation.stageStatus).filter(status => status === 'ready').length
-  const stageTotal = Object.keys(validation.stageStatus).length
+  const hasData = (state.internal?.length ?? 0) > 0 || (state.external?.length ?? 0) > 0
 
   const efiVal = analysis.efi.total
   const efeVal = analysis.efe.total
+  const orientation = analysis.relations.dominant ? ORIENTATIONS[analysis.relations.dominant] : null
+  const readyStages = Object.values(validation.stageStatus).filter(status => status === 'ready').length
+  const stageTotal = Object.keys(validation.stageStatus).length
 
   // Determine IE Matrix cell and region
   const iePosition = useMemo(() => {
@@ -201,12 +201,8 @@ export const InvestigatorSummaryView = () => {
 
   if (isLoading) {
     return (
-      <div className='flex flex-col gap-5' aria-busy='true'>
-        <div className='space-y-2'>
-          <Skeleton className='h-4 w-28' />
-          <Skeleton className='h-7 w-64' />
-          <Skeleton className='h-4 w-96' />
-        </div>
+      <div className='flex flex-col gap-6' aria-busy='true'>
+        {/* Row 1: KPI Cards */}
         <div className='grid gap-4 sm:grid-cols-2 lg:grid-cols-4'>
           {Array.from({ length: 4 }).map((_, i) => (
             <Card key={i} className='p-4 space-y-2'>
@@ -216,19 +212,35 @@ export const InvestigatorSummaryView = () => {
             </Card>
           ))}
         </div>
-        <div className='grid gap-4 lg:grid-cols-12'>
-          <div className='lg:col-span-8'>
-            <Skeleton className='h-96 w-full rounded-2xl' />
+
+        {/* Row 2: Central Section: Left Matrix + Right 2x2 Grid */}
+        <div className='grid gap-4 xl:grid-cols-12 items-stretch'>
+          <div className='xl:col-span-6 flex flex-col'>
+            <Skeleton className='h-[420px] w-full rounded-2xl' />
           </div>
-          <div className='lg:col-span-4 space-y-4'>
-            <Skeleton className='h-44 w-full rounded-2xl' />
-            <Skeleton className='h-44 w-full rounded-2xl' />
+          <div className='xl:col-span-6 grid grid-cols-1 md:grid-cols-2 gap-4 items-stretch'>
+            {Array.from({ length: 4 }).map((_, i) => (
+              <Skeleton key={i} className='h-[200px] w-full rounded-2xl' />
+            ))}
           </div>
         </div>
+
+        {/* Row 3: Investigation Confidence Card */}
+        <Skeleton className='h-[240px] w-full rounded-2xl' />
+
+        {/* Row 4: Academic Report */}
         <div className='space-y-4'>
-          <Skeleton className='h-5 w-64' />
-          <Skeleton className='h-3.5 w-96' />
-          <Skeleton className='h-48 w-full rounded-xl' />
+          <div className='flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-1'>
+            <div className='space-y-1'>
+              <Skeleton className='h-5 w-64' />
+              <Skeleton className='h-3.5 w-96' />
+            </div>
+            <div className='flex items-center gap-2'>
+              <Skeleton className='h-8 w-28 rounded-lg' />
+              <Skeleton className='h-8 w-20 rounded-lg' />
+            </div>
+          </div>
+          <Skeleton className='h-56 w-full rounded-xl' />
         </div>
       </div>
     )
@@ -440,6 +452,18 @@ export const InvestigatorSummaryView = () => {
         analysis={analysis}
         state={state}
         validation={validation}
+        onAuditCame={() => setIsAiDialogOpen(true)}
+        onJustifyMixedStrategy={() => setIsAiDialogOpen(true)}
+      />
+
+      <AiReportDialog
+        open={isAiDialogOpen}
+        onOpenChange={setIsAiDialogOpen}
+        onReportGenerated={text => {
+          setAiReportText(text)
+          setActiveReportTab('ai')
+        }}
+        trigger={null}
       />
 
       {/* Full Academic Report & Thesis Defense Synthesis (Section 19) */}

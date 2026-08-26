@@ -4,6 +4,21 @@
 
 All notable changes to this template will be documented in this file
 
+## v0.0.54 (2026-08-25)
+
+### Fixed & Methodology / UX Polish
+- **Recalibración de Regla de Nivel de Confianza y Eliminación de Falsos Avisos DAFO**:
+  - En [`src/utils/investigator/domain.ts`](file:///d:/03.%20MATRIZ%20DAFO/src/utils/investigator/domain.ts): Se reclasificó la asignación de confianza para que las investigaciones con alta cobertura de cruces ($\ge 40\%$) pero con empate técnico o paridad de vectores (brecha $< 10\%$) reciban dictamen de **Confianza Media (Estrategia Mixta)** en color ámbar en lugar de penalizarse erróneamente como `'baja'` e inducir falsos avisos de "relaciones DAFO incompletas".
+  - Distinción estricta de cruces con `strength: 0` (`status: 'sin relación'`) como calificaciones deliberadas 100% completadas, reservando el estado no completado exclusivamente para `status === 'pending'` o `strength === null`.
+
+- **Rediseño con Radial Progress Ring SVG y Botones Interactivos NovAi**:
+  - En [`src/components/ui/investigation-confidence-card.tsx`](file:///d:/03.%20MATRIZ%20DAFO/src/components/ui/investigation-confidence-card.tsx): Implementado medidor radial SVG circular (`stroke-dashoffset`) con animación fluida y sincronización de colores semánticos (verde para Alta, ámbar para Media/Mixta, rojo para Baja).
+  - Incorporada explicación formal del dictamen de Estrategia Mixta Recomendada ($DO \times DA$) y botones interactivos: `[✨ Auditar Cobertura CAME con NovAi]` y `[✨ Justificar Estrategia Mixta con NovAi]`.
+
+- **Sincronización 1:1 de Skeletons de Carga en Pantalla de Resumen**:
+  - En [`src/views/apps/investigator/summary/index.tsx`](file:///d:/03.%20MATRIZ%20DAFO/src/views/apps/investigator/summary/index.tsx): Reestructurado el layout del skeleton (`isLoading`) para que coincida exactamente con la jerarquía real (4 KPI cards superiores $\rightarrow$ Matriz izquierda `xl:col-span-6` + cuadrícula 2×2 de 4 cards simétricas `xl:col-span-6` $\rightarrow$ Tarjeta ancha de Confianza Metodológica $\rightarrow$ Sección de Informe Académico).
+  - Enlazados los manejadores de NovAi en `InvestigationConfidenceCard` con el diálogo controlado `AiReportDialog`.
+
 ## v0.0.53 (2026-08-25)
 
 ### Added & Performance / Methodology Polish

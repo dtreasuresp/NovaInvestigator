@@ -468,9 +468,13 @@ export const calculateRelations = (
         `Empate técnico entre ${dominant.quadrant} (${dominantName}) y ${second.quadrant} (${secondName}) con una brecha de solo el ${diffPercent} % (< 10 %). Se recomienda formular una estrategia mixta o afinar las calificaciones DAFO.`
       )
     }
-    if (dominant.coverage >= 0.7 && difference >= 0.1) confidence = 'alta'
-    else if (dominant.coverage >= 0.4 && difference >= 0.1) confidence = 'media'
-    else confidence = 'baja'
+    if (dominant.coverage >= 0.7 && difference >= 0.1) {
+      confidence = 'alta'
+    } else if (dominant.coverage >= 0.4) {
+      confidence = 'media'
+    } else {
+      confidence = 'baja'
+    }
   }
 
   return {

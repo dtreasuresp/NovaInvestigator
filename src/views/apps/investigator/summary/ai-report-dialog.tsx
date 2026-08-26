@@ -31,13 +31,28 @@ import { useInvestigatorAnalysis } from '@/hooks/use-investigator-analysis'
 import { useI18n } from '@/hooks/use-i18n'
 
 export function AiReportDialog({
-  onReportGenerated
+  onReportGenerated,
+  open: controlledOpen,
+  onOpenChange: controlledOnOpenChange,
+  trigger
 }: {
   onReportGenerated?: (text: string) => void
+  open?: boolean
+  onOpenChange?: (open: boolean) => void
+  trigger?: React.ReactElement | null
 }) {
   const { t, locale } = useI18n()
   const { state, aiQuota, isLoadingAiQuota, refreshAiQuota } = useInvestigatorAnalysis()
-  const [open, setOpen] = useState(false)
+  const [internalOpen, setInternalOpen] = useState(false)
+  const isControlled = controlledOpen !== undefined
+  const open = isControlled ? controlledOpen : internalOpen
+  const setOpen = (val: boolean) => {
+    if (isControlled) {
+      controlledOnOpenChange?.(val)
+    } else {
+      setInternalOpen(val)
+    }
+  }
   const [step, setStep] = useState<'confirm' | 'generating' | 'result'>('confirm')
   const [generatedReport, setGeneratedReport] = useState('')
   const [copied, setCopied] = useState(false)
@@ -143,18 +158,22 @@ export function AiReportDialog({
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger
-        render={
-          <Button
-            size='sm'
-            variant='default'
-            className='gap-1.5 bg-primary hover:bg-primary/90 text-primary-foreground text-xs shadow-xs cursor-pointer'
-          >
-            <Sparkles className='size-3.5' />
-            <span>{t('novai.aiGenerateReportBtn') || 'Redactar dictamen con IA'}</span>
-          </Button>
-        }
-      />
+      {trigger !== undefined ? (
+        trigger ? <DialogTrigger render={trigger} /> : null
+      ) : (
+        <DialogTrigger
+          render={
+            <Button
+              size='sm'
+              variant='default'
+              className='gap-1.5 bg-primary hover:bg-primary/90 text-primary-foreground text-xs shadow-xs cursor-pointer'
+            >
+              <Sparkles className='size-3.5' />
+              <span>{t('novai.aiGenerateReportBtn') || 'Redactar dictamen con IA'}</span>
+            </Button>
+          }
+        />
+      )}
 
       <DialogContent className='sm:max-w-2xl max-h-[85vh] flex flex-col'>
         <DialogHeader>
