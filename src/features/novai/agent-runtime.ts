@@ -11,7 +11,7 @@ import { NovaiModelRouter } from './adapters/model-router'
 import { NovaiTokenBudget } from './token-budget'
 import { NOVAI_ALL_MODULAR_TOOLS } from './tools/index'
 import { NovaiToolGateway } from './tool-gateway'
-import type { NovaiEvent, NovaiEventHandler } from './events'
+import type { NovaiEventHandler } from './events'
 import { resolveSystemPrompt, fetchTenantLiveOverview, assertNovaiAllowed, consumeAiQueryQuota } from './service'
 
 export interface AgentRuntimeOptions {
@@ -74,7 +74,6 @@ export class NovaiAgentRuntime {
     const geminiApiKey = process.env.GEMINI_API_KEY
     const githubToken = process.env.GITHUB_TOKEN
     const zenKeys = (process.env.OPENCODE_ZEN_API_KEY || '').split(',').map(k => k.trim()).filter(Boolean)
-    const cerebrasApiKey = process.env.CEREBRAS_API_KEY
 
     // Helper: selección de modelo
     const getGroqModelForCategory = (category: string): string => {
