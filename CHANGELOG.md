@@ -4,6 +4,91 @@
 
 All notable changes to this template will be documented in this file
 
+## v0.0.60 (2026-08-26)
+
+### Added & UI / AI Elements & Domain Cards (Fases 5, 6 y 11 PROMPT_NOVAI_PRO_V2)
+- **Tarjetas Ricas de Dominio Especializadas (`src/views/apps/novai/components/`)**:
+  - `NovaiEvidenceCard`: Fichas probatorias con tipo de factor (D/F/O/A), fragmento de evidencia, metadatos de documento y nivel de confianza.
+  - `NovaiAuditCard`: Diagnósticos de auditoría con badges semánticos (`VALID`, `WARNING`, `INVALID`), severidad codificada (`INFO` a `CRITICAL`), alertas de ceros sospechosos y recomendaciones metodológicas.
+  - `NovaiCalculationCard`: Renderizado determinista de matrices EFI/EFE/DAFO con fórmulas matemáticas, pesos, calificaciones y tabla interactiva de factores evaluados.
+  - `NovaiSourceCard`: Visualización y distinción de fuentes internas de expedientes vs enlaces documentales externos utilizando `@ai-elements/sources`.
+- **Visualizador de Agent Work Trace (`NovaiTraceViewer`)**:
+  - Implementado el timeline de trazas de trabajo auditables (`✓ Identificó investigación`, `✓ Recuperó evidencia`, `⚠️ Relación débil`, `🧮 Validación DAFO`) utilizando `@ai-elements/task` sin exponer Chain of Thought privado.
+- **Integración con Suite `@ai-elements` en `NovaiMessageItem`**:
+  - Refactorizado `ToolCard` utilizando los componentes canónicos `<Tool>`, `<ToolHeader>`, `<ToolContent>`, `<ToolInput>` y `<ToolOutput>`.
+  - Enriquecido el lector de eventos SSE en [`src/views/apps/novai/index.tsx`](file:///d:/03.%20MATRIZ%20DAFO/src/views/apps/novai/index.tsx) para capturar y enlazar eventos directos de evidencias, auditorías y cálculos.
+- **Tests de Escenarios de Agente (Sección 48 PROMPT_NOVAI_PRO_V2)**:
+  - Creada suite de pruebas en [`tests/novai/agent-scenarios.test.ts`](file:///d:/03.%20MATRIZ%20DAFO/tests/novai/agent-scenarios.test.ts) cubriendo los 7 escenarios canónicos (A: Listado, B: Activa, C: Evidencia D-03, D: Auditoría D-03 × A-02, E: Contradicciones, F: Comparación de Estrategias, G: Validación EFI) con 100% de éxito.
+
+## v0.0.59 (2026-08-26)
+
+### Added & Architecture / AI Agent Harness (Fases 8 a 13 PROMPT_NOVAI_PRO_V2)
+- **Implementación de Tools de Metodología, Auditoría y Cálculo Determinista (Fase 8)**:
+  - `audit_factor`: Auditoría de calibración de escalas (1-2 para debilidades, 3-4 para fortalezas), ponderaciones y calidad probatoria.
+  - `audit_relationship`: Auditoría formal de cruces (FO, DO, FA, DA), detección de ceros sospechosos y verificación de vínculos causales (caso canónico `D-03 × A-02`).
+  - `find_contradictions`: Detección determinista de inconsistencias matemáticas, calificaciones incompatibles y vacíos probatorios.
+  - `validate_methodology`: Verificación de consistencia integral de matrices EFI, EFE, DAFO, CAME y QSPM según axiomas académicos.
+  - `calculate_matrix`: Fachada determinista segura sobre `calculateAnalysis()` para recálculos matemáticos sin delegar aritmética al LLM.
+- **Implementación de Tools de Estrategia, Linaje y Red-Team (Fases 9 y 10)**:
+  - `trace_strategy`: Reconstrucción del grafo de linaje de una estrategia (Strategy → QSPM → CAME → Cruce DAFO → Factores → Evidencia → Fuente).
+  - `compare_strategies`: Comparación multicriterio de estrategias alternativas según orientación, cobertura de factores y atractivo QSPM.
+  - `challenge_analysis`: Auditoría crítica Red-Team para cuestionar sesgos de sobre-optimismo en FO, puntos únicos de fallo y amenazas no mitigadas en DA.
+- **Catálogo Maestro de 21 Herramientas Modulares**:
+  - Registradas las 21 tools en [`src/features/novai/tools/index.ts`](file:///d:/03.%20MATRIZ%20DAFO/src/features/novai/tools/index.ts) con soporte para Vercel AI SDK Core (`ai`) y OpenAI declarations.
+  - Actualizados los labels amigables en [`src/views/apps/novai/components/novai-message-item.tsx`](file:///d:/03.%20MATRIZ%20DAFO/src/views/apps/novai/components/novai-message-item.tsx).
+- **Test Suites Unitarias Automatizadas (Fase 11)**:
+  - Creado [`tests/novai/methodology-strategy-tools.test.ts`](file:///d:/03.%20MATRIZ%20DAFO/tests/novai/methodology-strategy-tools.test.ts) (58 suites / 183 tests pasando con 0 fallos).
+- **Documentación Técnica & Propuesta de Extracción (Fases 12 y 13)**:
+  - Creado [`doc/plans/NOVAI_ARCHITECTURE.md`](file:///d:/03.%20MATRIZ%20DAFO/doc/plans/NOVAI_ARCHITECTURE.md).
+  - Creado [`doc/plans/NOVAI_TOOLS.md`](file:///d:/03.%20MATRIZ%20DAFO/doc/plans/NOVAI_TOOLS.md).
+  - Creado [`doc/plans/HARNESS_EXTRACTION_PROPOSAL.md`](file:///d:/03.%20MATRIZ%20DAFO/doc/plans/HARNESS_EXTRACTION_PROPOSAL.md).
+
+## v0.0.58 (2026-08-26)
+
+### Added & Architecture / AI Agent Harness & Domain Tools Taxonomy
+- **Implementación de la Taxonomía de Tools de Evidencia e Investigación (Fase 7 PROMPT_NOVAI_PRO_V2)**:
+  - `get_active_investigation`: Identificación y resolución determinista de la investigación activa del usuario en el tenant.
+  - `get_investigation_documents`: Agrupación y consulta de fuentes documentales, expedientes y evidencias referenciadas.
+  - `search_evidence`: Búsqueda de evidencias, descripciones y justificaciones indexadas por factores internos/externos, cruces y CAME.
+  - `get_factor_evidence`: Trazabilidad completa para factores específicos (D-03, F-01, O-02, A-02), vinculando ponderación, calificación, evidencia textual, cruces DAFO y acciones CAME.
+  - `verify_claim`: Auditoría epistémica de afirmaciones clasificándolas en `FACT`, `EVIDENCE`, `INFERENCE`, `HYPOTHESIS`, `ASSUMPTION` o `UNSUPPORTED` con puntaje de confianza.
+- **Registro Maestro e Integración con Vercel AI SDK Core**:
+  - Registradas las 5 nuevas tools en [`src/features/novai/tools/index.ts`](file:///d:/03.%20MATRIZ%20DAFO/src/features/novai/tools/index.ts), alcanzando 13 herramientas modulares seguras bajo RLS y ReBAC.
+  - Actualizados los labels amigables en [`src/views/apps/novai/components/novai-message-item.tsx`](file:///d:/03.%20MATRIZ%20DAFO/src/views/apps/novai/components/novai-message-item.tsx).
+- **Test Suites Unitarias**:
+  - Creado [`tests/novai/investigation-evidence-tools.test.ts`](file:///d:/03.%20MATRIZ%20DAFO/tests/novai/investigation-evidence-tools.test.ts) cubriendo los 5 nuevos módulos (174 tests totales pasando con éxito).
+
+## v0.0.57 (2026-08-26)
+
+### Added & Architecture / AI Modernization
+- **Modularización de Tools de NovAi en Directorio Dedicado (`src/features/novai/tools/`)**:
+  - Desacoplado el archivo monolítico `src/features/novai/tools.ts` en submódulos por dominio:
+    - `investigations/`: `list-investigations.ts`, `get-investigation-details.ts`, `get-investigations-stats.ts`.
+    - `kanban/`: `list-kanban-tasks.ts`, `get-kanban-board-summary.ts`.
+    - `organization/`: `list-workspace-members.ts`.
+    - `billing/`: `get-billing-quota.ts`.
+    - `memory/`: `record-strategic-memory.ts`.
+  - Cada herramienta expone validación estricta Zod, metadata de riesgo, ejecutor seguro bajo RLS/ReBAC y adaptador nativo para Vercel AI SDK Core (`ai`).
+  - Creado catálogo maestro e índice unificado en [`src/features/novai/tools/index.ts`](file:///d:/03.%20MATRIZ%20DAFO/src/features/novai/tools/index.ts).
+
+- **Streaming Enriquecido con Vercel AI SDK Core (`streamText` y `fullStream`)**:
+  - En [`src/features/novai/service.ts`](file:///d:/03.%20MATRIZ%20DAFO/src/features/novai/service.ts) y [`src/app/api/novai/chat/route.ts`](file:///d:/03.%20MATRIZ%20DAFO/src/app/api/novai/chat/route.ts): Migrado el pipeline de streaming para consumir `result.fullStream`, emitiendo eventos SSE estructurados para `text-delta`, `reasoning`, `tool-call`, `tool-result` y `finish`.
+
+- **Renderizado Visual de Tools y Reasoning en UI de NovAi**:
+  - En [`src/views/apps/novai/components/novai-message-item.tsx`](file:///d:/03.%20MATRIZ%20DAFO/src/views/apps/novai/components/novai-message-item.tsx) y [`src/views/apps/novai/index.tsx`](file:///d:/03.%20MATRIZ%20DAFO/src/views/apps/novai/index.tsx): Renderizado en tiempo real de tarjetas colapsables de herramientas (`ToolCard`) y trazas de razonamiento (`<Reasoning>`) usando componentes de `@ai-elements`.
+  
+- **Sugerencias Flotantes y Sincronización en `AiCopilotSheet`**:
+  - En [`src/views/apps/investigator/shared/ai-copilot-sheet.tsx`](file:///d:/03.%20MATRIZ%20DAFO/src/views/apps/investigator/shared/ai-copilot-sheet.tsx): Eliminada la barra fija superior; las sugerencias rápidas ahora se muestran directamente dentro del chat (`ConversationContent`) como chips flotantes dinámicos que desaparecen al interactuar.
+  - Sincronización bidireccional del hilo de conversación con la base de datos PostgreSQL a través de `/api/novai/conversations`.
+
+## v0.0.56 (2026-08-25)
+
+### Fixed & UI / Design Tokens
+- **Corrección de Tokens de Diseño shadcn y Nombres Reales de Planes en `SidebarPlanWidget`**:
+  - En [`src/components/layout/Sidebar.tsx`](file:///d:/03.%20MATRIZ%20DAFO/src/components/layout/Sidebar.tsx): Sustituidos los gradientes ad-hoc y estilos no estándar por tokens canónicos de shadcn/ui (`border-sidebar-border`, `bg-sidebar-accent/40`, `text-sidebar-foreground`, `Badge variant='secondary' | 'outline'`).
+  - Implementada la resolución de nombres reales de planes vía i18n (`planIndividualName` $\rightarrow$ **`Individual`**, en lugar del código interno `basic` / `BASIC`), con badges de estado adecuados (`Activo` / `Demo`) y soporte multilenguaje integrado.
+  - En [`src/features/billing/translation.ts`](file:///d:/03.%20MATRIZ%20DAFO/src/features/billing/translation.ts): Incorporadas las claves `basic`, `one_time_access` y `enterprise` en `STANDARD_PLAN_MAP` para garantizar que la traducción y catálogo siempre devuelvan "Individual" y los nombres públicos en todas las capas de la aplicación.
+
 ## v0.0.55 (2026-08-25)
 
 ### Added & Architecture / UX & Multi-Device Sync

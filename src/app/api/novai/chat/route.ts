@@ -1,9 +1,10 @@
 import { requireInvestigationsPrincipal } from '@/lib/investigations/access'
 import { novaiChatRequestSchema } from '@/features/novai/schema'
-import { streamNovaiChat } from '@/features/novai/service'
+import { NovaiAgentRuntime } from '@/features/novai/agent-runtime'
 import { NovaiConversationsRepository } from '@/features/novai/conversations-repository'
 import { toErrorResponse } from '@/lib/investigations/http'
 import type { SupabaseClient } from '@supabase/supabase-js'
+import type { NovaiEvent } from '@/features/novai/events'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
@@ -59,19 +60,17 @@ export async function POST(request: Request) {
 
     void (async () => {
       try {
-        await streamNovaiChat({
+        await NovaiAgentRuntime.executeStreaming({
           principal,
           context: parsed.context,
           messages: parsed.messages,
           isFreeText: parsed.isFreeText,
           locale: parsed.locale,
-          callbacks: {
-            onChunk: (chunk: string) => {
-              const payload = JSON.stringify({ chunk })
+          onEvent: async (event: NovaiEvent) => {
+            const payload = JSON.stringify(event)
+            await safeWrite(`data: ${payload}\n\n`)
 
-              void safeWrite(`data: ${payload}\n\n`)
-            },
-            onComplete: (fullText: string) => {
+            if (event.type === 'message-complete') {
               if (parsed.conversationId) {
                 void NovaiConversationsRepository.appendMessage(
                   principal.client as unknown as SupabaseClient,
@@ -80,28 +79,21 @@ export async function POST(request: Request) {
                     tenantId: principal.tenantId,
                     userId: principal.userId,
                     role: 'assistant',
-                    content: fullText,
+                    content: event.fullText,
                     mode: parsed.context.mode || 'CHAT'
                   }
                 )
               }
 
-              const payload = JSON.stringify({ done: true, fullText })
-
-              void safeWrite(`data: ${payload}\n\n`).then(() => safeClose())
-            },
-            onError: (err: Error) => {
-              const payload = JSON.stringify({ error: err.message })
-
-              void safeWrite(`data: ${payload}\n\n`).then(() => safeClose())
+              await safeClose()
             }
           }
         })
       } catch (err) {
         const errorMsg = err instanceof Error ? err.message : String(err)
-        const payload = JSON.stringify({ error: errorMsg })
-
-        void safeWrite(`data: ${payload}\n\n`).then(() => safeClose())
+        const errorEvent: NovaiEvent = { type: 'error', error: errorMsg }
+        await safeWrite(`data: ${JSON.stringify(errorEvent)}\n\n`)
+        await safeClose()
       }
     })()
 

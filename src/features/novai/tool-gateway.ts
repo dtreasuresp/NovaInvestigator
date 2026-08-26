@@ -1,6 +1,6 @@
 import type { SupabaseClient } from '@supabase/supabase-js'
 import type { InvestigationsPrincipal } from '@/lib/investigations/access'
-import { executeNovaiTool, type ToolExecutionResult } from './tools'
+import { executeNovaiTool, getNovaiVercelTools, type ToolExecutionResult } from './tools'
 import { NovaiMemoryEngine, type SaveMemoryParams } from './memory-engine'
 import { logger } from '@/lib/logger'
 
@@ -160,6 +160,7 @@ export class NovaiToolGateway {
     Promise.resolve().then(async () => {
       try {
         const client = principal.client as unknown as SupabaseClient
+        
         await client.from('novai_audit_events').insert({
           tenant_id: principal.tenantId,
           user_id: principal.userId,

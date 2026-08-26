@@ -1,9 +1,29 @@
 import type { AiMessage } from '@/features/novai/schema'
 
+export interface ToolCallStreamEvent {
+  toolCallId: string
+  toolName: string
+  args: Record<string, unknown>
+}
+
+export interface ToolResultStreamEvent {
+  toolCallId: string
+  toolName: string
+  result: unknown
+  isError?: boolean
+}
+
+export interface ReasoningStreamEvent {
+  textDelta: string
+}
+
 export interface StreamCallbacks {
   onChunk: (text: string) => void
   onComplete: (fullText: string) => void
   onError: (error: Error) => void
+  onToolCall?: (event: ToolCallStreamEvent) => void
+  onToolResult?: (event: ToolResultStreamEvent) => void
+  onReasoning?: (event: ReasoningStreamEvent) => void
 }
 
 const DEFAULT_GEMINI_MODELS = [

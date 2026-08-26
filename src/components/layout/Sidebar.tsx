@@ -459,20 +459,67 @@ const SidebarGroupedMenuItems = ({
   )
 }
 
+function getPlanDisplayName(
+  planCode: string | null | undefined,
+  plans: readonly BillingPlan[] | null,
+  t: (key: string) => string
+): string {
+  if (!planCode) {
+    return t('pricingPage.planTrialName') || 'Prueba Demo'
+  }
+
+  const normalized = planCode.trim().toLowerCase()
+
+  switch (normalized) {
+    case 'basic':
+    case 'individual':
+      return t('pricingPage.planIndividualName') || 'Individual'
+    case 'team':
+      return t('pricingPage.planTeamName') || 'Equipo'
+    case 'pro':
+    case 'professional':
+      return t('pricingPage.planProName') || 'Profesional'
+    case 'enterprise':
+      return 'Enterprise'
+    case 'lifetime':
+      return t('pricingPage.planLifetimeName') || 'Acceso Vitalicio'
+    case 'one_time':
+    case 'onetime':
+    case 'one_time_access':
+      return t('pricingPage.planOnetimeName') || 'Pase Individual'
+    case 'trial':
+    case 'free':
+      return t('pricingPage.planTrialName') || 'Prueba Demo'
+  }
+
+  if (plans) {
+    const matched = plans.find(p => p.code.toLowerCase() === normalized)
+    
+    if (matched?.name) return matched.name
+  }
+
+  return planCode.charAt(0).toUpperCase() + planCode.slice(1)
+}
+
 function SidebarPlanWidget({
   planCode,
+  plans,
   isMobile,
   setOpenMobile
 }: {
   planCode?: string | null
+  plans: readonly BillingPlan[] | null
   isMobile: boolean
   setOpenMobile: (open: boolean) => void
 }) {
-  const displayPlan = (planCode || 'free').toUpperCase()
-  const isPro = displayPlan.includes('PRO') || displayPlan.includes('ENTERPRISE') || displayPlan.includes('LIFETIME')
+  const { t } = useI18n()
+  const planDisplayName = getPlanDisplayName(planCode, plans, t)
+  const normalized = (planCode || 'trial').trim().toLowerCase()
+  const isPaid = normalized !== 'trial' && normalized !== 'free'
+  const isPro = normalized === 'pro' || normalized === 'professional' || normalized === 'enterprise' || normalized === 'lifetime'
 
   return (
-    <SidebarFooter className='p-3 border-t border-border/40'>
+    <SidebarFooter className='p-3 border-t border-sidebar-border'>
       {/* 1. Collapsed View (Icon only) */}
       <div className='hidden group-data-[collapsible=icon]:flex justify-center'>
         <Tooltip>
@@ -480,49 +527,47 @@ function SidebarPlanWidget({
             render={
               <Link
                 href='/pages/billing/upgrade'
-                className='size-9 flex items-center justify-center rounded-xl bg-primary/10 text-primary hover:bg-primary/20 transition-colors'
+                className='size-9 flex items-center justify-center rounded-lg bg-sidebar-accent text-sidebar-accent-foreground hover:bg-sidebar-accent/80 transition-colors'
                 onClick={() => {
                   if (isMobile) setOpenMobile(false)
                 }}
               >
-                <Zap className='size-4' />
+                <Zap className='size-4 text-primary' />
               </Link>
             }
           />
           <TooltipContent side='right'>
-            <p className='text-xs font-semibold'>Plan {displayPlan} · Mejorar</p>
+            <p className='text-xs font-semibold'>Plan {planDisplayName}</p>
           </TooltipContent>
         </Tooltip>
       </div>
 
-      {/* 2. Expanded View (Card) */}
-      <div className='group-data-[collapsible=icon]:hidden rounded-xl border border-primary/20 bg-gradient-to-br from-primary/5 via-card to-background p-3 shadow-xs space-y-2.5'>
-        <div className='flex items-center justify-between'>
-          <div className='flex items-center gap-1.5'>
-            <Crown className='size-3.5 text-primary' />
-            <span className='text-xs font-bold tracking-tight text-foreground'>Plan {displayPlan}</span>
+      {/* 2. Expanded View (Card using shadcn design tokens) */}
+      <div className='group-data-[collapsible=icon]:hidden rounded-lg space-y-2.5 text-sidebar-foreground shadow-xs'>
+        <div className='flex items-center justify-between gap-2'>
+          <div className='flex items-center gap-1.5 min-w-0'>
+            <Crown className='size-3.5 text-primary shrink-0' />
+            <span className='text-xs font-semibold truncate'>Plan {planDisplayName}</span>
           </div>
-          <Badge variant='outline' className='text-[9px] font-mono uppercase px-1.5 py-0 border-primary/30 text-primary'>
-            {isPro ? 'Activo' : 'Básico'}
+          <Badge variant='secondary' className='text-[10px] font-medium shrink-0 px-1.5 py-0'>
+            {isPaid ? (t('common.active') || 'Activo') : (t('nav.tryDemoBadge') || 'Demo')}
           </Badge>
         </div>
 
-        <p className='text-[11px] text-muted-foreground leading-tight'>
-          {isPro
-            ? 'Acceso profesional y cuotas de IA activas.'
-            : 'Desbloquea el análisis estratégico ilimitado con NovAi.'}
+        <p className='text-xs text-muted-foreground leading-relaxed'>
+          Desbloquea el análisis estratégico avanzado con planes superiores.
         </p>
 
         <Button
           size='sm'
-          className='w-full text-xs h-7.5 gap-1.5 shadow-xs cursor-pointer'
+          className='w-full text-xs h-8 gap-1.5 cursor-pointer shadow-xs'
           render={<Link href='/pages/billing/upgrade' />}
           nativeButton={false}
           onClick={() => {
             if (isMobile) setOpenMobile(false)
           }}
         >
-          <Sparkles className='size-3' />
+          <Sparkles className='size-3.5' />
           <span>{isPro ? 'Administrar Plan' : 'Mejorar Plan'}</span>
         </Button>
       </div>
@@ -535,7 +580,7 @@ const SidebarLayout = () => {
   const pathname = usePathname()
   const searchParams = useSearchParams()
   const { has, hasModule, platformCapabilities, snapshot, loading } = usePermissions()
-  const { planForModule } = usePlanCatalog()
+  const { plans, planForModule } = usePlanCatalog()
   const { isMobile, setOpenMobile } = useSidebar()
 
   // Remove this state when the nav-apps API is removed. Until then, this state is used to hold the external nav-apps fetched from the API JSON.
@@ -643,6 +688,7 @@ const SidebarLayout = () => {
       </SidebarContent>
       <SidebarPlanWidget
         planCode={snapshot?.planCode}
+        plans={plans}
         isMobile={isMobile}
         setOpenMobile={setOpenMobile}
       />

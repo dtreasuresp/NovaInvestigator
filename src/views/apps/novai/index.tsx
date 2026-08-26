@@ -20,7 +20,7 @@ import { NovaiSidebar } from './components/novai-sidebar'
 import { NovaiEmptyState } from './components/novai-empty-state'
 import { NovaiMessageItem } from './components/novai-message-item'
 import { NovaiComposer } from './components/novai-composer'
-import type { ChatMessage, ChatThread } from './types'
+import type { ChatMessage, ChatThread, ToolInvocationItem, AgentTraceItem } from './types'
 
 const STORAGE_KEY = 'novastore:novai_threads_v2'
 
@@ -514,6 +514,13 @@ export default function NovAiView() {
       const reader = response.body.getReader()
       const decoder = new TextDecoder()
       let accumulatedText = ''
+      let accumulatedReasoning = ''
+      let currentToolInvocations: ToolInvocationItem[] = []
+      let currentTraces: AgentTraceItem[] = []
+      let currentEvidences: any[] = []
+      let currentAudits: any[] = []
+      let currentCalculations: any[] = []
+      let currentSources: any[] = []
 
       while (true) {
         const { done, value } = await reader.read()
@@ -531,31 +538,91 @@ export default function NovAiView() {
           try {
             const data = JSON.parse(trimmed.slice(6))
 
-            if (data.chunk) {
-              accumulatedText += data.chunk
-
-              // Update the assistant message in current thread state immutably
-              setThreads(prev =>
-                prev.map(th => {
-                  if (th.id !== activeThread.id) return th
-                  const copyMsgs = [...th.messages]
-                  const lastIdx = copyMsgs.length - 1
-                  const last = copyMsgs[lastIdx]
-
-                  if (last && last.role === 'assistant') {
-                    copyMsgs[lastIdx] = {
-                      ...last,
-                      content: accumulatedText,
-                      isStreaming: true
-                    }
+            if (data.type === 'text-delta' || data.chunk || data.delta) {
+              const chunk = data.delta || data.chunk || ''
+              accumulatedText += chunk
+            } else if (data.type === 'trace') {
+              const traceItem: AgentTraceItem = {
+                id: `tr-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+                category: data.category || 'validation',
+                title: data.title || 'Operación de agente',
+                description: data.description || '',
+                status: data.status || 'completed',
+                timestamp: data.timestamp || new Date().toISOString()
+              }
+              currentTraces = [...currentTraces, traceItem]
+            } else if (data.type === 'evidence') {
+              currentEvidences = [...currentEvidences, data]
+            } else if (data.type === 'audit') {
+              currentAudits = [...currentAudits, data]
+            } else if (data.type === 'calculation') {
+              currentCalculations = [...currentCalculations, data]
+            } else if (data.type === 'source') {
+              currentSources = [...currentSources, data]
+            } else if (data.type === 'tool-call') {
+              const callId = data.id || data.toolCallId || `tc-${Date.now()}`
+              const toolName = data.tool || data.toolName
+              const existingIdx = currentToolInvocations.findIndex(t => t.toolCallId === callId)
+              const newInvocation: ToolInvocationItem = {
+                toolCallId: callId,
+                toolName,
+                label: data.label,
+                args: data.input || data.args || {},
+                state: 'call'
+              }
+              if (existingIdx === -1) {
+                currentToolInvocations = [...currentToolInvocations, newInvocation]
+              } else {
+                currentToolInvocations = currentToolInvocations.map((t, idx) => idx === existingIdx ? newInvocation : t)
+              }
+            } else if (data.type === 'tool-result') {
+              const callId = data.id || data.toolCallId
+              const toolName = data.tool || data.toolName
+              currentToolInvocations = currentToolInvocations.map(t => {
+                if ((callId && t.toolCallId === callId) || (toolName && t.toolName === toolName)) {
+                  return {
+                    ...t,
+                    state: 'result',
+                    result: data.result,
+                    isError: data.isError
                   }
-
-                  return { ...th, messages: copyMsgs }
-                })
-              )
-            } else if (data.error) {
-              throw new Error(data.error)
+                }
+                return t
+              })
+            } else if (data.type === 'message-complete' || data.type === 'finish') {
+              if (data.fullText) {
+                accumulatedText = data.fullText
+              }
+            } else if (data.type === 'error' || data.error) {
+              throw new Error(data.error || 'Error en streaming.')
             }
+
+            // Update the assistant message in current thread state immutably
+            setThreads(prev =>
+              prev.map(th => {
+                if (th.id !== activeThread.id) return th
+                const copyMsgs = [...th.messages]
+                const lastIdx = copyMsgs.length - 1
+                const last = copyMsgs[lastIdx]
+
+                if (last && last.role === 'assistant') {
+                  copyMsgs[lastIdx] = {
+                    ...last,
+                    content: accumulatedText,
+                    reasoning: accumulatedReasoning || undefined,
+                    toolInvocations: currentToolInvocations.length > 0 ? [...currentToolInvocations] : undefined,
+                    agentTraces: currentTraces.length > 0 ? [...currentTraces] : undefined,
+                    evidences: currentEvidences.length > 0 ? [...currentEvidences] : undefined,
+                    audits: currentAudits.length > 0 ? [...currentAudits] : undefined,
+                    calculations: currentCalculations.length > 0 ? [...currentCalculations] : undefined,
+                    sources: currentSources.length > 0 ? [...currentSources] : undefined,
+                    isStreaming: true
+                  }
+                }
+
+                return { ...th, messages: copyMsgs }
+              })
+            )
           } catch {
             // ignore partial JSON parse errors
           }
@@ -574,6 +641,13 @@ export default function NovAiView() {
             copyMsgs[lastIdx] = {
               ...last,
               content: accumulatedText,
+              reasoning: accumulatedReasoning || undefined,
+              toolInvocations: currentToolInvocations.length > 0 ? [...currentToolInvocations] : undefined,
+              agentTraces: currentTraces.length > 0 ? [...currentTraces] : undefined,
+              evidences: currentEvidences.length > 0 ? [...currentEvidences] : undefined,
+              audits: currentAudits.length > 0 ? [...currentAudits] : undefined,
+              calculations: currentCalculations.length > 0 ? [...currentCalculations] : undefined,
+              sources: currentSources.length > 0 ? [...currentSources] : undefined,
               isStreaming: false
             }
           }

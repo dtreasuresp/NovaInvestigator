@@ -12,9 +12,12 @@ const STANDARD_PLAN_MAP: Record<string, { nameKey: string; descKey: string }> = 
   free: { nameKey: 'planTrialName', descKey: 'planTrialDesc' },
   one_time: { nameKey: 'planOnetimeName', descKey: 'planOnetimeDesc' },
   onetime: { nameKey: 'planOnetimeName', descKey: 'planOnetimeDesc' },
+  one_time_access: { nameKey: 'planOnetimeName', descKey: 'planOnetimeDesc' },
+  basic: { nameKey: 'planIndividualName', descKey: 'planIndividualDesc' },
   individual: { nameKey: 'planIndividualName', descKey: 'planIndividualDesc' },
   team: { nameKey: 'planTeamName', descKey: 'planTeamDesc' },
   pro: { nameKey: 'planProName', descKey: 'planProDesc' },
+  enterprise: { nameKey: 'planProName', descKey: 'planProDesc' },
   lifetime: { nameKey: 'planLifetimeName', descKey: 'planLifetimeDesc' }
 }
 

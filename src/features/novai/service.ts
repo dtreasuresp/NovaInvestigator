@@ -231,7 +231,7 @@ interface TenantLiveOverview {
   teams: Array<{ id: string; name: string }>
 }
 
-async function fetchTenantLiveOverview(principal: InvestigationsPrincipal): Promise<TenantLiveOverview> {
+export async function fetchTenantLiveOverview(principal: InvestigationsPrincipal): Promise<TenantLiveOverview> {
   const client = principal.client as unknown as SupabaseClient
   const tenantId = principal.tenantId
 
@@ -311,7 +311,7 @@ async function fetchTenantLiveOverview(principal: InvestigationsPrincipal): Prom
   }
 }
 
-function resolveSystemPrompt(
+export function resolveSystemPrompt(
   principal: InvestigationsPrincipal,
   context: NovaiContext,
   locale: string,
@@ -523,12 +523,42 @@ async function streamWithVercelAiSdk({
     })
 
     let hasText = false
-    for await (const chunk of result.textStream) {
-      hasText = true
-      callbacks.onChunk(chunk)
+    let accumulatedText = ''
+
+    for await (const part of result.fullStream) {
+      if (part.type === 'text-delta') {
+        const delta = (part as any).text ?? (part as any).textDelta ?? ''
+        if (delta) {
+          hasText = true
+          accumulatedText += delta
+          callbacks.onChunk(delta)
+        }
+      } else if (part.type === 'reasoning-delta') {
+        const delta = (part as any).text ?? (part as any).textDelta ?? ''
+        if (delta && callbacks.onReasoning) {
+          callbacks.onReasoning({ textDelta: delta })
+        }
+      } else if (part.type === 'tool-call') {
+        if (callbacks.onToolCall) {
+          callbacks.onToolCall({
+            toolCallId: (part as any).toolCallId || `tc-${Date.now()}`,
+            toolName: (part as any).toolName,
+            args: (part as any).input ?? (part as any).args ?? {}
+          })
+        }
+      } else if (part.type === 'tool-result') {
+        if (callbacks.onToolResult) {
+          callbacks.onToolResult({
+            toolCallId: (part as any).toolCallId || '',
+            toolName: (part as any).toolName,
+            result: (part as any).output ?? (part as any).result,
+            isError: (part as any).isError
+          })
+        }
+      }
     }
 
-    const fullText = await result.text
+    const fullText = accumulatedText || (await result.text)
     if (hasText || fullText) {
       await callbacks.onComplete(fullText)
       return true
@@ -579,6 +609,9 @@ export async function streamNovaiChat({
 
   const wrappedCallbacks: StreamCallbacks = {
     onChunk: callbacks.onChunk,
+    onToolCall: callbacks.onToolCall,
+    onToolResult: callbacks.onToolResult,
+    onReasoning: callbacks.onReasoning,
     onComplete: async (fullText: string) => {
       await consumeAiQueryQuota(principal)
       callbacks.onComplete(fullText)
