@@ -1,7 +1,9 @@
 import { requireInvestigationsPrincipal } from '@/lib/investigations/access'
 import { novaiChatRequestSchema } from '@/features/novai/schema'
 import { streamNovaiChat } from '@/features/novai/service'
+import { NovaiConversationsRepository } from '@/features/novai/conversations-repository'
 import { toErrorResponse } from '@/lib/investigations/http'
+import type { SupabaseClient } from '@supabase/supabase-js'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
@@ -12,6 +14,24 @@ export async function POST(request: Request) {
     const principal = await requireInvestigationsPrincipal()
     const body = await request.json()
     const parsed = novaiChatRequestSchema.parse(body)
+
+    if (parsed.conversationId) {
+      const lastUserMsg = parsed.messages[parsed.messages.length - 1]
+
+      if (lastUserMsg && lastUserMsg.role === 'user') {
+        void NovaiConversationsRepository.appendMessage(
+          principal.client as unknown as SupabaseClient,
+          {
+            conversationId: parsed.conversationId,
+            tenantId: principal.tenantId,
+            userId: principal.userId,
+            role: 'user',
+            content: lastUserMsg.content,
+            mode: parsed.context.mode || 'CHAT'
+          }
+        )
+      }
+    }
 
     const encoder = new TextEncoder()
     const stream = new TransformStream()
@@ -52,6 +72,20 @@ export async function POST(request: Request) {
               void safeWrite(`data: ${payload}\n\n`)
             },
             onComplete: (fullText: string) => {
+              if (parsed.conversationId) {
+                void NovaiConversationsRepository.appendMessage(
+                  principal.client as unknown as SupabaseClient,
+                  {
+                    conversationId: parsed.conversationId,
+                    tenantId: principal.tenantId,
+                    userId: principal.userId,
+                    role: 'assistant',
+                    content: fullText,
+                    mode: parsed.context.mode || 'CHAT'
+                  }
+                )
+              }
+
               const payload = JSON.stringify({ done: true, fullText })
 
               void safeWrite(`data: ${payload}\n\n`).then(() => safeClose())

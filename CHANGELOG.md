@@ -4,6 +4,25 @@
 
 All notable changes to this template will be documented in this file
 
+## v0.0.55 (2026-08-25)
+
+### Added & Architecture / UX & Multi-Device Sync
+- **Reubicación de Upgrade y Estado de Plan en `SidebarFooter`**:
+  - En [`src/components/layout/Sidebar.tsx`](file:///d:/03.%20MATRIZ%20DAFO/src/components/layout/Sidebar.tsx): Creado e inyectado el widget `SidebarPlanWidget` de forma fija/sticky dentro de `<SidebarFooter>`, mostrando el plan del usuario (Free, Pro, Enterprise, etc.) y un botón directo a `/pages/billing/upgrade`.
+  - Soporte completo para modo colapsado (icono interactivo con tooltip flotante `Zap`) y responsive móvil (cierre automático del drawer al navegar).
+  - En [`src/components/layout/UpgradePro.tsx`](file:///d:/03.%20MATRIZ%20DAFO/src/components/layout/UpgradePro.tsx): Desactivado el botón flotante independiente para limpiar la interfaz.
+
+- **Reubicación del Botón Flotante de NovAi Copilot**:
+  - En [`src/views/apps/investigator/shared/ai-copilot-sheet.tsx`](file:///d:/03.%20MATRIZ%20DAFO/src/views/apps/investigator/shared/ai-copilot-sheet.tsx): Eliminado el margen artificial `right-[235px]` y posicionado de forma canónica en la esquina inferior derecha `fixed right-4 bottom-4 sm:right-6 sm:bottom-6 md:right-8 md:bottom-8 z-50`, asegurando que no quede centrado ni obstaculice la navegación en móviles y tablets.
+
+- **Persistencia Real y Sincronización Multi-Dispositivo de NovAi en PostgreSQL**:
+  - En [`src/views/apps/novai/index.tsx`](file:///d:/03.%20MATRIZ%20DAFO/src/views/apps/novai/index.tsx): Conectada la aplicación de chat directamente con los endpoints `/api/novai/conversations` y `/api/novai/conversations/[id]` respaldados por `public.novai_conversations` y `public.novai_messages`.
+  - La creación, selección, nombrado automático, renombrado y eliminación de hilos se sincronizan en Supabase PostgreSQL, manteniendo `localStorage` como fallback offline.
+  - En [`src/features/novai/schema.ts`](file:///d:/03.%20MATRIZ%20DAFO/src/features/novai/schema.ts) y [`src/app/api/novai/chat/route.ts`](file:///d:/03.%20MATRIZ%20DAFO/src/app/api/novai/chat/route.ts): Agregado `conversationId` al payload para persistir automáticamente tanto los mensajes del usuario como las respuestas del asistente en `novai_messages`.
+
+- **Botón Único e Integrado de Auditoría de Confianza en `InvestigationConfidenceCard`**:
+  - En [`src/components/ui/investigation-confidence-card.tsx`](file:///d:/03.%20MATRIZ%20DAFO/src/components/ui/investigation-confidence-card.tsx): Unificadas las acciones de IA en un único botón insignia `[✨ Auditar Confianza y Estrategia con NovAi]`, conectándolo con el diálogo de informe integral en [`src/views/apps/investigator/summary/index.tsx`](file:///d:/03.%20MATRIZ%20DAFO/src/views/apps/investigator/summary/index.tsx).
+
 ## v0.0.54 (2026-08-25)
 
 ### Fixed & Methodology / UX Polish

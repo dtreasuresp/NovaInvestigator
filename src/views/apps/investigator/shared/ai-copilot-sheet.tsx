@@ -464,7 +464,7 @@ export function AiCopilotSheet({ floating = true }: AiCopilotSheetProps) {
           floating ? (
             <button
               type='button'
-              className='fixed right-[235px] bottom-8 z-50 group inline-flex h-10 items-center justify-center overflow-hidden rounded-full p-[2px] font-medium transition-all duration-300 hover:scale-105 active:scale-95 shadow-2xl focus:outline-none cursor-pointer'
+              className='fixed right-4 bottom-4 sm:right-6 sm:bottom-6 md:right-8 md:bottom-8 z-50 group inline-flex h-10 items-center justify-center overflow-hidden rounded-full p-[2px] font-medium transition-all duration-300 hover:scale-105 active:scale-95 shadow-2xl focus:outline-none cursor-pointer'
             >
               {/* 1. Ambient Glow */}
               <span className='absolute -inset-1 rounded-full bg-gradient-to-r from-pink-500 via-purple-500 to-cyan-400 opacity-70 blur-md group-hover:opacity-100 transition duration-500 animate-aurora-glow' />

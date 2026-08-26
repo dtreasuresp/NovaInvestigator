@@ -26,6 +26,7 @@ export interface InvestigationConfidenceCardProps {
   }
   state: InvestigationState
   validation: ValidationResult
+  onAuditConfidence?: () => void
   onAuditCame?: () => void
   onJustifyMixedStrategy?: () => void
   className?: string
@@ -35,6 +36,7 @@ export function InvestigationConfidenceCard({
   analysis,
   state,
   validation,
+  onAuditConfidence,
   onAuditCame,
   onJustifyMixedStrategy,
   className
@@ -306,33 +308,21 @@ export function InvestigationConfidenceCard({
         </div>
       )}
 
-      {/* Action Footer with AI Buttons */}
-      <div className='flex flex-wrap items-center justify-between gap-2 pt-1 border-t border-border/40'>
+      {/* Action Footer with Unified AI Audit Button */}
+      <div className='flex flex-wrap items-center justify-between gap-3 pt-2 border-t border-border/40'>
         <p className='text-[11px] text-muted-foreground'>
-          NovAi puede analizar la solidez de tu expediente y generar la fundamentación ejecutiva.
+          NovAi puede evaluar integralmente la solidez de tu expediente (cobertura DAFO, mitigación CAME y balances EFI/EFE) y generar el dictamen formal.
         </p>
         <div className='flex flex-wrap items-center gap-2'>
-          {onJustifyMixedStrategy && isAmbivalent && (
-            <Button
-              size='sm'
-              variant='outline'
-              onClick={onJustifyMixedStrategy}
-              className='h-8 text-xs gap-1.5'
-            >
-              <Sparkles className='size-3.5 text-amber-500' />
-              <span>Justificar Estrategia Mixta con NovAi</span>
-            </Button>
-          )}
-
-          {onAuditCame && (
+          {(onAuditConfidence || onAuditCame || onJustifyMixedStrategy) && (
             <Button
               size='sm'
               variant='default'
-              onClick={onAuditCame}
-              className='h-8 text-xs gap-1.5'
+              onClick={onAuditConfidence || onAuditCame || onJustifyMixedStrategy}
+              className='h-8 text-xs gap-1.5 shadow-xs bg-primary hover:bg-primary/90 text-primary-foreground font-medium cursor-pointer'
             >
               <Sparkles className='size-3.5' />
-              <span>Auditar Cobertura CAME con NovAi</span>
+              <span>Auditar Confianza y Estrategia con NovAi</span>
             </Button>
           )}
         </div>

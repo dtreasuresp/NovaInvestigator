@@ -11,7 +11,7 @@ import { usePathname, useSearchParams } from 'next/navigation'
 
 // Third-party Imports
 import * as Icon from 'lucide-react'
-import { ChevronRightIcon, LockKeyholeIcon, SquareArrowOutUpRightIcon } from 'lucide-react'
+import { ChevronRightIcon, LockKeyholeIcon, SquareArrowOutUpRightIcon, Crown, Zap, Sparkles } from 'lucide-react'
 
 // Type Imports
 import type { MenuGroupSubItem, MenuItem, MenuSubItem } from '@/configs/navConfig'
@@ -21,9 +21,13 @@ import type { BillingPlan } from '@/lib/billing/types'
 // Component Imports
 import LogoSvg from '@/assets/svg/logo'
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
+import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
+import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip'
 import {
   Sidebar,
   SidebarContent,
+  SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
   SidebarGroupLabel,
@@ -455,6 +459,77 @@ const SidebarGroupedMenuItems = ({
   )
 }
 
+function SidebarPlanWidget({
+  planCode,
+  isMobile,
+  setOpenMobile
+}: {
+  planCode?: string | null
+  isMobile: boolean
+  setOpenMobile: (open: boolean) => void
+}) {
+  const displayPlan = (planCode || 'free').toUpperCase()
+  const isPro = displayPlan.includes('PRO') || displayPlan.includes('ENTERPRISE') || displayPlan.includes('LIFETIME')
+
+  return (
+    <SidebarFooter className='p-3 border-t border-border/40'>
+      {/* 1. Collapsed View (Icon only) */}
+      <div className='hidden group-data-[collapsible=icon]:flex justify-center'>
+        <Tooltip>
+          <TooltipTrigger
+            render={
+              <Link
+                href='/pages/billing/upgrade'
+                className='size-9 flex items-center justify-center rounded-xl bg-primary/10 text-primary hover:bg-primary/20 transition-colors'
+                onClick={() => {
+                  if (isMobile) setOpenMobile(false)
+                }}
+              >
+                <Zap className='size-4' />
+              </Link>
+            }
+          />
+          <TooltipContent side='right'>
+            <p className='text-xs font-semibold'>Plan {displayPlan} · Mejorar</p>
+          </TooltipContent>
+        </Tooltip>
+      </div>
+
+      {/* 2. Expanded View (Card) */}
+      <div className='group-data-[collapsible=icon]:hidden rounded-xl border border-primary/20 bg-gradient-to-br from-primary/5 via-card to-background p-3 shadow-xs space-y-2.5'>
+        <div className='flex items-center justify-between'>
+          <div className='flex items-center gap-1.5'>
+            <Crown className='size-3.5 text-primary' />
+            <span className='text-xs font-bold tracking-tight text-foreground'>Plan {displayPlan}</span>
+          </div>
+          <Badge variant='outline' className='text-[9px] font-mono uppercase px-1.5 py-0 border-primary/30 text-primary'>
+            {isPro ? 'Activo' : 'Básico'}
+          </Badge>
+        </div>
+
+        <p className='text-[11px] text-muted-foreground leading-tight'>
+          {isPro
+            ? 'Acceso profesional y cuotas de IA activas.'
+            : 'Desbloquea el análisis estratégico ilimitado con NovAi.'}
+        </p>
+
+        <Button
+          size='sm'
+          className='w-full text-xs h-7.5 gap-1.5 shadow-xs cursor-pointer'
+          render={<Link href='/pages/billing/upgrade' />}
+          nativeButton={false}
+          onClick={() => {
+            if (isMobile) setOpenMobile(false)
+          }}
+        >
+          <Sparkles className='size-3' />
+          <span>{isPro ? 'Administrar Plan' : 'Mejorar Plan'}</span>
+        </Button>
+      </div>
+    </SidebarFooter>
+  )
+}
+
 const SidebarLayout = () => {
   const { t } = useI18n()
   const pathname = usePathname()
@@ -566,6 +641,11 @@ const SidebarLayout = () => {
           )
         })}
       </SidebarContent>
+      <SidebarPlanWidget
+        planCode={snapshot?.planCode}
+        isMobile={isMobile}
+        setOpenMobile={setOpenMobile}
+      />
     </Sidebar>
   )
 }

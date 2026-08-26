@@ -1,5 +1,4 @@
 export interface TranslationSchema {
-
 // --- CLAVES AÑADIDAS DESDE AUDIT I18N ---
 
   common: {

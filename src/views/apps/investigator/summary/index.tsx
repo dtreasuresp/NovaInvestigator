@@ -452,8 +452,7 @@ export const InvestigatorSummaryView = () => {
         analysis={analysis}
         state={state}
         validation={validation}
-        onAuditCame={() => setIsAiDialogOpen(true)}
-        onJustifyMixedStrategy={() => setIsAiDialogOpen(true)}
+        onAuditConfidence={() => setIsAiDialogOpen(true)}
       />
 
       <AiReportDialog

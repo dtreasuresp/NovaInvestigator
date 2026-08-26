@@ -61,6 +61,7 @@ export type NovaiContext = z.infer<typeof novaiContextSchema>
 export const novaiChatRequestSchema = z.object({
   messages: z.array(aiMessageSchema).min(1),
   context: novaiContextSchema.default({ app: 'general' }),
+  conversationId: z.string().optional(),
   isFreeText: z.boolean().default(true),
   locale: z.enum(['es', 'en', 'de', 'ko', 'pt']).default('es')
 })
