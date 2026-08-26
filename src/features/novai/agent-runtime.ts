@@ -9,7 +9,8 @@ import { logger } from '@/lib/logger'
 import { NovaiMemoryEngine } from './memory-engine'
 import { NovaiModelRouter } from './adapters/model-router'
 import { NovaiTokenBudget } from './token-budget'
-import { getNovaiVercelTools, NOVAI_ALL_MODULAR_TOOLS } from './tools/index'
+import { NOVAI_ALL_MODULAR_TOOLS } from './tools/index'
+import { NovaiToolGateway } from './tool-gateway'
 import type { NovaiEvent, NovaiEventHandler } from './events'
 import { resolveSystemPrompt, fetchTenantLiveOverview, assertNovaiAllowed, consumeAiQueryQuota } from './service'
 
@@ -106,10 +107,14 @@ export class NovaiAgentRuntime {
       .filter(m => m.content && typeof m.content === 'string' && m.content.trim().length > 0)
       .map(m => {
         const role = m.role === 'assistant' ? 'assistant' : m.role === 'system' ? 'system' : 'user'
+
         return { role, content: m.content || '' } as ModelMessage
       })
 
-    const vercelTools = getNovaiVercelTools(principal)
+    // Enforcement point del Harness (spec §38/§39): toda tool pasa por el Gateway,
+    // que aplica checkPolicy y registra auditoría en novai_audit_events.
+    const runId = `run-${Date.now()}`
+    const vercelTools = NovaiToolGateway.buildGovernedVercelTools(principal, { runId })
 
     // Lista ordenada de proveedores para ejecución resiliente
     const providerCandidates: Array<{
@@ -122,6 +127,7 @@ export class NovaiAgentRuntime {
         baseURL: 'https://api.groq.com/openai/v1',
         apiKey: groqApiKey
       })
+
       providerCandidates.push({ name: `Groq (${groqModel})`, modelInstance: groq(groqModel) })
     }
 
@@ -131,7 +137,9 @@ export class NovaiAgentRuntime {
         apiKey: openrouterApiKey,
         headers: { 'HTTP-Referer': 'https://novastore.app', 'X-Title': 'NovaStore ERP' }
       })
+
       const orModel = routeDecision.recommendedOpenRouterModel || process.env.OPENROUTER_MODEL || 'openai/gpt-4o-mini'
+
       providerCandidates.push({ name: `OpenRouter (${orModel})`, modelInstance: openrouter(orModel) })
     }
 
@@ -139,16 +147,19 @@ export class NovaiAgentRuntime {
       const zenBaseUrl = process.env.OPENCODE_ZEN_BASE_URL || 'https://opencode.ai/zen/v1'
       const zenModel = process.env.OPENCODE_ZEN_MODEL || 'big-pickle'
       const zen = createOpenAI({ baseURL: zenBaseUrl, apiKey: zenKeys[0] })
+
       providerCandidates.push({ name: `OpenCode Zen (${zenModel})`, modelInstance: zen(zenModel) })
     }
 
     if (githubToken) {
       const github = createOpenAI({ baseURL: 'https://models.inference.ai.azure.com', apiKey: githubToken })
+
       providerCandidates.push({ name: 'GitHub Models (gpt-4o-mini)', modelInstance: github('gpt-4o-mini') })
     }
 
     if (geminiApiKey) {
       const google = createGoogleGenerativeAI({ apiKey: geminiApiKey })
+
       providerCandidates.push({ name: 'Gemini (gemini-1.5-flash)', modelInstance: google('gemini-1.5-flash') })
     }
 
@@ -157,6 +168,7 @@ export class NovaiAgentRuntime {
       baseURL: 'https://text.pollinations.ai/openai',
       apiKey: 'pollinations-free'
     })
+
     providerCandidates.push({ name: 'Pollinations (openai)', modelInstance: pollinations('openai') })
 
     let success = false
@@ -174,6 +186,7 @@ export class NovaiAgentRuntime {
           onError: (errPayload) => {
             const raw = (errPayload as { error?: unknown })?.error ?? errPayload
             const msg = raw instanceof Error ? raw.message : typeof raw === 'object' ? JSON.stringify(raw) : String(raw)
+
             logger.warn('Agent Runtime provider stream error', {
               action: 'novai.runtime.stream_error',
               details: { provider: candidate.name, errorMessage: msg }
@@ -186,6 +199,7 @@ export class NovaiAgentRuntime {
         for await (const part of streamResult.fullStream) {
           if (part.type === 'text-delta') {
             const delta = (part as any).text ?? (part as any).textDelta ?? ''
+
             if (delta) {
               candidateHasText = true
               accumulatedText += delta
@@ -239,6 +253,7 @@ export class NovaiAgentRuntime {
         }
 
         const full = accumulatedText || (await streamResult.text)
+
         if (candidateHasText || full) {
           accumulatedText = full
           success = true
@@ -246,6 +261,7 @@ export class NovaiAgentRuntime {
         }
       } catch (provErr) {
         const errorMsg = provErr instanceof Error ? provErr.message : String(provErr)
+
         logger.warn(`Provider ${candidate.name} failed in Agent Runtime, trying next`, {
           action: 'novai.runtime.provider_fallback',
           details: { provider: candidate.name, error: errorMsg }

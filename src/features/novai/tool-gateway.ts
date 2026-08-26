@@ -1,4 +1,5 @@
 import type { SupabaseClient } from '@supabase/supabase-js'
+
 import type { InvestigationsPrincipal } from '@/lib/investigations/access'
 import { executeNovaiTool, getNovaiVercelTools, type ToolExecutionResult } from './tools'
 import { NovaiMemoryEngine, type SaveMemoryParams } from './memory-engine'
@@ -179,5 +180,86 @@ export class NovaiToolGateway {
         })
       }
     })
+  }
+
+  /**
+   * Envuelve una función execute() de tool con la política del Gateway
+   * y el registro asíncrono en `novai_audit_events`.
+   *
+   * Es el punto donde el Harness aplica enforcement (spec §38/§39):
+   * ninguna tool llega al modelo sin pasar por aquí.
+   */
+  private static wrapGoverned(
+    toolName: string,
+    execute: (args: Record<string, unknown>) => Promise<unknown>,
+    principal: InvestigationsPrincipal,
+    options?: { runId?: string; isUserConfirmed?: boolean }
+  ) {
+    return async (args: Record<string, unknown>) => {
+      const policy = this.checkPolicy(toolName, principal, options?.isUserConfirmed)
+
+      if (!policy.isAuthorized) {
+        return { error: policy.reason || 'Acción denegada por política de seguridad del Tool Gateway.' }
+      }
+
+      const startTime = Date.now()
+
+      try {
+        const result = await execute(args)
+
+        // Auditoría asíncrona no bloqueante (best-effort; nunca rompe la respuesta)
+        this.recordAuditEventAsync(principal, {
+          runId: options?.runId,
+          action: `tool.${toolName}`,
+          toolName,
+          riskLevel: policy.riskLevel,
+          approvalStatus: options?.isUserConfirmed ? 'user_approved' : 'auto_approved',
+          payload: args,
+          result,
+          durationMs: Date.now() - startTime
+        })
+
+        return result
+      } catch (err) {
+        const errorMsg = err instanceof Error ? err.message : String(err)
+
+        logger.error('Governed Vercel tool execution failed', {
+          action: 'novai.gateway.vercel_tool_error',
+          details: { toolName, tenantId: principal.tenantId, errorMessage: errorMsg }
+        })
+
+        return { error: errorMsg }
+      }
+    }
+  }
+
+  /**
+   * Adaptador gobernado de tools para Vercel AI SDK Core.
+   *
+   * Igual que `getNovaiVercelTools(principal)` pero cada tool pasa por
+   * checkPolicy + registro de auditoría antes de ejecutarse.
+   */
+  static buildGovernedVercelTools(
+    principal: InvestigationsPrincipal,
+    options?: { runId?: string; isUserConfirmed?: boolean }
+  ): Record<string, any> {
+    const raw = getNovaiVercelTools(principal)
+    const governed: Record<string, any> = {}
+
+    for (const [name, vercelTool] of Object.entries(raw)) {
+      const candidate = vercelTool as { execute?: (args: Record<string, unknown>) => Promise<unknown> }
+
+      if (typeof candidate.execute !== 'function') {
+        governed[name] = vercelTool
+        continue
+      }
+
+      governed[name] = {
+        ...candidate,
+        execute: this.wrapGoverned(name, candidate.execute.bind(candidate), principal, options)
+      }
+    }
+
+    return governed
   }
 }
