@@ -4,6 +4,23 @@
 
 All notable changes to this template will be documented in this file
 
+## v0.0.53 (2026-08-25)
+
+### Added & Performance / Methodology Polish
+- **Vercel Speed Insights (v2.0.0) a Nivel Raíz**:
+  - Instalado el paquete oficial `@vercel/speed-insights` (v2.0.0) en [`package.json`](file:///d:/03.%20MATRIZ%20DAFO/package.json).
+  - Integrado el componente `<SpeedInsights />` en [`src/app/layout.tsx`](file:///d:/03.%20MATRIZ%20DAFO/src/app/layout.tsx) junto a `<Analytics />` para la telemetría automática de Core Web Vitals en App Router.
+
+- **Rediseño Dinámico y Pedagógico de Alerta de Brecha DAFO (< 10%)**:
+  - En [`src/utils/investigator/domain.ts`](file:///d:/03.%20MATRIZ%20DAFO/src/utils/investigator/domain.ts): Rediseñado el cálculo y redacción del aviso metodológico cuando la diferencia entre el primer y segundo cuadrante es inferior al 10%. Ahora informa los nombres exactos de los cuadrantes en disputa (ej. *DO Adaptativa vs DA Supervivencia*), el porcentaje cuantitativo real y la recomendación de formular una estrategia mixta.
+
+- **Componente Global `InvestigationConfidenceCard` (Auditoría de Confianza)**:
+  - Creado componente global [`src/components/ui/investigation-confidence-card.tsx`](file:///d:/03.%20MATRIZ%20DAFO/src/components/ui/investigation-confidence-card.tsx) con score cuantitativo ($0-100\%$), badges de confianza (*Alta*, *Media*, *Baja*) y desglose transparente de 4 pilares: *Cobertura DAFO*, *Nitidez de Vector*, *Balance EFI/EFE* y *Mitigación CAME*.
+  - En [`src/views/apps/investigator/summary/index.tsx`](file:///d:/03.%20MATRIZ%20DAFO/src/views/apps/investigator/summary/index.tsx): Integrado el panel de confianza metodológica inmediatamente después de la cuadrícula de diagnóstico 2×2.
+
+- **Auditoría Cognitiva de Cobertura CAME en NovAi**:
+  - En [`src/features/novai/evidence-engine.ts`](file:///d:/03.%20MATRIZ%20DAFO/src/features/novai/evidence-engine.ts): El motor de evidencia determinista ahora audita de forma proactiva que todas las Debilidades Críticas (calificación $\le 2$) y Amenazas Severas (calificación $\le 2$) cuenten con acciones correctivas o de afrontamiento en el Plan CAME.
+
 ## v0.0.52 (2026-08-25)
 
 ### Added & Mobile / UX Enhancements

@@ -137,6 +137,7 @@ const ResearchCard = ({
 
   // Sincronizar draft cuando el título del item cambie
   useEffect(() => {
+
     setDraft(item.metadata.title)
   }, [item.metadata.title])
 

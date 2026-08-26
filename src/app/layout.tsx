@@ -8,6 +8,7 @@ import { Geist, Geist_Mono } from 'next/font/google'
 // Third-party Imports
 import { NuqsAdapter } from 'nuqs/adapters/next/app'
 import { Analytics } from '@vercel/analytics/next'
+import { SpeedInsights } from '@vercel/speed-insights/next'
 
 // Component Imports
 import Providers from '@/components/Providers'
@@ -79,6 +80,7 @@ const RootLayout = ({ children }: Readonly<{ children: ReactNode }>) => {
         <UpgradeProButton />
 
         <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   )

@@ -159,6 +159,44 @@ export function auditInvestigationConsistency(state?: InvestigationState | null)
     }
   }
 
+  // 4. Auditoría de Cobertura CAME frente a Debilidades y Amenazas Críticas
+  const cameActions = Array.isArray(state.cameActions) ? state.cameActions : []
+  const criticalWeaknesses = internal.filter(f => f.type === 'D' && Number(f.rating) <= 2)
+  const severeThreats = external.filter(f => f.type === 'A' && Number(f.rating) <= 2)
+
+  const actionFactorIds = new Set<string>()
+  cameActions.forEach(a => {
+    if (a.factorId) actionFactorIds.add(a.factorId)
+  })
+
+  const unmitigatedWeaknesses = criticalWeaknesses.filter(
+    w => !actionFactorIds.has(w.id) && !cameActions.some(a => a.action?.toLowerCase().includes(w.name.toLowerCase()))
+  )
+
+  const unmitigatedThreats = severeThreats.filter(
+    t => !actionFactorIds.has(t.id) && !cameActions.some(a => a.action?.toLowerCase().includes(t.name.toLowerCase()))
+  )
+
+  if (unmitigatedWeaknesses.length > 0 && cameActions.length > 0) {
+    findings.push({
+      code: 'CAME_UNMITIGATED_CRITICAL_WEAKNESS',
+      severity: 'medium',
+      category: 'came',
+      message: `Existen ${unmitigatedWeaknesses.length} debilidades críticas sin acción CAME correctiva vinculada (${unmitigatedWeaknesses.map(w => w.name).join(', ')}).`,
+      suggestedAction: 'Formular medidas de corrección (C) en el Plan CAME para estas debilidades prioritarias.'
+    })
+  }
+
+  if (unmitigatedThreats.length > 0 && cameActions.length > 0) {
+    findings.push({
+      code: 'CAME_UNMITIGATED_SEVERE_THREAT',
+      severity: 'medium',
+      category: 'came',
+      message: `Existen ${unmitigatedThreats.length} amenazas severas sin acción CAME de afrontamiento vinculada (${unmitigatedThreats.map(t => t.name).join(', ')}).`,
+      suggestedAction: 'Formular medidas de afrontamiento (A) en el Plan CAME para mitigar estas amenazas de alto impacto.'
+    })
+  }
+
   const hasCriticalContradictions = findings.some(f => f.severity === 'high')
 
   return {

@@ -455,10 +455,19 @@ export const calculateRelations = (
   } else if (!dominant) {
     warnings.push('Las relaciones evaluadas no aportan una orientación positiva.')
   } else {
-    if (dominant.coverage < 0.4)
+    if (dominant.coverage < 0.4) {
       warnings.push('La cobertura del cuadrante dominante es baja; la orientación es provisional.')
-    if (difference < 0.1)
-      warnings.push('La diferencia entre los dos primeros cuadrantes es menor que el umbral operativo del 10 %.')
+    }
+
+    if (difference < 0.1 && second) {
+      const dominantName = ORIENTATIONS[dominant.quadrant]?.name || dominant.quadrant
+      const secondName = ORIENTATIONS[second.quadrant]?.name || second.quadrant
+      const diffPercent = Math.round(difference * 100)
+
+      warnings.push(
+        `Empate técnico entre ${dominant.quadrant} (${dominantName}) y ${second.quadrant} (${secondName}) con una brecha de solo el ${diffPercent} % (< 10 %). Se recomienda formular una estrategia mixta o afinar las calificaciones DAFO.`
+      )
+    }
     if (dominant.coverage >= 0.7 && difference >= 0.1) confidence = 'alta'
     else if (dominant.coverage >= 0.4 && difference >= 0.1) confidence = 'media'
     else confidence = 'baja'

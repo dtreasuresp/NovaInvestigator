@@ -19,6 +19,7 @@ import { StrategicPositionMatrix, type StrategicMatrixPoint } from '@/components
 import { InvestigationSummarySheet } from '@/components/ui/investigation-summary-sheet'
 import { DafoQuadrantIndices } from '@/components/ui/dafo-quadrant-indices'
 import { CameActionsIndices } from '@/components/ui/came-actions-indices'
+import { InvestigationConfidenceCard } from '@/components/ui/investigation-confidence-card'
 import {
   Tooltip,
   TooltipContent,
@@ -433,6 +434,13 @@ export const InvestigatorSummaryView = () => {
           />
         </div>
       </div>
+
+      {/* 5. Nivel de Confianza Metodológica y Auditoría de Riesgos */}
+      <InvestigationConfidenceCard
+        analysis={analysis}
+        state={state}
+        validation={validation}
+      />
 
       {/* Full Academic Report & Thesis Defense Synthesis (Section 19) */}
       <div className='space-y-4'>
