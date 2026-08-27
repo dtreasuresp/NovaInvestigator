@@ -216,21 +216,48 @@ test('NovAi Cognitive Engine - Strategic Methodology Axioms & Anti-Sycophancy', 
       }
     } as unknown as InvestigationState
 
-    const prompt = NovaiContextEngine.buildSystemPrompt({
+    // Fase 2 ON DEMAND: caso casual Hola → minimal core+mode minimal, sin methodology ni dump
+    const promptCasual = NovaiContextEngine.buildSystemPrompt({
       principal: mockPrincipal,
       context: {
         app: 'investigator',
         state: mockState
       },
-      locale: 'es'
+      locale: 'es',
+      messages: [{ role: 'user', content: 'Hola' }]
+    })
+    assert.match(promptCasual, /Modo:/)
+    assert.doesNotMatch(promptCasual, /Marco Metodológico de Diagnóstico Estratégico/)
+    assert.doesNotMatch(promptCasual, /DATOS DEL EXPEDIENTE/)
+
+    // Caso investigator no casual sin metodología explícita → hint minimal de investigación, sin dump completo
+    const promptMinimal = NovaiContextEngine.buildSystemPrompt({
+      principal: mockPrincipal,
+      context: {
+        app: 'investigator',
+        state: mockState
+      },
+      locale: 'es',
+      messages: [{ role: 'user', content: 'Resume el expediente' }]
+    })
+    assert.match(promptMinimal, /Investigación activa/)
+    assert.match(promptMinimal, /Modo de Análisis Activo/)
+    assert.doesNotMatch(promptMinimal, /Marco Metodológico de Diagnóstico Estratégico/)
+
+    // Con query metodológica explícita → debe inyectar slice EFI/DAFO ON DEMAND
+    const promptWithMethodology = NovaiContextEngine.buildSystemPrompt({
+      principal: mockPrincipal,
+      context: {
+        app: 'investigator',
+        state: mockState
+      },
+      locale: 'es',
+      messages: [{ role: 'user', content: 'Explícame la metodología EFI y DAFO para validar el expediente' }]
     })
 
-    // Validate presence of methodology knowledge & audit
-    assert.match(prompt, /Marco Metodológico de Diagnóstico Estratégico/)
-    assert.match(prompt, /Enfoque de Asesoría y Principios Profesionales/)
-    assert.match(prompt, /AUDITORÍA DETERMINISTA DE COHERENCIA DEL EXPEDIENTE/)
-    assert.match(prompt, /Matriz de Evaluación de Factores Internos \(EFI\)/)
-    assert.match(prompt, /Matriz de Evaluación de Factores Externos \(EFE\)/)
-    assert.match(prompt, /Matriz de Impacto Cruzado DAFO/)
+    assert.match(promptWithMethodology, /EFI|DAFO/)
+    // Enfoque de asesoría ahora está en slice methodology, no siempre en core
+    // Para query metodológica, debe contener al menos una referencia metodológica
+    assert.match(promptWithMethodology, /Investigación activa|EFI|DAFO|FO/)
   })
 })

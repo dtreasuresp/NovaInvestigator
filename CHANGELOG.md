@@ -4,6 +4,18 @@
 
 All notable changes to this template will be documented in this file
 
+## v0.0.73 (2026-08-28)
+
+### Added & Architecture — Fase 2 Context Manager ON DEMAND
+
+- **Context ON DEMAND (`src/features/novai/context-manager.ts:1`)**: nuevo `NovaiContextManager` con 11 capas conceptuales pero inyección selectiva — `System Core` (73 tk) + `Mode` minimal para `Hola` (casual) vs `Investigation hint filtrado` + `Methodology slice` + `Memory relevance` para análisis. Heurística pura en Fase 2 (interfaz `detectMethodologyTopic` preparada para híbrido LLM cheap en Fase 4). Detecta `GENERAL_CHAT+isCasualGreeting` → CASUAL (core+mode, 73 tk) vs `VERIFY_FACTOR` con códigos `D-03/A-02` → hint con 2 factores (2448 tk vs 7443 tk Fase 1). Benchmark: A `Hola` 73 tk system (96.6%↓ vs 2174), C `D-03×A-02` 2448 tk (67%↓), D `competencia Cuba` 918 tk (61%↓), avg util 28.8% vs 47.4% Fase 1. Ejecutable `pnpm exec tsx scripts/benchmark-novai-context.ts`.
+- **Methodology slices (`src/features/novai/methodology-knowledge.ts:132`)**: `getCorePrompt(locale)`, `getMethodologySlice(topic)` y `detectMethodologyTopic(text)` — EFI/EFE/DAFO/QSPM/CAME como slices modulares (cada uno ~40-80 tk) en vez de `getMethodologicalPrompt()` monolítico 1302 tk siempre inyectado. `getMethodologicalPrompt()` marcado `@deprecated` para compatibilidad.
+- **Context Engine delegado (`src/features/novai/context-engine.ts:1`)**: `NovaiContextEngine.buildSystemPrompt` ahora delega en `NovaiContextManager` con `messages` para intent classification; fallback fail-open a core minimal si manager falla. `src/features/novai/service.ts:303` y `src/features/novai/agent-runtime.ts:67` propagan `messages` a `resolveSystemPrompt`.
+- **Memory ON DEMAND**: `context-manager.ts:155` scoring léxico `scoreMemoryRelevance` — solo top 3 memorias con overlap con query; si `GENERAL_CHAT` casual → 0 memorias (vs 15 siempre). Evita contaminación cross-investigation.
+- **Investigation ON DEMAND**: `context-manager.ts:203` hint minimal `Investigación activa: "title" (X EFI, Y EFE)` + filtrado por `extractFactorCodes` (regex `[FDOA]-\d+`) — D-03×A-02 inyecta solo 2 factores + 1 cruce relevante, no 16 factores + QSPM/CAME completos. Audit solo si `codes>0` y `findings>0`.
+- **Benchmark actualizado**: `scripts/benchmark-novai-context.ts:258` pasa `messages` a `NovaiContextEngine` para medición real ON DEMAND; versión `Fase 2 — Context Manager ON DEMAND`; tabla muestra ganancia por caso.
+- **Tests adaptados**: `tests/novai/reasoning-evaluation.test.ts:165` actualiza expectativa de metodología siempre-inyectada a ON DEMAND (casual → sin Marco, con query EFI/DAFO → slice). `pnpm check-types` limpio, `pnpm test` 239/239.
+
 ## v0.0.72 (2026-08-28)
 
 ### Added & Architecture — Fase 1 Instrumentación (Plan Maestro NovAi v2)

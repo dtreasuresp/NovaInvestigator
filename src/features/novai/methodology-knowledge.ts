@@ -101,6 +101,7 @@ export const CONSULTING_CRITICAL_DIRECTIVES = `
 
 /**
  * Genera el marco metodológico de referencia para inyectar en el contexto de NovAi.
+ * @deprecated Para Fase 2 usar getMethodologySlice(topic) — este mantiene compatibilidad legacy.
  */
 export function getMethodologicalPrompt(): string {
   return `
@@ -127,6 +128,77 @@ export function getMethodologicalPrompt(): string {
 
 ${CONSULTING_CRITICAL_DIRECTIVES}
 `
+}
+
+// =============================================================================
+// Fase 2 — Methodology ON DEMAND (slices modulares)
+// Solo inyectar lo relevante para el intent. Reduce Hola de ~1300tk a ~150tk.
+// =============================================================================
+
+export type MethodologyTopic = 'efi' | 'efe' | 'dafo' | 'qspm' | 'came' | 'general' | null
+
+const CORE_IDENTITY_PROMPT: Record<string, string> = {
+  es: 'Eres NovAi, asistente inteligente y consultor estratégico de NovaStore ERP. Responde de forma ejecutiva, precisa y profesional.',
+  en: 'You are NovAi, NovaStore ERP intelligent assistant and strategic consultant. Answer executive, precise and professional.',
+  de: 'Du bist NovAi, intelligenter Assistent und strategischer Berater von NovaStore ERP.',
+  ko: '당신은 NovaStore ERP의 지능형 어시스턴트이자 전략 컨설턴트인 NovAi입니다.',
+  pt: 'Você é o NovAi, assistente inteligente e consultor estratégico do NovaStore ERP.'
+}
+
+export function getCorePrompt(locale: string = 'es'): string {
+  const lang = CORE_IDENTITY_PROMPT[locale] || CORE_IDENTITY_PROMPT.es
+  const langInstruction =
+    locale === 'en'
+      ? 'You MUST answer strictly in English.'
+      : locale === 'de'
+        ? 'Antworten Sie UNBEDINGT auf Deutsch.'
+        : locale === 'ko'
+          ? '반드시 한국어로만 답변하십시오.'
+          : locale === 'pt'
+            ? 'Responda OBRIGATORIAMENTE em Português.'
+            : 'Responde OBLIGATORIAMENTE en Español.'
+
+  return `${lang} ${langInstruction}`
+}
+
+export function getMethodologySlice(topic: MethodologyTopic): string {
+  if (!topic) return ''
+
+  switch (topic) {
+    case 'efi':
+      return `EFI (Factores Internos): Ponderación suma=1.00. Escala 1=Debilidad Mayor,2=Debilidad Menor,3=Fortaleza Menor,4=Fortaleza Mayor. Umbral 2.50. Debilidades solo 1-2, fortalezas solo 3-4.`
+    case 'efe':
+      return `EFE (Factores Externos): Ponderación suma=1.00. Escala respuesta 1=Deficiente,2=Regular,3=Buena,4=Excelente. Umbral 2.50. Oportunidades/amenazas son del entorno (PESTEL/Porter), no internas.`
+    case 'dafo':
+      return `DAFO Cruces: Fuerza 0=Nula,1=Baja,2=Media,3=Alta/Crítica. Cuadrantes FO(Ofensivo), DO(Adaptativo), FA(Defensivo), DA(Supervivencia). Axioma DA: debilidad+amenaza mismo dominio no puede ser 0 sin blindaje.`
+    case 'qspm':
+      return `QSPM: AS 1=No atractiva,2=Algo,3=Razonablemente,4=Altamente (0=No aplica). TAS=Peso×AS, mayor TAS = más respaldo.`
+    case 'came':
+      return `CAME: Corregir Debilidades | Afrontar Amenazas | Mantener Fortalezas | Explotar Oportunidades.`
+    case 'general':
+      return getMethodologicalPrompt().slice(0, 800) // fallback compacto si se pide general pero filtrado
+    default:
+      return ''
+  }
+}
+
+/**
+ * Detecta el topic metodológico relevante a partir del texto del usuario.
+ * Heurística pura (Fase 2), interfaz preparada para híbrido LLM cheap en Fase 4.
+ */
+export function detectMethodologyTopic(text: string): MethodologyTopic {
+  const lower = (text || '').toLowerCase()
+  const has = (re: RegExp) => re.test(lower)
+
+  // Prioridad: si pide varios, elige el más específico; si pide metodología general, retorna null para inyectar solo core + relevante
+  if (has(/qspm|tas\s*=|attractiveness|puntaje.*atractivo/)) return 'qspm'
+  if (has(/\bcame\b|corregir.*debilidad|afrontar.*amenaza/)) return 'came'
+  if (has(/dafo|foda|cruce.*×|cruce.*x|quadrant|fo\s|do\s|fa\s|da\s|fuerza\s*[0-3]/)) return 'dafo'
+  if (has(/\befe\b|factores.*externos|efe.*ponderaci/)) return 'efe'
+  if (has(/\befi\b|factores.*internos|efi.*ponderaci/)) return 'efi'
+  // Si menciona metodología pero sin especificar, no inyectar todo: retornar null (Context Manager decidirá minimal + tool)
+  if (has(/metodolog|fred david|porter|pestel/)) return null
+  return null
 }
 
 export type GenericFactorType = 'F' | 'D' | 'O' | 'A' | 'strength' | 'weakness' | 'opportunity' | 'threat'

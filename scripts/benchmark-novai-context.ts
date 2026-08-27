@@ -260,13 +260,14 @@ function runBenchmark(): { results: CaseResult[]; summary: Record<string, unknow
     // Construir mensajes para este caso (historial mínimo: solo el mensaje del usuario)
     const messages: AiMessage[] = [{ role: 'user', content: c.userMessage }]
 
-    // System prompt real vía ContextEngine (mismo que agent-runtime)
+    // System prompt real vía ContextEngine ON DEMAND (Fase 2) — ahora con messages para intent
     const systemPrompt = NovaiContextEngine.buildSystemPrompt({
       principal: MOCK_PRINCIPAL,
       context: c.context,
       locale: c.locale,
       overview,
-      memories: memories as never
+      memories: memories as never,
+      messages
     })
 
     const systemTokens = NovaiTokenBudget.estimateTokens(systemPrompt)
@@ -324,7 +325,7 @@ function runBenchmark(): { results: CaseResult[]; summary: Record<string, unknow
 
   const summary = {
     generatedAt: new Date().toISOString(),
-    version: 'Fase 1 baseline (antes de Context Manager / Dynamic Tools)',
+    version: 'Fase 2 — Context Manager ON DEMAND (methodology/memory/investigation slices)',
     methodologyTokens,
     toolDefinitionsTokensAll: toolDefsTokensAll,
     toolCount: allToolNames.length,
@@ -333,7 +334,7 @@ function runBenchmark(): { results: CaseResult[]; summary: Record<string, unknow
     worstCase: worst.caseId,
     worstUtilization: worst.contextUtilization,
     casesCount: results.length,
-    note: 'Todos los tokens son estimados con NovaiTokenBudget.estimateTokens (max len/3.2, words*1.35). Usage real se captura en runtime SSE y se persiste en novai_agent_runs.'
+    note: 'Todos los tokens son estimados con NovaiTokenBudget.estimateTokens (max len/3.2, words*1.35). Fase 2: Hola debe ser <350tk system (vs 2174 Fase 1). Usage real se captura en runtime SSE y se persiste en novai_agent_runs.'
   }
 
   return { results, summary }
@@ -361,20 +362,20 @@ function main() {
   if (wantJson) {
     console.log(JSON.stringify({ summary, results }, null, 2))
   } else {
-    console.log('\n# NovAi Benchmark de Contexto — Fase 1 (baseline)\n')
+    console.log('\n# NovAi Benchmark de Contexto — Fase 2 (Context Manager ON DEMAND)\n')
     console.log(`Generado: ${summary.generatedAt as string}`)
     console.log(`${summary.note as string}\n`)
     console.log(formatTable(results))
     console.log('\n## Resumen\n')
-    console.log(`- Methodology slice: ${summary.methodologyTokens} tk (inyectado SIEMPRE en Fase 1)`)
-    console.log(`- Tool definitions (22 tools): ${summary.toolDefinitionsTokensAll} tk (expuestas SIEMPRE en Fase 1)`)
-    console.log(`- Investigación sample (8F+8E): ${summary.investigationSampleTokens} tk (solo caso C)`)
+    console.log(`- Methodology: slice ON DEMAND (solo si query menciona EFI/EFE/DAFO/QSPM/CAME), vs ${summary.methodologyTokens} tk SIEMPRE en Fase 1`)
+    console.log(`- Tool definitions (22 tools): ${summary.toolDefinitionsTokensAll} tk (aún SIEMPRE en Fase 2; dinámicas en Fase 3)`)
+    console.log(`- Investigación sample (8F+8E full dump): ${summary.investigationSampleTokens} tk — Fase 2: hint minimal o filtrado por códigos`)
     console.log(`- Utilización promedio: ${((summary.avgContextUtilization as number) * 100).toFixed(1)}%`)
     console.log(`- Peor caso: ${summary.worstCase} con ${((summary.worstUtilization as number) * 100).toFixed(1)}%`)
-    console.log('\n## Interpretación Fase 1\n')
-    console.log('- Caso A "Hola" debería estar <350 tk system; hoy paga ~1k+ metodología + 22 tools → objetivo Fase 2: -85%')
-    console.log('- Caso C "D-03×A-02" paga investigación completa + metodología + 22 tools → objetivo Fase 2: slice selectivo + tools dinámicas')
-    console.log('- Fase 2 (Context Manager) y Fase 3 (Dynamic Tools) medirán de nuevo con este mismo script para validar ganancia real.\n')
+    console.log('\n## Interpretación Fase 2\n')
+    console.log('- Caso A "Hola" debe estar <350 tk system (vs 2174 tk Fase 1). Si no, revisar ContextManager.isCasualGreeting.');
+    console.log('- Caso C "D-03×A-02" debe ser hint filtrado (2 factores) no 16 factores + QSPM completo.')
+    console.log('- Fase 3 (Dynamic Tools) reducirá además toolDefs de 2899 tk a 0/360 según intent.\n')
     console.log('## Detalle por caso (JSON resumido)\n')
     for (const r of results) {
       console.log(

@@ -305,14 +305,16 @@ export function resolveSystemPrompt(
   context: NovaiContext,
   locale: string,
   overview?: TenantLiveOverview,
-  memories?: NovaiMemory[]
+  memories?: NovaiMemory[],
+  messages?: AiMessage[]
 ): string {
   return NovaiContextEngine.buildSystemPrompt({
     principal,
     context,
     locale,
     overview,
-    memories
+    memories,
+    messages
   })
 }
 

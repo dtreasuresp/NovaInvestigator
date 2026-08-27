@@ -23,6 +23,7 @@ import { resolveSystemPrompt, fetchTenantLiveOverview, assertNovaiAllowed, consu
 import { classifyIntent, getRequiredToolsForIntent } from './intent-requirements'
 import { validateResponse } from './response-validator'
 import { NovaiInstrumentation } from './instrumentation'
+import { NovaiContextManager } from './context-manager'
 
 export interface AgentRuntimeOptions {
   principal: InvestigationsPrincipal
@@ -71,15 +72,15 @@ export class NovaiAgentRuntime {
       })
     ])
 
-    const systemPrompt = resolveSystemPrompt(principal, context, locale, overview, memories)
-
-    // 2. Enrutamiento inteligente de modelo
+    // 2. Enrutamiento inteligente de modelo (necesario antes de systemPrompt para budget)
     const routeDecision = NovaiModelRouter.routeTask({
       messages,
       contextApp: context.app,
       explicitMode: context.mode,
       isPremium: isFreeText
     })
+
+    const systemPrompt = resolveSystemPrompt(principal, context, locale, overview, memories, messages)
 
     const geminiApiKey = process.env.GEMINI_API_KEY
     const openrouterApiKey = process.env.OPENROUTER_API_KEY
@@ -122,13 +123,20 @@ export class NovaiAgentRuntime {
         systemTokensEstimated -
         NovaiTokenBudget.getModelBudget('gemini-3.6-flash').reservedOutputTokens
     )
+    const sliceInfo = (() => {
+      try {
+        return NovaiContextManager.getInjectedSlices({ principal, context, locale, overview, memories, messages })
+      } catch {
+        return null
+      }
+    })()
     const selectedSnapshotBase = {
       systemPrompt,
       overview,
-      memoriesCount: memories.length,
+      memoriesCount: sliceInfo ? (sliceInfo.hasMemory ? 1 : 0) : memories.length,
       memoryKeys: memories.map(m => m.key),
-      methodologyInjected: systemPrompt.includes('Marco Metodológico'),
-      auditFindingsCount: systemPrompt.includes('ALERTAS DE AUDITORÍA') ? 1 : 0,
+      methodologyInjected: sliceInfo ? sliceInfo.hasMethodology : (systemPrompt.includes('EFI') || systemPrompt.includes('QSPM') || systemPrompt.includes('DAFO') || systemPrompt.includes('Marco Metodológico')),
+      auditFindingsCount: sliceInfo ? (sliceInfo.hasAudit ? 1 : 0) : (systemPrompt.includes('ALERTAS DE AUDITORÍA') || systemPrompt.includes('AUDITORÍA') ? 1 : 0),
       budgetResult: {
         totalEstimatedTokens: budgetResult.totalEstimatedTokens,
         wasTrimmed: budgetResult.wasTrimmed,
