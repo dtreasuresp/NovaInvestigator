@@ -1,6 +1,6 @@
 # Arquitectura Técnica NovAi Agent Harness & NovaInvestigator Domain
 
-**Versión:** 2.0 (2026-08-26)  
+**Versión:** 2.1 (2026-08-27) — PHASE 8 QSPM + PHASE 23 web_research  
 **Estado:** Producción / Master Spec Vigente  
 **Autor:** DGTECNOVA AI Engineering Team  
 
@@ -27,22 +27,24 @@ El sistema de Inteligencia Artificial de la plataforma se estructura en dos capa
 - **Agnóstico al negocio:** No conoce términos como EFI, EFE, DAFO, CAME ni QSPM.
 - **Responsabilidades:** Orquestación de modelos LLM, negociación SSE multi-proveedor, enrutamiento por capacidades, presupuesto y truncado de tokens, memoria estratégica/sesión, y pasarela de herramientas (Tool Gateway) con Human-in-the-Loop.
 - **Componentes clave:**
-  - `src/features/novai/agent-runtime.ts` (`NovaiAgentRuntime`)
-  - `src/features/novai/events.ts` (`NovaiEvent` protocol)
-  - `src/features/novai/model-router.ts` (`NovaiModelRouter`)
+  - `src/features/novai/agent-runtime.ts` (`NovaiAgentRuntime`) — tríada `gemini`→`openrouter`→`opencode-zen` (spec §26/27)
+  - `src/features/novai/events.ts` (`NovaiEvent` protocol) — normalización multi-proveedor
+  - `src/features/novai/adapters/model-router.ts` (`NovaiModelRouter`) — capability detection `capabilities.ts`
   - `src/features/novai/token-budget.ts` (`NovaiTokenBudgetEngine`)
   - `src/features/novai/memory-engine.ts` (`NovaiMemoryEngine`)
-  - `src/features/novai/tool-gateway.ts` (`NovaiToolGateway`)
+  - `src/features/novai/tool-gateway.ts` (`NovaiToolGateway`) — enforcement + audit `novai_audit_events`
+- **Providers activos (§26):** `gemini` (3.6-flash/2.5-flash/2.5-pro), `openrouter` (llama-3.1-8b, qwen-coder, gemini-exp), `opencode-zen` (big-pickle). Legacy `pollinations/groq/cerebras/github` eliminados y convergidos a `NovaiAgentRuntime` `streamText()`.
 
 ### 1.2 NovaInvestigator Domain (Especialización Estratégica)
 - **Dominio Analítico:** Reglas formales de auditoría matricial, verificación probatoria de factores, trazabilidad de linaje y cuestionamiento Red-Team.
 - **Componentes clave:**
-  - `src/utils/investigator/domain.ts` (`calculateAnalysis` - Motor matemático canónico)
+  - `src/utils/investigator/domain.ts` (`calculateAnalysis` incl. `calculateQspm` TAS=weight_normalized×AS - Motor canónico)
   - `src/features/novai/evidence-engine.ts` (`auditInvestigationConsistency` - Motor de consistencia)
   - `src/features/novai/methodology-knowledge.ts` (`auditDafoCrossing` - Axiomas epistemológicos)
-  - `src/features/novai/tools/investigations/*` (Tools de expedientes y evidencias)
-  - `src/features/novai/tools/methodology/*` (Fachadas deterministas de auditoría y cálculo)
-  - `src/features/novai/tools/strategy/*` (Linaje, comparación y Red-Team)
+  - `src/features/novai/tools/investigations/*` (8 tools expediente & evidencia — INTERNAL_EVIDENCE)
+  - `src/features/novai/tools/methodology/*` (5 tools incl. `calculate_matrix` con `QSPM` §19)
+  - `src/features/novai/tools/strategy/*` (3 tools linaje/comparación/Red-Team)
+  - `src/features/novai/tools/research/web-research.ts` (1 tool §23 EXTERNAL_EVIDENCE — Tavily/Brave, distinguido de INTERNAL)
 
 ---
 

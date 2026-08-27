@@ -5,21 +5,10 @@ import { resolveEffectiveAccessSnapshot } from '@/features/access/access-service
 import { authorize } from '@/features/access/authorization-engine'
 import { BillingError } from '@/features/billing/errors'
 import { enforceBillingRateLimit } from '@/features/billing/rate-limit'
-
 import { canUseFreeText, checkAiEntitlements } from '@/features/novai/entitlements'
 import { getDailyQuota, consumeDailyQuota } from '@/features/novai/rate-limit'
 import { logger } from '@/lib/logger'
-import { callGeminiStreaming, type StreamCallbacks } from '@/features/novai/client/gemini-client'
-import { callGroqStreaming } from '@/features/novai/client/groq-client'
-import { callCerebrasStreaming } from '@/features/novai/client/cerebras-client'
-import { callPollinationsStreaming } from '@/features/novai/client/pollinations-client'
-import { callGithubModelsStreaming } from '@/features/novai/client/github-models-client'
-import { callOpenRouterStreaming } from '@/features/novai/client/openrouter-client'
-import { callOpenCodeZenStreaming } from '@/features/novai/client/opencode-zen-client'
-
-import { streamText, isStepCount, type ModelMessage } from 'ai'
-import { createOpenAI } from '@ai-sdk/openai'
-import { createGoogleGenerativeAI } from '@ai-sdk/google'
+import { type StreamCallbacks } from '@/features/novai/client/gemini-client'
 
 import { NovaiContextEngine } from './context-engine'
 import { NovaiModelRouter } from './adapters/model-router'
@@ -31,7 +20,6 @@ import type { NovaiContext, AiMessage, AiQuotaInfo } from './schema'
 import { NovaiAgentRuntime } from './agent-runtime'
 
 import { executeNovaiTool, getNovaiVercelTools, NOVAI_TOOL_DECLARATIONS, NOVAI_OPENAI_TOOLS, type OpenAiToolCall } from './tools'
-import type { ToolDefinition, StreamingCompletionResult } from '@/features/novai/client/openrouter-client'
 import type { InvestigationState, Factor, Strategy } from '@/types/apps/investigator-types'
 import { quadrantFor } from '@/utils/investigator/domain'
 
@@ -391,95 +379,6 @@ export async function assertNovaiAllowed(principal: InvestigationsPrincipal, isF
   await enforceBillingRateLimit('checkout_one_time', principal.tenantId)
 }
 
-type ProviderRunner = (
-  currentMessages: Array<AiMessage | { role: string; content: string | null; tool_call_id?: string; tool_calls?: OpenAiToolCall[] }>,
-  tools: ToolDefinition[] | undefined,
-  callbacks: StreamCallbacks
-) => Promise<StreamingCompletionResult>
-
-async function runWithToolCallingLoop({
-  runner,
-  initialMessages,
-  tools,
-  principal,
-  callbacks
-}: {
-  runner: ProviderRunner
-  initialMessages: AiMessage[]
-  tools: ToolDefinition[]
-  principal: InvestigationsPrincipal
-  callbacks: StreamCallbacks
-}): Promise<void> {
-  const currentMessages: Array<{ role: string; content: string | null; tool_call_id?: string; tool_calls?: OpenAiToolCall[] }> = [...initialMessages]
-
-  const firstPassCallbacks: StreamCallbacks = {
-    onChunk: (chunk: string) => {
-      callbacks.onChunk(chunk)
-    },
-    onComplete: () => {
-      // Manejado al evaluar si hubo tool calls
-    },
-    onError: (err: Error) => {
-      callbacks.onError(err)
-    }
-  }
-
-  const result = await runner(currentMessages, tools, firstPassCallbacks)
-
-  logger.info('NovAi tool calls emitted', {
-    action: 'novai.tools.emitted',
-    details: {
-      tenantId: principal.tenantId,
-      count: result.toolCalls?.length || 0,
-      names: result.toolCalls?.map(t => t.function.name) || [],
-      hasToolCalls: !!(result.toolCalls && result.toolCalls.length > 0)
-    }
-  })
-
-  if (result.toolCalls && result.toolCalls.length > 0) {
-    logger.info('NovAi executing tools', {
-      action: 'novai.tools.execute',
-      details: {
-        tenantId: principal.tenantId,
-        count: result.toolCalls.length,
-        names: result.toolCalls.map(t => t.function.name)
-      }
-    })
-
-    currentMessages.push({
-      role: 'assistant',
-      content: result.text || null,
-      tool_calls: result.toolCalls
-    })
-
-    for (const tc of result.toolCalls) {
-      let args: Record<string, unknown> = {}
-
-      try {
-        args = tc.function.arguments ? JSON.parse(tc.function.arguments) : {}
-      } catch {
-        args = {}
-      }
-
-      const execResult = await executeNovaiTool(tc.function.name, args, principal)
-
-      currentMessages.push({
-        role: 'tool',
-        tool_call_id: tc.id,
-        content: JSON.stringify(execResult.data !== undefined ? execResult.data : { error: execResult.error })
-      })
-    }
-
-    // Segunda pasada: síntesis en lenguaje natural streameando al usuario
-    await runner(currentMessages, undefined, callbacks)
-
-    return
-  }
-
-  // Respuesta directa completada
-  await callbacks.onComplete(result.text)
-}
-
 /**
  * Ejecutor canónico de streaming NovAi (Fase D · Pipeline Convergence).
  * Delega en NovaiAgentRuntime para garantizar ejecución unificada,
@@ -570,167 +469,28 @@ export async function generateNovaiRawText({
   const messages: AiMessage[] = [{ role: 'user', content: userPrompt }]
   let accumulatedText = ''
 
-  const callbacks: StreamCallbacks = {
-    onChunk: (chunk: string) => {
-      accumulatedText += chunk
-    },
-    onComplete: async () => { },
-    onError: (err: Error) => {
-      logger.warn('NovAi raw generation chunk error', {
-        action: 'novai.raw.error',
-        details: { errorMessage: err.message }
-      })
-    }
-  }
-
-  const openrouterApiKey = process.env.OPENROUTER_API_KEY
-  const openrouterModel = process.env.OPENROUTER_MODEL || 'openai/gpt-4o-mini'
-
-  const OPENROUTER_FREE_FALLBACKS_NOVAI = (process.env.OPENROUTER_FREE_MODELS ||
-    'nvidia/nemotron-3-super-120b-a12b:free,meta-llama/llama-4-maverick:free,qwen/qwen3-coder:free,z-ai/glm-4.5-air:free'
-  )
-    .split(',')
-    .map(s => s.trim())
-    .filter(Boolean)
-
-  if (openrouterApiKey) {
-    const modelsToTry = [openrouterModel, ...OPENROUTER_FREE_FALLBACKS_NOVAI.filter(m => m !== openrouterModel)]
-
-    for (const m of modelsToTry) {
-      accumulatedText = ''
-
-      try {
-        await callOpenRouterStreaming({
-          systemPrompt,
-          messages,
-          apiKey: openrouterApiKey,
-          model: m,
-          callbacks
-        })
-
-        if (accumulatedText.trim()) return accumulatedText
-      } catch {
-        continue
+  await NovaiAgentRuntime.executeStreaming({
+    principal,
+    context: { app: 'general', hint: systemPrompt },
+    messages,
+    isFreeText: true,
+    locale: 'es',
+    onEvent: async (event) => {
+      if (event.type === 'text-delta') {
+        accumulatedText += event.delta
+      } else if (event.type === 'message-complete') {
+        if (event.fullText) {
+          accumulatedText = event.fullText
+        }
       }
     }
+  })
+
+  if (!accumulatedText.trim()) {
+    throw new Error('No fue posible obtener respuesta de los proveedores de IA disponibles.')
   }
 
-  const zenKeys = (process.env.OPENCODE_ZEN_API_KEY || '').split(',').map(k => k.trim()).filter(Boolean)
-  const zenModel = process.env.OPENCODE_ZEN_MODEL || 'big-pickle'
-  const zenBaseUrl = process.env.OPENCODE_ZEN_BASE_URL || 'https://opencode.ai/zen/v1'
-
-  if (zenKeys.length) {
-    for (const zenKey of zenKeys) {
-      accumulatedText = ''
-
-      try {
-        await callOpenCodeZenStreaming({
-          systemPrompt,
-          messages,
-          apiKey: zenKey,
-          model: zenModel,
-          baseUrl: zenBaseUrl,
-          callbacks
-        })
-
-        if (accumulatedText.trim()) return accumulatedText
-      } catch {
-        continue
-      }
-    }
-  }
-
-  const githubToken = process.env.GITHUB_TOKEN
-
-  if (githubToken) {
-    accumulatedText = ''
-
-    try {
-      await callGithubModelsStreaming({
-        systemPrompt,
-        messages,
-        apiKey: githubToken,
-        callbacks
-      })
-
-      if (accumulatedText.trim()) return accumulatedText
-    } catch {
-      // fallback
-    }
-  }
-
-  const groqApiKey = process.env.GROQ_API_KEY
-
-  if (groqApiKey) {
-    accumulatedText = ''
-
-    try {
-      await callGroqStreaming({
-        systemPrompt,
-        messages,
-        apiKey: groqApiKey,
-        callbacks
-      })
-
-      if (accumulatedText.trim()) return accumulatedText
-    } catch {
-      // fallback
-    }
-  }
-
-  const cerebrasApiKey = process.env.CEREBRAS_API_KEY
-
-  if (cerebrasApiKey) {
-    accumulatedText = ''
-
-    try {
-      await callCerebrasStreaming({
-        systemPrompt,
-        messages,
-        apiKey: cerebrasApiKey,
-        callbacks
-      })
-
-      if (accumulatedText.trim()) return accumulatedText
-    } catch {
-      // fallback
-    }
-  }
-
-  try {
-    accumulatedText = ''
-
-    await callPollinationsStreaming({
-      systemPrompt,
-      messages,
-      callbacks
-    })
-
-    if (accumulatedText.trim()) return accumulatedText
-  } catch {
-    // fallback
-  }
-
-  const geminiApiKey = process.env.GEMINI_API_KEY
-
-  if (process.env.AI_PROVIDER === 'gemini' && geminiApiKey) {
-    accumulatedText = ''
-
-    try {
-      await callGeminiStreaming({
-        systemPrompt,
-        messages,
-        apiKey: geminiApiKey,
-        callbacks
-      })
-
-      if (accumulatedText.trim()) return accumulatedText
-    } catch {
-      // fallback
-    }
-  }
-
-  throw new Error('No fue posible obtener respuesta de los proveedores de IA disponibles.')
+  return accumulatedText
 }
 
 // =============================================================================

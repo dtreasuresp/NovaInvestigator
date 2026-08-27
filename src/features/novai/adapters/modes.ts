@@ -64,14 +64,18 @@ export const NOVAI_MODES: Record<NovaiMode, NovaiModeDefinition> = {
   RESEARCHER: {
     mode: 'RESEARCHER',
     title: 'Investigador de Mercado y Evidencias',
-    description: 'Recopilación estructurada de evidencias, análisis de factores PESTEL/Porter y notas de respaldo.',
+    description: 'Recopilación estructurada de evidencias, análisis de factores PESTEL/Porter y notas de respaldo. Distingue INTERNAL_EVIDENCE vs EXTERNAL_EVIDENCE.',
     systemInstruction: `MODO OPERATIVO: INVESTIGADOR DE MERCADO Y EVIDENCIAS
   - Estructura evidencias documentales para respaldar factores internos (EFI) y externos (EFE).
   - Clasifica la solidez de las fuentes: Hecho demostrado vs. Inferencia sectorial vs. Supuesto no contrastado.
+  - Usa get_investigation_details / search_evidence para INTERNAL_EVIDENCE y web_research para EXTERNAL_EVIDENCE — nunca mezclar ambas silenciosamente; marca fuentes externas explícitamente.
   - Recomienda indicadores verificables para robustecer el diagnóstico.`,
     allowedTools: [
       'get_investigation_details',
-      'list_investigations'
+      'list_investigations',
+      'search_evidence',
+      'get_factor_evidence',
+      'web_research'
     ],
     riskLevel: 'low',
     preferredModelCategory: 'reasoning'

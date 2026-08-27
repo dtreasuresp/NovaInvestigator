@@ -96,40 +96,40 @@ export class NovaiModelRouter {
     const requiredCapabilities = requiredCapabilitiesForCategory(category)
     const tier: ModelTier = isPremium ? 'PREMIUM' : 'FREE'
 
-    let recommendedOpenRouterModel = 'meta-llama/llama-3.1-8b-instruct:free'
-    let preferredProvider: ModelRouteDecision['preferredProvider'] = process.env.GEMINI_API_KEY
-      ? 'gemini'
-      : (process.env.OPENROUTER_API_KEY ? 'openrouter' : 'opencode-zen')
+    let recommendedOpenRouterModel = 'openrouter/free'
+    let preferredProvider: ModelRouteDecision['preferredProvider'] = process.env.OPENROUTER_API_KEY
+      ? 'openrouter'
+      : (process.env.GEMINI_API_KEY ? 'gemini' : 'opencode-zen')
     let rationale = `Modo ${mode} asignado.`
 
     switch (category) {
       case 'coding':
         // DEVELOPER — Mejor coding con tool calling
-        recommendedOpenRouterModel = 'qwen/qwen-2.5-coder-32b-instruct:free'
-        preferredProvider = process.env.GEMINI_API_KEY ? 'gemini' : (process.env.OPENROUTER_API_KEY ? 'openrouter' : 'opencode-zen')
-        rationale = 'Desarrollo técnico — Qwen 2.5 Coder 32B / Gemini 3.6 Flash con tool calling nativo.'
+        recommendedOpenRouterModel = 'qwen/qwen-2.5-72b-instruct:free'
+        preferredProvider = process.env.OPENROUTER_API_KEY ? 'openrouter' : (process.env.GEMINI_API_KEY ? 'gemini' : 'opencode-zen')
+        rationale = 'Desarrollo técnico — Qwen 2.5 72B / Gemini 2.0 Flash con tool calling nativo.'
         break
 
       case 'reasoning':
         // CONSULTANT, ARCHITECT — Razonamiento profundo y auditoría
-        recommendedOpenRouterModel = 'nvidia/llama-3.1-nemotron-70b-instruct:free'
-        preferredProvider = process.env.GEMINI_API_KEY ? 'gemini' : (process.env.OPENROUTER_API_KEY ? 'openrouter' : 'opencode-zen')
-        rationale = 'Razonamiento estratégico — Gemini 3.6 / Llama 3.1 Nemotron 70B.'
+        recommendedOpenRouterModel = 'nvidia/nemotron-3-super-120b-a12b:free'
+        preferredProvider = process.env.OPENROUTER_API_KEY ? 'openrouter' : (process.env.GEMINI_API_KEY ? 'gemini' : 'opencode-zen')
+        rationale = 'Razonamiento estratégico — Nemotron 3 Super 120B / Gemini 2.0 Flash.'
         break
 
       case 'fast':
         // OPERATOR, CHAT — Ultra-rápido, alta fluidez
-        recommendedOpenRouterModel = 'meta-llama/llama-3.1-8b-instruct:free'
-        preferredProvider = process.env.GEMINI_API_KEY ? 'gemini' : (process.env.OPENROUTER_API_KEY ? 'openrouter' : 'opencode-zen')
-        rationale = 'Consulta general y navegación — Gemini 3.6 Flash / Llama 3.1 8B.'
+        recommendedOpenRouterModel = 'mistralai/mistral-small-24b-instruct-2501:free'
+        preferredProvider = process.env.OPENROUTER_API_KEY ? 'openrouter' : (process.env.GEMINI_API_KEY ? 'gemini' : 'opencode-zen')
+        rationale = 'Consulta general y navegación — Mistral Small 24B / Gemini 2.0 Flash.'
         break
 
       case 'balanced':
       default:
         // ANALYST, RESEARCHER — Equilibrado
-        recommendedOpenRouterModel = 'meta-llama/llama-3.1-8b-instruct:free'
-        preferredProvider = process.env.GEMINI_API_KEY ? 'gemini' : (process.env.OPENROUTER_API_KEY ? 'openrouter' : 'opencode-zen')
-        rationale = 'Tarea analítica y métricas — Gemini 3.6 Flash / Qwen 2.5.'
+        recommendedOpenRouterModel = 'deepseek/deepseek-chat:free'
+        preferredProvider = process.env.OPENROUTER_API_KEY ? 'openrouter' : (process.env.GEMINI_API_KEY ? 'gemini' : 'opencode-zen')
+        rationale = 'Tarea analítica y métricas — DeepSeek Chat / Qwen 2.5.'
         break
     }
 

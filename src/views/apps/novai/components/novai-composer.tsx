@@ -92,40 +92,40 @@ export function NovaiComposer({
               : 'Escribe tu consulta para NovAi...'
 
   return (
-    <div className='w-full max-w-4xl mx-auto px-4 pb-3 pt-1 shrink-0'>
+    <div className='w-full max-w-3xl mx-auto px-3 sm:px-4 pb-3 pt-1 shrink-0'>
       {/* Quota or Permission Alert */}
       {isNotAllowed ? (
-        <div className='mb-3 p-3 rounded-2xl border border-destructive/30 bg-destructive/10 text-xs text-destructive flex items-center justify-between shadow-xs'>
+        <div className='mb-2.5 p-3 rounded-2xl border border-destructive/30 bg-destructive/10 text-xs text-destructive flex items-center justify-between shadow-xs'>
           <div className='flex items-center gap-2'>
             <ShieldAlert className='size-4 shrink-0' />
             <span>NovAi no está incluido en tu plan actual. Contacta al administrador para activarlo.</span>
           </div>
         </div>
       ) : isQuotaExhausted ? (
-        <div className='mb-3 p-3 rounded-2xl border border-amber-200 dark:border-amber-900/50 bg-amber-50/70 dark:bg-amber-950/20 text-xs text-amber-800 dark:text-amber-300 flex items-center gap-2 shadow-xs'>
+        <div className='mb-2.5 p-3 rounded-2xl border border-amber-200 dark:border-amber-900/50 bg-amber-50/70 dark:bg-amber-950/20 text-xs text-amber-800 dark:text-amber-300 flex items-center gap-2 shadow-xs'>
           <Lock className='size-4 shrink-0 text-amber-600' />
           <span>Has alcanzado el límite de consultas de NovAi. Se renovará según el período de tu plan.</span>
         </div>
       ) : null}
 
-      {/* Official AI Elements PromptInput */}
+      {/* PromptInput with single clean container styling */}
       <PromptInput
         onSubmit={(_msg, _evt) => {
           if (!isLoading && input.trim() && !isDisabled) {
             onSend()
           }
         }}
-        className='relative flex flex-col rounded-2xl border border-border/80 bg-background/95 shadow-lg backdrop-blur-md transition-all focus-within:border-primary/50 focus-within:ring-2 focus-within:ring-primary/10 dark:bg-card/95'
+        className='w-full [&_[data-slot=input-group]]:rounded-2xl [&_[data-slot=input-group]]:border-border/70 [&_[data-slot=input-group]]:bg-card/90 dark:[&_[data-slot=input-group]]:bg-card/90 [&_[data-slot=input-group]]:shadow-sm [&_[data-slot=input-group]]:transition-all'
       >
         <PromptInputTextarea
           value={input}
           onChange={e => setInput(e.target.value)}
           placeholder={placeholder}
-          className='w-full resize-none border-0 bg-transparent px-4 pt-3.5 pb-2 text-sm placeholder:text-muted-foreground/70 focus-visible:ring-0 focus-visible:outline-none min-h-[52px] max-h-[180px] leading-relaxed'
+          className='w-full resize-none border-0 bg-transparent px-4 pt-3.5 pb-2 text-sm placeholder:text-muted-foreground/60 focus-visible:ring-0 focus-visible:outline-none min-h-[48px] max-h-[180px] leading-relaxed'
         />
 
-        {/* Composer Controls Bar with AI Elements PromptInputFooter */}
-        <PromptInputFooter className='flex items-center justify-between px-3 pb-2.5 pt-1 gap-2 flex-wrap sm:flex-nowrap'>
+        {/* Composer Controls Bar */}
+        <PromptInputFooter className='flex items-center justify-between px-3 pb-2.5 pt-0.5 gap-2 flex-wrap sm:flex-nowrap'>
           <PromptInputTools className='flex items-center gap-2 flex-wrap'>
             {/* 7 Operational Modes Selector */}
             {setSelectedMode && (
@@ -135,9 +135,9 @@ export function NovaiComposer({
                     <Button
                       size='sm'
                       variant='ghost'
-                      className='h-7 gap-1.5 rounded-full bg-primary/10 px-2.5 text-xs font-semibold text-primary hover:bg-primary/20 cursor-pointer'
+                      className='h-7 gap-1.5 rounded-full border border-border/50 bg-background/80 hover:bg-muted px-2.5 text-xs font-medium text-foreground cursor-pointer shadow-2xs'
                     >
-                      <CurrentModeIcon className='size-3.5' />
+                      <CurrentModeIcon className='size-3.5 text-muted-foreground' />
                       <span className='max-w-[120px] truncate'>{selectedMode}</span>
                     </Button>
                   }
@@ -174,15 +174,15 @@ export function NovaiComposer({
             {quota && (
               <Badge
                 variant={!quota.allowed || isQuotaExhausted ? 'destructive' : 'secondary'}
-                className='h-7 px-2.5 gap-1.5 rounded-full text-[11px] font-mono border border-border/50 shadow-2xs shrink-0'
+                className='h-7 px-2.5 gap-1.5 rounded-full text-[11px] font-mono border border-border/40 shadow-2xs shrink-0'
               >
                 <Zap className='size-3 text-amber-500 shrink-0' />
                 <span>
                   {!quota.allowed
-                    ? 'Sin IA'
+                    ? 'Sin cuota'
                     : quota.limitValue === null
                       ? 'Ilimitado'
-                      : `${quota.remaining ?? 0} / ${quota.limitValue} mes`}
+                      : `${quota.remaining ?? 0} / ${quota.limitValue}`}
                 </span>
                 {dailyLim !== null && (
                   <span className='opacity-75 text-[10px] pl-1 border-l border-current/20'>
@@ -191,10 +191,6 @@ export function NovaiComposer({
                 )}
               </Badge>
             )}
-
-            <span className='hidden xl:inline-block text-[11px] text-muted-foreground/60'>
-              Enter ↵ para enviar, Shift+Enter para nueva línea
-            </span>
           </PromptInputTools>
 
           {/* Action Button via PromptInputSubmit with status / onStop */}
@@ -211,8 +207,9 @@ export function NovaiComposer({
 
       {/* Sidelined Disclaimer */}
       <p className='mt-2 text-center text-[11px] text-muted-foreground/60 select-none'>
-        NovAi es un asistente con IA. Verifica la formulación metodológica y los datos comerciales.
+        NovAi puede cometer errores. Verifica la formulación metodológica y los datos estratégicos.
       </p>
     </div>
   )
 }
+

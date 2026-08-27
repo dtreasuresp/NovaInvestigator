@@ -44,7 +44,8 @@ const TOOL_LABELS: Record<string, string> = {
   get_kanban_board_summary: 'Resumen Tablero Kanban',
   list_workspace_members_and_teams: 'Consultar Miembros y Equipos',
   get_tenant_billing_and_quota_info: 'Consultar Cuotas y Facturación',
-  record_strategic_memory: 'Guardar Memoria Estratégica'
+  record_strategic_memory: 'Guardar Memoria Estratégica',
+  web_research: 'Búsqueda Web Externa (EXTERNAL_EVIDENCE)'
 }
 
 function RenderStructuredToolResult({ invocation }: { invocation: ToolInvocationItem }) {
@@ -207,6 +208,59 @@ function RenderStructuredToolResult({ invocation }: { invocation: ToolInvocation
     )
   }
 
+  // 8. External Web Research (`web_research`) — EXTERNAL_EVIDENCE separado de INTERNAL
+  if (invocation.toolName === 'web_research') {
+    if (result.status === 'EXTERNAL_RESEARCH_DISABLED') {
+      return (
+        <div className='rounded-lg bg-amber-500/10 border border-amber-500/30 p-2.5 text-xs text-amber-700 dark:text-amber-300 flex items-start gap-2'>
+          <AlertCircle className='size-4 shrink-0 mt-0.5' />
+          <div>
+            <p className='font-medium'>Búsqueda externa deshabilitada</p>
+            <p className='opacity-80 mt-0.5'>{String(result.message || 'Configure TAVILY_API_KEY o BRAVE_SEARCH_API_KEY.')}</p>
+            <p className='opacity-60 mt-1 text-[10px]'>INTERNAL_EVIDENCE → use search_evidence / get_factor_evidence</p>
+          </div>
+        </div>
+      )
+    }
+
+    if (Array.isArray(result.results) && result.results.length > 0) {
+      return (
+        <div className='space-y-1.5'>
+          <div className='flex items-center gap-1.5 text-[10px] font-medium text-muted-foreground uppercase tracking-widest'>
+            <span className='size-1.5 rounded-full bg-emerald-500 animate-pulse' />
+            EXTERNAL_EVIDENCE · {String(result.providerUsed || 'externo')} · {result.results.length} fuente(s)
+          </div>
+          {result.results.slice(0, 3).map((src: any, idx: number) => (
+            <NovaiSourceCard
+              key={idx}
+              source={{
+                sourceType: 'external',
+                name: src.title || src.url,
+                url: src.url,
+                excerpt: src.snippet,
+                retrievedAt: src.retrievedAt
+              }}
+            />
+          ))}
+          {result.results.length > 3 && (
+            <p className='text-[10px] text-muted-foreground text-center'>
+              + {result.results.length - 3} fuente(s) externa(s) adicional(es)
+            </p>
+          )}
+        </div>
+      )
+    }
+
+    if (result.status === 'EXTERNAL_RESEARCH_ERROR' || result.status === 'EXTERNAL_RESEARCH_TIMEOUT') {
+      return (
+        <div className='rounded-lg bg-destructive/10 border border-destructive/30 p-2.5 text-xs text-destructive flex items-center gap-2'>
+          <AlertCircle className='size-4 shrink-0' />
+          <span>{String(result.message || result.error || 'Error en búsqueda externa')}</span>
+        </div>
+      )
+    }
+  }
+
   return null
 }
 
@@ -271,42 +325,31 @@ export function NovaiMessageItem({ message, isLast, isLoading, onRegenerate }: N
 
   if (isUser) {
     return (
-      <Message from='user' className='max-w-3xl mx-auto w-full'>
-        <div className='flex items-start justify-end gap-3 w-full group'>
-          <MessageContent className='max-w-[85%] sm:max-w-[75%] rounded-2xl rounded-tr-xs bg-primary px-4 py-3 text-sm text-primary-foreground shadow-xs'>
+      <Message from='user' className='max-w-3xl mx-auto w-full py-1'>
+        <div className='flex items-start justify-end gap-2.5 w-full group'>
+          <MessageContent className='max-w-[85%] sm:max-w-[75%] rounded-[20px] rounded-br-xs bg-muted/80 dark:bg-[#2f2f2f] px-4 py-2.5 text-sm text-foreground shadow-2xs border border-border/40'>
             <p className='whitespace-pre-wrap leading-relaxed'>{message.content}</p>
           </MessageContent>
-          <div className='size-8 rounded-full bg-muted border border-border/80 flex items-center justify-center text-muted-foreground shrink-0 mt-0.5 shadow-2xs'>
-            <User className='size-4' />
-          </div>
         </div>
       </Message>
     )
   }
 
   return (
-    <Message from='assistant' className='max-w-3xl mx-auto w-full animate-in fade-in duration-300'>
-      <div className='flex items-start gap-3.5 w-full group'>
-        {/* NovAi Stylized Avatar */}
-        <div className='relative size-8 rounded-xl bg-gradient-to-tr from-purple-600 to-indigo-500 text-white flex items-center justify-center shrink-0 shadow-md border border-white/20 mt-0.5'>
-          <Sparkles className='size-4 animate-pulse' />
+    <Message from='assistant' className='max-w-3xl mx-auto w-full py-2'>
+      <div className='flex items-start gap-3 w-full group'>
+        {/* NovAi Brand Icon */}
+        <div className='size-7 rounded-lg bg-foreground text-background flex items-center justify-center shrink-0 mt-1 shadow-2xs'>
+          <Sparkles className='size-4' />
         </div>
 
-        <div className='flex-1 space-y-2.5 min-w-0'>
-          {/* Message Header */}
-          <div className='flex items-center gap-2'>
-            <span className='text-xs font-bold text-foreground'>NovAi</span>
-            <span className='text-[10px] font-mono text-muted-foreground'>
-              {new Date(message.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-            </span>
-          </div>
-
+        <div className='flex-1 space-y-2 min-w-0'>
           {/* 1. Agent Work Trace using AI Elements Task */}
           {message.agentTraces && message.agentTraces.length > 0 && (
             <NovaiTraceViewer traces={message.agentTraces} />
           )}
 
-          {/* 2. Structured Domain Cards from SSE (if any direct card events) */}
+          {/* 2. Structured Domain Cards from SSE */}
           {message.evidences && message.evidences.length > 0 && (
             <div className='space-y-1.5'>
               {message.evidences.map((ev, i) => (
@@ -348,44 +391,44 @@ export function NovaiMessageItem({ message, isLast, isLoading, onRegenerate }: N
             </div>
           )}
 
-          {/* 4. Model Reasoning / Thinking Trace (if any) */}
+          {/* 4. Model Reasoning / Thinking Trace */}
           {message.reasoning && (
             <Reasoning isStreaming={message.isStreaming} className='mb-2'>
               <ReasoningTrigger />
-              <ReasoningContent className='text-xs text-muted-foreground leading-relaxed whitespace-pre-wrap bg-muted/20 p-3 rounded-lg border border-border/60'>
+              <ReasoningContent className='text-xs text-muted-foreground leading-relaxed whitespace-pre-wrap bg-muted/20 p-3 rounded-xl border border-border/60'>
                 {message.reasoning}
               </ReasoningContent>
             </Reasoning>
           )}
 
-          {/* 5. Message Body with AI Elements MessageResponse */}
-          <MessageContent className='rounded-2xl rounded-tl-xs border border-border/70 bg-card/80 px-4 py-3.5 shadow-2xs backdrop-blur-xs'>
+          {/* 5. Message Body with AI Elements MessageResponse (Clean Markdown) */}
+          <div className='text-sm text-foreground leading-relaxed'>
             {message.content ? (
               <MessageResponse>{message.content}</MessageResponse>
             ) : isLoading && isLast && (!message.toolInvocations || message.toolInvocations.length === 0) ? (
               <div className='flex items-center gap-2 text-xs text-muted-foreground py-1'>
                 <RefreshCw className='size-3.5 animate-spin text-primary' />
-                <span>NovAi está formulando la respuesta...</span>
+                <span>Formulando respuesta...</span>
               </div>
             ) : null}
 
-            {/* Streaming Cursor */}
+            {/* Streaming Indicator */}
             {message.isStreaming && (
-              <span className='inline-block size-2 rounded-full bg-primary animate-ping ml-1' />
+              <span className='inline-block size-2 rounded-full bg-foreground animate-pulse ml-1 align-middle' />
             )}
 
             {/* Error notice */}
             {message.error && (
-              <div className='mt-2.5 p-2.5 rounded-lg border border-destructive/30 bg-destructive/10 text-xs text-destructive flex items-center gap-2'>
+              <div className='mt-2.5 p-2.5 rounded-xl border border-destructive/30 bg-destructive/10 text-xs text-destructive flex items-center gap-2'>
                 <AlertCircle className='size-4 shrink-0' />
                 <span>{message.error}</span>
               </div>
             )}
-          </MessageContent>
+          </div>
 
           {/* Assistant Actions Toolbar using AI Elements MessageActions */}
           {!message.isStreaming && message.content && (
-            <MessageActions className='opacity-0 group-hover:opacity-100 transition-opacity text-xs gap-1'>
+            <MessageActions className='opacity-0 group-hover:opacity-100 transition-opacity text-xs gap-1 pt-1'>
               <Tooltip>
                 <TooltipTrigger
                   render={
@@ -394,7 +437,7 @@ export function NovaiMessageItem({ message, isLast, isLoading, onRegenerate }: N
                       variant='ghost'
                       onClick={handleCopy}
                       aria-label='Copiar respuesta'
-                      className='text-muted-foreground hover:text-foreground'
+                      className='size-7 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted'
                     />
                   }
                 >
@@ -414,7 +457,7 @@ export function NovaiMessageItem({ message, isLast, isLoading, onRegenerate }: N
                         variant='ghost'
                         onClick={onRegenerate}
                         aria-label='Regenerar respuesta'
-                        className='text-muted-foreground hover:text-foreground'
+                        className='size-7 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted'
                       />
                     }
                   >

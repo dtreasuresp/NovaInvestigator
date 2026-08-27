@@ -30,6 +30,9 @@ import { listWorkspaceMembersTool } from './organization/list-workspace-members'
 import { getBillingQuotaTool } from './billing/get-billing-quota'
 import { recordStrategicMemoryTool } from './memory/record-strategic-memory'
 
+// 5. Research & External Evidence (spec §23)
+import { webResearchTool } from './research/web-research'
+
 export * from './types'
 export { listInvestigationsTool } from './investigations/list-investigations'
 export { getActiveInvestigationTool } from './investigations/get-active-investigation'
@@ -55,6 +58,8 @@ export { getKanbanBoardSummaryTool } from './kanban/get-kanban-board-summary'
 export { listWorkspaceMembersTool } from './organization/list-workspace-members'
 export { getBillingQuotaTool } from './billing/get-billing-quota'
 export { recordStrategicMemoryTool } from './memory/record-strategic-memory'
+
+export { webResearchTool } from './research/web-research'
 
 /**
  * Catálogo maestro de todas las herramientas modulares registradas de NovAi.
@@ -87,7 +92,10 @@ export const NOVAI_ALL_MODULAR_TOOLS: Record<string, NovaiModularTool> = {
   get_kanban_board_summary: getKanbanBoardSummaryTool as unknown as NovaiModularTool,
   list_workspace_members_and_teams: listWorkspaceMembersTool as unknown as NovaiModularTool,
   get_tenant_billing_and_quota_info: getBillingQuotaTool as unknown as NovaiModularTool,
-  record_strategic_memory: recordStrategicMemoryTool as unknown as NovaiModularTool
+  record_strategic_memory: recordStrategicMemoryTool as unknown as NovaiModularTool,
+
+  // Research & External Evidence (spec §23) — EXTERNAL_EVIDENCE separado de INTERNAL_EVIDENCE
+  web_research: webResearchTool as unknown as NovaiModularTool
 }
 
 /**

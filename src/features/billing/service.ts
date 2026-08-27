@@ -416,44 +416,7 @@ export async function getBillingSummary(): Promise<BillingSummary> {
 
   const billingPlan = plan ? toBillingPlan(plan, entitlements) : null
 
-  let effectiveInvoices = invoiceRows
-
-  if (effectiveInvoices.length === 0) {
-    try {
-      const customer = await findBillingCustomerByTenantId(actor.client, actor.tenantId)
-
-      if (customer?.provider_customer_id) {
-        const stripe = getStripe()
-
-        const stripeInvoices = await stripe.invoices.list({
-          customer: customer.provider_customer_id,
-          limit: 20
-        })
-
-        if (stripeInvoices.data.length > 0) {
-          for (const inv of stripeInvoices.data) {
-            await upsertInvoiceRow(actor.client, {
-              tenantId: actor.tenantId,
-              providerInvoiceId: inv.id,
-              status: inv.status === 'paid' ? 'paid' : inv.status === 'void' ? 'void' : 'open',
-              number: inv.number,
-              amountMinor: inv.amount_paid || inv.total || 0,
-              taxAmountMinor: getStripeInvoiceTaxAmountMinor(inv),
-              taxId: getStripeInvoiceTaxId(inv),
-              currency: inv.currency,
-              issuedAt: inv.created ? new Date(inv.created * 1000).toISOString() : null,
-              paidAt: inv.status === 'paid' && inv.created ? new Date(inv.created * 1000).toISOString() : null,
-              hostedInvoiceUrl: inv.hosted_invoice_url ?? null
-            })
-          }
-
-          effectiveInvoices = await listRecentInvoicesForTenant(actor.client, actor.tenantId, 20)
-        }
-      }
-    } catch {
-      // Ignore Stripe network errors during fallback sync
-    }
-  }
+  const effectiveInvoices = invoiceRows
 
   return {
     accessMode: commercialAccess.source === 'subscription'

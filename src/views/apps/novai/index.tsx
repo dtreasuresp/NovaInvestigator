@@ -28,6 +28,44 @@ function generateId(): string {
   return `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`
 }
 
+let inFlightQuotaPromise: Promise<AiQuotaInfo | null> | null = null
+let cachedQuota: { data: AiQuotaInfo; timestamp: number } | null = null
+const QUOTA_CACHE_TTL_MS = 5000
+
+export async function fetchNovaiQuotaShared(force = false): Promise<AiQuotaInfo | null> {
+  const now = Date.now()
+
+  if (!force && cachedQuota && now - cachedQuota.timestamp < QUOTA_CACHE_TTL_MS) {
+    return cachedQuota.data
+  }
+
+  if (inFlightQuotaPromise) {
+    return inFlightQuotaPromise
+  }
+
+  inFlightQuotaPromise = (async () => {
+    try {
+      const res = await fetch('/api/novai/quota', { cache: 'no-store' })
+
+      if (res.ok) {
+        const data = (await res.json()) as AiQuotaInfo
+
+        cachedQuota = { data, timestamp: Date.now() }
+
+        return data
+      }
+
+      return null
+    } catch {
+      return null
+    } finally {
+      inFlightQuotaPromise = null
+    }
+  })()
+
+  return inFlightQuotaPromise
+}
+
 export default function NovAiView() {
   const { locale } = useI18n()
   const { user } = useCurrentUser()
@@ -36,6 +74,7 @@ export default function NovAiView() {
   const [activeThreadId, setActiveThreadId] = useState<string | null>(null)
   const [input, setInput] = useState('')
   const [isLoading, setIsLoading] = useState(false)
+  const [isLoadingThreadMessages, setIsLoadingThreadMessages] = useState(false)
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false)
 
   const [quota, setQuota] = useState<AiQuotaInfo | null>(null)
@@ -54,151 +93,171 @@ export default function NovAiView() {
         const data = await res.json()
 
         if (data.messages && Array.isArray(data.messages)) {
-          const mappedMsgs: ChatMessage[] = data.messages.map((m: { id: string; role: string; content: string; created_at: string }) => ({
+          const mappedMsgs: ChatMessage[] = data.messages.map((m: { id: string; role: string; content: string; created_at?: string; createdAt?: string }) => ({
             id: m.id,
             role: m.role as 'user' | 'assistant' | 'system',
             content: m.content,
-            timestamp: m.created_at
+            timestamp: m.created_at || m.createdAt || new Date().toISOString()
           }))
 
           setThreads(prev =>
-            prev.map(t => (t.id === threadId ? { ...t, messages: mappedMsgs } : t))
+            prev.map(t => {
+              if (t.id !== threadId) return t
+
+              // Preserve rich trace and tool metadata if already present in active session
+              if (t.messages && t.messages.length > 0) {
+                const merged = mappedMsgs.map(newMsg => {
+                  const existingMsg = t.messages.find(em => em.id === newMsg.id || (em.role === newMsg.role && em.content === newMsg.content))
+
+                  if (existingMsg) {
+                    return {
+                      ...newMsg,
+                      agentTraces: existingMsg.agentTraces,
+                      toolInvocations: existingMsg.toolInvocations,
+                      evidences: existingMsg.evidences,
+                      audits: existingMsg.audits,
+                      calculations: existingMsg.calculations,
+                      sources: existingMsg.sources,
+                      reasoning: existingMsg.reasoning
+                    }
+                  }
+
+                  return newMsg
+                })
+
+                return { ...t, messages: merged }
+              }
+
+              return { ...t, messages: mappedMsgs }
+            })
           )
         }
       }
     } catch {
-      // fallback
+      // network error
+    } finally {
+      setIsLoadingThreadMessages(false)
     }
   }, [])
 
-  // 1. Load threads from DB on mount (with localStorage fallback) and collapse sidebar on mobile
+  // 1. Load canonical conversations from Supabase on mount
+  const loadConversations = useCallback(async () => {
+    try {
+      const res = await fetch('/api/novai/conversations', { cache: 'no-store' })
+
+      if (res.ok) {
+        const data = await res.json()
+
+        if (Array.isArray(data.conversations) && data.conversations.length > 0) {
+          const mapped: ChatThread[] = data.conversations.map((c: { id: string; title?: string; app_context?: string; appContext?: string; mode?: string; created_at?: string; createdAt?: string; updated_at?: string; updatedAt?: string }) => ({
+            id: c.id,
+            title: c.title || 'Nueva conversación',
+            createdAt: c.created_at || c.createdAt || new Date().toISOString(),
+            updatedAt: c.updated_at || c.updatedAt || new Date().toISOString(),
+            context: { app: ((c.app_context || c.appContext || 'general') as NovaiContext['app']), mode: (c.mode || 'CHAT') as NovaiMode },
+            messages: []
+          }))
+
+          setThreads(prev => {
+            return mapped.map(m => {
+              const existing = prev.find(p => p.id === m.id)
+
+              return existing && existing.messages && existing.messages.length > 0
+                ? { ...m, messages: existing.messages }
+                : m
+            })
+          })
+
+          setActiveThreadId(prevActive => {
+            if (prevActive && mapped.some(m => m.id === prevActive)) {
+              return prevActive
+            }
+
+            const savedId = typeof window !== 'undefined' ? localStorage.getItem('novastore:novai_active_id') : null
+            const initialId = (savedId && mapped.some(m => m.id === savedId)) ? savedId : mapped[0].id
+            const targetThread = mapped.find(m => m.id === initialId) || mapped[0]
+
+            if (targetThread) {
+              setContextApp(targetThread.context.app)
+            }
+
+            void fetchMessagesForThread(initialId)
+
+            return initialId
+          })
+
+          return
+        } else if (Array.isArray(data.conversations) && data.conversations.length === 0) {
+          // Create initial canonical thread in DB
+          const createRes = await fetch('/api/novai/conversations', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ title: 'Nueva conversación', appContext: 'general', mode: 'CHAT' })
+          })
+
+          if (createRes.ok) {
+            const createData = await createRes.json()
+
+            if (createData.conversation) {
+              const initT: ChatThread = {
+                id: createData.conversation.id,
+                title: createData.conversation.title || 'Nueva conversación',
+                createdAt: createData.conversation.created_at || createData.conversation.createdAt || new Date().toISOString(),
+                updatedAt: createData.conversation.updated_at || createData.conversation.updatedAt || new Date().toISOString(),
+                context: { app: 'general', mode: 'CHAT' },
+                messages: []
+              }
+
+              setThreads([initT])
+              setActiveThreadId(initT.id)
+
+              return
+            }
+          }
+        }
+      }
+    } catch {
+      // network error
+    }
+  }, [fetchMessagesForThread])
+
   useEffect(() => {
     if (typeof window !== 'undefined' && window.innerWidth < 768) {
       setIsSidebarCollapsed(true)
     }
 
-    let isMounted = true
+    void loadConversations()
+  }, [loadConversations])
 
-    const loadConversations = async () => {
-      try {
-        const res = await fetch('/api/novai/conversations', { cache: 'no-store' })
+  // 2. Multi-pestaña: sincronización de eventos de conversaciones
+  useEffect(() => {
+    if (typeof window === 'undefined' || typeof BroadcastChannel === 'undefined') return
 
-        if (res.ok) {
-          const data = await res.json()
+    const channel = new BroadcastChannel('novastore:novai-conversations')
 
-          if (Array.isArray(data.conversations) && data.conversations.length > 0) {
-            const mapped: ChatThread[] = data.conversations.map((c: { id: string; title?: string; app_context?: string; mode?: string; created_at: string; updated_at: string }) => ({
-              id: c.id,
-              title: c.title || 'Nueva conversación',
-              createdAt: c.created_at,
-              updatedAt: c.updated_at,
-              context: { app: (c.app_context || 'general') as NovaiContext['app'], mode: (c.mode || 'CHAT') as NovaiMode },
-              messages: []
-            }))
-
-            if (isMounted) {
-              setThreads(mapped)
-              setActiveThreadId(mapped[0].id)
-              setContextApp(mapped[0].context.app)
-              void fetchMessagesForThread(mapped[0].id)
-
-              return
-            }
-          } else if (Array.isArray(data.conversations) && data.conversations.length === 0) {
-            // Create first thread in DB
-            const createRes = await fetch('/api/novai/conversations', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ title: 'Nueva conversación', appContext: 'general', mode: 'CHAT' })
-            })
-
-            if (createRes.ok) {
-              const createData = await createRes.json()
-
-              if (createData.conversation && isMounted) {
-                const initT: ChatThread = {
-                  id: createData.conversation.id,
-                  title: createData.conversation.title || 'Nueva conversación',
-                  createdAt: createData.conversation.created_at,
-                  updatedAt: createData.conversation.updated_at,
-                  context: { app: 'general', mode: 'CHAT' },
-                  messages: []
-                }
-
-                setThreads([initT])
-                setActiveThreadId(initT.id)
-
-                return
-              }
-            }
-          }
+    channel.onmessage = (event: MessageEvent<{ action: string; conversationId?: string }>) => {
+      if (event.data?.action === 'refresh') {
+        void loadConversations()
+      } else if (event.data?.action === 'message-added' && event.data.conversationId) {
+        if (event.data.conversationId === activeThreadId && !isLoading) {
+          void fetchMessagesForThread(event.data.conversationId)
         }
-      } catch {
-        // network error fallback
-      }
-
-      // Fallback to localStorage if API unavailable
-      try {
-        const raw = localStorage.getItem(STORAGE_KEY)
-
-        if (raw) {
-          const parsed = JSON.parse(raw) as ChatThread[]
-
-          if (Array.isArray(parsed) && parsed.length > 0 && isMounted) {
-            setThreads(parsed)
-            setActiveThreadId(parsed[0].id)
-            setContextApp(parsed[0].context.app)
-
-            return
-          }
-        }
-      } catch {
-        // ignore
-      }
-
-      if (isMounted) {
-        const initialThread: ChatThread = {
-          id: generateId(),
-          title: 'Nueva conversación',
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-          context: { app: 'general' },
-          messages: []
-        }
-
-        setThreads([initialThread])
-        setActiveThreadId(initialThread.id)
       }
     }
-
-    void loadConversations()
 
     return () => {
-      isMounted = false
+      channel.close()
     }
-  }, [fetchMessagesForThread])
+  }, [loadConversations, activeThreadId, isLoading, fetchMessagesForThread])
 
-  // 2. Persist threads to localStorage on changes
-  const saveThreads = useCallback((newThreads: ChatThread[]) => {
-    setThreads(newThreads)
-
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(newThreads))
-    } catch {
-      // ignore storage quota errors
-    }
-  }, [])
-
-  // 3. Quota Refresh
-  const refreshQuota = useCallback(async () => {
+  // 3. Quota Refresh (con deduplicación en vuelo y caché de 5s para evitar ráfagas)
+  const refreshQuota = useCallback(async (force = false) => {
     setIsLoadingQuota(true)
 
     try {
-      const res = await fetch('/api/novai/quota', { cache: 'no-store' })
+      const data = await fetchNovaiQuotaShared(force)
 
-      if (res.ok) {
-        const data = (await res.json()) as AiQuotaInfo
-
+      if (data) {
         setQuota(data)
 
         try {
@@ -211,8 +270,6 @@ export default function NovAiView() {
           // ignore
         }
       }
-    } catch {
-      // ignore
     } finally {
       setIsLoadingQuota(false)
     }
@@ -238,18 +295,14 @@ export default function NovAiView() {
 
     const handleVisibility = () => {
       if (document.visibilityState === 'visible') {
-        void refreshQuota()
+        void refreshQuota(false)
       }
     }
 
-    const handleFocus = () => void refreshQuota()
-
     document.addEventListener('visibilitychange', handleVisibility)
-    window.addEventListener('focus', handleFocus)
 
     return () => {
       document.removeEventListener('visibilitychange', handleVisibility)
-      window.removeEventListener('focus', handleFocus)
       channel.close()
     }
   }, [refreshQuota])
@@ -285,26 +338,6 @@ export default function NovAiView() {
       setIsLoading(false)
     }
 
-    const tempId = generateId()
-
-    const newThread: ChatThread = {
-      id: tempId,
-      title: 'Nueva conversación',
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-      context: { app: contextApp },
-      messages: []
-    }
-
-    const nextThreads = [newThread, ...threads]
-
-    saveThreads(nextThreads)
-    setActiveThreadId(tempId)
-
-    if (typeof window !== 'undefined' && window.innerWidth < 768) {
-      setIsSidebarCollapsed(true)
-    }
-
     try {
       const res = await fetch('/api/novai/conversations', {
         method: 'POST',
@@ -320,16 +353,35 @@ export default function NovAiView() {
         const data = await res.json()
 
         if (data.conversation?.id) {
-          const realId = data.conversation.id
+          const canonicalThread: ChatThread = {
+            id: data.conversation.id,
+            title: data.conversation.title || 'Nueva conversación',
+            createdAt: data.conversation.created_at || data.conversation.createdAt || new Date().toISOString(),
+            updatedAt: data.conversation.updated_at || data.conversation.updatedAt || new Date().toISOString(),
+            context: { app: contextApp, mode: selectedMode },
+            messages: []
+          }
 
-          setThreads(prev =>
-            prev.map(t => (t.id === tempId ? { ...t, id: realId } : t))
-          )
-          setActiveThreadId(realId)
+          setThreads(prev => [canonicalThread, ...prev])
+          setActiveThreadId(canonicalThread.id)
+
+          try {
+            localStorage.setItem('novastore:novai_active_id', canonicalThread.id)
+            const bc = new BroadcastChannel('novastore:novai-conversations')
+
+            bc.postMessage({ action: 'refresh', conversationId: canonicalThread.id })
+            bc.close()
+          } catch {
+            // ignore
+          }
         }
       }
     } catch {
-      // local fallback active
+      toast.error('Error al crear nueva conversación')
+    }
+
+    if (typeof window !== 'undefined' && window.innerWidth < 768) {
+      setIsSidebarCollapsed(true)
     }
   }
 
@@ -340,14 +392,27 @@ export default function NovAiView() {
     }
 
     setActiveThreadId(id)
+
+    try {
+      localStorage.setItem('novastore:novai_active_id', id)
+    } catch {
+      // ignore
+    }
+
     const selected = threads.find(t => t.id === id)
 
     if (selected) {
       setContextApp(selected.context.app)
 
       if (!selected.messages || selected.messages.length === 0) {
+        setIsLoadingThreadMessages(true)
         void fetchMessagesForThread(id)
+      } else {
+        setIsLoadingThreadMessages(false)
       }
+    } else {
+      setIsLoadingThreadMessages(true)
+      void fetchMessagesForThread(id)
     }
 
     if (typeof window !== 'undefined' && window.innerWidth < 768) {
@@ -361,16 +426,22 @@ export default function NovAiView() {
     if (remaining.length === 0) {
       void handleNewThread()
     } else {
-      saveThreads(remaining)
+      setThreads(remaining)
 
       if (activeThreadId === id) {
-        setActiveThreadId(remaining[0].id)
-        void fetchMessagesForThread(remaining[0].id)
+        const nextActiveId = remaining[0].id
+
+        setActiveThreadId(nextActiveId)
+        void fetchMessagesForThread(nextActiveId)
       }
     }
 
     try {
       await fetch(`/api/novai/conversations/${id}`, { method: 'DELETE' })
+      const bc = new BroadcastChannel('novastore:novai-conversations')
+
+      bc.postMessage({ action: 'refresh' })
+      bc.close()
     } catch {
       // ignore
     }
@@ -379,11 +450,11 @@ export default function NovAiView() {
   }
 
   const handleRenameThread = async (id: string, newTitle: string) => {
-    const nextThreads = threads.map(t =>
-      t.id === id ? { ...t, title: newTitle, updatedAt: new Date().toISOString() } : t
+    setThreads(prev =>
+      prev.map(t =>
+        t.id === id ? { ...t, title: newTitle, updatedAt: new Date().toISOString() } : t
+      )
     )
-
-    saveThreads(nextThreads)
 
     try {
       await fetch(`/api/novai/conversations/${id}`, {
@@ -391,6 +462,10 @@ export default function NovAiView() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ title: newTitle })
       })
+      const bc = new BroadcastChannel('novastore:novai-conversations')
+
+      bc.postMessage({ action: 'refresh' })
+      bc.close()
     } catch {
       // ignore
     }
@@ -470,11 +545,7 @@ export default function NovAiView() {
       ? threads.map(t => (t && t.id === currentThreadId ? updatedThread : t))
       : [updatedThread, ...threads]
 
-    if (!activeThreadId) {
-      setActiveThreadId(currentThreadId)
-    }
-
-    saveThreads(nextThreads)
+    setThreads(nextThreads)
 
     setInput('')
     setIsLoading(true)
@@ -549,16 +620,26 @@ export default function NovAiView() {
             if (data.type === 'text-delta' || data.chunk || data.delta) {
               const chunk = data.delta || data.chunk || ''
               accumulatedText += chunk
+            } else if (data.type === 'reasoning' || data.type === 'reasoning-delta') {
+              const chunk = data.delta || data.chunk || data.reasoning || ''
+              accumulatedReasoning += chunk
             } else if (data.type === 'trace') {
+              const traceTitle = data.title || 'Operación de agente'
+              const traceId = data.id || `tr-${traceTitle.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`
+              const existingIdx = currentTraces.findIndex(t => t.id === traceId || t.title === traceTitle)
               const traceItem: AgentTraceItem = {
-                id: `tr-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+                id: traceId,
                 category: data.category || 'validation',
-                title: data.title || 'Operación de agente',
+                title: traceTitle,
                 description: data.description || '',
                 status: data.status || 'completed',
                 timestamp: data.timestamp || new Date().toISOString()
               }
-              currentTraces = [...currentTraces, traceItem]
+              if (existingIdx >= 0) {
+                currentTraces = currentTraces.map((t, idx) => idx === existingIdx ? traceItem : t)
+              } else {
+                currentTraces = [...currentTraces, traceItem]
+              }
             } else if (data.type === 'evidence') {
               currentEvidences = [...currentEvidences, data]
             } else if (data.type === 'audit') {
@@ -663,7 +744,10 @@ export default function NovAiView() {
         })
 
         try {
-          localStorage.setItem(STORAGE_KEY, JSON.stringify(finalThreads))
+          const bc = new BroadcastChannel('novastore:novai-conversations')
+
+          bc.postMessage({ action: 'message-added', conversationId: currentThreadId })
+          bc.close()
         } catch {}
 
         return finalThreads
@@ -785,7 +869,7 @@ export default function NovAiView() {
 
     const nextThreads = threads.map(t => (t && t.id === currentThreadId ? updatedThread : t))
 
-    saveThreads(nextThreads)
+    setThreads(nextThreads)
     setIsLoading(true)
 
     const controller = new AbortController()
@@ -888,7 +972,10 @@ export default function NovAiView() {
         })
 
         try {
-          localStorage.setItem(STORAGE_KEY, JSON.stringify(finalThreads))
+          const bc = new BroadcastChannel('novastore:novai-conversations')
+
+          bc.postMessage({ action: 'message-added', conversationId: currentThreadId })
+          bc.close()
         } catch {}
 
         return finalThreads
@@ -919,10 +1006,6 @@ export default function NovAiView() {
           return { ...th, messages: copyMsgs }
         })
 
-        try {
-          localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedWithErr))
-        } catch {}
-
         return updatedWithErr
       })
     } finally {
@@ -949,40 +1032,51 @@ export default function NovAiView() {
 
       {/* 2. Área Principal de Chat (Máximo espacio central) */}
       <main className='flex flex-1 flex-col overflow-hidden bg-background/50 relative min-w-0'>
-        {/* Mobile Header Bar (ChatGPT style) */}
-        <div className='flex md:hidden items-center justify-between px-3 py-2 border-b border-border/40 bg-background/90 backdrop-blur-md shrink-0 z-10'>
+        {/* Top Header Bar (ChatGPT style for Desktop & Mobile) */}
+        <div className='flex items-center justify-between px-3.5 py-2 border-b border-border/40 bg-background/80 backdrop-blur-md shrink-0 z-10'>
           <div className='flex items-center gap-2 min-w-0'>
-            <Button
-              size='icon'
-              variant='ghost'
-              onClick={() => setIsSidebarCollapsed(false)}
-              className='size-8 rounded-lg text-foreground hover:bg-muted shrink-0'
-              aria-label='Abrir historial'
-            >
-              <PanelLeft className='size-4' />
-            </Button>
-            <div className='flex items-center gap-1.5 min-w-0'>
-              <span className='font-bold text-xs tracking-tight truncate'>NovAi</span>
-              <Badge variant='outline' className='text-[10px] px-1.5 py-0 font-normal shrink-0'>
+            {isSidebarCollapsed && (
+              <Button
+                size='icon'
+                variant='ghost'
+                onClick={() => setIsSidebarCollapsed(false)}
+                className='size-8 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted shrink-0'
+                aria-label='Abrir historial'
+              >
+                <PanelLeft className='size-4' />
+              </Button>
+            )}
+            <div className='flex items-center gap-2 min-w-0'>
+              <span className='font-bold text-sm tracking-tight text-foreground'>NovAi</span>
+              <Badge variant='outline' className='text-[10px] px-2 py-0.5 font-medium rounded-full border-border/60 text-muted-foreground shrink-0'>
                 {selectedMode}
               </Badge>
             </div>
           </div>
-          <div className='flex items-center gap-1 shrink-0'>
+
+          <div className='flex items-center gap-1.5 shrink-0'>
             <Button
-              size='icon'
+              size='sm'
               variant='ghost'
               onClick={handleNewThread}
-              className='size-8 rounded-lg text-foreground hover:bg-muted'
+              className='h-8 gap-1.5 rounded-lg text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-muted'
               aria-label='Nuevo chat'
             >
-              <Plus className='size-4' />
+              <Plus className='size-3.5' />
+              <span className='hidden sm:inline'>Nuevo chat</span>
             </Button>
           </div>
         </div>
 
         {/* Messages Stream or Empty State with AI Elements Conversation */}
-        {messages.length === 0 ? (
+        {isLoadingThreadMessages ? (
+          <div className='flex flex-1 items-center justify-center p-8 text-center'>
+            <div className='flex items-center gap-2.5 text-xs text-muted-foreground bg-muted/30 px-4 py-2.5 rounded-xl border border-border/40'>
+              <RefreshCw className='size-3.5 animate-spin text-primary' />
+              <span>Cargando conversación...</span>
+            </div>
+          </div>
+        ) : messages.length === 0 ? (
             <NovaiEmptyState
               userName={user?.fullName || user?.email?.split('@')[0]}
               currentContext={contextApp}

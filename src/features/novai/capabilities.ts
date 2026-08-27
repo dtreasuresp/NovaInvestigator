@@ -136,15 +136,16 @@ export interface ModelCapability {
 
 export const KNOWN_MODEL_CAPABILITIES: ModelCapability[] = [
   // Gemini
-  { modelId: 'gemini-3.6-flash', provider: 'gemini', capabilities: PROVIDER_CAPABILITIES.gemini, contextWindow: 1_000_000, maxOutputTokens: 8192 },
-  { modelId: 'gemini-2.5-flash', provider: 'gemini', capabilities: PROVIDER_CAPABILITIES.gemini, contextWindow: 1_000_000, maxOutputTokens: 8192 },
-  { modelId: 'gemini-2.5-pro', provider: 'gemini', capabilities: PROVIDER_CAPABILITIES.gemini, contextWindow: 1_000_000, maxOutputTokens: 8192 },
+  { modelId: 'gemini-2.0-flash', provider: 'gemini', capabilities: PROVIDER_CAPABILITIES.gemini, contextWindow: 1_000_000, maxOutputTokens: 8192 },
+  { modelId: 'gemini-1.5-flash', provider: 'gemini', capabilities: PROVIDER_CAPABILITIES.gemini, contextWindow: 1_000_000, maxOutputTokens: 8192 },
 
-  // OpenRouter models
-  { modelId: 'meta-llama/llama-3.1-8b-instruct:free', provider: 'openrouter', capabilities: PROVIDER_CAPABILITIES.openrouter, contextWindow: 128_000, maxOutputTokens: 8192 },
-  { modelId: 'qwen/qwen-2.5-coder-32b-instruct:free', provider: 'openrouter', capabilities: PROVIDER_CAPABILITIES.openrouter, contextWindow: 32_768, maxOutputTokens: 8192 },
-  { modelId: 'nvidia/llama-3.1-nemotron-70b-instruct:free', provider: 'openrouter', capabilities: PROVIDER_CAPABILITIES.openrouter, contextWindow: 128_000, maxOutputTokens: 8192 },
-  { modelId: 'google/gemini-2.0-flash-exp:free', provider: 'openrouter', capabilities: PROVIDER_CAPABILITIES.openrouter, contextWindow: 128_000, maxOutputTokens: 8192 },
+  // OpenRouter models (free & high capability)
+  { modelId: 'nvidia/nemotron-3-super-120b-a12b:free', provider: 'openrouter', capabilities: PROVIDER_CAPABILITIES.openrouter, contextWindow: 128_000, maxOutputTokens: 8192 },
+  { modelId: 'deepseek/deepseek-r1:free', provider: 'openrouter', capabilities: PROVIDER_CAPABILITIES.openrouter, contextWindow: 64_000, maxOutputTokens: 8192 },
+  { modelId: 'deepseek/deepseek-chat:free', provider: 'openrouter', capabilities: PROVIDER_CAPABILITIES.openrouter, contextWindow: 64_000, maxOutputTokens: 8192 },
+  { modelId: 'qwen/qwen-2.5-72b-instruct:free', provider: 'openrouter', capabilities: PROVIDER_CAPABILITIES.openrouter, contextWindow: 32_768, maxOutputTokens: 8192 },
+  { modelId: 'mistralai/mistral-small-24b-instruct-2501:free', provider: 'openrouter', capabilities: PROVIDER_CAPABILITIES.openrouter, contextWindow: 32_768, maxOutputTokens: 8192 },
+  { modelId: 'openrouter/free', provider: 'openrouter', capabilities: PROVIDER_CAPABILITIES.openrouter, contextWindow: 128_000, maxOutputTokens: 8192 },
 
   // OpenCode Zen
   { modelId: 'big-pickle', provider: 'opencode-zen', capabilities: PROVIDER_CAPABILITIES['opencode-zen'], contextWindow: 128_000, maxOutputTokens: 8192 }

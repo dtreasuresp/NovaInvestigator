@@ -188,6 +188,93 @@ export class NovaiConversationsRepository {
   }
 
   /**
+   * Obtiene los metadatos de una conversación validando pertenencia.
+   */
+  static async getConversation(
+    client: SupabaseClient,
+    params: { conversationId: string; tenantId: string; userId: string }
+  ): Promise<NovaiConversationDTO | null> {
+    const { conversationId, tenantId, userId } = params
+
+    try {
+      const { data, error } = await client
+        .from('novai_conversations')
+        .select('*')
+        .eq('id', conversationId)
+        .eq('tenant_id', tenantId)
+        .eq('user_id', userId)
+        .single()
+
+      if (error || !data) {
+        return null
+      }
+
+      const r = data as unknown as NovaiConversationRow
+
+      return {
+        id: r.id,
+        tenantId: r.tenant_id,
+        workspaceId: r.workspace_id,
+        userId: r.user_id,
+        title: r.title,
+        mode: r.mode as NovaiMode,
+        appContext: r.app_context,
+        metadata: r.metadata || {},
+        isPinned: r.is_pinned,
+        isArchived: r.is_archived,
+        createdAt: r.created_at,
+        updatedAt: r.updated_at
+      }
+    } catch {
+      return null
+    }
+  }
+
+  /**
+   * Carga el historial canónico ordenado de mensajes en formato AiMessage para el Agent Runtime.
+   */
+  static async loadCanonicalAiMessages(
+    client: SupabaseClient,
+    params: { conversationId: string; tenantId: string; userId: string; limit?: number }
+  ): Promise<Array<{ role: 'user' | 'assistant' | 'system' | 'tool'; content: string }>> {
+    const { conversationId, tenantId, userId, limit = 50 } = params
+
+    try {
+      // 1. Validar autorización de la conversación
+      const conv = await this.getConversation(client, { conversationId, tenantId, userId })
+
+      if (!conv) {
+        return []
+      }
+
+      // 2. Cargar mensajes ordenados canónicamente por created_at asc
+      const { data, error } = await client
+        .from('novai_messages')
+        .select('role, content')
+        .eq('conversation_id', conversationId)
+        .eq('tenant_id', tenantId)
+        .order('created_at', { ascending: true })
+        .limit(limit)
+
+      if (error || !data) {
+        return []
+      }
+
+      return data.map(m => ({
+        role: m.role as 'user' | 'assistant' | 'system' | 'tool',
+        content: m.content || ''
+      }))
+    } catch (err) {
+      logger.error('Error loading canonical AI messages', {
+        action: 'novai.messages.load_canonical',
+        details: { conversationId, errorMessage: err instanceof Error ? err.message : String(err) }
+      })
+
+      return []
+    }
+  }
+
+  /**
    * Obtiene una conversación con sus mensajes ordenados.
    */
   static async getConversationWithMessages(
@@ -357,6 +444,36 @@ export class NovaiConversationsRepository {
     } = params
 
     try {
+      // 1. Idempotencia y prevención de envíos dobles rápidos (< 3s)
+      const { data: latestMsg } = await client
+        .from('novai_messages')
+        .select('*')
+        .eq('conversation_id', conversationId)
+        .eq('tenant_id', tenantId)
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .single()
+
+      if (latestMsg && latestMsg.role === role && latestMsg.content === content) {
+        const diffMs = Date.now() - new Date(latestMsg.created_at).getTime()
+
+        if (diffMs < 3000) {
+          return {
+            id: latestMsg.id,
+            conversationId: latestMsg.conversation_id,
+            tenantId: latestMsg.tenant_id,
+            userId: latestMsg.user_id,
+            role: latestMsg.role,
+            content: latestMsg.content,
+            mode: (latestMsg.mode || 'CHAT') as NovaiMode,
+            model: latestMsg.model,
+            toolCalls: latestMsg.tool_calls,
+            tokenCount: latestMsg.token_count || 0,
+            createdAt: latestMsg.created_at
+          }
+        }
+      }
+
       const { data, error } = await client
         .from('novai_messages')
         .insert({

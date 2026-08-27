@@ -106,12 +106,43 @@ export class NovaiAgentRuntime {
     // Capacidad requerida por el modo/categoría (spec §27/§29)
     const requiredCaps = requiredCapabilitiesForCategory(routeDecision.category)
 
-    // Lista ordenada de proveedores oficiales: Gemini -> OpenRouter -> OpenCode Zen
+    // Lista ordenada de proveedores oficiales: OpenRouter (prioritario) -> Gemini -> OpenCode Zen
     const providerCandidates: Array<{
       name: string
       modelInstance: any
       provider: ProviderId
     }> = []
+
+    if (openrouterApiKey) {
+      const openrouter = createOpenAI({
+        baseURL: 'https://openrouter.ai/api/v1',
+        apiKey: openrouterApiKey,
+        headers: { 'HTTP-Referer': 'https://novastore.app', 'X-Title': 'NovaStore ERP' }
+      })
+
+      const orModel = routeDecision.recommendedOpenRouterModel || process.env.OPENROUTER_MODEL || 'nvidia/nemotron-3-super-120b-a12b:free'
+
+      providerCandidates.push({ name: `OpenRouter (${orModel})`, modelInstance: openrouter(orModel), provider: 'openrouter' })
+
+      const freeCandidates = [
+        'nvidia/nemotron-3-super-120b-a12b:free',
+        'deepseek/deepseek-r1:free',
+        'deepseek/deepseek-chat:free',
+        'qwen/qwen-2.5-72b-instruct:free',
+        'mistralai/mistral-small-24b-instruct-2501:free',
+        'openrouter/free'
+      ]
+
+      for (const modelSlug of freeCandidates) {
+        if (modelSlug !== orModel) {
+          providerCandidates.push({
+            name: `OpenRouter (${modelSlug})`,
+            modelInstance: openrouter(modelSlug),
+            provider: 'openrouter'
+          })
+        }
+      }
+    }
 
     if (geminiApiKey) {
       const google = createGoogleGenerativeAI({ apiKey: geminiApiKey })
@@ -121,31 +152,8 @@ export class NovaiAgentRuntime {
         providerCandidates.push({ name: `Gemini (${customGeminiModel})`, modelInstance: google(customGeminiModel), provider: 'gemini' })
       }
 
-      providerCandidates.push({ name: 'Gemini (gemini-3.6-flash)', modelInstance: google('gemini-3.6-flash'), provider: 'gemini' })
-      providerCandidates.push({ name: 'Gemini (gemini-2.5-flash)', modelInstance: google('gemini-2.5-flash'), provider: 'gemini' })
-      providerCandidates.push({ name: 'Gemini (gemini-2.5-pro)', modelInstance: google('gemini-2.5-pro'), provider: 'gemini' })
-    }
-
-    if (openrouterApiKey) {
-      const openrouter = createOpenAI({
-        baseURL: 'https://openrouter.ai/api/v1',
-        apiKey: openrouterApiKey,
-        headers: { 'HTTP-Referer': 'https://novastore.app', 'X-Title': 'NovaStore ERP' }
-      })
-
-      const orModel = routeDecision.recommendedOpenRouterModel || process.env.OPENROUTER_MODEL || 'meta-llama/llama-3.1-8b-instruct:free'
-
-      providerCandidates.push({ name: `OpenRouter (${orModel})`, modelInstance: openrouter(orModel), provider: 'openrouter' })
-
-      if (orModel !== 'google/gemini-2.0-flash-exp:free') {
-        providerCandidates.push({ name: 'OpenRouter (google/gemini-2.0-flash-exp:free)', modelInstance: openrouter('google/gemini-2.0-flash-exp:free'), provider: 'openrouter' })
-      }
-      if (orModel !== 'meta-llama/llama-3.1-8b-instruct:free') {
-        providerCandidates.push({ name: 'OpenRouter (meta-llama/llama-3.1-8b-instruct:free)', modelInstance: openrouter('meta-llama/llama-3.1-8b-instruct:free'), provider: 'openrouter' })
-      }
-      if (orModel !== 'qwen/qwen-2.5-coder-32b-instruct:free') {
-        providerCandidates.push({ name: 'OpenRouter (qwen/qwen-2.5-coder-32b-instruct:free)', modelInstance: openrouter('qwen/qwen-2.5-coder-32b-instruct:free'), provider: 'openrouter' })
-      }
+      providerCandidates.push({ name: 'Gemini (gemini-2.0-flash)', modelInstance: google('gemini-2.0-flash'), provider: 'gemini' })
+      providerCandidates.push({ name: 'Gemini (gemini-1.5-flash)', modelInstance: google('gemini-1.5-flash'), provider: 'gemini' })
     }
 
     if (zenKeys.length > 0) {
@@ -182,6 +190,7 @@ export class NovaiAgentRuntime {
           messages: coreMessages,
           tools: vercelTools,
           maxOutputTokens: 8192,
+          maxRetries: 1,
           stopWhen: isStepCount(5),
           onError: (errPayload) => {
             const raw = (errPayload as { error?: unknown })?.error ?? errPayload
@@ -293,7 +302,8 @@ export class NovaiAgentRuntime {
             model: candidate.modelInstance,
             system: systemPrompt,
             messages: coreMessages,
-            maxOutputTokens: 4096
+            maxOutputTokens: 4096,
+            maxRetries: 0
           })
 
           for await (const part of emergencyStream.fullStream) {

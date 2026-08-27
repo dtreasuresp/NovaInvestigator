@@ -192,6 +192,44 @@ const notifyInvestigationError = (error: unknown) => {
   toast.error(error instanceof Error ? error.message : 'No se pudo sincronizar la investigación.')
 }
 
+let inFlightInvestigatorQuotaPromise: Promise<AiQuotaInfo | null> | null = null
+let cachedInvestigatorQuota: { data: AiQuotaInfo; timestamp: number } | null = null
+const INVESTIGATOR_QUOTA_CACHE_TTL_MS = 5000
+
+export async function fetchInvestigatorAiQuotaShared(force = false): Promise<AiQuotaInfo | null> {
+  const now = Date.now()
+
+  if (!force && cachedInvestigatorQuota && now - cachedInvestigatorQuota.timestamp < INVESTIGATOR_QUOTA_CACHE_TTL_MS) {
+    return cachedInvestigatorQuota.data
+  }
+
+  if (inFlightInvestigatorQuotaPromise) {
+    return inFlightInvestigatorQuotaPromise
+  }
+
+  inFlightInvestigatorQuotaPromise = (async () => {
+    try {
+      const res = await fetch('/api/investigations/ai/quota', { cache: 'no-store' })
+
+      if (res.ok) {
+        const data = (await res.json()) as AiQuotaInfo
+
+        cachedInvestigatorQuota = { data, timestamp: Date.now() }
+
+        return data
+      }
+
+      return null
+    } catch {
+      return null
+    } finally {
+      inFlightInvestigatorQuotaPromise = null
+    }
+  })()
+
+  return inFlightInvestigatorQuotaPromise
+}
+
 export const InvestigatorAnalysisProvider = ({ children }: Readonly<{ children: ReactNode }>) => {
   const [state, setState] = useState<InvestigationState>(createBlankState)
   const [investigations, setInvestigations] = useState<InvestigationState[]>([])
@@ -221,15 +259,12 @@ export const InvestigatorAnalysisProvider = ({ children }: Readonly<{ children: 
   // Canal para sincronizar cuota entre pestañas (BroadcastChannel + polling backup)
   const aiQuotaChannelRef = useRef<BroadcastChannel | null>(null)
 
-  const refreshAiQuota = useCallback(async () => {
+  const refreshAiQuota = useCallback(async (force = false) => {
     try {
-      const res = await fetch('/api/investigations/ai/quota', { cache: 'no-store' })
+      const data = await fetchInvestigatorAiQuotaShared(force)
 
-      if (res.ok) {
-        const data = (await res.json()) as AiQuotaInfo
-
+      if (data) {
         setAiQuota(data)
-
 
         // Propaga a otras pestañas
         try {
@@ -267,12 +302,12 @@ export const InvestigatorAnalysisProvider = ({ children }: Readonly<{ children: 
 
     const handleVisibility = () => {
       if (document.visibilityState === 'visible') {
-        void refreshAiQuota()
+        void refreshAiQuota(false)
       }
     }
 
     const handleFocus = () => {
-      void refreshAiQuota()
+      void refreshAiQuota(false)
     }
 
     document.addEventListener('visibilitychange', handleVisibility)

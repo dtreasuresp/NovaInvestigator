@@ -1,7 +1,7 @@
 # Catálogo Maestro de Herramientas Modulares de NovAi (NOVAI_TOOLS)
 
-**Versión:** 2.0 (2026-08-26)  
-**Total Herramientas Registradas:** 21  
+**Versión:** 2.1 (2026-08-27) — PHASE 8 QSPM + PHASE 23 web_research  
+**Total Herramientas Registradas:** 22  
 **Directorio Canónico:** `src/features/novai/tools/`  
 
 ---
@@ -12,6 +12,7 @@
 2. [Metodología y Auditoría Determinista (5 Tools)](#2-metodología-y-auditoría-determinista)
 3. [Estrategia y Red-Team (3 Tools)](#3-estrategia-y-red-team)
 4. [Plataforma, Operaciones y Memoria (5 Tools)](#4-plataforma-operaciones-y-memoria)
+5. [Research & External Evidence (1 Tool)](#5-research--external-evidence) — §23 EXTERNAL_EVIDENCE separado de INTERNAL
 
 ---
 
@@ -106,11 +107,11 @@
 - **Output:** `{ status: 'VALID' | 'WARNINGS' | 'ERRORS', methodologyScore: number, errors: string[], warnings: string[], recommendations: string[] }`
 
 ### 2.5 `calculate_matrix`
-- **Propósito:** Fachada determinista que ejecuta `calculateAnalysis()` para obtener los índices oficiales de EFI, EFE, DAFO y CAME.
+- **Propósito:** Fachada determinista que ejecuta `calculateAnalysis()` para obtener los índices oficiales de EFI, EFE, DAFO, CAME y QSPM (TAS = weight_normalized × AS).
 - **Ruta:** `src/features/novai/tools/methodology/calculate-matrix.ts`
 - **Riesgo / Alcance:** `read-only` / `investigation`
-- **Input:** `{ investigation_id: string, matrix_type?: 'ALL' | 'EFI' | 'EFE' | 'DAFO' | 'CAME' }`
-- **Output:** `{ matrixType, calculation: { efi, efe, dafo: { dominantQuadrant, quadrants }, came } }`
+- **Input:** `{ investigation_id: string, matrix_type?: 'ALL' | 'EFI' | 'EFE' | 'DAFO' | 'CAME' | 'QSPM' }`
+- **Output (QSPM):** `{ matrixType: 'QSPM', calculation: { qspm: { winner, results:[{strategyId,totalTas,internalTas,externalTas}], topDifference, tie }, interpretation, formula: 'TAS = weight_normalized * AS' } }` — `ALL` incluye `qspm` con `resultsSummary` sin duplicar motor `src/utils/investigator/domain.ts:574`.
 
 ---
 
@@ -165,3 +166,16 @@
 - **Propósito:** Registra un aprendizaje o preferencia estratégica persistente en la memoria de largo plazo del tenant.
 - **Ruta:** `src/features/novai/tools/memory/record-strategic-memory.ts`
 - **Riesgo / Alcance:** `medium` / `tenant`
+
+---
+
+## 5. Research & External Evidence
+
+### 5.1 `web_research`
+- **Propósito:** Busca fuentes públicas externas (EXTERNAL_EVIDENCE) complementarias al expediente interno. Distingue explícitamente entre INTERNAL_EVIDENCE (`search_evidence`/`get_factor_evidence`) y EXTERNAL_EVIDENCE — nunca mezcla ambas silenciosamente (§23).
+- **Ruta:** `src/features/novai/tools/research/web-research.ts`
+- **Riesgo / Alcance:** `read-only` / `tenant`
+- **Input:** `{ query: string, top_k?: number (1-10, default 5), investigation_id?: string }`
+- **Output:** `{ query, status: 'EXTERNAL_EVIDENCE' | 'EXTERNAL_RESEARCH_DISABLED' | 'EXTERNAL_RESEARCH_ERROR' | 'EXTERNAL_RESEARCH_TIMEOUT', providerUsed: 'tavily'|'brave'|null, source: 'EXTERNAL_EVIDENCE', results: Array<{title, url, snippet, publicationDate, retrievedAt, credibilityScore}>, retrievedAt }`
+- **Providers:** `TAVILY_API_KEY` (preferido, `search_depth: advanced`) → fallback `BRAVE_SEARCH_API_KEY`. Sin keys → degradación explícita `EXTERNAL_RESEARCH_DISABLED` (no inventa datos). Timeout `8000ms`, proyección a `SourceEvent.sourceType='external'` en `src/features/novai/event-projection.ts:72` y `NovaiSourceCard` con badge `EXTERNAL_EVIDENCE`.
+- **Seguridad:** Respeta `tenantId` del `Principal` para auditoría, no accede a datos tenant, no loguea secrets. Enforcement vía `NovaiToolGateway`.

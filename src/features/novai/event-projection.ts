@@ -88,8 +88,6 @@ function projectCalculateMatrix(result: AnyRecord): NovaiEvent[] {
 
   if (!calc) return []
 
-  // Solo EFI/EFE tienen un índice determinista que mapear a tarjeta de cálculo.
-  // DAFO/CAME/ALL se comunican por tool-result y auditoría, sin inventar totales.
   if ((matrixType === 'efi' || matrixType === 'efe') && typeof calc.totalIndex === 'number') {
     const factors = Array.isArray(calc.factors) ? calc.factors.filter(isRecord) : []
 
@@ -110,6 +108,48 @@ function projectCalculateMatrix(result: AnyRecord): NovaiEvent[] {
       })),
       details: { weightsSum: calc.weightsSum }
     } satisfies CalculationEvent]
+  }
+
+  if (matrixType === 'qspm' && isRecord(calc.qspm)) {
+    const qspm = calc.qspm as AnyRecord
+    const results = Array.isArray(qspm.results) ? qspm.results.filter(isRecord) : []
+    const winnerId = typeof qspm.winner === 'string' ? qspm.winner : null
+    const winner = winnerId ? results.find(r => r.strategyId === winnerId) : null
+    const winnerTas = winner && typeof winner.totalTas === 'number' ? winner.totalTas : 0
+    const topDiff = typeof qspm.topDifference === 'number' ? qspm.topDifference : 0
+
+    return [{
+      type: 'calculation',
+      matrixType: 'qspm',
+      total: Number(winnerTas.toFixed(3)),
+      summary: winnerId
+        ? `QSPM · Ganadora ${winnerId} TAS ${Number(winnerTas).toFixed(3)} · Δ ${Number(topDiff).toFixed(3)} sobre 2ª`
+        : 'QSPM · Sin evaluación completa — faltan puntuaciones AS',
+      formula: 'TAS = Σ(weight_normalized × AS)',
+      factorsEvaluated: results.length,
+      interpretation: typeof calc.interpretation === 'string' ? calc.interpretation : undefined,
+      details: { winner: winnerId, topDifference: topDiff, tie: Boolean(qspm.tie), warnings: qspm.warnings, resultsCount: results.length }
+    } satisfies CalculationEvent]
+  }
+
+  if (matrixType === 'all' && isRecord(calc.qspm) && isRecord((calc.qspm as AnyRecord))) {
+    const qspmAll = calc.qspm as AnyRecord
+    const resultsAll = Array.isArray(qspmAll.results) ? qspmAll.results : []
+
+    if (resultsAll.length > 0 && typeof qspmAll.winner === 'string') {
+      const win = resultsAll.find((r: AnyRecord) => r.strategyId === qspmAll.winner) as AnyRecord | undefined
+      const tas = win && typeof win.totalTas === 'number' ? win.totalTas : 0
+
+      return [{
+        type: 'calculation',
+        matrixType: 'qspm',
+        total: Number(tas.toFixed(3)),
+        summary: `QSPM ALL · Ganadora ${String(qspmAll.winner)} TAS ${Number(tas).toFixed(3)}`,
+        formula: 'TAS = Σ(weight_normalized × AS)',
+        factorsEvaluated: resultsAll.length,
+        details: { tie: Boolean(qspmAll.tie), topDifference: qspmAll.topDifference }
+      } satisfies CalculationEvent]
+    }
   }
 
   return []
@@ -252,6 +292,24 @@ function safeInv(result: AnyRecord): string | undefined {
   return typeof result.investigationId === 'string' ? result.investigationId : undefined
 }
 
+function projectWebResearch(result: AnyRecord): NovaiEvent[] {
+  const results = Array.isArray(result.results) ? result.results : []
+
+  // Solo proyectar cuando hay EXTERNAL_EVIDENCE real — degradación no genera tarjetas
+  if (result.status === 'EXTERNAL_RESEARCH_DISABLED' || result.status === 'EXTERNAL_RESEARCH_ERROR' || results.length === 0) {
+    return []
+  }
+
+  return results.slice(0, 5).filter(isRecord).map(r => ({
+    type: 'source',
+    sourceType: 'external' as const,
+    name: String(r.title ?? 'Fuente externa'),
+    url: String(r.url ?? ''),
+    page: undefined,
+    retrievedAt: String(r.retrievedAt ?? result.retrievedAt ?? new Date().toISOString())
+  })) satisfies SourceEvent[]
+}
+
 const PROJECTORS: Record<string, (result: AnyRecord) => NovaiEvent[]> = {
   get_factor_evidence: projectGetFactorEvidence,
   search_evidence: projectSearchEvidence,
@@ -260,7 +318,8 @@ const PROJECTORS: Record<string, (result: AnyRecord) => NovaiEvent[]> = {
   validate_methodology: projectValidateMethodology,
   find_contradictions: projectFindContradictions,
   audit_factor: projectAuditFactor,
-  audit_relationship: projectAuditRelationship
+  audit_relationship: projectAuditRelationship,
+  web_research: projectWebResearch
 }
 
 /**

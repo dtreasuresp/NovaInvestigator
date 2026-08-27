@@ -185,11 +185,11 @@ export function NovaiSidebar({
 
         <Button
           onClick={onNewThread}
-          className='w-full justify-start gap-2 h-9 text-xs font-semibold rounded-xl shadow-xs bg-primary text-primary-foreground hover:bg-primary/90'
+          className='w-full justify-start gap-2 h-9 text-xs font-medium rounded-xl shadow-xs bg-foreground text-background hover:bg-foreground/90'
         >
           <Plus className='size-4' />
-          <span>Nuevo Chat</span>
-          <span className='ml-auto font-mono text-[10px] opacity-70 border border-white/20 px-1.5 py-0.2 rounded'>⌘K</span>
+          <span>Nuevo chat</span>
+          <span className='ml-auto font-mono text-[10px] opacity-60 border border-border/40 px-1.5 py-0.5 rounded'>Ctrl+K</span>
         </Button>
 
         {threads.length > 3 && (

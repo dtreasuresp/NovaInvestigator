@@ -8,7 +8,7 @@ import type { NovaiModularTool, ToolExecutionResult } from '../types'
 
 export const calculateMatrixSchema = z.object({
   investigation_id: z.string().min(1).describe('El ID único (UUID) de la investigación a calcular.'),
-  matrix_type: z.enum(['ALL', 'EFI', 'EFE', 'DAFO', 'CAME']).optional().default('ALL').describe('La matriz o sección específica cuyos cálculos matemáticos se desean consultar.')
+  matrix_type: z.enum(['ALL', 'EFI', 'EFE', 'DAFO', 'CAME', 'QSPM']).optional().default('ALL').describe('La matriz o sección específica cuyos cálculos matemáticos se desean consultar.')
 })
 
 export type CalculateMatrixInput = z.infer<typeof calculateMatrixSchema>
@@ -92,6 +92,19 @@ export async function executeCalculateMatrix(
         }
         break
 
+      case 'QSPM':
+        responseData = {
+          qspm: calculated.qspm,
+          interpretation: calculated.qspm.winner
+            ? `Estrategia preferente: ${calculated.qspm.winner} (TAS ${calculated.qspm.results[0]?.totalTas?.toFixed(3) ?? 'N/A'})`
+            : 'QSPM sin evaluación completa — faltan factores o puntuaciones AS',
+          formula: 'TAS = weight_normalized * AS (Attractiveness Score 1-4)',
+          weightsSum: 1.0,
+          factorsCount: calculated.qspm.factors.length,
+          strategiesCount: calculated.qspm.results.length
+        }
+        break
+
       case 'ALL':
       default:
         responseData = {
@@ -111,6 +124,20 @@ export async function executeCalculateMatrix(
           },
           came: {
             totalActions: (calculated.came?.actions || []).length
+          },
+          qspm: {
+            totalStrategies: calculated.qspm.results.length,
+            winner: calculated.qspm.winner,
+            topDifference: calculated.qspm.topDifference,
+            tie: calculated.qspm.tie,
+            warnings: calculated.qspm.warnings,
+            resultsSummary: calculated.qspm.results.map(r => ({
+              strategyId: r.strategyId,
+              totalTas: r.totalTas,
+              evaluated: r.evaluated,
+              pending: r.pending,
+              complete: r.complete
+            }))
           }
         }
         break
@@ -140,7 +167,7 @@ export const calculateMatrixTool: NovaiModularTool = {
     name: 'calculate_matrix',
     displayName: 'Ejecutar Cálculos de Matrices',
     description:
-      'Calcula deterministamente los índices y distribuciones matemáticas oficiales (EFI, EFE, cruces DAFO, cuadrante dominante y CAME) reutilizando el motor analítico del sistema.',
+      'Calcula deterministamente los índices y distribuciones matemáticas oficiales (EFI, EFE, cruces DAFO, cuadrante dominante, CAME y QSPM con TAS) reutilizando el motor analítico del sistema.',
     category: 'methodology',
     riskLevel: 'read-only',
     scope: 'investigation'
@@ -150,12 +177,12 @@ export const calculateMatrixTool: NovaiModularTool = {
   openAiDeclaration: {
     name: 'calculate_matrix',
     description:
-      'Calcula deterministamente los índices y distribuciones matemáticas oficiales (EFI, EFE, cruces DAFO, cuadrante dominante y CAME) reutilizando el motor analítico del sistema.',
+      'Calcula deterministamente los índices y distribuciones matemáticas oficiales (EFI, EFE, cruces DAFO, cuadrante dominante, CAME y QSPM con TAS) reutilizando el motor analítico del sistema.',
     parameters: {
       type: 'object',
       properties: {
         investigation_id: { type: 'string', description: 'El ID único (UUID) de la investigación.' },
-        matrix_type: { type: 'string', enum: ['ALL', 'EFI', 'EFE', 'DAFO', 'CAME'], description: 'Tipo de matriz a calcular.' }
+        matrix_type: { type: 'string', enum: ['ALL', 'EFI', 'EFE', 'DAFO', 'CAME', 'QSPM'], description: 'Tipo de matriz a calcular.' }
       },
       required: ['investigation_id']
     }
@@ -163,7 +190,7 @@ export const calculateMatrixTool: NovaiModularTool = {
   toVercelTool: (principal: InvestigationsPrincipal) =>
     tool({
       description:
-        'Calcula deterministamente los índices y distribuciones matemáticas oficiales (EFI, EFE, cruces DAFO, cuadrante dominante y CAME) reutilizando el motor analítico del sistema.',
+        'Calcula deterministamente los índices y distribuciones matemáticas oficiales (EFI, EFE, cruces DAFO, cuadrante dominante, CAME y QSPM con TAS) reutilizando el motor analítico del sistema.',
       inputSchema: calculateMatrixSchema,
       execute: async (args: CalculateMatrixInput) => {
         const res = await executeCalculateMatrix(args, principal)

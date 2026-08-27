@@ -60,7 +60,7 @@ import {
 import { Reasoning, ReasoningTrigger, ReasoningContent } from '@/components/ai-elements/reasoning'
 import { CodeBlock } from '@/components/ai-elements/code-block'
 
-import { useOptionalInvestigatorAnalysis } from '@/hooks/use-investigator-analysis'
+import { useOptionalInvestigatorAnalysis, fetchInvestigatorAiQuotaShared } from '@/hooks/use-investigator-analysis'
 import { useI18n } from '@/hooks/use-i18n'
 import { PREDEFINED_PROMPTS, type AiQuotaInfo } from '@/features/novai/schema'
 import type { ToolInvocationItem } from '@/views/apps/novai/types'
@@ -178,9 +178,8 @@ export function AiCopilotSheet({ floating = true }: AiCopilotSheetProps) {
 
     setIsLoadingLocalQuota(true)
     try {
-      const res = await fetch('/api/novai/quota', { cache: 'no-store' })
-      if (res.ok) {
-        const data = (await res.json()) as AiQuotaInfo
+      const data = await fetchInvestigatorAiQuotaShared()
+      if (data) {
         setLocalQuota(data)
       }
     } catch {

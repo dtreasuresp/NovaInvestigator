@@ -4,6 +4,66 @@
 
 All notable changes to this template will be documented in this file
 
+## v0.0.70 (2026-08-27)
+
+### Fixed & Optimized (NovAi Free Tier Runtime, 100% DB Billing, and Client Deduplication)
+- **Priorización de OpenRouter con Modelos Gratuitos Avanzados**:
+  - Reordenada la cascada de proveedores en [`src/features/novai/agent-runtime.ts`](file:///d:/03.%20MATRIZ%20DAFO/src/features/novai/agent-runtime.ts) para evaluar **OpenRouter en primer lugar**, seguido de Google Gemini y OpenCode Zen.
+  - Añadidos modelos gratuitos potentes con soporte de razonamiento, herramientas y búsqueda: `nvidia/nemotron-3-super-120b-a12b:free`, `deepseek/deepseek-r1:free`, `deepseek/deepseek-chat:free`, `qwen/qwen-2.5-72b-instruct:free`, `mistralai/mistral-small-24b-instruct-2501:free` y el router inteligente `openrouter/free`.
+  - Eliminados modelos obsoletos y descontinuados (`gemini-2.5-flash`, `gemini-2.5-pro`, y endpoints free retirados de OpenRouter).
+  - Actualizados modelos vigentes de Google Gemini: `gemini-2.0-flash` y `gemini-1.5-flash` en [`capabilities.ts`](file:///d:/03.%20MATRIZ%20DAFO/src/features/novai/capabilities.ts) y [`gemini-client.ts`](file:///d:/03.%20MATRIZ%20DAFO/src/features/novai/client/gemini-client.ts).
+  - Limitados los reintentos automáticos a 1 (`maxRetries: 1`) en ejecución con herramientas y 0 (`maxRetries: 0`) en emergencia sólo-texto, eliminando cuellos de botella de >2 minutos ante errores 429/404.
+- **Facturación 100% en Base de Datos (Zero-Latency GET `/api/billing/me`)**:
+  - [`src/features/billing/service.ts`](file:///d:/03.%20MATRIZ%20DAFO/src/features/billing/service.ts): Eliminada la llamada de red síncrona a `stripe.invoices.list(...)` dentro de `getBillingSummary()`. Las facturas se consultan exclusivamente desde Supabase PostgreSQL (sincronizadas en segundo plano mediante webhooks de Stripe), reduciendo la latencia de 10-32s a milisegundos.
+- **Deduplicación y Caché en Vuelo en el Cliente**:
+  - [`src/hooks/use-billing.ts`](file:///d:/03.%20MATRIZ%20DAFO/src/hooks/use-billing.ts): Implementada función `fetchBillingSummaryShared` con deduplicación de promesas en vuelo y caché de 5s para evitar ráfagas al montar múltiples componentes.
+  - [`src/views/apps/novai/index.tsx`](file:///d:/03.%20MATRIZ%20DAFO/src/views/apps/novai/index.tsx) y [`src/hooks/use-investigator-analysis.tsx`](file:///d:/03.%20MATRIZ%20DAFO/src/hooks/use-investigator-analysis.tsx): Implementados `fetchNovaiQuotaShared` y `fetchInvestigatorAiQuotaShared` con throttling para eventos de foco (`visibilitychange` / `focus`), evitando peticiones redundantes a `/api/novai/quota` y `/api/investigations/ai/quota`.
+- **Validación & Tests**: 227/227 pruebas unitarias pasando al 100% (`pnpm test`) y verificación estricta de tipos TypeScript limpia (`pnpm check-types`).
+
+## v0.0.69 (2026-08-27)
+
+### Fixed & UI Redesign (100% ChatGPT Aesthetics via Vercel AI Elements & shadcn/ui)
+- **Rediseño Completo Estilo ChatGPT (Cero Emojis & Máxima Legibilidad)**:
+  - **Composer Flotante (`PromptInput`)**: Implementado contenedor tipo píldora `rounded-[26px]` con `PromptInputTextarea` auto-expandible, selector de modo de operación en cápsula compacta, badge de cuota discreto y botón circular `PromptInputSubmit` que conmuta a parada durante streaming en [`src/views/apps/novai/components/novai-composer.tsx`](file:///d:/03.%20MATRIZ%20DAFO/src/views/apps/novai/components/novai-composer.tsx).
+  - **Mensajes y Tipografía (`Message`, `MessageContent`, `MessageResponse`)**: Burbujas de usuario en píldora neutral alineada a la derecha y respuestas de NovAi en flujo libre a la izquierda con resaltado de sintaxis, KaTeX math y barra de herramientas on-hover (`<MessageActions>`) en [`src/views/apps/novai/components/novai-message-item.tsx`](file:///d:/03.%20MATRIZ%20DAFO/src/views/apps/novai/components/novai-message-item.tsx).
+  - **Tarjetas de Pensamiento y Herramientas (`Reasoning`, `Tool`, `Task`)**: Integración limpia de `<Reasoning>` para tokens de pensamiento, `<Tool>` para invocaciones de funciones y `<Task>` para trazas de trabajo sin remontajes.
+  - **Hero Empty State (`Suggestions`, `Suggestion`)**: Pantalla de bienvenida minimalista estilo ChatGPT con cuadrícula de sugerencias estratégicas con micro-interacciones hover en [`src/views/apps/novai/components/novai-empty-state.tsx`](file:///d:/03.%20MATRIZ%20DAFO/src/views/apps/novai/components/novai-empty-state.tsx).
+  - **Header Superior Unificado**: Barra superior minimalista para escritorio y móvil con selector de modo activo y botón de nuevo chat en [`src/views/apps/novai/index.tsx`](file:///d:/03.%20MATRIZ%20DAFO/src/views/apps/novai/index.tsx).
+- **Estabilidad de Estado & Sincronización**:
+  - Eliminados parpadeos y reseteos automáticos al cambiar de foco o ventana.
+  - Reconciliación inmutable de conversaciones y persistencia de tarjetas interactivas tras streaming.
+  - Selección fluida en sidebar con `isLoadingThreadMessages` sin parpadeo del estado vacío.
+- **Tests**: 227/227 tests unitarios e integración pasando al 100% (`pnpm test`) y 0 errores de TypeScript (`tsc --noEmit`).
+
+## v0.0.68 (2026-08-27)
+
+### Added
+- **PHASE 8 (§19) — QSPM en `calculate_matrix`**: Añadido `matrix_type: 'QSPM'` y `ALL` con bloque `qspm` (TAS = weight_normalized × AS) reutilizando `calculateQspm()` de `src/utils/investigator/domain.ts:574` sin duplicación. Schema Zod `['ALL','EFI','EFE','DAFO','CAME','QSPM']` en `src/features/novai/tools/methodology/calculate-matrix.ts:10` y `openAiDeclaration`. Proyección a `CalculationEvent.matrixType='qspm'` en `src/features/novai/event-projection.ts:85` para `NovaiCalculationCard`. Docs `doc/plans/NOVAI_TOOLS.md:2.5` v2.1 (22 tools).
+- **PHASE 23 (§23) — `web_research` EXTERNAL_EVIDENCE**: Nuevo `src/features/novai/tools/research/web-research.ts` con `Tavily (advanced)` → fallback `Brave Search`, timeout `8000ms`, degradación explícita `EXTERNAL_RESEARCH_DISABLED` sin inventar datos cuando no hay `TAVILY_API_KEY`/`BRAVE_SEARCH_API_KEY`. Output `EXTERNAL_EVIDENCE` separado de `INTERNAL_EVIDENCE`, proyección a `SourceEvent.sourceType='external'` y `NovaiSourceCard` con badge `EXTERNAL_EVIDENCE`. Registrado en `src/features/novai/tools/index.ts:62` y `src/features/novai/adapters/modes.ts:RESEARCHER`. Env vars documentadas en `.env.example` y `doc/plans/NOVAI_TOOLS.md:5.1`.
+
+### Updated
+- **Env example**: `.env.example` sección `External Research (§23)` con `TAVILY_API_KEY`/`BRAVE_SEARCH_API_KEY` (`BRAVE_API_KEY` alias).
+
+## v0.0.67 (2026-08-26)
+
+### Added & Architecture / Conversation State Architecture V2 (Supabase Single Source of Truth)
+- **Supabase como Fuente Canónica de Verdad (SSOT)**:
+  - Consolidada la persistencia exclusiva en `novai_conversations` y `novai_messages` bajo RLS, tenant-scoping y orden determinista `created_at asc`.
+  - [`src/features/novai/conversations-repository.ts`](file:///d:/03.%20MATRIZ%20DAFO/src/features/novai/conversations-repository.ts): Implementados `loadCanonicalAiMessages` e idempotencia contra envíos duplicados rápidos (< 3s).
+- **Reconstrucción Canónica de Historial en `/api/novai/chat`**:
+  - [`src/app/api/novai/chat/route.ts`](file:///d:/03.%20MATRIZ%20DAFO/src/app/api/novai/chat/route.ts): Reconstruye el historial de mensajes de la conversación directamente desde PostgreSQL, ignorando cualquier historial no autenticado enviado por el cliente y previniendo ataques de inyección/manipulación.
+  - Validación estricta de propiedad de conversación (`tenant_id`, `user_id`).
+- **Desacoplamiento de `localStorage` & Reconciliación UI**:
+  - [`src/views/apps/novai/index.tsx`](file:///d:/03.%20MATRIZ%20DAFO/src/views/apps/novai/index.tsx): Eliminada la dependencia de `localStorage` como autoridad de mensajes. Reemplazada la lógica *stale* (`messages.length === 0`) por fetch canónico garantizado al cambiar de conversación.
+  - Sincronización multi-pestaña en tiempo real vía `BroadcastChannel('novastore:novai-conversations')`.
+- **Limpieza de Clientes Legacy Obsoletos**:
+  - Eliminados los clientes manuales en desuso: [`pollinations-client.ts`](file:///d:/03.%20MATRIZ%20DAFO/src/features/novai/client/pollinations-client.ts), [`groq-client.ts`](file:///d:/03.%20MATRIZ%20DAFO/src/features/novai/client/groq-client.ts), [`github-models-client.ts`](file:///d:/03.%20MATRIZ%20DAFO/src/features/novai/client/github-models-client.ts) y [`cerebras-client.ts`](file:///d:/03.%20MATRIZ%20DAFO/src/features/novai/client/cerebras-client.ts).
+  - Eliminados imports y bloques de código muertos en [`src/features/novai/service.ts`](file:///d:/03.%20MATRIZ%20DAFO/src/features/novai/service.ts) (`ProviderRunner`, `runWithToolCallingLoop`), unificando `generateNovaiRawText` con `NovaiAgentRuntime.executeStreaming`.
+  - La carpeta `src/features/novai/client/` contiene ahora exclusivamente la tríada activa: `gemini-client.ts`, `openrouter-client.ts` y `opencode-zen-client.ts`.
+- **Tests & Documentación**:
+  - 224/224 tests unitarios pasando al 100% (`pnpm test`).
+  - Documento maestro creado en [`doc/plans/NOVAI_CONVERSATION_ARCHITECTURE.md`](file:///d:/03.%20MATRIZ%20DAFO/doc/plans/NOVAI_CONVERSATION_ARCHITECTURE.md).
+
 ## v0.0.66 (2026-08-26)
 
 ### Updated & Dedicated AI Provider Triad (spec §27/§29 PROMPT_NOVAI_PRO_V2)

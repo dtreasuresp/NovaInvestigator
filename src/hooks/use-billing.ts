@@ -17,24 +17,56 @@ const isBillingSummary = (value: BillingResponse): value is BillingSummary =>
   typeof value.commercialAccess.status === 'string' &&
   Array.isArray(value.invoices)
 
+let inFlightBillingPromise: Promise<BillingResponse> | null = null
+let cachedBillingResponse: { data: BillingResponse; timestamp: number } | null = null
+const BILLING_CACHE_TTL_MS = 5000
+
+export async function fetchBillingSummaryShared(force = false): Promise<BillingResponse> {
+  const now = Date.now()
+
+  if (!force && cachedBillingResponse && now - cachedBillingResponse.timestamp < BILLING_CACHE_TTL_MS) {
+    return cachedBillingResponse.data
+  }
+
+  if (inFlightBillingPromise) {
+    return inFlightBillingPromise
+  }
+
+  inFlightBillingPromise = (async () => {
+    try {
+      const response = await fetch('/api/billing/me', { cache: 'no-store' })
+      const payload = (await response.json()) as BillingResponse
+
+      if (response.ok) {
+        cachedBillingResponse = { data: payload, timestamp: Date.now() }
+      }
+
+      return payload
+    } finally {
+      inFlightBillingPromise = null
+    }
+  })()
+
+  return inFlightBillingPromise
+}
+
 export const useBilling = () => {
   const [billing, setBilling] = useState<BillingSummary | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [errorCode, setErrorCode] = useState<string | null>(null)
 
-  const refresh = useCallback(async () => {
+  const refresh = useCallback(async (force = false) => {
     setLoading(true)
     setError(null)
     setErrorCode(null)
 
     try {
-      const response = await fetch('/api/billing/me', { cache: 'no-store' })
-      const payload = (await response.json()) as BillingResponse
+      const payload = await fetchBillingSummaryShared(force)
 
-      if (!response.ok) {
-        setError(payload.error?.messageKey ?? 'billing.summaryUnavailable')
-        setErrorCode(payload.error?.code ?? null)
+      if (payload.error) {
+        setError(payload.error.messageKey ?? 'billing.summaryUnavailable')
+        setErrorCode(payload.error.code ?? null)
 
         return
       }
