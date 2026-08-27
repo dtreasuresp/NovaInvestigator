@@ -4,6 +4,80 @@
 
 All notable changes to this template will be documented in this file
 
+## v0.0.66 (2026-08-26)
+
+### Updated & Dedicated AI Provider Triad (spec §27/§29 PROMPT_NOVAI_PRO_V2)
+- **Consolidación exclusiva a 3 clientes de IA (`gemini`, `openrouter`, `opencode-zen`)**:
+  - Eliminados los clientes inestables y con bloqueos de red (`groq`, `github`, `cerebras`, `pollinations`).
+  - **Google Gemini**: Configuración prioritaria con `gemini-3.6-flash`, `gemini-2.5-flash` y `gemini-2.5-pro` (o `process.env.GEMINI_MODEL`).
+  - **OpenRouter**: Enrutamiento optimizado con modelos verificados y multi-fallback (`meta-llama/llama-3.1-8b-instruct:free`, `qwen/qwen-2.5-coder-32b-instruct:free`, `google/gemini-2.0-flash-exp:free`).
+  - **OpenCode Zen**: Configurado con rotación de API keys (`OPENCODE_ZEN_API_KEY`), URL base y modelo (`big-pickle`).
+- **Eliminación de latencia y timeouts**: El tiempo de respuesta de NovAi se redujo sustancialmente al eliminar esperas de conexión fallidas de proveedores secundarios.
+- **Tests unitarios**: 220/220 tests pasando exitosamente con 0 errores de tipo.
+
+## v0.0.65 (2026-08-26)
+
+### Fixed & Resilient Model Fallbacks & UI Null-Safety (PROMPT_NOVAI_PRO_V2, spec §27/§29)
+- **Corrección de modelos de proveedores en tiempo de ejecución**:
+  - **OpenRouter**: Actualizados slugs de modelos gratuitos a modelos activos y soportados (`meta-llama/llama-3.1-8b-instruct:free`, `qwen/qwen-2.5-coder-32b-instruct:free`, `nvidia/llama-3.1-nemotron-70b-instruct:free`), resolviendo el error de retiro de `meta-llama/llama-3.3-70b-instruct:free`.
+  - **Google Gemini**: Incorporados `gemini-2.0-flash` y `gemini-1.5-flash-latest` en [`src/features/novai/agent-runtime.ts`](file:///d:/03.%20MATRIZ%20DAFO/src/features/novai/agent-runtime.ts) para evitar el error de modelo no encontrado en la API v1beta de `@ai-sdk/google`.
+- **Blindaje de Null-Safety en UI de NovAi**:
+  - [`src/views/apps/novai/index.tsx`](file:///d:/03.%20MATRIZ%20DAFO/src/views/apps/novai/index.tsx): Protegidos todos los accesos a `activeThread`, `currentThreadId` y callbacks de actualización inmutables `setThreads(prev => ...)` contra estados iniciales vacíos o threads indefinidos.
+  - [`src/views/apps/novai/components/novai-sidebar.tsx`](file:///d:/03.%20MATRIZ%20DAFO/src/views/apps/novai/components/novai-sidebar.tsx): Agregado filtrado defensivo `safeThreads` y lectura segura `thread.context?.app`, eliminando el `Uncaught TypeError: Cannot read properties of undefined (reading 'id')`.
+- **Tests unitarios**:
+  - Suite de 222 tests unitarios pasando al 100% con 0 errores de TypeScript (`tsc --noEmit`).
+
+## v0.0.64 (2026-08-26)
+
+### Added & Architecture / Canonical Pipeline Convergence (Fase D · AUDITORIA_NOVAI_V2, spec §26/§27 PROMPT_NOVAI_PRO_V2)
+- **Unificación canónica de streaming (`streamNovaiChat`)**:
+  - Refactorizado [`src/features/novai/service.ts`](file:///d:/03.%20MATRIZ%20DAFO/src/features/novai/service.ts): `streamNovaiChat` ahora delega de manera transparente en [`NovaiAgentRuntime.executeStreaming`](file:///d:/03.%20MATRIZ%20DAFO/src/features/novai/agent-runtime.ts).
+  - Eliminado el pipeline dual paralelo (~350 líneas de lógica duplicada de streaming y llamadas a proveedores aisladas en `service.ts`).
+  - Todos los endpoints de la plataforma (`/api/novai/chat`, `/api/novai/report`, `/api/investigations/ai/chat`, `/api/investigations/ai/report`) ahora pasan por el **Agent Runtime gobernado**, garantizando enforcement de políticas en el Tool Gateway, auditoría persistente en `novai_audit_events` y degradación explícita por capabilities.
+- **Model Router Capability Output**:
+  - Actualizado [`src/features/novai/adapters/model-router.ts`](file:///d:/03.%20MATRIZ%20DAFO/src/features/novai/adapters/model-router.ts): `routeTask()` retorna explícitamente `requiredCapabilities` desacopladas del dominio para alimentar al pipeline de capacidades.
+- **Tests unitarios**:
+  - Nuevo [`tests/novai/pipeline-convergence.test.ts`](file:///d:/03.%20MATRIZ%20DAFO/tests/novai/pipeline-convergence.test.ts) verificando la delegación canónica, emisión de chunks, tool calls, tool results y enrutamiento transparente de dictámenes estratégicos e informes (222/222 pass).
+
+## v0.0.63 (2026-08-26)
+
+### Added & Provider Capability Detection / Explicit Degradation (Fase C · AUDITORIA_NOVAI_V2, spec §27/§29 PROMPT_NOVAI_PRO_V2)
+- **Matriz de capacidades por proveedor (`PROVIDER_CAPABILITIES`)**:
+  - Nuevo [`src/features/novai/capabilities.ts`](file:///d:/03.%20MATRIZ%20DAFO/src/features/novai/capabilities.ts): tipado y catálogo exhaustivo de los 7 proveedores soportados (`groq`, `openrouter`, `github`, `opencode-zen`, `gemini`, `cerebras`, `pollinations`) mapeando `supportsTools`, `supportsStreaming`, `supportsReasoning`, `supportsStructuredOutput` y `supportsVision`.
+  - Mapeo de modelos conocidos (`KNOWN_MODEL_CAPABILITIES`) con tamaño de context window y tokens máximos de salida.
+- **Degradación explícita controlada y auditable**:
+  - Función `filterCandidatesByCapabilities()`: filtra en tiempo de ejecución la cascada de proveedores según las capacidades mínimas requeridas por la categoría de la tarea (`fast`, `reasoning`, `coding`, `balanced`), registrando advertencias auditables en lugar de simular falsas capacidades o fallar silenciosamente.
+  - Integrado en [`src/features/novai/agent-runtime.ts`](file:///d:/03.%20MATRIZ%20DAFO/src/features/novai/agent-runtime.ts): Cerebras y Pollinations se omiten automáticamente para tareas que exigen ejecución determinista de tools, preservando la integridad del Agent Harness.
+- **Tests unitarios**:
+  - Nuevo [`tests/novai/capabilities.test.ts`](file:///d:/03.%20MATRIZ%20DAFO/tests/novai/capabilities.test.ts) con 12 subtests verificando los 7 proveedores, filtrado de candidatos, degradación controlada y compatibilidad de categorías (100% pass).
+
+## v0.0.62 (2026-08-26)
+
+### Added & Structured Events / Domain Cards Wiring (Fase B · AUDITORIA_NOVAI_V2, spec §24/§31-36 PROMPT_NOVAI_PRO_V2)
+- **Proyección de resultados de tools al protocolo NovaiEvent**:
+  - Nuevo [`src/features/novai/event-projection.ts`](file:///d:/03.%20MATRIZ%20DAFO/src/features/novai/event-projection.ts): capa pura de solo lectura (`projectToolResultToEvents`) que convierte los payloads verificados de 8 tools en eventos estructurados `evidence` / `audit` / `calculation` / `source`. Best-effort: nunca muta resultados ni lanza excepciones.
+  - Cableado en [`src/features/novai/agent-runtime.ts`](file:///d:/03.%20MATRIZ%20DAFO/src/features/novai/agent-runtime.ts): tras cada `tool-result` exitoso se emiten los eventos proyectados por el stream SSE.
+- **Tarjetas de dominio ahora alcanzables** (antes código muerto): `NovaiEvidenceCard`, `NovaiAuditCard`, `NovaiCalculationCard` y `NovaiSourceCard` reciben datos reales del backend:
+  - `get_factor_evidence` / `search_evidence` → `EvidenceCard` con factor, snippet y trazabilidad.
+  - `audit_factor` / `find_contradictions` / `validate_methodology` / `audit_relationship` → `AuditCard` con estado VALID/WARNING/INVALID, severidad, código canónico (`DAFO_SUSPICIOUS_ZERO_CROSSING`) y recomendación.
+  - `calculate_matrix` EFI/EFE y validación metodológica → `CalculationCard` determinista (Σ peso × calificación); DAFO/CAME/ALL no inventan totales.
+  - `get_investigation_documents` → `SourceCard` distinguiendo fuentes internas/externas.
+- **Protocolo extendido sin breaking changes**: `EvidenceEvent.investigationId`, `CalculationEvent.interpretation` e `items[]` alineados 1:1 con los contratos de la UI (`src/views/apps/novai/types.ts`).
+- **Tests**: nuevo [`tests/novai/event-projection.test.ts`](file:///d:/03.%20MATRIZ%20DAFO/tests/novai/event-projection.test.ts) (10 casos: fixtures reales de las 8 tools, mapeo de severidades, cero sospechoso, entradas malformadas sin lanzar).
+
+## v0.0.61 (2026-08-26)
+
+### Added & Security / Tool Gateway Enforcement (Fase A · AUDITORIA_NOVAI_V2, spec §38/§39 PROMPT_NOVAI_PRO_V2)
+- **Tool Gateway reconectado como enforcement point único del Harness**:
+  - Nuevo `NovaiToolGateway.buildGovernedVercelTools(principal, { runId })` en [`src/features/novai/tool-gateway.ts`](file:///d:/03.%20MATRIZ%20DAFO/src/features/novai/tool-gateway.ts): envuelve el `execute()` de cada tool Vercel AI SDK con `checkPolicy()` (riesgo/aprobación) y registro de auditoría asíncrono no bloqueante.
+  - Cableado en [`src/features/novai/agent-runtime.ts`](file:///d:/03.%20MATRIZ%20DAFO/src/features/novai/agent-runtime.ts): las tools del Agent Runtime ya no se ejecutan directo; toda invocación pasa por el Gateway y la tabla `novai_audit_events` recibe nuevamente el rastro real (antes: 0 llamadores de `executeGovernedTool`, auditoría muerta).
+  - Errores de tools capturados y normalizados (`{ error }`) sin propagar excepciones al modelo.
+- **Tests del cableado del Gateway**:
+  - Nuevo [`tests/novai/tool-gateway-wiring.test.ts`](file:///d:/03.%20MATRIZ%20DAFO/tests/novai/tool-gateway-wiring.test.ts): catálogo completo gobernado (21/21 tools con execute), verificación de fila insertada en `novai_audit_events` (tenant_id/user_id/tool_name/action/risk_level/approval_status/run_id), captura de errores y enforcement de riesgo ALTO.
+
+### Fixed
+- Variables muertas eliminadas en `agent-runtime.ts` (`cerebrasApiKey` sin uso, import `NovaiEvent` sin uso) para mantener `eslint` verde.
+
 ## v0.0.60 (2026-08-26)
 
 ### Added & UI / AI Elements & Domain Cards (Fases 5, 6 y 11 PROMPT_NOVAI_PRO_V2)

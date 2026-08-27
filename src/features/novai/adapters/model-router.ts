@@ -1,5 +1,6 @@
 import type { NovaiMode, AiMessage } from '../schema'
 import { getNovaiModeDefinition, type NovaiModeDefinition } from './modes'
+import { requiredCapabilitiesForCategory, type RequiredCapabilities, type ProviderId } from '../capabilities'
 
 export type ModelTier = 'FREE' | 'LOW_COST' | 'PREMIUM' | 'FALLBACK'
 
@@ -8,8 +9,9 @@ export interface ModelRouteDecision {
   modeDefinition: NovaiModeDefinition
   tier: ModelTier
   category: 'fast' | 'reasoning' | 'coding' | 'balanced'
+  requiredCapabilities: RequiredCapabilities
   recommendedOpenRouterModel: string
-  preferredProvider: 'gemini' | 'groq' | 'cerebras' | 'openrouter' | 'github' | 'pollinations'
+  preferredProvider: ProviderId
   rationale: string
 }
 
@@ -91,40 +93,43 @@ export class NovaiModelRouter {
     const mode = this.classifyTaskIntent(messages, contextApp, explicitMode)
     const modeDef = getNovaiModeDefinition(mode)
     const category = modeDef.preferredModelCategory
+    const requiredCapabilities = requiredCapabilitiesForCategory(category)
     const tier: ModelTier = isPremium ? 'PREMIUM' : 'FREE'
 
-    let recommendedOpenRouterModel = 'openai/gpt-4o-mini'
-    let preferredProvider: ModelRouteDecision['preferredProvider'] = 'groq'
+    let recommendedOpenRouterModel = 'meta-llama/llama-3.1-8b-instruct:free'
+    let preferredProvider: ModelRouteDecision['preferredProvider'] = process.env.GEMINI_API_KEY
+      ? 'gemini'
+      : (process.env.OPENROUTER_API_KEY ? 'openrouter' : 'opencode-zen')
     let rationale = `Modo ${mode} asignado.`
 
     switch (category) {
       case 'coding':
         // DEVELOPER — Mejor coding con tool calling
         recommendedOpenRouterModel = 'qwen/qwen-2.5-coder-32b-instruct:free'
-        preferredProvider = process.env.OPENROUTER_API_KEY ? 'openrouter' : (process.env.GROQ_API_KEY ? 'groq' : 'gemini')
-        rationale = 'Desarrollo técnico — Qwen 2.5 Coder 32B con tool calling nativo.'
+        preferredProvider = process.env.GEMINI_API_KEY ? 'gemini' : (process.env.OPENROUTER_API_KEY ? 'openrouter' : 'opencode-zen')
+        rationale = 'Desarrollo técnico — Qwen 2.5 Coder 32B / Gemini 3.6 Flash con tool calling nativo.'
         break
 
       case 'reasoning':
         // CONSULTANT, ARCHITECT — Razonamiento profundo y auditoría
         recommendedOpenRouterModel = 'nvidia/llama-3.1-nemotron-70b-instruct:free'
-        preferredProvider = process.env.OPENROUTER_API_KEY ? 'openrouter' : (process.env.GROQ_API_KEY ? 'groq' : 'gemini')
-        rationale = 'Razonamiento estratégico — Llama 3.1 Nemotron 70B / DeepSeek R1.'
+        preferredProvider = process.env.GEMINI_API_KEY ? 'gemini' : (process.env.OPENROUTER_API_KEY ? 'openrouter' : 'opencode-zen')
+        rationale = 'Razonamiento estratégico — Gemini 3.6 / Llama 3.1 Nemotron 70B.'
         break
 
       case 'fast':
         // OPERATOR, CHAT — Ultra-rápido, alta fluidez
-        recommendedOpenRouterModel = 'meta-llama/llama-3.3-70b-instruct:free'
-        preferredProvider = process.env.OPENROUTER_API_KEY ? 'openrouter' : (process.env.GROQ_API_KEY ? 'groq' : 'gemini')
-        rationale = 'Consulta general y navegación — Llama 3.3 70B / Gemma 2.'
+        recommendedOpenRouterModel = 'meta-llama/llama-3.1-8b-instruct:free'
+        preferredProvider = process.env.GEMINI_API_KEY ? 'gemini' : (process.env.OPENROUTER_API_KEY ? 'openrouter' : 'opencode-zen')
+        rationale = 'Consulta general y navegación — Gemini 3.6 Flash / Llama 3.1 8B.'
         break
 
       case 'balanced':
       default:
         // ANALYST, RESEARCHER — Equilibrado
-        recommendedOpenRouterModel = 'meta-llama/llama-3.3-70b-instruct:free'
-        preferredProvider = process.env.OPENROUTER_API_KEY ? 'openrouter' : (process.env.GROQ_API_KEY ? 'groq' : 'gemini')
-        rationale = 'Tarea analítica y métricas — Llama 3.3 70B / Mistral Small.'
+        recommendedOpenRouterModel = 'meta-llama/llama-3.1-8b-instruct:free'
+        preferredProvider = process.env.GEMINI_API_KEY ? 'gemini' : (process.env.OPENROUTER_API_KEY ? 'openrouter' : 'opencode-zen')
+        rationale = 'Tarea analítica y métricas — Gemini 3.6 Flash / Qwen 2.5.'
         break
     }
 
@@ -133,6 +138,7 @@ export class NovaiModelRouter {
       modeDefinition: modeDef,
       tier,
       category,
+      requiredCapabilities,
       recommendedOpenRouterModel,
       preferredProvider,
       rationale

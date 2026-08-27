@@ -450,21 +450,29 @@ export default function NovAiView() {
       isStreaming: true
     }
 
-    // Determine title if it's the first message
-    const isFirstMessage = !activeThread || activeThread.messages.length === 0
-    const autoTitle = isFirstMessage ? textToSend.slice(0, 35) + (textToSend.length > 35 ? '...' : '') : activeThread.title
+    const currentThreadId = activeThread?.id || generateId()
+    const isFirstMessage = !activeThread || !activeThread.messages || activeThread.messages.length === 0
+    const autoTitle = isFirstMessage ? textToSend.slice(0, 35) + (textToSend.length > 35 ? '...' : '') : (activeThread?.title || 'Nueva conversación')
 
     const updatedMessages = [...messages, userMessage, assistantPlaceholder]
 
     const updatedThread: ChatThread = {
-      ...activeThread,
+      id: currentThreadId,
       title: autoTitle,
+      createdAt: activeThread?.createdAt || new Date().toISOString(),
       updatedAt: new Date().toISOString(),
-      context: { app: effectiveContext },
+      context: { app: effectiveContext, mode: selectedMode },
       messages: updatedMessages
     }
 
-    const nextThreads = threads.map(t => (t.id === activeThread.id ? updatedThread : t))
+    const threadExists = threads.some(t => t && t.id === currentThreadId)
+    const nextThreads = threadExists
+      ? threads.map(t => (t && t.id === currentThreadId ? updatedThread : t))
+      : [updatedThread, ...threads]
+
+    if (!activeThreadId) {
+      setActiveThreadId(currentThreadId)
+    }
 
     saveThreads(nextThreads)
 
@@ -487,7 +495,7 @@ export default function NovAiView() {
         headers: { 'Content-Type': 'application/json' },
         signal: controller.signal,
         body: JSON.stringify({
-          conversationId: activeThread?.id,
+          conversationId: currentThreadId,
           messages: apiMessages,
           context: contextPayload,
           isFreeText: true,
@@ -495,8 +503,8 @@ export default function NovAiView() {
         })
       })
 
-      if (isFirstMessage && activeThread?.id) {
-        void fetch(`/api/novai/conversations/${activeThread.id}`, {
+      if (isFirstMessage && currentThreadId) {
+        void fetch(`/api/novai/conversations/${currentThreadId}`, {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ title: autoTitle })
@@ -570,23 +578,22 @@ export default function NovAiView() {
                 args: data.input || data.args || {},
                 state: 'call'
               }
-              if (existingIdx === -1) {
-                currentToolInvocations = [...currentToolInvocations, newInvocation]
-              } else {
+              if (existingIdx >= 0) {
                 currentToolInvocations = currentToolInvocations.map((t, idx) => idx === existingIdx ? newInvocation : t)
+              } else {
+                currentToolInvocations = [...currentToolInvocations, newInvocation]
               }
             } else if (data.type === 'tool-result') {
               const callId = data.id || data.toolCallId
-              const toolName = data.tool || data.toolName
               currentToolInvocations = currentToolInvocations.map(t => {
-                if ((callId && t.toolCallId === callId) || (toolName && t.toolName === toolName)) {
+                if (t.toolCallId === callId || t.toolName === data.tool) {
                   return {
                     ...t,
                     state: 'result',
-                    result: data.result,
-                    isError: data.isError
+                    result: data.result || data.output
                   }
                 }
+
                 return t
               })
             } else if (data.type === 'message-complete' || data.type === 'finish') {
@@ -600,7 +607,7 @@ export default function NovAiView() {
             // Update the assistant message in current thread state immutably
             setThreads(prev =>
               prev.map(th => {
-                if (th.id !== activeThread.id) return th
+                if (!th || th.id !== currentThreadId) return th
                 const copyMsgs = [...th.messages]
                 const lastIdx = copyMsgs.length - 1
                 const last = copyMsgs[lastIdx]
@@ -632,7 +639,7 @@ export default function NovAiView() {
       // Mark streaming done
       setThreads(prev => {
         const finalThreads = prev.map(th => {
-          if (th.id !== activeThread.id) return th
+          if (!th || th.id !== currentThreadId) return th
           const copyMsgs = [...th.messages]
           const lastIdx = copyMsgs.length - 1
           const last = copyMsgs[lastIdx]
@@ -668,7 +675,7 @@ export default function NovAiView() {
         // User aborted, close streaming cleanly
         setThreads(prev =>
           prev.map(th => {
-            if (th.id !== activeThread.id) return th
+            if (!th || th.id !== currentThreadId) return th
             const copyMsgs = [...th.messages]
             const lastIdx = copyMsgs.length - 1
             const last = copyMsgs[lastIdx]
@@ -693,7 +700,7 @@ export default function NovAiView() {
 
       setThreads(prev => {
         const updatedWithErr = prev.map(th => {
-          if (th.id !== activeThread.id) return th
+          if (!th || th.id !== currentThreadId) return th
           const copyMsgs = [...th.messages]
           const lastIdx = copyMsgs.length - 1
           const last = copyMsgs[lastIdx]
@@ -723,6 +730,8 @@ export default function NovAiView() {
 
   const handleRegenerate = async () => {
     if (isLoading || !activeThread || messages.length === 0) return
+
+    const currentThreadId = activeThread.id
 
     // Find the last assistant message index
     const lastAssistantIdx = [...messages].map((m, idx) => ({ role: m.role, idx })).reverse().find(m => m.role === 'assistant')?.idx
@@ -774,7 +783,7 @@ export default function NovAiView() {
       messages: updatedMessages
     }
 
-    const nextThreads = threads.map(t => (t.id === activeThread.id ? updatedThread : t))
+    const nextThreads = threads.map(t => (t && t.id === currentThreadId ? updatedThread : t))
 
     saveThreads(nextThreads)
     setIsLoading(true)
@@ -795,6 +804,7 @@ export default function NovAiView() {
         headers: { 'Content-Type': 'application/json' },
         signal: controller.signal,
         body: JSON.stringify({
+          conversationId: currentThreadId,
           messages: apiMessages,
           context: contextPayload,
           isFreeText: true,
@@ -835,7 +845,7 @@ export default function NovAiView() {
 
               setThreads(prev =>
                 prev.map(th => {
-                  if (th.id !== activeThread.id) return th
+                  if (!th || th.id !== currentThreadId) return th
                   const copyMsgs = [...th.messages]
                   const lastIdx = copyMsgs.length - 1
                   const last = copyMsgs[lastIdx]
@@ -861,7 +871,7 @@ export default function NovAiView() {
       // Mark streaming done
       setThreads(prev => {
         const finalThreads = prev.map(th => {
-          if (th.id !== activeThread.id) return th
+          if (!th || th.id !== currentThreadId) return th
           const copyMsgs = [...th.messages]
           const lastIdx = copyMsgs.length - 1
           const last = copyMsgs[lastIdx]
@@ -893,7 +903,7 @@ export default function NovAiView() {
 
       setThreads(prev => {
         const updatedWithErr = prev.map(th => {
-          if (th.id !== activeThread.id) return th
+          if (!th || th.id !== currentThreadId) return th
           const copyMsgs = [...th.messages]
           const lastIdx = copyMsgs.length - 1
           const last = copyMsgs[lastIdx]

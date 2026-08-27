@@ -28,6 +28,7 @@ import { NovaiTokenBudget } from './token-budget'
 import { getMethodologicalPrompt } from './methodology-knowledge'
 import { listInvestigationMetadata } from '@/lib/investigations/repository'
 import type { NovaiContext, AiMessage, AiQuotaInfo } from './schema'
+import { NovaiAgentRuntime } from './agent-runtime'
 
 import { executeNovaiTool, getNovaiVercelTools, NOVAI_TOOL_DECLARATIONS, NOVAI_OPENAI_TOOLS, type OpenAiToolCall } from './tools'
 import type { ToolDefinition, StreamingCompletionResult } from '@/features/novai/client/openrouter-client'
@@ -480,102 +481,10 @@ async function runWithToolCallingLoop({
 }
 
 /**
- * Ejecutor nativo de streaming y Tool Calling Loop gobernado con Vercel AI SDK Core.
+ * Ejecutor canónico de streaming NovAi (Fase D · Pipeline Convergence).
+ * Delega en NovaiAgentRuntime para garantizar ejecución unificada,
+ * Tool Gateway enforcement, auditoría estructurada y degradación por capabilities.
  */
-async function streamWithVercelAiSdk({
-  model,
-  systemPrompt,
-  messages,
-  principal,
-  callbacks
-}: {
-  model: any
-  systemPrompt: string
-  messages: Array<{ role: string; content: string | null; tool_call_id?: string; tool_calls?: any }>
-  principal: InvestigationsPrincipal
-  callbacks: StreamCallbacks
-}): Promise<boolean> {
-  try {
-    const coreMessages: ModelMessage[] = messages
-      .filter(m => m.content && typeof m.content === 'string' && m.content.trim().length > 0)
-      .map(m => {
-        const role = m.role === 'assistant' ? 'assistant' : m.role === 'system' ? 'system' : 'user'
-        return { role, content: m.content || '' } as ModelMessage
-      })
-
-    const vercelTools = getNovaiVercelTools(principal)
-
-    const result = streamText({
-      model,
-      system: systemPrompt,
-      messages: coreMessages,
-      tools: vercelTools,
-      maxOutputTokens: 8192,
-      stopWhen: isStepCount(5),
-      onError: (errPayload) => {
-        const raw = (errPayload as { error?: unknown })?.error ?? errPayload
-        const message = raw instanceof Error ? raw.message : typeof raw === 'object' ? JSON.stringify(raw) : String(raw)
-        logger.warn('Vercel AI SDK stream error', {
-          action: 'novai.vercel_ai.stream_error',
-          details: { tenantId: principal.tenantId, errorMessage: message }
-        })
-      }
-    })
-
-    let hasText = false
-    let accumulatedText = ''
-
-    for await (const part of result.fullStream) {
-      if (part.type === 'text-delta') {
-        const delta = (part as any).text ?? (part as any).textDelta ?? ''
-        if (delta) {
-          hasText = true
-          accumulatedText += delta
-          callbacks.onChunk(delta)
-        }
-      } else if (part.type === 'reasoning-delta') {
-        const delta = (part as any).text ?? (part as any).textDelta ?? ''
-        if (delta && callbacks.onReasoning) {
-          callbacks.onReasoning({ textDelta: delta })
-        }
-      } else if (part.type === 'tool-call') {
-        if (callbacks.onToolCall) {
-          callbacks.onToolCall({
-            toolCallId: (part as any).toolCallId || `tc-${Date.now()}`,
-            toolName: (part as any).toolName,
-            args: (part as any).input ?? (part as any).args ?? {}
-          })
-        }
-      } else if (part.type === 'tool-result') {
-        if (callbacks.onToolResult) {
-          callbacks.onToolResult({
-            toolCallId: (part as any).toolCallId || '',
-            toolName: (part as any).toolName,
-            result: (part as any).output ?? (part as any).result,
-            isError: (part as any).isError
-          })
-        }
-      }
-    }
-
-    const fullText = accumulatedText || (await result.text)
-    if (hasText || fullText) {
-      await callbacks.onComplete(fullText)
-      return true
-    }
-
-    return false
-  } catch (err) {
-    const raw = (err as { error?: unknown })?.error ?? err
-    const message = raw instanceof Error ? raw.message : typeof raw === 'object' ? JSON.stringify(raw) : String(raw)
-    logger.warn('Vercel AI SDK execution exception', {
-      action: 'novai.vercel_ai.exception',
-      details: { tenantId: principal.tenantId, errorMessage: message }
-    })
-    return false
-  }
-}
-
 export async function streamNovaiChat({
   principal,
   context,
@@ -591,260 +500,35 @@ export async function streamNovaiChat({
   locale?: string
   callbacks: StreamCallbacks
 }): Promise<void> {
-  await assertNovaiAllowed(principal, isFreeText)
-
-  // Hidratación automática en vivo de los datos del tenant y memorias bajo RLS y ReBAC
-  const [overview, memories] = await Promise.all([
-    fetchTenantLiveOverview(principal),
-    NovaiMemoryEngine.getActiveMemories(principal.client as unknown as SupabaseClient, {
-      tenantId: principal.tenantId,
-      userId: principal.userId
-    })
-  ]);
-
-  const systemPrompt = resolveSystemPrompt(principal, context, locale, overview, memories)
-  const groqApiKey = process.env.GROQ_API_KEY
-  const geminiApiKey = process.env.GEMINI_API_KEY
-  const cerebrasApiKey = process.env.CEREBRAS_API_KEY
-
-  const wrappedCallbacks: StreamCallbacks = {
-    onChunk: callbacks.onChunk,
-    onToolCall: callbacks.onToolCall,
-    onToolResult: callbacks.onToolResult,
-    onReasoning: callbacks.onReasoning,
-    onComplete: async (fullText: string) => {
-      await consumeAiQueryQuota(principal)
-      callbacks.onComplete(fullText)
-    },
-    onError: callbacks.onError
-  }
-
-  const githubToken = process.env.GITHUB_TOKEN
-
-  const openrouterApiKey = process.env.OPENROUTER_API_KEY
-  const openrouterModel = process.env.OPENROUTER_MODEL || 'openai/gpt-4o-mini'
-
-  const OPENROUTER_FREE_FALLBACKS_NOVAI = (process.env.OPENROUTER_FREE_MODELS ||
-    'nvidia/llama-3.1-nemotron-70b-instruct:free,meta-llama/llama-3.3-70b-instruct:free,qwen/qwen-2.5-coder-32b-instruct:free,mistralai/mistral-small-24b-instruct-2501:free,openai/gpt-4o-mini'
-  )
-    .split(',')
-    .map(s => s.trim())
-
-  const routeDecision = NovaiModelRouter.routeTask({
+  await NovaiAgentRuntime.executeStreaming({
+    principal,
+    context,
     messages,
-    contextApp: context.app,
-    explicitMode: context.mode,
-    isPremium: isFreeText
+    isFreeText,
+    locale,
+    onEvent: async (event) => {
+      if (event.type === 'text-delta') {
+        callbacks.onChunk(event.delta)
+      } else if (event.type === 'tool-call') {
+        callbacks.onToolCall?.({
+          toolCallId: event.id,
+          toolName: event.tool,
+          args: event.input
+        })
+      } else if (event.type === 'tool-result') {
+        callbacks.onToolResult?.({
+          toolCallId: event.id,
+          toolName: event.tool,
+          result: event.result,
+          isError: event.isError
+        })
+      } else if (event.type === 'message-complete') {
+        await callbacks.onComplete(event.fullText)
+      } else if (event.type === 'error') {
+        callbacks.onError(new Error(event.error))
+      }
+    }
   })
-
-  // Helper: seleccionar modelo Groq según categoría
-  const getGroqModelForCategory = (category: string): string => {
-    switch (category) {
-      case 'reasoning':
-        return 'openai/gpt-oss-120b' // Mejor razonamiento + tools
-      case 'coding':
-        return 'qwen/qwen3-32b' // Coding + razonamiento
-      case 'fast':
-        return 'llama-3.1-8b-instant' // Ultra-rápido, 14,400 RPD
-      case 'balanced':
-      default:
-        return 'llama-3.3-70b-versatile' // Flagship equilibrado
-    }
-  }
-
-  const groqModel = getGroqModelForCategory(routeDecision.category)
-
-  // Presupuesto y ventana deslizante inteligente de tokens
-  const budgetResult = NovaiTokenBudget.trimConversationHistory({
-    messages,
-    systemPrompt,
-    modelName: groqModel
-  })
-
-  const effectiveMessages = budgetResult.trimmedMessages
-
-  if (budgetResult.wasTrimmed) {
-    logger.info('NovAi conversation history trimmed for token budget', {
-      action: 'novai.token_budget.trim',
-      details: {
-        tenantId: principal.tenantId,
-        originalCount: messages.length,
-        trimmedCount: effectiveMessages.length,
-        omittedCount: budgetResult.omittedCount,
-        estimatedTokens: budgetResult.totalEstimatedTokens
-      }
-    })
-  }
-
-  // 1. GROQ con Vercel AI SDK — Modelos con tool calling nativo, ultra-rápidos (primario)
-  if (groqApiKey) {
-    try {
-      const groqProvider = createOpenAI({
-        baseURL: 'https://api.groq.com/openai/v1',
-        apiKey: groqApiKey
-      })
-
-      const ok = await streamWithVercelAiSdk({
-        model: groqProvider(groqModel),
-        systemPrompt,
-        messages: effectiveMessages,
-        principal,
-        callbacks: wrappedCallbacks
-      })
-
-      if (ok) return
-    } catch (groqError) {
-      logger.warn('Groq Vercel AI SDK stream failed, trying fallback runner', { action: 'novai.chat.groq_ai_sdk', details: { tenantId: principal.tenantId, model: groqModel, errorMessage: groqError instanceof Error ? groqError.message : String(groqError) } })
-    }
-  }
-
-  // 2. OPENROUTER con Vercel AI SDK — Modelos con tool calling (secundario)
-  if (openrouterApiKey) {
-    const modelsToTryNovai = [
-      routeDecision.recommendedOpenRouterModel,
-      openrouterModel,
-      ...OPENROUTER_FREE_FALLBACKS_NOVAI.filter(m => m !== routeDecision.recommendedOpenRouterModel && m !== openrouterModel)
-    ]
-
-    const openrouterProvider = createOpenAI({
-      baseURL: 'https://openrouter.ai/api/v1',
-      apiKey: openrouterApiKey,
-      headers: {
-        'HTTP-Referer': 'https://novastore.app',
-        'X-Title': 'NovaStore ERP'
-      }
-    })
-
-    for (const m of modelsToTryNovai) {
-      try {
-        const ok = await streamWithVercelAiSdk({
-          model: openrouterProvider(m),
-          systemPrompt,
-          messages: effectiveMessages,
-          principal,
-          callbacks: wrappedCallbacks
-        })
-
-        if (ok) return
-      } catch (openrouterError) {
-        logger.warn('OpenRouter Vercel AI SDK stream failed', {
-          action: 'novai.chat.openrouter_ai_sdk',
-          details: {
-            tenantId: principal.tenantId,
-            model: m,
-            errorMessage: openrouterError instanceof Error ? openrouterError.message : String(openrouterError)
-          }
-        })
-        continue
-      }
-    }
-  }
-
-  // 3. OPENCODE ZEN (rotación de keys) con Vercel AI SDK
-  const zenKeys = (process.env.OPENCODE_ZEN_API_KEY || '').split(',').map(k => k.trim()).filter(Boolean)
-  const zenModel = process.env.OPENCODE_ZEN_MODEL || 'big-pickle'
-  const zenBaseUrl = process.env.OPENCODE_ZEN_BASE_URL || 'https://opencode.ai/zen/v1'
-
-  if (zenKeys.length) {
-    for (const zenKey of zenKeys) {
-      try {
-        const zenProvider = createOpenAI({
-          baseURL: zenBaseUrl,
-          apiKey: zenKey
-        })
-
-        const ok = await streamWithVercelAiSdk({
-          model: zenProvider(zenModel),
-          systemPrompt,
-          messages: effectiveMessages,
-          principal,
-          callbacks: wrappedCallbacks
-        })
-
-        if (ok) return
-      } catch (zenError) {
-        logger.warn('OpenCode Zen Vercel AI SDK stream failed (novai)', { action: 'novai.chat.zen_ai_sdk', details: { tenantId: principal.tenantId, errorMessage: zenError instanceof Error ? zenError.message : String(zenError) } })
-      }
-    }
-  }
-
-  // 4. GITHUB MODELS con Vercel AI SDK
-  if (githubToken) {
-    try {
-      const githubProvider = createOpenAI({
-        baseURL: 'https://models.inference.ai.azure.com',
-        apiKey: githubToken
-      })
-
-      const ok = await streamWithVercelAiSdk({
-        model: githubProvider('gpt-4o-mini'),
-        systemPrompt,
-        messages: effectiveMessages,
-        principal,
-        callbacks: wrappedCallbacks
-      })
-
-      if (ok) return
-    } catch (githubError) {
-      logger.warn('GitHub Models Vercel AI SDK stream failed', { action: 'novai.chat.github_ai_sdk', details: { tenantId: principal.tenantId, errorMessage: githubError instanceof Error ? githubError.message : String(githubError) } })
-    }
-  }
-
-  // 5. GEMINI con Vercel AI SDK (@ai-sdk/google)
-  if (geminiApiKey) {
-    try {
-      const googleProvider = createGoogleGenerativeAI({
-        apiKey: geminiApiKey
-      })
-
-      const ok = await streamWithVercelAiSdk({
-        model: googleProvider('gemini-1.5-flash'),
-        systemPrompt,
-        messages: effectiveMessages,
-        principal,
-        callbacks: wrappedCallbacks
-      })
-
-      if (ok) return
-    } catch (geminiError) {
-      logger.warn('Gemini Vercel AI SDK stream failed', { action: 'novai.chat.gemini_ai_sdk', details: { tenantId: principal.tenantId, errorMessage: geminiError instanceof Error ? geminiError.message : String(geminiError) } })
-    }
-  }
-
-  // 6. POLLINATIONS — Text-only fallback
-  try {
-    await callPollinationsStreaming({
-      systemPrompt,
-      messages: effectiveMessages,
-      callbacks: wrappedCallbacks
-    })
-  } catch (pollinationsError) {
-    logger.warn('Pollinations stream failed', { action: 'novai.chat.pollinations', details: { tenantId: principal.tenantId, errorMessage: pollinationsError instanceof Error ? pollinationsError.message : String(pollinationsError) } })
-  }
-
-  // 7. CEREBRAS — Text-only fallback
-  if (cerebrasApiKey) {
-    try {
-      await callCerebrasStreaming({
-        systemPrompt,
-        messages: effectiveMessages,
-        apiKey: cerebrasApiKey,
-        callbacks: wrappedCallbacks
-      })
-
-      return
-    } catch (cerebrasError) {
-      logger.warn('Cerebras stream failed', { action: 'novai.chat.cerebras', details: { tenantId: principal.tenantId, errorMessage: cerebrasError instanceof Error ? cerebrasError.message : String(cerebrasError) } })
-    }
-  }
-
-  const fallback =
-    locale === 'en'
-      ? `**NovAi (offline)** — No AI keys configured. I can still help with NovaStore navigation and methodology. Ask about Investigator, Kanban or billing.`
-      : `**NovAi (offline)** — Sin claves IA configuradas. Puedo ayudarte con navegación y metodología de NovaStore. Pregunta sobre Investigador, Kanban o facturación.`
-
-  wrappedCallbacks.onChunk(fallback)
-  await wrappedCallbacks.onComplete(fallback)
 }
 
 // =============================================================================

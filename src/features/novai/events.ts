@@ -73,6 +73,7 @@ export interface EvidenceEvent {
   page?: number | string
   confidence?: number
   quality?: 'high' | 'medium' | 'low' | 'unverified'
+  investigationId?: string
 }
 
 export interface CalculationEvent {
@@ -82,6 +83,14 @@ export interface CalculationEvent {
   summary: string
   formula?: string
   factorsEvaluated?: number
+  interpretation?: string
+  items?: Array<{
+    code: string
+    name: string
+    weight: number
+    rating: number
+    weightedScore: number
+  }>
   details?: Record<string, unknown>
 }
 

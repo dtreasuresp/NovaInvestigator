@@ -126,4 +126,25 @@ test('NovAi Model Router & 7 Operational Modes Engine', async t => {
     assert.match(prompt, /ESPECIALISTA EN CÓDIGO E INTEGRACIONES/)
     assert.match(prompt, /Next\.js App Router/)
   })
+
+  await t.test('Model Router outputs requiredCapabilities according to spec §27', () => {
+    const decisionReasoning = NovaiModelRouter.routeTask({
+      messages: [{ role: 'user', content: 'Audita la matriz DAFO' }],
+      explicitMode: 'CONSULTANT'
+    })
+
+    assert.equal(decisionReasoning.category, 'reasoning')
+    assert.equal(decisionReasoning.requiredCapabilities.supportsReasoning, true)
+    assert.equal(decisionReasoning.requiredCapabilities.supportsTools, true)
+    assert.equal(decisionReasoning.requiredCapabilities.supportsStreaming, true)
+
+    const decisionFast = NovaiModelRouter.routeTask({
+      messages: [{ role: 'user', content: 'Hola' }],
+      explicitMode: 'CHAT'
+    })
+
+    assert.equal(decisionFast.category, 'fast')
+    assert.equal(decisionFast.requiredCapabilities.supportsTools, true)
+    assert.equal(decisionFast.requiredCapabilities.supportsStreaming, true)
+  })
 })

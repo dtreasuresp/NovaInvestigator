@@ -11,6 +11,13 @@ import { NovaiModelRouter } from './adapters/model-router'
 import { NovaiTokenBudget } from './token-budget'
 import { NOVAI_ALL_MODULAR_TOOLS } from './tools/index'
 import { NovaiToolGateway } from './tool-gateway'
+import { projectToolResultToEvents } from './event-projection'
+import {
+  PROVIDER_CAPABILITIES,
+  filterCandidatesByCapabilities,
+  requiredCapabilitiesForCategory,
+  type ProviderId
+} from './capabilities'
 import type { NovaiEventHandler } from './events'
 import { resolveSystemPrompt, fetchTenantLiveOverview, assertNovaiAllowed, consumeAiQueryQuota } from './service'
 
@@ -69,34 +76,15 @@ export class NovaiAgentRuntime {
       isPremium: isFreeText
     })
 
-    const groqApiKey = process.env.GROQ_API_KEY
-    const openrouterApiKey = process.env.OPENROUTER_API_KEY
     const geminiApiKey = process.env.GEMINI_API_KEY
-    const githubToken = process.env.GITHUB_TOKEN
+    const openrouterApiKey = process.env.OPENROUTER_API_KEY
     const zenKeys = (process.env.OPENCODE_ZEN_API_KEY || '').split(',').map(k => k.trim()).filter(Boolean)
-
-    // Helper: selección de modelo
-    const getGroqModelForCategory = (category: string): string => {
-      switch (category) {
-        case 'reasoning':
-          return 'openai/gpt-oss-120b'
-        case 'coding':
-          return 'qwen/qwen3-32b'
-        case 'fast':
-          return 'llama-3.1-8b-instant'
-        case 'balanced':
-        default:
-          return 'llama-3.3-70b-versatile'
-      }
-    }
-
-    const groqModel = getGroqModelForCategory(routeDecision.category)
 
     // 3. Control y presupuesto de tokens
     const budgetResult = NovaiTokenBudget.trimConversationHistory({
       messages,
       systemPrompt,
-      modelName: groqModel
+      modelName: 'gemini-3.6-flash'
     })
 
     const effectiveMessages = budgetResult.trimmedMessages
@@ -115,19 +103,27 @@ export class NovaiAgentRuntime {
     const runId = `run-${Date.now()}`
     const vercelTools = NovaiToolGateway.buildGovernedVercelTools(principal, { runId })
 
-    // Lista ordenada de proveedores para ejecución resiliente
+    // Capacidad requerida por el modo/categoría (spec §27/§29)
+    const requiredCaps = requiredCapabilitiesForCategory(routeDecision.category)
+
+    // Lista ordenada de proveedores oficiales: Gemini -> OpenRouter -> OpenCode Zen
     const providerCandidates: Array<{
       name: string
       modelInstance: any
+      provider: ProviderId
     }> = []
 
-    if (groqApiKey) {
-      const groq = createOpenAI({
-        baseURL: 'https://api.groq.com/openai/v1',
-        apiKey: groqApiKey
-      })
+    if (geminiApiKey) {
+      const google = createGoogleGenerativeAI({ apiKey: geminiApiKey })
+      const customGeminiModel = process.env.GEMINI_MODEL
 
-      providerCandidates.push({ name: `Groq (${groqModel})`, modelInstance: groq(groqModel) })
+      if (customGeminiModel) {
+        providerCandidates.push({ name: `Gemini (${customGeminiModel})`, modelInstance: google(customGeminiModel), provider: 'gemini' })
+      }
+
+      providerCandidates.push({ name: 'Gemini (gemini-3.6-flash)', modelInstance: google('gemini-3.6-flash'), provider: 'gemini' })
+      providerCandidates.push({ name: 'Gemini (gemini-2.5-flash)', modelInstance: google('gemini-2.5-flash'), provider: 'gemini' })
+      providerCandidates.push({ name: 'Gemini (gemini-2.5-pro)', modelInstance: google('gemini-2.5-pro'), provider: 'gemini' })
     }
 
     if (openrouterApiKey) {
@@ -137,9 +133,19 @@ export class NovaiAgentRuntime {
         headers: { 'HTTP-Referer': 'https://novastore.app', 'X-Title': 'NovaStore ERP' }
       })
 
-      const orModel = routeDecision.recommendedOpenRouterModel || process.env.OPENROUTER_MODEL || 'openai/gpt-4o-mini'
+      const orModel = routeDecision.recommendedOpenRouterModel || process.env.OPENROUTER_MODEL || 'meta-llama/llama-3.1-8b-instruct:free'
 
-      providerCandidates.push({ name: `OpenRouter (${orModel})`, modelInstance: openrouter(orModel) })
+      providerCandidates.push({ name: `OpenRouter (${orModel})`, modelInstance: openrouter(orModel), provider: 'openrouter' })
+
+      if (orModel !== 'google/gemini-2.0-flash-exp:free') {
+        providerCandidates.push({ name: 'OpenRouter (google/gemini-2.0-flash-exp:free)', modelInstance: openrouter('google/gemini-2.0-flash-exp:free'), provider: 'openrouter' })
+      }
+      if (orModel !== 'meta-llama/llama-3.1-8b-instruct:free') {
+        providerCandidates.push({ name: 'OpenRouter (meta-llama/llama-3.1-8b-instruct:free)', modelInstance: openrouter('meta-llama/llama-3.1-8b-instruct:free'), provider: 'openrouter' })
+      }
+      if (orModel !== 'qwen/qwen-2.5-coder-32b-instruct:free') {
+        providerCandidates.push({ name: 'OpenRouter (qwen/qwen-2.5-coder-32b-instruct:free)', modelInstance: openrouter('qwen/qwen-2.5-coder-32b-instruct:free'), provider: 'openrouter' })
+      }
     }
 
     if (zenKeys.length > 0) {
@@ -147,33 +153,28 @@ export class NovaiAgentRuntime {
       const zenModel = process.env.OPENCODE_ZEN_MODEL || 'big-pickle'
       const zen = createOpenAI({ baseURL: zenBaseUrl, apiKey: zenKeys[0] })
 
-      providerCandidates.push({ name: `OpenCode Zen (${zenModel})`, modelInstance: zen(zenModel) })
+      providerCandidates.push({ name: `OpenCode Zen (${zenModel})`, modelInstance: zen(zenModel), provider: 'opencode-zen' })
     }
 
-    if (githubToken) {
-      const github = createOpenAI({ baseURL: 'https://models.inference.ai.azure.com', apiKey: githubToken })
+    // Degradación explícita por capacidades (spec §27/§29): no simular tools
+    // en proveedores que no las soporten. Se registra cada salto.
+    const filteredCandidates = filterCandidatesByCapabilities(
+      providerCandidates,
+      requiredCaps,
+      (msg) => logger.warn(msg, { action: 'novai.runtime.capability_fallback' })
+    )
 
-      providerCandidates.push({ name: 'GitHub Models (gpt-4o-mini)', modelInstance: github('gpt-4o-mini') })
+    if (filteredCandidates.length === 0) {
+      logger.error('No provider compatible with required capabilities', {
+        action: 'novai.runtime.no_compatible_provider',
+        details: { requiredCaps, originalCount: providerCandidates.length }
+      })
     }
-
-    if (geminiApiKey) {
-      const google = createGoogleGenerativeAI({ apiKey: geminiApiKey })
-
-      providerCandidates.push({ name: 'Gemini (gemini-1.5-flash)', modelInstance: google('gemini-1.5-flash') })
-    }
-
-    // Fallback Pollinations (OpenAI compatible, $0 sin key)
-    const pollinations = createOpenAI({
-      baseURL: 'https://text.pollinations.ai/openai',
-      apiKey: 'pollinations-free'
-    })
-
-    providerCandidates.push({ name: 'Pollinations (openai)', modelInstance: pollinations('openai') })
 
     let success = false
     let accumulatedText = ''
 
-    for (const candidate of providerCandidates) {
+    for (const candidate of filteredCandidates) {
       try {
         const streamResult = streamText({
           model: candidate.modelInstance,
@@ -248,6 +249,16 @@ export class NovaiAgentRuntime {
               description: isError ? 'Error en la ejecución de la herramienta' : 'Datos validados correctamente.',
               status: isError ? 'error' : 'completed'
             })
+
+            // Proyección a eventos estructurados de dominio (spec §24/§31-36):
+            // evidencia, auditorías y cálculos deterministas que la UI
+            // renderiza con las tarjetas NovaiEvidenceCard / NovaiAuditCard /
+            // NovaiCalculationCard / NovaiSourceCard.
+            if (!isError) {
+              for (const structuredEvent of projectToolResultToEvents(toolName, output)) {
+                await onEvent(structuredEvent)
+              }
+            }
           }
         }
 
@@ -266,6 +277,43 @@ export class NovaiAgentRuntime {
           details: { provider: candidate.name, error: errorMsg }
         })
         continue
+      }
+    }
+
+    // Fallback de emergencia sin tools para intentar completar la respuesta si la invocación con tools falló
+    if (!success && providerCandidates.length > 0) {
+      for (const candidate of providerCandidates) {
+        try {
+          logger.warn(`Attempting emergency text-only stream on ${candidate.name}`, {
+            action: 'novai.runtime.emergency_text_fallback',
+            details: { provider: candidate.name }
+          })
+
+          const emergencyStream = streamText({
+            model: candidate.modelInstance,
+            system: systemPrompt,
+            messages: coreMessages,
+            maxOutputTokens: 4096
+          })
+
+          for await (const part of emergencyStream.fullStream) {
+            if (part.type === 'text-delta') {
+              const delta = (part as any).text ?? (part as any).textDelta ?? ''
+
+              if (delta) {
+                accumulatedText += delta
+                await onEvent({ type: 'text-delta', delta })
+              }
+            }
+          }
+
+          if (accumulatedText.length > 0) {
+            success = true
+            break
+          }
+        } catch {
+          continue
+        }
       }
     }
 

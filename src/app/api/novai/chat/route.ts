@@ -20,17 +20,21 @@ export async function POST(request: Request) {
       const lastUserMsg = parsed.messages[parsed.messages.length - 1]
 
       if (lastUserMsg && lastUserMsg.role === 'user') {
-        void NovaiConversationsRepository.appendMessage(
-          principal.client as unknown as SupabaseClient,
-          {
-            conversationId: parsed.conversationId,
-            tenantId: principal.tenantId,
-            userId: principal.userId,
-            role: 'user',
-            content: lastUserMsg.content,
-            mode: parsed.context.mode || 'CHAT'
-          }
-        )
+        try {
+          await NovaiConversationsRepository.appendMessage(
+            principal.client as unknown as SupabaseClient,
+            {
+              conversationId: parsed.conversationId,
+              tenantId: principal.tenantId,
+              userId: principal.userId,
+              role: 'user',
+              content: lastUserMsg.content,
+              mode: parsed.context.mode || 'CHAT'
+            }
+          )
+        } catch {
+          // Logged inside repository
+        }
       }
     }
 
@@ -72,17 +76,21 @@ export async function POST(request: Request) {
 
             if (event.type === 'message-complete') {
               if (parsed.conversationId) {
-                void NovaiConversationsRepository.appendMessage(
-                  principal.client as unknown as SupabaseClient,
-                  {
-                    conversationId: parsed.conversationId,
-                    tenantId: principal.tenantId,
-                    userId: principal.userId,
-                    role: 'assistant',
-                    content: event.fullText,
-                    mode: parsed.context.mode || 'CHAT'
-                  }
-                )
+                try {
+                  await NovaiConversationsRepository.appendMessage(
+                    principal.client as unknown as SupabaseClient,
+                    {
+                      conversationId: parsed.conversationId,
+                      tenantId: principal.tenantId,
+                      userId: principal.userId,
+                      role: 'assistant',
+                      content: event.fullText,
+                      mode: parsed.context.mode || 'CHAT'
+                    }
+                  )
+                } catch {
+                  // Logged inside repository
+                }
               }
 
               await safeClose()

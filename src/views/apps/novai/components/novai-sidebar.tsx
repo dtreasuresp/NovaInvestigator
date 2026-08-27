@@ -73,8 +73,9 @@ export function NovaiSidebar({
     setEditingId(null)
   }
 
-  const filteredThreads = threads.filter(t =>
-    t.title.toLowerCase().includes(search.toLowerCase())
+  const safeThreads = (threads || []).filter((t): t is ChatThread => Boolean(t && t.id))
+  const filteredThreads = safeThreads.filter(t =>
+    (t.title || '').toLowerCase().includes(search.toLowerCase())
   )
 
   // Group threads by recency
@@ -83,19 +84,22 @@ export function NovaiSidebar({
   const yesterdayStart = todayStart - 86400000
   const lastWeekStart = todayStart - 7 * 86400000
 
+  const getThreadTime = (t: ChatThread) => {
+    const raw = t.updatedAt || t.createdAt
+    const time = raw ? new Date(raw).getTime() : 0
+
+    return Number.isNaN(time) ? 0 : time
+  }
+
   const groups = {
-    today: filteredThreads.filter(t => new Date(t.updatedAt).getTime() >= todayStart),
+    today: filteredThreads.filter(t => getThreadTime(t) >= todayStart),
     yesterday: filteredThreads.filter(
-      t =>
-        new Date(t.updatedAt).getTime() >= yesterdayStart &&
-        new Date(t.updatedAt).getTime() < todayStart
+      t => getThreadTime(t) >= yesterdayStart && getThreadTime(t) < todayStart
     ),
     lastWeek: filteredThreads.filter(
-      t =>
-        new Date(t.updatedAt).getTime() >= lastWeekStart &&
-        new Date(t.updatedAt).getTime() < yesterdayStart
+      t => getThreadTime(t) >= lastWeekStart && getThreadTime(t) < yesterdayStart
     ),
-    older: filteredThreads.filter(t => new Date(t.updatedAt).getTime() < lastWeekStart)
+    older: filteredThreads.filter(t => getThreadTime(t) < lastWeekStart)
   }
 
   if (isCollapsed) {
@@ -302,11 +306,11 @@ function ThreadSection({
     <div className='space-y-1'>
       <p className='px-2 text-[10px] font-bold uppercase tracking-wider text-muted-foreground/70'>{title}</p>
       <div className='space-y-0.5'>
-        {threads.map(thread => {
+        {threads.filter((t): t is ChatThread => Boolean(t && t.id)).map(thread => {
           const isActive = thread.id === activeId
           const isEditing = thread.id === editingId
-          const isInvestigator = thread.context.app === 'investigator'
-          const isKanban = thread.context.app === 'kanban'
+          const isInvestigator = thread.context?.app === 'investigator'
+          const isKanban = thread.context?.app === 'kanban'
 
           const IconComponent = isInvestigator ? Compass : isKanban ? Kanban : HelpCircle
 
