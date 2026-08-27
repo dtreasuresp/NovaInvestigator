@@ -4,6 +4,15 @@
 
 All notable changes to this template will be documented in this file
 
+## v0.0.80 (2026-08-29)
+
+### Added & Architecture — Fase 6 Compaction Semántica Real
+
+- **Compaction Engine (`src/features/novai/compaction-engine.ts:1`)**: `NovaiCompactionEngine` con `StructuredSummary` (objective, facts, decisions, constraints, activeInvestigationId, evidence, conclusions, preferences, openQuestions, pendingWork, references) y trigger `80% util` o `>=40 mensajes`. Heurístico determinista + LLM cheap `mistral-small:free` con `AbortSignal.timeout(7000)` y fallback. Renderiza `summaryText` y `compressedMessages: [anchor, compressionNotice, ...recent10]`, persiste `summary` en `novai_conversations.metadata.compaction` + `summary`/`compaction_version`/`token_snapshot`.
+- **Agent Runtime (`src/features/novai/agent-runtime.ts:100`)**: genera `runId` antes de compaction para trazabilidad, `NovaiCompactionEngine.compact({messages, systemPrompt, conversationId, principal})` antes de `TokenBudget.trim`, log `novai.compaction.applied` + `trace` `Contexto comprimido`, y budget sobre `messagesForBudget`.
+- **Migración**: `supabase/migrations/2026-08-29T00-00-00_novai_compaction.sql:1` añade `summary jsonb`, `compaction_version int`, `token_snapshot jsonb` a `novai_conversations` y `parts jsonb` a `novai_messages`.
+- **Validación**: `pnpm check-types` limpio, `pnpm test` 253/253.
+
 ## v0.0.79 (2026-08-28)
 
 ### Added & Architecture — Fase 5 Evidence Model + Inline Citations + Source Grouping

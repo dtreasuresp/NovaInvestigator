@@ -28,6 +28,7 @@ import { NovaiContextManager } from './context-manager'
 import { NovaiToolSelector } from './tool-selector'
 import { NovaiEvidenceService, type EvidenceLinkOptions } from './evidence-service'
 import { projectCitationsFromRun, projectSourceGroupFromRun } from './event-projection'
+import { NovaiCompactionEngine } from './compaction-engine'
 
 export interface AgentRuntimeOptions {
   principal: InvestigationsPrincipal
@@ -90,9 +91,34 @@ export class NovaiAgentRuntime {
     const openrouterApiKey = process.env.OPENROUTER_API_KEY
     const zenKeys = (process.env.OPENCODE_ZEN_API_KEY || '').split(',').map(k => k.trim()).filter(Boolean)
 
-    // 3. Control y presupuesto de tokens
-    const budgetResult = NovaiTokenBudget.trimConversationHistory({
+    // FIX Fase 1: runId UUID v4 (corrige FK violation anterior run-* string) — generado antes de compaction para trazabilidad
+    const runId = NovaiInstrumentation.generateRunId()
+
+    // 3. Compaction semántica (Fase 6) — antes de token trim, si supera umbrales
+    const compactionResult = await NovaiCompactionEngine.compact({
       messages,
+      systemPrompt,
+      conversationId,
+      principal: principal as unknown as { tenantId: string; client: SupabaseClient; userId: string }
+    })
+    const messagesForBudget = compactionResult.wasCompacted ? compactionResult.compressedMessages : messages
+    if (compactionResult.wasCompacted) {
+      logger.info('Compaction applied', {
+        action: 'novai.compaction.applied',
+        details: { runId, omittedCount: compactionResult.omittedCount, summary: compactionResult.summary.objective.slice(0, 80) }
+      })
+      await onEvent({
+        type: 'trace',
+        category: 'validation',
+        title: 'Contexto comprimido',
+        description: `Se resumieron ${compactionResult.omittedCount} mensajes previos para liberar ventana de contexto.`,
+        status: 'completed'
+      })
+    }
+
+    // 3b. Control y presupuesto de tokens (sobre mensajes ya compactados si aplica)
+    const budgetResult = NovaiTokenBudget.trimConversationHistory({
+      messages: messagesForBudget,
       systemPrompt,
       modelName: 'gemini-3.6-flash'
     })
@@ -107,9 +133,6 @@ export class NovaiAgentRuntime {
 
         return { role, content: m.content || '' } as ModelMessage
       })
-
-    // FIX Fase 1: runId UUID v4 (corrige FK violation anterior run-* string)
-    const runId = NovaiInstrumentation.generateRunId()
 
     // Instrumentación Fase 1: snapshots de contexto recibido vs seleccionado
     const lastUserContent = [...messages].reverse().find(m => m.role === 'user')?.content || ''
@@ -800,9 +823,6 @@ toolsExposed: toolSelection.selectedTools,
         await emitEvent(sourceGroupEvent as NovaiEvent)
       }
     }
-
-    // Persistir async
-    void NovaiInstrumentation.persistRunAsync(supabaseClient, trace as unknown as Parameters<typeof NovaiInstrumentation.persistRunAsync>[1])
 
     // Emitir evento final de instrumentación para observabilidad SSE
     await emitEvent({
