@@ -88,6 +88,9 @@ export interface ChatMessage {
   audits?: AuditItemData[]
   calculations?: CalculationItemData[]
   sources?: SourceItemData[]
+  citations?: Array<{ id: string; sourceId: string; claim: string; excerpt: string; location?: string }>
+  usage?: { promptTokens?: number; completionTokens?: number; totalTokens?: number; cachedTokens?: number; reasoningTokens?: number; isEstimated?: boolean }
+  model?: string
 }
 
 export interface ChatThread {

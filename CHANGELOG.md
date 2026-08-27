@@ -4,6 +4,15 @@
 
 All notable changes to this template will be documented in this file
 
+## v0.0.81 (2026-08-29)
+
+### Added & UI — Fase 7 AI Elements: Reasoning / Task / Sources / Context
+
+- **Jerarquía UI (`src/views/apps/novai/components/novai-message-item.tsx:1`)**: Reordenada a `Reasoning (top, observable) → Activity · N pasos (single Task) → Sources agrupadas (📚 N fuentes) → Response dominante (prose, 15px) → Context + Actions`. Reasoning muestra `🧠 Analizando...` / `Análisis completado`, no CoT privado. Activity usa `NovaiActivityTask` (`src/views/apps/novai/components/novai-activity-task.tsx:1`) con `Task`/`TaskTrigger`/`TaskContent`/`TaskItem`, estados `pending/running/completed/failed/warning`, badge `En curso/Completado/Error`, y nota `Actividad observable del runtime`. Sources usa `NovaiSourcesGroup` (`src/views/apps/novai/components/novai-sources-group.tsx:1`) con `Sources`/`SourcesTrigger`/`SourcesContent`/`Source`, trigger `📚 N fuentes consultadas`, colapso por defecto si `>2`, distinción `internal_document` vs `web_source`, y nota `Fuentes verificadas por el runtime`.
+- **Context health (`src/views/apps/novai/components/novai-context-indicator.tsx:1`)**: `NovaiContextIndicator` con `Context`/`ContextTrigger`/`ContextContent`/`Progress` + `tokenlens` breakdown `Input/Output/Reasoning/Cache`, health `0-60% Saludable / 60-80% Moderado / 80-90% Atención / 90-100% Crítico`, y fallback estimado ` (est.)` si `usage` no reportado. Usa `usedTokens/maxTokens` + `LanguageModelUsage` con `cachedInputTokens`/`reasoningTokens`.
+- **Tipos (`src/views/apps/novai/types.ts:77`)**: `ChatMessage` extendido con `citations` y `usage` (`promptTokens/completionTokens/totalTokens/cachedTokens/reasoningTokens/isEstimated`) + `model`.
+- **Validación**: `pnpm check-types` limpio, `pnpm test` 253/253, `prefers-reduced-motion` respetado, `aria-label` y `role=status` en streaming, `focus` states en collabsibles.
+
 ## v0.0.80 (2026-08-29)
 
 ### Added & Architecture — Fase 6 Compaction Semántica Real
