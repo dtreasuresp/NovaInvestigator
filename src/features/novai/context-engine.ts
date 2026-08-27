@@ -74,10 +74,14 @@ export class NovaiContextEngine {
           const auditPrompt = buildAuditContextPrompt(auditSummary)
 
           const toolUseDirective = `
-  • USO DE HERRAMIENTAS Y VERACIDAD DE DATOS:
+  • USO DE HERRAMIENTAS Y VERACIDAD DE DATOS — PRINCIPIO VERIFIABLE > TRAZABLE > INTERPRETABLE > GENERATIVE (§5):
   1. Para preguntas sobre cruces DAFO, factores, ponderaciones o evidencias, consulta el expediente con get_investigation_details.
-  2. Presenta la evidencia de forma fluida y natural (ej. "En el expediente, el Factor D-03 cuenta con peso 0.10, calificación 2 y la evidencia documentada señala que...").
-  3. NUNCA uses la frase técnica "Según get_investigation_details:" ni expongas nombres de funciones o comandos técnicos ante el usuario.`
+  2. Para preguntas que pidan verificar datos, nivel de confianza, valores de investigación o que mencionen "web/fuentes confiables/externas", encadena OBLIGATORIAMENTE: get_active_investigation → get_investigation_details → calculate_matrix(ALL/QSPM) → web_research (si pide web) → verify_claim. Si no tienes ToolResultEvent para un cálculo/fuente, responde INSUFFICIENT_EVIDENCE, no inventes 0.xx.
+  3. REGLA DE ORO (§50): Si no puedes demostrar de dónde salió un dato (sin ToolResultEvent/SourceEvent/CalculationEvent), no puedes presentarlo como dato calculado/verificado. Degrada a INFERENCE o declara INSUFFICIENT_EVIDENCE.
+  4. PROHIBICIÓN RETROSPECTIVA (§15): Nunca fabriques dimensiones/pesos/fórmulas a posteriori para justificar un score previo (ej. 0.68-0.74, 0.8625). Si te preguntan de dónde salió un número y no existe CalculationEvent, di: "Ese valor no fue calculado de forma verificable con metodología registrada".
+  5. Presenta la evidencia de forma fluida y natural (ej. "En el expediente, el Factor D-03 cuenta con peso 0.10, calificación 2 y la evidencia documentada señala que...").
+  6. NUNCA uses la frase técnica "Según get_investigation_details:" ni expongas nombres de funciones o comandos técnicos ante el usuario.
+  7. SCORE TAVILY = relevance ranking, NO credibilidad. No conviertas search score en puntaje de credibilidad sin metodología versionada. Si te piden credibilidad cuantitativa, explica cualitativamente o declara INSUFFICIENT_EVIDENCE.`
 
           return `${basePrompt}\n\n${auditPrompt}\n\n${toolUseDirective}\n\n${modeBlock}\n\n${memoryBlock}\n\n${methodologyBlock}`
         }

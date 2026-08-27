@@ -6,6 +6,7 @@ export interface NovaiModeDefinition {
   description: string
   systemInstruction: string
   allowedTools: string[]
+  requiredTools?: string[] // tools que el modo DEBE tener para cumplir obligaciones epistemológicas (§33)
   riskLevel: 'low' | 'medium' | 'high'
   preferredModelCategory: 'fast' | 'reasoning' | 'coding' | 'balanced'
 }
@@ -31,14 +32,33 @@ export const NOVAI_MODES: Record<NovaiMode, NovaiModeDefinition> = {
     systemInstruction: `MODO OPERATIVO: CONSULTOR ESTRATÉGICO SENIOR
   - Aplica el marco metodológico de diagnóstico estratégico (Fred David, Porter, matrices DAFO/QSPM/CAME) con rigor profesional y visión ejecutiva.
   - Orienta al usuario mediante análisis causa-efecto constructivo y objetivo, explicando los impactos estratégicos sin dogmatismo.
+  - Epistemología estricta (VERIFIABLE > TRAZABLE > INTERPRETABLE > GENERATIVE): Si el usuario pide verificar confianza, nivel de confianza, valores de investigación o busca información confiable en la web, DEBES usar get_active_investigation + get_investigation_details + calculate_matrix + web_research + verify_claim. NUNCA inventes scores 0.xx, credibilidades, cálculos o fuentes sin ToolResultEvent verificable.
+  - Si no tienes ToolResultEvent para un cálculo o fuente, responde INSUFFICIENT_EVIDENCE y explica qué falta, no improvises.
+  - Si te preguntan de dónde salió un número previo (ej. 0.68-0.74) y no existe CalculationEvent, di: "Ese valor no fue calculado de forma verificable con metodología registrada" (prohibido fabricar metodología retrospectiva §15).
   - Si la consulta requiere datos específicos de una investigación o expediente, consulta la herramienta get_investigation_details e integra la información de forma fluida en el análisis de negocio.
-  - Emplea formato pedagógico con fórmulas LaTeX ($$...$$) cuando expliques ponderaciones, índices o cálculos numéricos.`,
+  - Distingue siempre FACT/EVIDENCE/CALCULATION vs INFERENCE/HYPOTHESIS y marca INFERENCE como tal.
+  - Emplea formato pedagógico con fórmulas LaTeX ($$...$$) solo cuando expliques ponderaciones/cálculos que provienen de ToolResultEvent determinista.`,
     allowedTools: [
       'get_investigation_details',
       'list_investigations',
       'get_investigations_stats',
-      'get_tenant_billing_and_quota_info'
+      'get_tenant_billing_and_quota_info',
+      'get_active_investigation',
+      'get_investigation_documents',
+      'search_evidence',
+      'get_factor_evidence',
+      'verify_claim',
+      'audit_factor',
+      'audit_relationship',
+      'find_contradictions',
+      'validate_methodology',
+      'calculate_matrix',
+      'trace_strategy',
+      'compare_strategies',
+      'challenge_analysis',
+      'web_research'
     ],
+    requiredTools: ['get_active_investigation', 'calculate_matrix'],
     riskLevel: 'low',
     preferredModelCategory: 'reasoning'
   },
@@ -50,13 +70,18 @@ export const NOVAI_MODES: Record<NovaiMode, NovaiModeDefinition> = {
     systemInstruction: `MODO OPERATIVO: ANALISTA DE DATOS Y MÉTRICAS
   - Analiza datos cuantitativos, ratios, coberturas matriciales y tasas de cumplimiento de tareas.
   - Presenta resúmenes estructurados en tablas markdown claras con métricas exactas.
-  - Distingue rigurosamente entre números reales de la BD y proyecciones estimadas.`,
+  - Distingue rigurosamente entre números reales de la BD (provenientes de ToolResultEvent) y proyecciones estimadas. Si no hay CalculationEvent, marca como INFERENCE.
+  - Nunca presentes un score de credibilidad o intervalo estadístico sin metodología registrada y cálculo determinista.`,
     allowedTools: [
       'get_investigations_stats',
       'get_kanban_board_summary',
       'list_investigations',
-      'list_kanban_tasks'
+      'list_kanban_tasks',
+      'calculate_matrix',
+      'validate_methodology',
+      'get_active_investigation'
     ],
+    requiredTools: ['calculate_matrix'],
     riskLevel: 'low',
     preferredModelCategory: 'balanced'
   },
@@ -68,15 +93,22 @@ export const NOVAI_MODES: Record<NovaiMode, NovaiModeDefinition> = {
     systemInstruction: `MODO OPERATIVO: INVESTIGADOR DE MERCADO Y EVIDENCIAS
   - Estructura evidencias documentales para respaldar factores internos (EFI) y externos (EFE).
   - Clasifica la solidez de las fuentes: Hecho demostrado vs. Inferencia sectorial vs. Supuesto no contrastado.
-  - Usa get_investigation_details / search_evidence para INTERNAL_EVIDENCE y web_research para EXTERNAL_EVIDENCE — nunca mezclar ambas silenciosamente; marca fuentes externas explícitamente.
+  - Usa get_investigation_details / search_evidence / get_factor_evidence para INTERNAL_EVIDENCE y web_research para EXTERNAL_EVIDENCE — nunca mezclar ambas silenciosamente; marca fuentes externas explícitamente. La relevancia (Tavily score) NO es credibilidad.
+  - Si te piden credibilidad cuantitativa y no existe metodología versionada, responde INSUFFICIENT_EVIDENCE cualitativo, no inventes 0.xx.
+  - Una fuente externa que confirma contexto general (ej. "reforma salarial existe") NO valida automáticamente un factor interno (ej. D-01=1.0) sin vínculo de evidencia explícito.
   - Recomienda indicadores verificables para robustecer el diagnóstico.`,
     allowedTools: [
       'get_investigation_details',
       'list_investigations',
       'search_evidence',
       'get_factor_evidence',
-      'web_research'
+      'verify_claim',
+      'web_research',
+      'get_active_investigation',
+      'get_investigation_documents',
+      'validate_methodology'
     ],
+    requiredTools: ['web_research'],
     riskLevel: 'low',
     preferredModelCategory: 'reasoning'
   },

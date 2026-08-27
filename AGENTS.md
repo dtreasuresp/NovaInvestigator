@@ -36,7 +36,9 @@ Para evitar confusiones, alucinaciones o modificaciones erróneas, **todo agente
    - **Paso 2 (Capa SODA):** Identifica la capa y feature (`src/features/<modulo>/`). Nunca mezcles lógica de base de datos en vistas o componentes.
    - **Paso 3 (Validación de Límites):** Payloads siempre validados con Zod (`schema.ts`), permisos con `access.ts`, y `tenantId` resuelto desde la sesión del Principal autenticado.
    - **Paso 4 (Disciplina de Alcance):** **Un cambio = un propósito.** No modifiques archivos fuera del alcance solicitado ni hagas refactors masivos no pedidos.
-   - **Paso 5 (Validación Local):** Ejecuta `pnpm check-types` y `pnpm test` (o `npx react-doctor@latest` para UI) antes de dar por cerrada la tarea.
+   - **Paso 5 (Validación Local & Sincronización de Dependencias):**
+      - Al sincronizar el repositorio o actualizar paquetes, ejecuta `pnpm outdated` y `pnpm update` respetando las versiones del framework bloqueadas (Next.js 16.2.x, React 19.2.x, Tailwind v4).
+      - Siempre ejecuta `pnpm check-types` y `pnpm test` (o `npx react-doctor@latest` para UI) antes de hacer push o dar por cerrada la tarea.
    - **Paso 6 (Trazabilidad & Changelog):** Registra el cambio en [`CHANGELOG.md`](file:///d:/03.%20MATRIZ%20DAFO/CHANGELOG.md) siguiendo SemVer 2.0.0.
 
 4. **Anti-patrones Prohibidos (Lo que NUNCA debes hacer):**

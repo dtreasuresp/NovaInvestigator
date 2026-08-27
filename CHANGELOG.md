@@ -4,6 +4,30 @@
 
 All notable changes to this template will be documented in this file
 
+## v0.0.72 (2026-08-28)
+
+### Added & Architecture — Fase 1 Instrumentación (Plan Maestro NovAi v2)
+
+- **Plan maestro aprobado**: `doc/plans/2026-08-28_PLAN_MAESTRO_NOVAI_V2_MODERNIZACION.md` con orden **Instrumentación → Context Manager → Tools/Orchestration → Intent Classifier (heurística pura) → UI/Optimización**, evidencia dedicada `novai_evidence` y benchmark reproducible. Rama `feat/novai-v2-instrumentation` aislada de `main`.
+- **Instrumentación trazable (no solo logs)**: nuevo `src/features/novai/instrumentation.ts` con `NovaiRunTrace` estructurado — `contexto recibido` (app/mode/hasState/messages), `contexto seleccionado` (systemTokens, methodology, memories, toolsExposed, budget), `intent heurístico`, `tools invocadas (input/result)`, `evidencia (evidence/calc/audit/source)` y `decisión (validationAction, finalText)` — permite reconstruir *por qué* NovAi decidió y detectar *pérdida/contaminación/confusión* de contexto. Persistencia best-effort en `novai_agent_runs` con fallback FK-safe.
+- **RunId UUID + usage real**: `src/features/novai/agent-runtime.ts:105` corrige `run-${Date.now()}` (string, FK violation) → `randomUUID()` v4; captura `usage` real de `streamText.usage/totalUsage` (prompt/completion/total/cached/reasoning) y `TTFT` (time to first token), distingue `isEstimated` vs `actual` en `message-complete.usage`. Inserción temprana de `novai_agent_runs` para compliance FK de `novai_audit_events`; `src/features/novai/tool-gateway.ts:148` reintenta audit con `run_id null + payload._runId` si FK aún no existe.
+- **Eventos SSE diagnósticos**: `src/features/novai/events.ts:8` añade `reasoning`, `reasoning-delta`, `instrumentation`, `context-snapshot`; runtime emite `context-snapshot` y `instrumentation` tempranos + final con `metrics {input/output/total, contextUtilization, latency, ttft, provider, model}`.
+- **Migraciones**: `supabase/migrations/2026-08-28T00-00-01_novai_instrumentation_fix.sql` (columnas `context_snapshot`, `intent`, `evidence_count`, `correlation_id`, `provider`, `ttft_ms`, `usage_is_estimated`, `cached_tokens`, `reasoning_tokens` + índices) y `2026-08-28T10-00-00_novai_evidence.sql` (`novai_evidence` + `novai_citations` con RLS tenant-scoped, `epistemic` FACT/INFERENCE/HYPOTHESIS).
+- **Benchmark reproducible**: `scripts/benchmark-novai-context.ts` (casos A `Hola`, B `¿investigación activa?`, C `D-03×A-02` con 8F+8E, D `competencia Cuba`) — baseline Fase 1 medido: A 2174 tk system / 5079 total (31.0% 16k), C 7443 tk / 10356 total (84.3% WARNING), methodology 1302 tk + 22 tools 2899 tk siempre inyectados. Objetivo Fase 2: A `<350 tk`, C slice selectivo + tools dinámicas. Ejecutable `pnpm exec tsx scripts/benchmark-novai-context.ts [--json] [--out path]`.
+- **Validación**: `pnpm check-types` limpio, `pnpm test` 239/239 pasando (forensic-epistemic + pipeline + capabilities intactos).
+
+## v0.0.71 (2026-08-27)
+
+### Fixed & Security — Epistemic Firewall Forense (Anti-alucinación 0.68-0.74)
+- **Auditoría forense integral**: `doc/plans/AUDITORIA_FORENSE_NOVAI_2026-08-27.md` (19 secciones, golden test `0.68-0.74` / `0.8625` / `0.787±0.14`). Root cause: `CONSULTANT` sin `web_research`, sin `INSUFFICIENT_EVIDENCE`, score Tavily confundido con credibilidad.
+- **Firewall epistemológico**: nuevo `src/features/novai/response-validator.ts` con 15 reglas canónicas §37 (`R1..R15`), firewall `VERIFIABLE>TRAZABLE` (§35) integrado en `src/features/novai/agent-runtime.ts:184` pre `message-complete` — detecta `score sin CalculationEvent`, `fuente sin SourceEvent`, `tool afirmada sin ToolCallEvent`, `relevance→credibility` y `razonamiento retrospectivo`; emite `warning` events y prependea `INSUFFICIENT_EVIDENCE/DEGRADE_TO_INFERENCE`.
+- **Matriz Intent→Required Tools**: nuevo `src/features/novai/intent-requirements.ts` (§33) con `VERIFY_INVESTIGATION → get_active_investigation + calculate_matrix + web_research_optional`, `SEARCH_WEB → web_research`, etc., con `classifyIntent()` conservador; validator exige `requiredTools` o fuerza `INSUFFICIENT_EVIDENCE`.
+- **Modos endurecidos**: `src/features/novai/adapters/modes.ts:13` `CONSULTANT` ahora expone 17 tools + `requiredTools: [get_active_investigation, calculate_matrix]` y directiva anti-alucinación + `§50` + `§15` anti-retrospectiva; `RESEARCHER` + `ANALYST` con `requiredTools` y nota `relevance ≠ credibility`.
+- **Context Engine & Methodology**: `src/features/novai/context-engine.ts:44` + `src/features/novai/methodology-knowledge.ts:90` con principio `Si no puedes demostrar de dónde salió un dato, no puedes presentarlo como verificado` y taxonomía `FACT/EVIDENCE/CALCULATION/INFERENCE/HYPOTHESIS/INSUFFICIENT_EVIDENCE`.
+- **web_research semantics**: `src/features/novai/tools/research/web-research.ts:29` `relevanceScore` (Tavily ranking) separado de `credibilityScore` deprecated, notas `relevance ≠ credibility` y `external ≠ valida interno` (§7 §8 §10).
+- **UI firewall**: `src/views/apps/novai/index.tsx:643` maneja `warning` events como `AuditCard WARNING`; validator prepend visible en `MessageResponse` (texto) + `SourceEvent` externo ya distinguido.
+- **Tests forenses**: `tests/novai/forensic-epistemic.test.ts` 11 casos A-L + golden test `0.68-0.74` — 239/239 tests pasando, `pnpm check-types` limpio.
+
 ## v0.0.70 (2026-08-27)
 
 ### Fixed & Optimized (NovAi Free Tier Runtime, 100% DB Billing, and Client Deduplication)

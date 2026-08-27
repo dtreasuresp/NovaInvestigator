@@ -20,6 +20,8 @@ interface ExternalSource {
   publicationDate?: string | null
   retrievedAt: string
   provider: 'tavily' | 'brave' | 'serper'
+  relevanceScore?: number | null // Tavily/Brave ranking — NO es credibility (§7)
+  // @deprecated — alias para compatibilidad, no usar como credibilidad
   credibilityScore?: number | null
   score?: number | null
 }
@@ -65,7 +67,8 @@ async function callTavily(query: string, topK: number, apiKey: string): Promise<
       publicationDate: r.published_date || null,
       retrievedAt: now,
       provider: 'tavily' as const,
-      credibilityScore: typeof r.score === 'number' ? r.score : null,
+      relevanceScore: typeof r.score === 'number' ? r.score : null,
+      credibilityScore: typeof r.score === 'number' ? r.score : null, // deprecated alias, NO es credibilidad (§7)
       score: typeof r.score === 'number' ? r.score : null
     }))
   } finally {
@@ -221,8 +224,9 @@ export async function executeWebResearch(
         results: externalResults,
         retrievedAt: new Date().toISOString(),
         totalResults: externalResults.length,
-        credibilityNote: 'Fuentes externas — verificar vigencia y sesgo antes de usar como evidencia primaria. Distinguir de INTERNAL_EVIDENCE del expediente.',
-        internalEvidenceNote: 'Para evidencia interna del expediente use search_evidence / get_factor_evidence.'
+        relevanceNote: 'Tavily/Brave score = relevance ranking, NO credibilidad (§7). Para credibilidad cualitativa, vea publicationDate, fuente y corroboración; no existe metodología cuantitativa versionada de credibilidad en el sistema.',
+        credibilityNote: 'DEPRECATED: No usar score como credibilidad. Ver relevanceScore y metadata de fuente. Para métrica de credibilidad se requerirá metodología versionada con pesos y CalculationEvent.',
+        internalEvidenceNote: 'Para evidencia interna del expediente use search_evidence / get_factor_evidence. Fuente externa que confirma contexto general NO valida automáticamente un factor interno (ej. "reforma existe" ≠ "D-01=1.0 validado") — requiere vínculo de evidencia explícito.'
       }
     }
   } catch (err) {
@@ -260,7 +264,7 @@ export const webResearchTool: NovaiModularTool = {
     name: 'web_research',
     displayName: 'Búsqueda Web Externa',
     description:
-      'Busca fuentes públicas externas (EXTERNAL_EVIDENCE) complementarias al expediente interno. Distingue explícitamente entre INTERNAL_EVIDENCE (search_evidence) y EXTERNAL_EVIDENCE. Requiere TAVILY_API_KEY o BRAVE_SEARCH_API_KEY; si no hay keys, degrada explícitamente sin inventar datos.',
+      'Busca fuentes públicas externas (EXTERNAL_EVIDENCE) complementarias al expediente interno. Distingue explícitamente entre INTERNAL_EVIDENCE (search_evidence) y EXTERNAL_EVIDENCE. RelevanceScore (Tavily) NO es credibilidad — no existe metodología cuantitativa versionada de credibilidad. Requiere TAVILY_API_KEY o BRAVE_SEARCH_API_KEY; si no hay keys, degrada a EXTERNAL_RESEARCH_DISABLED sin inventar datos.',
     category: 'platform',
     riskLevel: 'read-only',
     scope: 'tenant'

@@ -18,6 +18,10 @@ export type NovaiEventType =
   | 'source'
   | 'trace'
   | 'text-delta'
+  | 'reasoning'
+  | 'reasoning-delta'
+  | 'instrumentation'
+  | 'context-snapshot'
   | 'message-complete'
   | 'error'
 
@@ -136,6 +140,36 @@ export interface TextDeltaEvent {
   delta: string
 }
 
+export interface ReasoningEvent {
+  type: 'reasoning'
+  delta: string
+}
+
+export interface ReasoningDeltaEvent {
+  type: 'reasoning-delta'
+  delta: string
+}
+
+export interface InstrumentationEvent {
+  type: 'instrumentation'
+  runId: string
+  received?: unknown
+  selected?: unknown
+  intent?: string
+  toolCount?: number
+  evidence?: unknown
+  metrics?: unknown
+  timestamp?: string
+}
+
+export interface ContextSnapshotEvent {
+  type: 'context-snapshot'
+  runId: string
+  received: unknown
+  selected: unknown
+  timestamp: string
+}
+
 export interface MessageCompleteEvent {
   type: 'message-complete'
   fullText: string
@@ -144,6 +178,9 @@ export interface MessageCompleteEvent {
     promptTokens?: number
     completionTokens?: number
     totalTokens?: number
+    cachedTokens?: number
+    reasoningTokens?: number
+    isEstimated?: boolean
   }
 }
 
@@ -166,6 +203,10 @@ export type NovaiEvent =
   | SourceEvent
   | AgentTraceEvent
   | TextDeltaEvent
+  | ReasoningEvent
+  | ReasoningDeltaEvent
+  | InstrumentationEvent
+  | ContextSnapshotEvent
   | MessageCompleteEvent
   | ErrorEvent
 

@@ -122,6 +122,7 @@ export async function POST(request: Request) {
           messages: canonicalMessages,
           isFreeText: parsed.isFreeText,
           locale: parsed.locale,
+          conversationId: activeConversationId || null,
           onEvent: async (event: NovaiEvent) => {
             const payload = JSON.stringify(event)
             await safeWrite(`data: ${payload}\n\n`)

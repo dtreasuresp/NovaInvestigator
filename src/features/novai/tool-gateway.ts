@@ -144,6 +144,9 @@ export class NovaiToolGateway {
 
   /**
    * Registro asíncrono del evento de auditoría en base de datos.
+   * Fase 1 fix: runId ahora es UUID v4 compatible con FK novai_agent_runs(id).
+   * Si el run aún no existe (FK violation por insert early no completado), reintenta
+   * con run_id null y persiste runId en payload para trazabilidad sin violar FK.
    */
   private static recordAuditEventAsync(
     principal: InvestigationsPrincipal,
@@ -161,8 +164,8 @@ export class NovaiToolGateway {
     Promise.resolve().then(async () => {
       try {
         const client = principal.client as unknown as SupabaseClient
-        
-        await client.from('novai_audit_events').insert({
+
+        const baseRow: Record<string, unknown> = {
           tenant_id: principal.tenantId,
           user_id: principal.userId,
           run_id: event.runId || null,
@@ -172,7 +175,34 @@ export class NovaiToolGateway {
           approval_status: event.approvalStatus,
           payload: event.payload || {},
           result: event.result || {}
-        })
+        }
+
+        const { error } = await client.from('novai_audit_events').insert(baseRow as never)
+
+        if (error) {
+          const msg = String(error.message || '')
+          const isFkViolation = msg.toLowerCase().includes('foreign key') || msg.toLowerCase().includes('violates foreign key') || msg.includes('23503')
+          if (isFkViolation && event.runId) {
+            // Reintento sin FK: preserva trazabilidad en payload.runId
+            const fallbackRow: Record<string, unknown> = {
+              ...baseRow,
+              run_id: null,
+              payload: { ...(baseRow.payload as Record<string, unknown>), _runId: event.runId, _fkFallback: true }
+            }
+            const retry = await client.from('novai_audit_events').insert(fallbackRow as never)
+            if (retry.error) {
+              logger.warn('Failed to record audit event (fallback also failed)', {
+                action: 'novai.audit.record',
+                details: { errorMessage: retry.error.message, toolName: event.toolName }
+              })
+            }
+          } else if (!isFkViolation) {
+            logger.warn('Failed to record audit event in novai_audit_events', {
+              action: 'novai.audit.record',
+              details: { errorMessage: error.message, toolName: event.toolName }
+            })
+          }
+        }
       } catch (err) {
         logger.warn('Failed to record audit event in novai_audit_events', {
           action: 'novai.audit.record',

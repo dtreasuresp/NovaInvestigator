@@ -648,6 +648,18 @@ export default function NovAiView() {
               currentCalculations = [...currentCalculations, data]
             } else if (data.type === 'source') {
               currentSources = [...currentSources, data]
+            } else if (data.type === 'warning') {
+              // Epistemic firewall findings (§37) → render como auditoría WARNING
+              const warningAsAudit = {
+                type: 'audit',
+                status: 'WARNING',
+                severity: data.severity === 'high' ? 'high' : data.severity === 'medium' ? 'medium' : 'low',
+                target: `Firewall: ${String(data.code || 'EPIS')}`,
+                code: String(data.code || 'WARNING'),
+                message: String(data.message || ''),
+                recommendation: 'Revisar trazabilidad: el validator detectó hallucination potencial.'
+              }
+              currentAudits = [...currentAudits, warningAsAudit]
             } else if (data.type === 'tool-call') {
               const callId = data.id || data.toolCallId || `tc-${Date.now()}`
               const toolName = data.tool || data.toolName
