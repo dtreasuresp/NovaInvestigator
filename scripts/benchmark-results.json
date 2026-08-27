@@ -1,10 +1,10 @@
 {
   "summary": {
-    "generatedAt": "2026-08-27T09:44:08.677Z",
+    "generatedAt": "2026-08-27T16:14:25.830Z",
     "version": "Fase 2 — Context Manager ON DEMAND (methodology/memory/investigation slices)",
     "methodologyTokens": 1302,
-    "toolDefinitionsTokensAll": 2899,
-    "toolCount": 22,
+    "toolDefinitionsTokensAll": 3220,
+    "toolCount": 23,
     "investigationSampleTokens": 3306,
     "avgContextUtilization": 0.10497538248697917,
     "worstCase": "C",
@@ -49,7 +49,8 @@
         "list_workspace_members_and_teams",
         "get_tenant_billing_and_quota_info",
         "record_strategic_memory",
-        "web_research"
+        "web_research",
+        "web_extract"
       ],
       "inputTokensEstimated": 79,
       "totalTokensEstimated": 79,
@@ -88,7 +89,7 @@
         "mode": "CHAT",
         "requiredTools": [],
         "optionalTools": [],
-        "tokenSavings": 2860
+        "tokenSavings": 2990
       }
     },
     {
@@ -128,7 +129,8 @@
         "get_kanban_board_summary",
         "list_workspace_members_and_teams",
         "record_strategic_memory",
-        "web_research"
+        "web_research",
+        "web_extract"
       ],
       "inputTokensEstimated": 946,
       "totalTokensEstimated": 946,
@@ -171,7 +173,7 @@
           "list_investigations",
           "list_kanban_tasks"
         ],
-        "tokenSavings": 2470
+        "tokenSavings": 2600
       }
     },
     {
@@ -211,7 +213,8 @@
         "get_kanban_board_summary",
         "list_workspace_members_and_teams",
         "record_strategic_memory",
-        "web_research"
+        "web_research",
+        "web_extract"
       ],
       "inputTokensEstimated": 3392,
       "totalTokensEstimated": 3392,
@@ -245,7 +248,8 @@
             "trace_strategy",
             "compare_strategies",
             "challenge_analysis",
-            "web_research"
+            "web_research",
+            "web_extract"
           ],
           "requiredTools": [
             "get_active_investigation",
@@ -286,7 +290,7 @@
           "find_contradictions",
           "validate_methodology"
         ],
-        "tokenSavings": 1040
+        "tokenSavings": 1170
       },
       "investigationTokens": 3306
     },
@@ -327,7 +331,8 @@
         "list_workspace_members_and_teams",
         "get_tenant_billing_and_quota_info",
         "record_strategic_memory",
-        "web_research"
+        "web_research",
+        "web_extract"
       ],
       "inputTokensEstimated": 999,
       "totalTokensEstimated": 999,
@@ -350,6 +355,7 @@
             "get_factor_evidence",
             "verify_claim",
             "web_research",
+            "web_extract",
             "get_active_investigation",
             "get_investigation_documents",
             "validate_methodology"
@@ -378,7 +384,7 @@
         "optionalTools": [
           "list_investigations"
         ],
-        "tokenSavings": 2730
+        "tokenSavings": 2860
       }
     }
   ]

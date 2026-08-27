@@ -21,6 +21,7 @@ import {
 import type { NovaiEvent, NovaiEventHandler } from './events'
 import { resolveSystemPrompt, fetchTenantLiveOverview, assertNovaiAllowed, consumeAiQueryQuota } from './service'
 import { classifyIntent, getRequiredToolsForIntent } from './intent-requirements'
+import { HybridIntentClassifier, type IntentClassificationResult } from './intent-classifier'
 import { validateResponse } from './response-validator'
 import { NovaiInstrumentation } from './instrumentation'
 import { NovaiContextManager } from './context-manager'
@@ -107,13 +108,30 @@ export class NovaiAgentRuntime {
 
     // FIX Fase 1: runId UUID v4 (corrige FK violation anterior run-* string)
     const runId = NovaiInstrumentation.generateRunId()
+
+    // Instrumentación Fase 1: snapshots de contexto recibido vs seleccionado
+    const lastUserContent = [...messages].reverse().find(m => m.role === 'user')?.content || ''
+    
+    // Fase 4: Hybrid Intent Classifier (heurística → LLM on ambiguity)
+    const intentClassifier = HybridIntentClassifier.getInstance({ 
+      confidenceThreshold: 0.7,
+      enableLlmFallback: true,
+      locale
+    })
+    const intentResult = await intentClassifier.classify(lastUserContent, {
+      mode: context.mode,
+      app: context.app,
+      hasInvestigation: context.app === 'investigator' && !!context.state
+    })
+    const heuristicIntent = intentResult.intent
     
     // Fase 3: Tool Selector ON DEMAND — selección dinámica según intent, modo, permisos y contexto
     const toolSelection = NovaiToolSelector.selectTools({
       principal,
       context,
       messages,
-      locale
+      locale,
+      explicitIntent: heuristicIntent
     })
     
     const vercelTools = NovaiToolSelector.getSelectedVercelTools(
@@ -137,9 +155,6 @@ export class NovaiAgentRuntime {
       }
     } as unknown as Record<string, unknown>)
 
-    // Instrumentación Fase 1: snapshots de contexto recibido vs seleccionado
-    const lastUserContent = [...messages].reverse().find(m => m.role === 'user')?.content || ''
-    const heuristicIntent = classifyIntent(lastUserContent)
     const receivedSnapshot = NovaiInstrumentation.buildReceivedSnapshot({ context, messages, locale })
     // Estimación de tokens de definiciones de tools (heurística)
     const toolDefsTokensEstimated = NovaiTokenBudget.estimateTokens(toolSelection.selectedTools.join(',')) * 10
@@ -177,7 +192,13 @@ export class NovaiAgentRuntime {
         preferredProvider: routeDecision.preferredProvider,
         rationale: routeDecision.rationale
       },
-      toolsExposed: toolSelection.selectedTools
+      toolsExposed: toolSelection.selectedTools,
+      intentClassification: {
+        intent: intentResult.intent,
+        confidence: intentResult.confidence,
+        method: intentResult.method,
+        reasoning: intentResult.reasoning
+      }
     }
     // Trace base para instrumentación incremental
     const runTraceBase: Record<string, unknown> = {

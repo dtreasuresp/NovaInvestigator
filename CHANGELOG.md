@@ -4,6 +4,50 @@
 
 All notable changes to this template will be documented in this file
 
+## v0.0.78 (2026-08-28)
+
+### Added & Features — Fase 4 Búsqueda Web Avanzada (`web_research` con filtros Tavily)
+
+- **Parámetros de Búsqueda Avanzada (`src/features/novai/tools/research/web-research.ts:8`)**: Ampliado el esquema Zod `webResearchSchema` y la declaración OpenAPI de `web_research` para admitir:
+  - `topic`: `'general' | 'news' | 'finance'` para orientar la búsqueda según la naturaleza del análisis.
+  - `days`: Filtro temporal por antigüedad en días (`1-365`) para recuperar fuentes recientes y vigentes.
+  - `include_domains` y `exclude_domains`: Filtros de inclusión/exclusión de dominios de confianza (hasta 5 dominios).
+- **Propagación a la API REST de Tavily (`src/features/novai/tools/research/web-research.ts:38`)**: Adaptada la función `callTavily` para estructurar dinámicamente el payload JSON con los nuevos parámetros opcionales sin alterar la firma en caso de búsqueda básica.
+- **Suite de Pruebas (`tests/novai/web-research.test.ts:75`)**: Añadido subtest unitario validando la aceptación de parámetros avanzados, control de dominios máximos y rechazo de topics inválidos.
+- **Validación**: `pnpm check-types` limpio (0 errores), `pnpm test` 253/253 tests pasando exitosamente.
+
+## v0.0.77 (2026-08-28)
+
+### Added & Persistence — Fase 3 Repositorio de Evidencias y Citaciones (`novai_evidence` & `novai_citations`)
+
+- **Nuevo Repositorio de Evidencias (`src/features/novai/evidence-repository.ts:1`)**: Implementado `NovaiEvidenceRepository` para gestionar la persistencia y trazabilidad de evidencias (`novai_evidence`) y citaciones inline (`novai_citations`) con aislamiento estricto RLS tenant-scoped.
+- **Tipado Epistémico y Trazabilidad**: Soporte completo para clasificaciones epistémicas canónicas (`FACT`, `INFERENCE`, `HYPOTHESIS`, `ASSUMPTION`, `UNKNOWN`), tipos de fuentes (`internal_document`, `web_source`, `database_evidence`, `tool_derived`, `memory`), niveles de confianza normalizados `[0.00, 1.00]`, y vinculación a `investigation_id`, `conversation_id` y `run_id`.
+- **Persistencia en Herramientas de Investigación Externa**: Integrado `batchCreateEvidence` en `web_research` (`src/features/novai/tools/research/web-research.ts:208`) y `web_extract` (`src/features/novai/tools/research/web-extract.ts:142`) cuando se proporciona un `investigation_id` válido, almacenando de forma duradera las fuentes recuperadas como evidencia auditable del expediente.
+- **Suite de Pruebas (`tests/novai/evidence-repository.test.ts:1`)**: 5 nuevos tests unitarios validando inserción individual con RLS tenant-scope, inserción batch, creación de citas inline vinculadas y consultas filtradas por investigación.
+- **Validación**: `pnpm check-types` limpio (0 errores), `pnpm test` 252/252 tests pasando exitosamente.
+
+## v0.0.76 (2026-08-28)
+
+### Added & Features — Fase 2 Extracción Web Profunda (`web_extract`)
+
+- **Nueva Herramienta Modular `web_extract` (`src/features/novai/tools/research/web-extract.ts:1`)**: Implementada tool `web_extract` que consume el endpoint REST `https://api.tavily.com/extract` de Tavily para recuperar el contenido completo en markdown de 1 a 3 URLs externas. Permite a NovAi analizar páginas completas superando la limitación de snippets de 600 caracteres.
+- **Protección de Presupuesto de Tokens**: Límite estricto de 6.000 caracteres (~1.500 tokens) por página extraída con truncado limpio y advertencia contextual explícita para evitar desbordamiento del context window.
+- **Degradación Elegante y Timeouts**: Manejo nativo de `AbortController` con timeout de 10s (`EXTERNAL_RESEARCH_TIMEOUT`) y fallback transparente a `EXTERNAL_RESEARCH_DISABLED` cuando `TAVILY_API_KEY` no está configurada, sin interrumpir el stream del LLM.
+- **Integración con Modos y Tool Selector**: Registrada en `NOVAI_ALL_MODULAR_TOOLS`, expuesta en categoría `web` de `NovaiToolSelector` y habilitada en los modos `CONSULTANT` y `RESEARCHER` (`src/features/novai/adapters/modes.ts`).
+- **Proyección de Eventos y UI (`src/features/novai/event-projection.ts`, `src/views/apps/novai/components/novai-message-item.tsx`)**: Nueva función `projectWebExtract` que proyecta páginas extraídas a eventos canónicos `SourceEvent` con excerpt y soporte visual en `novai-message-item.tsx` (`EXTERNAL_EVIDENCE · Extracción profunda`).
+- **Suite de Pruebas (`tests/novai/web-research.test.ts:1`)**: 6 nuevos tests unitarios validando esquema Zod (1-3 URLs), degradación sin clave, metadata, y proyección de eventos para `web_extract` y `web_research`.
+- **Validación**: `pnpm check-types` limpio (0 errores), `pnpm test` 247/247 tests pasando exitosamente.
+
+## v0.0.75 (2026-08-28)
+
+### Fixed & Epistemic Integrity — Fase 1 Saneamiento Epistémico (Eliminación de credibilityScore en web_research)
+
+- **Saneamiento de interfaz de búsqueda (`src/features/novai/tools/research/web-research.ts:15`)**: Eliminados los campos `credibilityScore` y `score` de la interfaz `ExternalSource` y del mapeo de resultados de los proveedores Tavily y Brave. La herramienta expone exclusivamente `relevanceScore: number | null` (ranking de relevancia de búsqueda).
+- **Directivas y notas de relevancia (`src/features/novai/tools/research/web-research.ts:220`)**: Actualizada la directiva `relevanceNote` para establecer con total claridad que el score de Tavily/Brave es ranking de relevancia y no credibilidad metodológica; eliminada la nota deprecated que mantenía ambigüedad epistémica.
+- **Corrección de inicialización en runtime (`src/features/novai/agent-runtime.ts:110`)**: Reordenada la clasificación de intención heurística previo a la selección dinámica de herramientas, resolviendo referencias no declaradas y garantizando tipado estricto `pnpm check-types`.
+- **Suite de tests ampliada (`tests/novai/forensic-epistemic.test.ts:182`)**: Añadido subtest `Test K` para verificar que `R9_RELEVANCE_AS_CREDIBILITY` bloquea y rechaza inmediatamente cualquier intento del modelo de interpretar el score de Tavily como credibilidad calculada sin `CalculationEvent`.
+- **Validación**: `pnpm check-types` limpio (0 errores), `pnpm test` 240/240 tests pasando exitosamente.
+
 ## v0.0.74 (2026-08-28)
 
 ### Added & Architecture — Fase 3 Tool Selector ON DEMAND (Dynamic Tool Exposure)
