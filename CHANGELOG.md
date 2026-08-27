@@ -4,6 +4,15 @@
 
 All notable changes to this template will be documented in this file
 
+## v0.0.74 (2026-08-28)
+
+### Added & Architecture — Fase 3 Tool Selector ON DEMAND (Dynamic Tool Exposure)
+
+- **Tool Selector ON DEMAND (`src/features/novai/tool-selector.ts:1`)**: nuevo `NovaiToolSelector` con selección dinámica por `intent × modo × permisos × contexto`. Matriz `INTENT_TOOL_CATEGORIES` + `MODE_ALLOWED_CATEGORIES` → intersección efectiva. `requiredTools` por intent siempre incluidas (epistemic requirement). Heurística pura en Fase 3 (interfaz `explicitIntent` preparada para override). Detecta `GENERAL_CHAT+isCasualGreeting` → 0 tools (vs 22 Fase 2); `VERIFY_FACTOR D-03×A-02` → 14 tools (investigación 7 + metodología 5 + base 2); `SEARCH_WEB` → 1 tool web_research. Benchmark: A `Hola` 0 tools (2860tk ahorro), B `investigación activa` 3 base tools (2470tk ahorro), C `D-03×A-02` 14 tools (1040tk ahorro), D `competencia Cuba` 1 tool (2730tk ahorro). ToolDefs dinámicas: Hola 0tk, Investigación 780tk, Estrategia 1300tk, Web 260tk.
+- **Agent Runtime integrado (`src/features/novai/agent-runtime.ts:111`)**: `NovaiAgentRuntime.executeStreaming` ahora usa `NovaiToolSelector.selectTools()` + `getSelectedVercelTools()` en lugar de exponer 22 tools siempre. Logging de selección para observabilidad (`novai.tool_selection`).
+- **Benchmark extendido (`scripts/benchmark-novai-context.ts:290`)**: mide tools expuestas dinámicamente, token savings por caso, intent detectado. Tabla incluye `ToolSavings` column y detalle de `requiredTools/optionalTools`.
+- **Tests**: `pnpm check-types` limpio, `pnpm test` 239/239 (forensic-epistemic + pipeline + capabilities + tool-gateway intactos).
+
 ## v0.0.73 (2026-08-28)
 
 ### Added & Architecture — Fase 2 Context Manager ON DEMAND

@@ -1,14 +1,14 @@
 {
   "summary": {
-    "generatedAt": "2026-08-27T07:32:57.965Z",
+    "generatedAt": "2026-08-27T09:44:08.677Z",
     "version": "Fase 2 — Context Manager ON DEMAND (methodology/memory/investigation slices)",
     "methodologyTokens": 1302,
     "toolDefinitionsTokensAll": 2899,
     "toolCount": 22,
     "investigationSampleTokens": 3306,
-    "avgContextUtilization": 0.2877553304036458,
+    "avgContextUtilization": 0.10497538248697917,
     "worstCase": "C",
-    "worstUtilization": 0.436279296875,
+    "worstUtilization": 0.2760416666666667,
     "casesCount": 4,
     "note": "Todos los tokens son estimados con NovaiTokenBudget.estimateTokens (max len/3.2, words*1.35). Fase 2: Hola debe ser <350tk system (vs 2174 Fase 1). Usage real se captura en runtime SSE y se persiste en novai_agent_runs."
   },
@@ -24,9 +24,10 @@
       "memoryTokens": 26,
       "overviewTokens": 157,
       "historyTokens": 6,
-      "toolDefinitionsTokensEstimated": 2899,
-      "toolsExposed": 22,
-      "toolsExposedList": [
+      "toolDefinitionsTokensEstimated": 0,
+      "toolsExposed": 0,
+      "toolsExposedList": [],
+      "excludedTools": [
         "list_investigations",
         "get_active_investigation",
         "get_investigation_details",
@@ -50,10 +51,10 @@
         "record_strategic_memory",
         "web_research"
       ],
-      "inputTokensEstimated": 2978,
-      "totalTokensEstimated": 2978,
+      "inputTokensEstimated": 79,
+      "totalTokensEstimated": 79,
       "maxTotalTokens": 16384,
-      "contextUtilization": 0.1817626953125,
+      "contextUtilization": 0.00482177734375,
       "contextHealth": "HEALTHY",
       "wasTrimmed": false,
       "omittedCount": 0,
@@ -81,6 +82,13 @@
         "recommendedOpenRouterModel": "mistralai/mistral-small-24b-instruct-2501:free",
         "preferredProvider": "opencode-zen",
         "rationale": "Consulta general y navegación — Mistral Small 24B / Gemini 2.0 Flash."
+      },
+      "toolSelection": {
+        "intent": "GENERAL_CHAT",
+        "mode": "CHAT",
+        "requiredTools": [],
+        "optionalTools": [],
+        "tokenSavings": 2860
       }
     },
     {
@@ -94,10 +102,14 @@
       "memoryTokens": 26,
       "overviewTokens": 157,
       "historyTokens": 15,
-      "toolDefinitionsTokensEstimated": 2899,
-      "toolsExposed": 22,
+      "toolDefinitionsTokensEstimated": 230,
+      "toolsExposed": 3,
       "toolsExposedList": [
+        "get_tenant_billing_and_quota_info",
         "list_investigations",
+        "list_kanban_tasks"
+      ],
+      "excludedTools": [
         "get_active_investigation",
         "get_investigation_details",
         "get_investigations_stats",
@@ -113,17 +125,15 @@
         "trace_strategy",
         "compare_strategies",
         "challenge_analysis",
-        "list_kanban_tasks",
         "get_kanban_board_summary",
         "list_workspace_members_and_teams",
-        "get_tenant_billing_and_quota_info",
         "record_strategic_memory",
         "web_research"
       ],
-      "inputTokensEstimated": 3615,
-      "totalTokensEstimated": 3615,
+      "inputTokensEstimated": 946,
+      "totalTokensEstimated": 946,
       "maxTotalTokens": 16384,
-      "contextUtilization": 0.22064208984375,
+      "contextUtilization": 0.0577392578125,
       "contextHealth": "HEALTHY",
       "wasTrimmed": false,
       "omittedCount": 0,
@@ -151,6 +161,17 @@
         "recommendedOpenRouterModel": "mistralai/mistral-small-24b-instruct-2501:free",
         "preferredProvider": "opencode-zen",
         "rationale": "Consulta general y navegación — Mistral Small 24B / Gemini 2.0 Flash."
+      },
+      "toolSelection": {
+        "intent": "GENERAL_CHAT",
+        "mode": "CHAT",
+        "requiredTools": [],
+        "optionalTools": [
+          "get_tenant_billing_and_quota_info",
+          "list_investigations",
+          "list_kanban_tasks"
+        ],
+        "tokenSavings": 2470
       }
     },
     {
@@ -164,36 +185,38 @@
       "memoryTokens": 26,
       "overviewTokens": 157,
       "historyTokens": 14,
-      "toolDefinitionsTokensEstimated": 2899,
-      "toolsExposed": 22,
+      "toolDefinitionsTokensEstimated": 930,
+      "toolsExposed": 14,
       "toolsExposedList": [
-        "list_investigations",
         "get_active_investigation",
-        "get_investigation_details",
+        "get_factor_evidence",
+        "audit_factor",
         "get_investigations_stats",
+        "get_tenant_billing_and_quota_info",
+        "list_investigations",
+        "get_investigation_details",
         "get_investigation_documents",
         "search_evidence",
-        "get_factor_evidence",
         "verify_claim",
-        "audit_factor",
         "audit_relationship",
-        "find_contradictions",
-        "validate_methodology",
         "calculate_matrix",
+        "find_contradictions",
+        "validate_methodology"
+      ],
+      "excludedTools": [
         "trace_strategy",
         "compare_strategies",
         "challenge_analysis",
         "list_kanban_tasks",
         "get_kanban_board_summary",
         "list_workspace_members_and_teams",
-        "get_tenant_billing_and_quota_info",
         "record_strategic_memory",
         "web_research"
       ],
-      "inputTokensEstimated": 5361,
-      "totalTokensEstimated": 5361,
+      "inputTokensEstimated": 3392,
+      "totalTokensEstimated": 3392,
       "maxTotalTokens": 12288,
-      "contextUtilization": 0.436279296875,
+      "contextUtilization": 0.2760416666666667,
       "contextHealth": "HEALTHY",
       "wasTrimmed": false,
       "omittedCount": 0,
@@ -242,6 +265,29 @@
         "preferredProvider": "opencode-zen",
         "rationale": "Razonamiento estratégico — Nemotron 3 Super 120B / Gemini 2.0 Flash."
       },
+      "toolSelection": {
+        "intent": "VERIFY_FACTOR",
+        "mode": "CONSULTANT",
+        "requiredTools": [
+          "get_active_investigation",
+          "get_factor_evidence",
+          "audit_factor"
+        ],
+        "optionalTools": [
+          "get_investigations_stats",
+          "get_tenant_billing_and_quota_info",
+          "list_investigations",
+          "get_investigation_details",
+          "get_investigation_documents",
+          "search_evidence",
+          "verify_claim",
+          "audit_relationship",
+          "calculate_matrix",
+          "find_contradictions",
+          "validate_methodology"
+        ],
+        "tokenSavings": 1040
+      },
       "investigationTokens": 3306
     },
     {
@@ -255,10 +301,12 @@
       "memoryTokens": 26,
       "overviewTokens": 157,
       "historyTokens": 21,
-      "toolDefinitionsTokensEstimated": 2899,
-      "toolsExposed": 22,
+      "toolDefinitionsTokensEstimated": 60,
+      "toolsExposed": 1,
       "toolsExposedList": [
-        "list_investigations",
+        "list_investigations"
+      ],
+      "excludedTools": [
         "get_active_investigation",
         "get_investigation_details",
         "get_investigations_stats",
@@ -281,10 +329,10 @@
         "record_strategic_memory",
         "web_research"
       ],
-      "inputTokensEstimated": 3838,
-      "totalTokensEstimated": 3838,
+      "inputTokensEstimated": 999,
+      "totalTokensEstimated": 999,
       "maxTotalTokens": 12288,
-      "contextUtilization": 0.3123372395833333,
+      "contextUtilization": 0.081298828125,
       "contextHealth": "HEALTHY",
       "wasTrimmed": false,
       "omittedCount": 0,
@@ -322,6 +370,15 @@
         "recommendedOpenRouterModel": "nvidia/nemotron-3-super-120b-a12b:free",
         "preferredProvider": "opencode-zen",
         "rationale": "Razonamiento estratégico — Nemotron 3 Super 120B / Gemini 2.0 Flash."
+      },
+      "toolSelection": {
+        "intent": "GENERAL_CHAT",
+        "mode": "RESEARCHER",
+        "requiredTools": [],
+        "optionalTools": [
+          "list_investigations"
+        ],
+        "tokenSavings": 2730
       }
     }
   ]

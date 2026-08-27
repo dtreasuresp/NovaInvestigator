@@ -32,6 +32,7 @@ import { NovaiModelRouter } from '../src/features/novai/adapters/model-router'
 import { NOVAI_ALL_MODULAR_TOOLS } from '../src/features/novai/tools/index'
 import type { NovaiContext, AiMessage } from '../src/features/novai/schema'
 import { buildInvestigationSystemPrompt } from '../src/features/novai/context-builder'
+import { NovaiToolSelector } from '../src/features/novai/tool-selector'
 
 // ---------------------------------------------------------------------------
 // Mock data — determinista, sin Supabase
@@ -212,6 +213,7 @@ interface CaseResult {
   toolDefinitionsTokensEstimated: number
   toolsExposed: number
   toolsExposedList: string[]
+  excludedTools: string[]
   inputTokensEstimated: number
   totalTokensEstimated: number
   maxTotalTokens: number
@@ -221,6 +223,13 @@ interface CaseResult {
   omittedCount: number
   modelRoute: ReturnType<typeof NovaiModelRouter.routeTask>
   investigationTokens?: number
+  toolSelection?: {
+    intent: string
+    mode: string
+    requiredTools: string[]
+    optionalTools: string[]
+    tokenSavings: number
+  }
 }
 
 function healthFromUtil(u: number): CaseResult['contextHealth'] {
@@ -288,10 +297,15 @@ function runBenchmark(): { results: CaseResult[]; summary: Record<string, unknow
       modelName: route.recommendedOpenRouterModel
     })
 
-    // Tools expuestos: hoy siempre 22 (Fase 1 baseline). Fase 3 lo hará dinámico.
-    const toolsExposed = allToolNames.length
-    const inputTokens = systemTokens + toolDefsTokensAll + historyTokens
-    const totalTokens = trimmed.totalEstimatedTokens + toolDefsTokensAll
+    // Tool selection dinámico (Fase 3)
+    const toolSelection = NovaiToolSelector.selectTools({
+      principal: MOCK_PRINCIPAL,
+      context: c.context,
+      messages
+    })
+    const dynamicToolDefsTokens = NovaiTokenBudget.estimateTokens(toolSelection.selectedTools.join(',')) * 10
+    const inputTokens = systemTokens + dynamicToolDefsTokens + historyTokens
+    const totalTokens = trimmed.totalEstimatedTokens + dynamicToolDefsTokens
     const util = totalTokens / budgetForRoute.maxTotalTokens
 
     return {
@@ -305,9 +319,10 @@ function runBenchmark(): { results: CaseResult[]; summary: Record<string, unknow
       memoryTokens: NovaiTokenBudget.estimateTokens(memories.map(m => m.content).join(' ')),
       overviewTokens: NovaiTokenBudget.estimateTokens(JSON.stringify(overview)),
       historyTokens,
-      toolDefinitionsTokensEstimated: toolDefsTokensAll,
-      toolsExposed,
-      toolsExposedList: allToolNames,
+      toolDefinitionsTokensEstimated: dynamicToolDefsTokens,
+      toolsExposed: toolSelection.toolCount,
+      toolsExposedList: toolSelection.selectedTools,
+      excludedTools: toolSelection.excludedTools,
       inputTokensEstimated: inputTokens,
       totalTokensEstimated: totalTokens,
       maxTotalTokens: budgetForRoute.maxTotalTokens,
@@ -316,6 +331,13 @@ function runBenchmark(): { results: CaseResult[]; summary: Record<string, unknow
       wasTrimmed: trimmed.wasTrimmed,
       omittedCount: trimmed.omittedCount,
       modelRoute: route,
+      toolSelection: {
+        intent: toolSelection.intent,
+        mode: toolSelection.mode,
+        requiredTools: toolSelection.requiredTools,
+        optionalTools: toolSelection.optionalTools,
+        tokenSavings: toolSelection.tokenSavings
+      },
       investigationTokens: c.id === 'C' ? investigationTokens : undefined
     }
   })
@@ -342,11 +364,12 @@ function runBenchmark(): { results: CaseResult[]; summary: Record<string, unknow
 
 function formatTable(results: CaseResult[]): string {
   const header =
-    '| Caso | Mensaje | System tk | ToolDefs tk | Hist tk | Input est. | Total est. | Max | Util % | Health | Tools | Modelo | Trim |\n' +
+    '| Caso | Mensaje | System tk | ToolDefs tk | Hist tk | Input est. | Total est. | Max | Util % | Health | Tools | ToolSavings | Modelo | Trim |\n' +
     '|---|---|---:|---:|---:|---:|---:|---:|---:|---|---|---|---|---|'
   const rows = results.map(r => {
     const pct = (r.contextUtilization * 100).toFixed(1) + '%'
-    return `| ${r.caseId} | ${r.label} | ${r.systemPromptTokensEstimated} | ${r.toolDefinitionsTokensEstimated} | ${r.historyTokens} | ${r.inputTokensEstimated} | ${r.totalTokensEstimated} | ${r.maxTotalTokens} | ${pct} | ${r.contextHealth} | ${r.toolsExposed} | ${r.modelRoute.recommendedOpenRouterModel.split('/').pop()?.slice(0, 22)} | ${r.wasTrimmed ? `yes ${r.omittedCount}` : 'no'} |`
+    const toolSavings = r.toolSelection ? `${r.toolSelection.tokenSavings}tk` : 'N/A'
+    return `| ${r.caseId} | ${r.label} | ${r.systemPromptTokensEstimated} | ${r.toolDefinitionsTokensEstimated} | ${r.historyTokens} | ${r.inputTokensEstimated} | ${r.totalTokensEstimated} | ${r.maxTotalTokens} | ${pct} | ${r.contextHealth} | ${r.toolsExposed} | ${toolSavings} | ${r.modelRoute.recommendedOpenRouterModel.split('/').pop()?.slice(0, 22)} | ${r.wasTrimmed ? `yes ${r.omittedCount}` : 'no'} |`
   })
   return [header, ...rows].join('\n')
 }
@@ -369,17 +392,16 @@ function main() {
     console.log('\n## Resumen\n')
     console.log(`- Methodology: slice ON DEMAND (solo si query menciona EFI/EFE/DAFO/QSPM/CAME), vs ${summary.methodologyTokens} tk SIEMPRE en Fase 1`)
     console.log(`- Tool definitions (22 tools): ${summary.toolDefinitionsTokensAll} tk (aún SIEMPRE en Fase 2; dinámicas en Fase 3)`)
-    console.log(`- Investigación sample (8F+8E full dump): ${summary.investigationSampleTokens} tk — Fase 2: hint minimal o filtrado por códigos`)
-    console.log(`- Utilización promedio: ${((summary.avgContextUtilization as number) * 100).toFixed(1)}%`)
-    console.log(`- Peor caso: ${summary.worstCase} con ${((summary.worstUtilization as number) * 100).toFixed(1)}%`)
-    console.log('\n## Interpretación Fase 2\n')
-    console.log('- Caso A "Hola" debe estar <350 tk system (vs 2174 tk Fase 1). Si no, revisar ContextManager.isCasualGreeting.');
-    console.log('- Caso C "D-03×A-02" debe ser hint filtrado (2 factores) no 16 factores + QSPM completo.')
-    console.log('- Fase 3 (Dynamic Tools) reducirá además toolDefs de 2899 tk a 0/360 según intent.\n')
+console.log('\n## Interpretación Fase 3\n')
+    console.log('- Caso A "Hola": 0 tools expuestas (vs 22 Fase 2) → toolDefs 0tk (vs 2899tk)')
+    console.log('- Caso C "D-03×A-02": 6 tools requeridas (investigación+methodology) vs 22')
+    console.log('- ToolDefs dinámicas: Hola 0tk, Investigación 780tk, Estrategia 1300tk, Web 260tk\n')
     console.log('## Detalle por caso (JSON resumido)\n')
     for (const r of results) {
+      const ts = r.toolSelection
+      const toolInfo = ts ? ` | intent=${ts.intent} | required=${ts.requiredTools.length} (${ts.requiredTools.join(',')}) | optional=${ts.optionalTools.length} | savings=${ts.tokenSavings}tk` : ''
       console.log(
-        `- ${r.caseId} "${r.label}": system ${r.systemPromptChars} chars / ${r.systemPromptTokensEstimated} tk | tools ${r.toolsExposed} | input ${r.inputTokensEstimated} tk | util ${(r.contextUtilization * 100).toFixed(1)}% ${r.contextHealth} | model ${r.modelRoute.mode}/${r.modelRoute.category} → ${r.modelRoute.recommendedOpenRouterModel}`
+        `- ${r.caseId} "${r.label}": system ${r.systemPromptChars} chars / ${r.systemPromptTokensEstimated} tk | tools=${r.toolsExposed} (${r.toolsExposedList.join(',')}) | excluded=${r.excludedTools.length} | input ${r.inputTokensEstimated} tk | util ${(r.contextUtilization * 100).toFixed(1)}% ${r.contextHealth} | model ${r.modelRoute.mode}/${r.modelRoute.category} → ${r.modelRoute.recommendedOpenRouterModel}${toolInfo}`
       )
     }
     console.log('')

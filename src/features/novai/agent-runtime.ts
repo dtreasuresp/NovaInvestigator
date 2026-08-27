@@ -24,6 +24,7 @@ import { classifyIntent, getRequiredToolsForIntent } from './intent-requirements
 import { validateResponse } from './response-validator'
 import { NovaiInstrumentation } from './instrumentation'
 import { NovaiContextManager } from './context-manager'
+import { NovaiToolSelector } from './tool-selector'
 
 export interface AgentRuntimeOptions {
   principal: InvestigationsPrincipal
@@ -104,18 +105,44 @@ export class NovaiAgentRuntime {
         return { role, content: m.content || '' } as ModelMessage
       })
 
-    // Enforcement point del Harness (spec §38/§39): toda tool pasa por el Gateway,
-    // que aplica checkPolicy y registra auditoría en novai_audit_events.
     // FIX Fase 1: runId UUID v4 (corrige FK violation anterior run-* string)
     const runId = NovaiInstrumentation.generateRunId()
-    const vercelTools = NovaiToolGateway.buildGovernedVercelTools(principal, { runId })
+    
+    // Fase 3: Tool Selector ON DEMAND — selección dinámica según intent, modo, permisos y contexto
+    const toolSelection = NovaiToolSelector.selectTools({
+      principal,
+      context,
+      messages,
+      locale
+    })
+    
+    const vercelTools = NovaiToolSelector.getSelectedVercelTools(
+      principal,
+      context,
+      messages
+    )
+    
+    // Log tool selection para observabilidad
+    logger.info('NovAi tool selection', {
+      action: 'novai.tool_selection',
+      details: {
+        runId,
+        intent: toolSelection.intent,
+        mode: toolSelection.mode,
+        selectedTools: toolSelection.selectedTools,
+        excludedTools: toolSelection.excludedTools,
+        toolCount: toolSelection.toolCount,
+        tokenSavings: toolSelection.tokenSavings,
+        reason: toolSelection.reason
+      }
+    } as unknown as Record<string, unknown>)
 
     // Instrumentación Fase 1: snapshots de contexto recibido vs seleccionado
     const lastUserContent = [...messages].reverse().find(m => m.role === 'user')?.content || ''
     const heuristicIntent = classifyIntent(lastUserContent)
     const receivedSnapshot = NovaiInstrumentation.buildReceivedSnapshot({ context, messages, locale })
     // Estimación de tokens de definiciones de tools (heurística)
-    const toolDefsTokensEstimated = NovaiTokenBudget.estimateTokens(Object.keys(vercelTools).join(',')) * 10
+    const toolDefsTokensEstimated = NovaiTokenBudget.estimateTokens(toolSelection.selectedTools.join(',')) * 10
     const systemTokensEstimated = NovaiTokenBudget.estimateTokens(systemPrompt)
     const availableForMessages = Math.max(
       100,
@@ -150,7 +177,7 @@ export class NovaiAgentRuntime {
         preferredProvider: routeDecision.preferredProvider,
         rationale: routeDecision.rationale
       },
-      toolsExposed: Object.keys(vercelTools)
+      toolsExposed: toolSelection.selectedTools
     }
     // Trace base para instrumentación incremental
     const runTraceBase: Record<string, unknown> = {
@@ -174,7 +201,7 @@ export class NovaiAgentRuntime {
       selected: {
         systemPromptTokensEstimated: systemTokensEstimated,
         toolDefinitionsTokensEstimated: toolDefsTokensEstimated,
-        toolsExposed: Object.keys(vercelTools),
+        toolsExposed: toolSelection.selectedTools,
         modelRoute: selectedSnapshotBase.modelRoute,
         budgetResult: selectedSnapshotBase.budgetResult,
         memoriesInjected: memories.length
@@ -206,7 +233,7 @@ export class NovaiAgentRuntime {
         output_tokens: 0,
         duration_ms: 0,
         status: 'completed', // se actualizará al final con métricas reales; este insert temprano evita FK violation
-        context_snapshot: { received: receivedSnapshot, selected: { toolsExposed: Object.keys(vercelTools), systemTokensEstimated } },
+        context_snapshot: { received: receivedSnapshot, selected: { toolsExposed: toolSelection.selectedTools, systemTokensEstimated } },
         intent: heuristicIntent
       } as Record<string, unknown>
       const { error: earlyErr } = await earlyClient.from('novai_agent_runs').insert(earlyPayload as never)
@@ -675,8 +702,8 @@ export class NovaiAgentRuntime {
         auditFindingsInjected: selectedSnapshotBase.auditFindingsCount,
         budgetResult: selectedSnapshotBase.budgetResult,
         modelRoute: selectedSnapshotBase.modelRoute,
-        toolsExposed: Object.keys(vercelTools),
-        toolsExposedCount: Object.keys(vercelTools).length,
+toolsExposed: toolSelection.selectedTools,
+      toolsExposedCount: toolSelection.selectedTools.length,
         toolDefinitionsTokensEstimated: toolDefsTokensEstimated
       },
       intentHeuristic: heuristicIntent,
