@@ -179,4 +179,26 @@ test('Forensic Epistemic Firewall — Golden test 0.68-0.74', async t => {
     // Pero si afirma haber consultado expediente sin tool, sería fallo; aquí no lo afirma
     assert.ok(result.action === 'PASS' || result.findings.length === 0)
   })
+
+  await t.test('Test K: Tavily relevance score ≠ credibility score (R9 rejection)', () => {
+    const text = 'Según la búsqueda en Tavily, el score de credibilidad es 0.82.'
+    const result = validateResponse({
+      userMessage: 'busca en web y dime la credibilidad',
+      assistantText: text,
+      events: [
+        toolCall('web_research'),
+        toolResult('web_research', {
+          status: 'EXTERNAL_EVIDENCE',
+          results: [{ title: 'Doc', url: 'https://example.com', relevanceScore: 0.82 }]
+        }),
+        sourceEvent()
+      ],
+      intentType: 'SEARCH_WEB',
+      requiredTools: ['web_research']
+    })
+
+    const hasR9 = result.findings.some(f => f.ruleId === 'R9')
+    assert.ok(hasR9, 'debe detectar R9_RELEVANCE_AS_CREDIBILITY cuando el texto equipara score de Tavily con credibilidad')
+    assert.equal(result.action, 'REJECT')
+  })
 })

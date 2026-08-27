@@ -26,6 +26,8 @@ import { validateResponse } from './response-validator'
 import { NovaiInstrumentation } from './instrumentation'
 import { NovaiContextManager } from './context-manager'
 import { NovaiToolSelector } from './tool-selector'
+import { NovaiEvidenceService, type EvidenceLinkOptions } from './evidence-service'
+import { projectCitationsFromRun, projectSourceGroupFromRun } from './event-projection'
 
 export interface AgentRuntimeOptions {
   principal: InvestigationsPrincipal
@@ -776,6 +778,27 @@ toolsExposed: toolSelection.selectedTools,
         model: modelUsed || candidateModelName
       },
       status: success ? ('completed' as const) : ('failed' as const)
+    }
+
+    // Persistir async
+    void NovaiInstrumentation.persistRunAsync(supabaseClient, trace as unknown as Parameters<typeof NovaiInstrumentation.persistRunAsync>[1])
+
+    // Emitir citaciones inline y grupos de fuentes al final del run
+    const allEvidences = collectedEvents.filter(e => e.type === 'evidence')
+    const allSources = collectedEvents.filter(e => e.type === 'source')
+
+    if (allEvidences.length > 0) {
+      const citationEvents = projectCitationsFromRun(allEvidences)
+      for (const citationEvent of citationEvents) {
+        await emitEvent(citationEvent as NovaiEvent)
+      }
+    }
+
+    if (allSources.length > 0) {
+      const sourceGroupEvents = projectSourceGroupFromRun([{ sources: allSources, sourceType: 'mixed' }])
+      for (const sourceGroupEvent of sourceGroupEvents) {
+        await emitEvent(sourceGroupEvent as NovaiEvent)
+      }
     }
 
     // Persistir async

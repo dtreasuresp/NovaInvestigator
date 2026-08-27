@@ -23,6 +23,8 @@ export type NovaiEventType =
   | 'instrumentation'
   | 'context-snapshot'
   | 'message-complete'
+  | 'citation'
+  | 'source-group'
   | 'error'
 
 export interface StepStartEvent {
@@ -124,6 +126,8 @@ export interface SourceEvent {
   url?: string
   page?: string | number
   retrievedAt?: string
+  excerpt?: string
+  factorCount?: number
 }
 
 export interface AgentTraceEvent {
@@ -190,6 +194,32 @@ export interface ErrorEvent {
   code?: string
 }
 
+export interface CitationEvent {
+  type: 'citation'
+  citationId: string
+  evidenceId: string
+  claim: string
+  excerpt: string
+  location?: string
+}
+
+export interface SourceGroupEvent {
+  type: 'source-group'
+  groupId: string
+  sourceType: 'internal_document' | 'web_source' | 'database_evidence' | 'tool_derived'
+  sources: Array<{
+    id: string
+    name: string
+    url?: string
+    documentName?: string
+    factorCount?: number
+    excerpt?: string
+    retrievedAt: string
+    evidenceCount: number
+  }>
+  totalEvidence: number
+}
+
 export type NovaiEvent =
   | StepStartEvent
   | StepUpdateEvent
@@ -203,10 +233,8 @@ export type NovaiEvent =
   | SourceEvent
   | AgentTraceEvent
   | TextDeltaEvent
-  | ReasoningEvent
-  | ReasoningDeltaEvent
-  | InstrumentationEvent
-  | ContextSnapshotEvent
+  | CitationEvent
+  | SourceGroupEvent
   | MessageCompleteEvent
   | ErrorEvent
 

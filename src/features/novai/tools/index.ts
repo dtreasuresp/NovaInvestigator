@@ -32,6 +32,7 @@ import { recordStrategicMemoryTool } from './memory/record-strategic-memory'
 
 // 5. Research & External Evidence (spec §23)
 import { webResearchTool } from './research/web-research'
+import { webExtractTool } from './research/web-extract'
 
 export * from './types'
 export { listInvestigationsTool } from './investigations/list-investigations'
@@ -60,6 +61,7 @@ export { getBillingQuotaTool } from './billing/get-billing-quota'
 export { recordStrategicMemoryTool } from './memory/record-strategic-memory'
 
 export { webResearchTool } from './research/web-research'
+export { webExtractTool } from './research/web-extract'
 
 /**
  * Catálogo maestro de todas las herramientas modulares registradas de NovAi.
@@ -95,7 +97,8 @@ export const NOVAI_ALL_MODULAR_TOOLS: Record<string, NovaiModularTool> = {
   record_strategic_memory: recordStrategicMemoryTool as unknown as NovaiModularTool,
 
   // Research & External Evidence (spec §23) — EXTERNAL_EVIDENCE separado de INTERNAL_EVIDENCE
-  web_research: webResearchTool as unknown as NovaiModularTool
+  web_research: webResearchTool as unknown as NovaiModularTool,
+  web_extract: webExtractTool as unknown as NovaiModularTool
 }
 
 /**

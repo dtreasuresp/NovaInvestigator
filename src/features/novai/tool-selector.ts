@@ -72,7 +72,8 @@ const TOOLS_BY_CATEGORY = {
   ],
   // Investigación web externa (EXTERNAL_EVIDENCE)
   web: [
-    'web_research'
+    'web_research',
+    'web_extract'
   ]
 } as const
 

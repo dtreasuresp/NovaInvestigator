@@ -56,7 +56,8 @@ export const NOVAI_MODES: Record<NovaiMode, NovaiModeDefinition> = {
       'trace_strategy',
       'compare_strategies',
       'challenge_analysis',
-      'web_research'
+      'web_research',
+      'web_extract'
     ],
     requiredTools: ['get_active_investigation', 'calculate_matrix'],
     riskLevel: 'low',
@@ -104,6 +105,7 @@ export const NOVAI_MODES: Record<NovaiMode, NovaiModeDefinition> = {
       'get_factor_evidence',
       'verify_claim',
       'web_research',
+      'web_extract',
       'get_active_investigation',
       'get_investigation_documents',
       'validate_methodology'

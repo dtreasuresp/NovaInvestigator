@@ -3,11 +3,16 @@ import { tool } from 'ai'
 import type { InvestigationsPrincipal } from '@/lib/investigations/access'
 import { logger } from '@/lib/logger'
 import type { NovaiModularTool, ToolExecutionResult } from '../types'
+import { NovaiEvidenceRepository } from '../../evidence-repository'
 
 export const webResearchSchema = z.object({
   query: z.string().min(1).describe('Consulta o hipótesis a verificar con fuentes externas públicas (ej: "mercado logístico bioceánico 2026", "competencia portuaria tarifas").'),
   top_k: z.number().int().min(1).max(10).optional().default(5).describe('Número máximo de fuentes externas a recuperar (1-10, default 5).'),
-  investigation_id: z.string().optional().describe('ID opcional de investigación para anclar trazabilidad del tenant (no afecta búsqueda externa).')
+  topic: z.enum(['general', 'news', 'finance']).optional().default('general').describe('Categoría de búsqueda: "general" para fuentes globales, "news" para noticias recientes, "finance" para datos económicos/financieros.'),
+  days: z.number().int().min(1).max(365).optional().describe('Filtrar resultados publicados en los últimos N días (ej: 7, 30, 90). Válido principalmente con topic="news".'),
+  include_domains: z.array(z.string()).max(5).optional().describe('Lista opcional de dominios a los que restringir la búsqueda (ej: ["cepal.org", "gob.cl"]).'),
+  exclude_domains: z.array(z.string()).max(5).optional().describe('Lista opcional de dominios a excluir de los resultados.'),
+  investigation_id: z.string().optional().describe('ID opcional de investigación para anclar trazabilidad y persistencia de evidencias en el expediente.')
 })
 
 export type WebResearchInput = z.infer<typeof webResearchSchema>
@@ -21,29 +26,50 @@ interface ExternalSource {
   retrievedAt: string
   provider: 'tavily' | 'brave' | 'serper'
   relevanceScore?: number | null // Tavily/Brave ranking — NO es credibility (§7)
-  // @deprecated — alias para compatibilidad, no usar como credibilidad
-  credibilityScore?: number | null
-  score?: number | null
 }
 
 const FETCH_TIMEOUT_MS = 8000
 
-async function callTavily(query: string, topK: number, apiKey: string): Promise<ExternalSource[]> {
+interface TavilySearchParams {
+  query: string
+  topK: number
+  apiKey: string
+  topic?: 'general' | 'news' | 'finance'
+  days?: number
+  include_domains?: string[]
+  exclude_domains?: string[]
+}
+
+async function callTavily(params: TavilySearchParams): Promise<ExternalSource[]> {
+  const { query, topK, apiKey, topic = 'general', days, include_domains, exclude_domains } = params
   const controller = new AbortController()
   const tid = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS)
 
   try {
+    const bodyPayload: Record<string, unknown> = {
+      api_key: apiKey,
+      query,
+      search_depth: 'advanced',
+      max_results: topK,
+      topic,
+      include_answer: false,
+      include_raw_content: false
+    }
+
+    if (typeof days === 'number' && days > 0) {
+      bodyPayload.days = days
+    }
+    if (Array.isArray(include_domains) && include_domains.length > 0) {
+      bodyPayload.include_domains = include_domains
+    }
+    if (Array.isArray(exclude_domains) && exclude_domains.length > 0) {
+      bodyPayload.exclude_domains = exclude_domains
+    }
+
     const res = await fetch('https://api.tavily.com/search', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        api_key: apiKey,
-        query,
-        search_depth: 'advanced',
-        max_results: topK,
-        include_answer: false,
-        include_raw_content: false
-      }),
+      body: JSON.stringify(bodyPayload),
       signal: controller.signal
     })
 
@@ -67,9 +93,7 @@ async function callTavily(query: string, topK: number, apiKey: string): Promise<
       publicationDate: r.published_date || null,
       retrievedAt: now,
       provider: 'tavily' as const,
-      relevanceScore: typeof r.score === 'number' ? r.score : null,
-      credibilityScore: typeof r.score === 'number' ? r.score : null, // deprecated alias, NO es credibilidad (§7)
-      score: typeof r.score === 'number' ? r.score : null
+      relevanceScore: typeof r.score === 'number' ? r.score : null
     }))
   } finally {
     clearTimeout(tid)
@@ -112,8 +136,7 @@ async function callBrave(query: string, topK: number, apiKey: string): Promise<E
       publicationDate: (r.age as string) || null,
       retrievedAt: now,
       provider: 'brave' as const,
-      credibilityScore: null,
-      score: null
+      relevanceScore: null
     }))
   } finally {
     clearTimeout(tid)
@@ -170,7 +193,15 @@ export async function executeWebResearch(
 
     if (tavilyKey) {
       try {
-        externalResults = await callTavily(query, topK, tavilyKey)
+        externalResults = await callTavily({
+          query,
+          topK,
+          apiKey: tavilyKey,
+          topic: args.topic,
+          days: args.days,
+          include_domains: args.include_domains,
+          exclude_domains: args.exclude_domains
+        })
       } catch (tavilyErr) {
         logger.warn('Tavily failed, falling back to Brave if available', {
           action: 'novai.web_research.tavily_fallback',
@@ -213,6 +244,31 @@ export async function executeWebResearch(
       }
     })
 
+    // Persistencia opcional en novai_evidence cuando se provee investigation_id
+    if (args.investigation_id && principal.client && externalResults.length > 0) {
+      await NovaiEvidenceRepository.batchCreateEvidence(
+        principal.client,
+        principal.tenantId,
+        externalResults.map(r => ({
+          tenantId: principal.tenantId,
+          investigationId: args.investigation_id,
+          sourceId: r.url,
+          sourceType: 'web_source',
+          claim: r.title,
+          excerpt: r.snippet,
+          location: r.url,
+          confidence: 1.0,
+          epistemic: 'FACT',
+          retrievedAt: r.retrievedAt
+        }))
+      ).catch(err => {
+        logger.warn('Failed to persist web_research evidence', {
+          action: 'novai.web_research.persist_error',
+          details: { error: err instanceof Error ? err.message : String(err) }
+        })
+      })
+    }
+
     return {
       toolName: 'web_research',
       success: true,
@@ -224,8 +280,7 @@ export async function executeWebResearch(
         results: externalResults,
         retrievedAt: new Date().toISOString(),
         totalResults: externalResults.length,
-        relevanceNote: 'Tavily/Brave score = relevance ranking, NO credibilidad (§7). Para credibilidad cualitativa, vea publicationDate, fuente y corroboración; no existe metodología cuantitativa versionada de credibilidad en el sistema.',
-        credibilityNote: 'DEPRECATED: No usar score como credibilidad. Ver relevanceScore y metadata de fuente. Para métrica de credibilidad se requerirá metodología versionada con pesos y CalculationEvent.',
+        relevanceNote: 'Tavily/Brave score = relevance ranking (relevancia de búsqueda), NO credibilidad metodológica. Para credibilidad cualitativa, evalúe la fuente, fecha de publicación y corroboración independiente; no existe metodología cuantitativa versionada de credibilidad en el sistema.',
         internalEvidenceNote: 'Para evidencia interna del expediente use search_evidence / get_factor_evidence. Fuente externa que confirma contexto general NO valida automáticamente un factor interno (ej. "reforma existe" ≠ "D-01=1.0 validado") — requiere vínculo de evidencia explícito.'
       }
     }
@@ -280,7 +335,11 @@ export const webResearchTool: NovaiModularTool = {
       properties: {
         query: { type: 'string', description: 'Consulta para búsqueda externa.' },
         top_k: { type: 'number', description: 'Número de fuentes externas a recuperar (1-10).' },
-        investigation_id: { type: 'string', description: 'ID opcional de investigación para trazabilidad.' }
+        topic: { type: 'string', enum: ['general', 'news', 'finance'], description: 'Categoría de búsqueda: general, news o finance.' },
+        days: { type: 'number', description: 'Filtrar resultados publicados en los últimos N días (ej: 7, 30, 90).' },
+        include_domains: { type: 'array', items: { type: 'string' }, description: 'Lista opcional de dominios a incluir.' },
+        exclude_domains: { type: 'array', items: { type: 'string' }, description: 'Lista opcional de dominios a excluir.' },
+        investigation_id: { type: 'string', description: 'ID opcional de investigación para trazabilidad y persistencia de evidencias.' }
       },
       required: ['query']
     }

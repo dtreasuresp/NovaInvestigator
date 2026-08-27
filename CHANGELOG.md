@@ -4,6 +4,18 @@
 
 All notable changes to this template will be documented in this file
 
+## v0.0.79 (2026-08-28)
+
+### Added & Architecture — Fase 5 Evidence Model + Inline Citations + Source Grouping
+
+- **Evidence Model (`src/features/novai/evidence-model.ts:1`)**: nuevo `evidenceSchema` con `EvidenceSourceType`/`EpistemicStatus`, `SourceGroup` y SQL `novai_evidence`/`novai_citations` (RLS tenant-scoped). Workaround `Object.fromEntries` para TS1117 con Zod.
+- **Evidence Repository (`src/features/novai/evidence-repository.ts:1`)**: `NovaiEvidenceRepository` con `saveEvidence`/`saveEvidenceBatch`/`saveCitation`/`getEvidenceGroupedBySource` + aliases `createEvidence`/`batchCreateEvidence`/`createCitation`/`listEvidenceByInvestigation` para compatibilidad con tools/tests. Normaliza `epistemic`→`epistemicStatus`, maneja `string|null` vs `undefined`, y chain `order().limit()` para mocks.
+- **Evidence Service (`src/features/novai/evidence-service.ts:1`)**: `NovaiEvidenceService.processEvent` con type guards `EvidenceEvent`/`CalculationEvent`/`AuditFindingEvent`/`SourceEvent`, persiste evidencia `database_evidence`/`tool_derived`/`web_source` con `epistemicStatus` FACT/INFERENCE, y `generateInlineCitations` por factor codes. `getSourceGroupsForRun` para UI.
+- **Event Projection (`src/features/novai/event-projection.ts:402`)**: `projectCitationsFromRun` y `projectSourceGroupFromRun` + `CitationEvent`/`SourceGroupEvent` en `events.ts:26` (`citation`, `source-group`).
+- **Agent Runtime (`src/features/novai/agent-runtime.ts:28`)**: importa `NovaiEvidenceService` y proyectores; emite `citation`/`source-group` events al final del run antes de `message-complete`; `persistRunAsync` deduplicado.
+- **Migración**: `supabase/migrations/2026-08-28T20-00-00_novai_evidence_citations.sql` con RLS `tenant_id` + índices.
+- **Tests**: `tests/novai/evidence-repository.test.ts` 253/253, `pnpm check-types` limpio tras `rm .tsbuildinfo`.
+
 ## v0.0.78 (2026-08-28)
 
 ### Added & Features — Fase 4 Búsqueda Web Avanzada (`web_research` con filtros Tavily)

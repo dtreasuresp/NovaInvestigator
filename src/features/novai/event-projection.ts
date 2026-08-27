@@ -10,10 +10,14 @@
 import type {
   AuditFindingEvent,
   CalculationEvent,
+  CitationEvent,
   EvidenceEvent,
   NovaiEvent,
-  SourceEvent
+  SourceEvent,
+  SourceGroupEvent
 } from './events'
+
+type SourceGroupEventInput = SourceGroupEvent & { sources: any[] }
 
 type AnyRecord = Record<string, any>
 
@@ -305,9 +309,81 @@ function projectWebResearch(result: AnyRecord): NovaiEvent[] {
     sourceType: 'external' as const,
     name: String(r.title ?? 'Fuente externa'),
     url: String(r.url ?? ''),
+    excerpt: typeof r.snippet === 'string' && r.snippet.trim() ? r.snippet.trim() : undefined,
     page: undefined,
     retrievedAt: String(r.retrievedAt ?? result.retrievedAt ?? new Date().toISOString())
   })) satisfies SourceEvent[]
+}
+
+function projectWebExtract(result: AnyRecord): NovaiEvent[] {
+  const results = Array.isArray(result.results) ? result.results : []
+
+  if (result.status === 'EXTERNAL_RESEARCH_DISABLED' || result.status === 'EXTERNAL_RESEARCH_ERROR' || results.length === 0) {
+    return []
+  }
+
+  return results.slice(0, 3).filter(isRecord).map(p => {
+    const rawContent = String(p.content ?? '').trim()
+    const snippet = rawContent.length > 280 ? rawContent.slice(0, 280) + '...' : rawContent
+
+    return {
+      type: 'source',
+      sourceType: 'external' as const,
+      name: String(p.title ?? p.url ?? 'Documento Extraído'),
+      url: String(p.url ?? ''),
+      excerpt: snippet || undefined,
+      page: undefined,
+      retrievedAt: String(p.retrievedAt ?? result.retrievedAt ?? new Date().toISOString())
+    } satisfies SourceEvent
+  })
+}
+
+function projectCitationsFromEvidence(evidences: AnyRecord[]): CitationEvent[] {
+  return evidences.map(e => ({
+    type: 'citation',
+    citationId: `citation-${String(e.evidenceId ?? e.evidence_id ?? `ev-${Date.now()}-${Math.random().toString(36).slice(2,9)}`)}`,
+    evidenceId: String(e.evidenceId ?? e.evidence_id ?? ''),
+    claim: String(e.claim ?? e.title ?? 'Evidencia citada'),
+    excerpt: String(e.excerpt ?? e.snippet ?? e.evidence ?? 'Evidencia'),
+    location: e.location ? String(e.location) : e.factorId ? `factor:${String(e.factorId)}` : undefined
+  }))
+}
+
+function projectSourceGroupFromResult(result: AnyRecord): SourceGroupEvent[] {
+  const sourceType = String(result.sourceType ?? '').toLowerCase()
+  const sources = Array.isArray(result.sources) ? result.sources : []
+
+  if (sources.length === 0) return []
+
+  const grouped = new Map<string, typeof sources[0][]>()
+
+  for (const s of sources) {
+    const key = String(s.documentName ?? s.name ?? s.url ?? s.id ?? 'unknown')
+    const arr = grouped.get(key) || []
+    arr.push(s)
+    grouped.set(key, arr)
+  }
+
+  const sourcesArray = Array.from(grouped.entries()).map(([name, srcs]) => ({
+    id: name,
+    name: String(srcs[0]?.name ?? name),
+    url: srcs[0]?.url,
+    documentName: srcs[0]?.documentName,
+    factorCount: new Set(srcs.map(s => s.factorId ?? s.factor_id).filter(Boolean)).size,
+    excerpt: srcs[0]?.excerpt?.slice(0, 200),
+    retrievedAt: String(srcs[0]?.retrievedAt ?? srcs[0]?.retrieved_at ?? new Date().toISOString()),
+    evidenceCount: srcs.length
+  }))
+
+  return [{
+    type: 'source-group',
+    groupId: `source-group-${String(result.sourceType ?? sourceType ?? 'unknown')}-${Date.now()}`,
+    sourceType: (sourceType === 'external' ? 'web_source' : 
+                 sourceType === 'internal' ? 'internal_document' :
+                 sourceType === 'tool_derived' ? 'tool_derived' : 'database_evidence') as SourceGroupEvent['sourceType'],
+    sources: sourcesArray,
+    totalEvidence: sources.reduce((acc, s) => acc + (s.evidenceCount ?? 1), 0)
+  }]
 }
 
 const PROJECTORS: Record<string, (result: AnyRecord) => NovaiEvent[]> = {
@@ -319,7 +395,72 @@ const PROJECTORS: Record<string, (result: AnyRecord) => NovaiEvent[]> = {
   find_contradictions: projectFindContradictions,
   audit_factor: projectAuditFactor,
   audit_relationship: projectAuditRelationship,
-  web_research: projectWebResearch
+  web_research: projectWebResearch,
+  web_extract: projectWebExtract
+}
+
+/**
+ * Genera eventos de citación a partir de las evidencias acumuladas en un run
+ * Se llama al final del streaming (message-complete)
+ */
+export function projectCitationsFromRun(
+  evidences: Array<{ evidenceId?: string; evidence_id?: string; claim?: string; title?: string; snippet?: string; excerpt?: string; location?: string; factorId?: string; factor_id?: string }>
+): CitationEvent[] {
+  return evidences
+    .filter(e => e.evidenceId || e.evidence_id)
+    .map(e => ({
+      type: 'citation',
+      citationId: `citation-${String(e.evidenceId ?? e.evidence_id ?? `ev-${Date.now()}-${Math.random().toString(36).slice(2,9)}`)}`,
+      evidenceId: String(e.evidenceId ?? e.evidence_id ?? ''),
+      claim: String(e.claim ?? e.title ?? 'Evidencia citada'),
+      excerpt: String(e.excerpt ?? e.snippet ?? 'Evidencia'),
+      location: e.location ? String(e.location) : e.factorId || e.factor_id ? `factor:${String(e.factorId ?? e.factor_id)}` : undefined
+    }))
+}
+
+/**
+ * Genera evento de agrupación de fuentes a partir de las fuentes acumuladas
+ * Se llama al final del streaming (message-complete)
+ */
+export function projectSourceGroupFromRun(
+  sources: Array<{ sourceType?: string; source_type?: string; sources?: any[] }>
+): SourceGroupEvent[] {
+  if (!sources.length) return []
+
+  const allSources = sources.flatMap(s => s.sources || [])
+  if (!allSources.length) return []
+
+  const sourceType = String(allSources[0]?.sourceType ?? allSources[0]?.source_type ?? '').toLowerCase()
+
+  const grouped = new Map<string, any[]>()
+
+  for (const s of allSources) {
+    const key = String(s.documentName ?? s.name ?? s.url ?? s.id ?? 'unknown')
+    const arr = grouped.get(key) || []
+    arr.push(s)
+    grouped.set(key, arr)
+  }
+
+  const sourcesArray = Array.from(grouped.entries()).map(([name, srcs]) => ({
+    id: name,
+    name: String(srcs[0]?.name ?? name),
+    url: srcs[0]?.url,
+    documentName: srcs[0]?.documentName,
+    factorCount: new Set(srcs.map(s => s.factorId ?? s.factor_id).filter(Boolean)).size,
+    excerpt: srcs[0]?.excerpt?.slice(0, 200),
+    retrievedAt: String(srcs[0]?.retrievedAt ?? srcs[0]?.retrieved_at ?? new Date().toISOString()),
+    evidenceCount: srcs.length
+  }))
+
+  return [{
+    type: 'source-group',
+    groupId: `source-group-${String(allSources[0]?.sourceType ?? allSources[0]?.source_type ?? 'unknown')}-${Date.now()}`,
+    sourceType: (allSources[0]?.sourceType === 'external' || allSources[0]?.source_type === 'external' ? 'web_source' :
+                 allSources[0]?.sourceType === 'internal' || allSources[0]?.source_type === 'internal' ? 'internal_document' :
+                 allSources[0]?.sourceType === 'tool_derived' || allSources[0]?.source_type === 'tool_derived' ? 'tool_derived' : 'database_evidence') as SourceGroupEvent['sourceType'],
+    sources: sourcesArray,
+    totalEvidence: allSources.reduce((acc, s) => acc + (s.evidenceCount ?? 1), 0)
+  }]
 }
 
 /**

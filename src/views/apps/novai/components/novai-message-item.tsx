@@ -261,6 +261,58 @@ function RenderStructuredToolResult({ invocation }: { invocation: ToolInvocation
     }
   }
 
+  // 9. External Web Extract (`web_extract`) — EXTERNAL_EVIDENCE lectura profunda de URLs
+  if (invocation.toolName === 'web_extract') {
+    if (result.status === 'EXTERNAL_RESEARCH_DISABLED') {
+      return (
+        <div className='rounded-lg bg-amber-500/10 border border-amber-500/30 p-2.5 text-xs text-amber-700 dark:text-amber-300 flex items-start gap-2'>
+          <AlertCircle className='size-4 shrink-0 mt-0.5' />
+          <div>
+            <p className='font-medium'>Extracción web deshabilitada</p>
+            <p className='opacity-80 mt-0.5'>{String(result.message || 'Configure TAVILY_API_KEY.')}</p>
+          </div>
+        </div>
+      )
+    }
+
+    if (Array.isArray(result.results) && result.results.length > 0) {
+      return (
+        <div className='space-y-1.5'>
+          <div className='flex items-center gap-1.5 text-[10px] font-medium text-muted-foreground uppercase tracking-widest'>
+            <span className='size-1.5 rounded-full bg-blue-500 animate-pulse' />
+            EXTERNAL_EVIDENCE · Extracción profunda · {result.results.length} documento(s)
+          </div>
+          {result.results.slice(0, 3).map((page: any, idx: number) => {
+            const rawContent = String(page.content || '')
+            const snippet = rawContent.length > 200 ? rawContent.slice(0, 200) + '...' : rawContent
+
+            return (
+              <NovaiSourceCard
+                key={idx}
+                source={{
+                  sourceType: 'external',
+                  name: page.title || page.url,
+                  url: page.url,
+                  excerpt: snippet,
+                  retrievedAt: page.retrievedAt
+                }}
+              />
+            )
+          })}
+        </div>
+      )
+    }
+
+    if (result.status === 'EXTERNAL_RESEARCH_ERROR' || result.status === 'EXTERNAL_RESEARCH_TIMEOUT') {
+      return (
+        <div className='rounded-lg bg-destructive/10 border border-destructive/30 p-2.5 text-xs text-destructive flex items-center gap-2'>
+          <AlertCircle className='size-4 shrink-0' />
+          <span>{String(result.message || result.error || 'Error en extracción web')}</span>
+        </div>
+      )
+    }
+  }
+
   return null
 }
 
