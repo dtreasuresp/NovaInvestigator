@@ -4,6 +4,16 @@
 
 All notable changes to this template will be documented in this file
 
+## v0.0.84 (2026-08-28)
+
+### Fixed & Synchronized — Supabase Migrations & NovAi Database Schema Alignment
+
+- **Supabase Migrations Synchronization (`supabase/migrations/`)**:
+  - Corregido error de sintaxis en [`2026-08-28T20-00-00_novai_evidence_citations.sql`](file:///d:/03.%20MATRIZ%20DAFO/supabase/migrations/2026-08-28T20-00-00_novai_evidence_citations.sql) eliminando la declaración duplicada de la columna `investigation_id`.
+  - Eliminado archivo borrador obsoleto `supabase/migrations/2026-08-28T10-00-00_novai_evidence.sql`.
+  - Aplicados en PostgreSQL los DDL pendientes para observabilidad en `novai_agent_runs` (Fase 1), tablas `novai_evidence` y `novai_citations` con RLS habilitado (Fase 5), y compactación semántica en `novai_conversations` y `novai_messages` (Fase 6).
+  - Sincronizada la tabla `supabase_migrations.schema_migrations` registrando las 5 versiones (`20260825000000`, `20260827000000`, `20260828000001`, `20260828200000`, `20260829000000`), dejando la base de datos 100% al día con los 75 archivos de migración locales.
+
 ## v0.0.83 (2026-08-28)
 
 ### Fixed & Integrated — NovAi V2 Auditoría, Corrección e Integración End-to-End

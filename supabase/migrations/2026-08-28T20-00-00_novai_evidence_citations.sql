@@ -20,7 +20,6 @@ create table if not exists public.novai_evidence (
   confidence numeric not null default 1.0 check (confidence >= 0.0 and confidence <= 1.0),
   epistemic_status text not null default 'FACT' check (epistemic_status in ('FACT','INFERENCE','HYPOTHESIS','ASSUMPTION','UNSUPPORTED')),
   factor_id text,
-  investigation_id uuid references public.investigations(id) on delete set null,
   document_name text,
   url text,
   page text,
