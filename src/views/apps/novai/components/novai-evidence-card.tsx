@@ -17,16 +17,16 @@ export function NovaiEvidenceCard({ evidence, className = '' }: NovaiEvidenceCar
     switch (factorType) {
       case 'D':
       case 'WEAKNESS':
-        return 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/30'
+        return 'bg-chart-4/10 text-chart-4 border-chart-4/30'
       case 'F':
       case 'STRENGTH':
-        return 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/30'
+        return 'bg-chart-2/10 text-chart-2 border-chart-2/30'
       case 'O':
       case 'OPPORTUNITY':
-        return 'bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/30'
+        return 'bg-chart-2/10 text-chart-2 border-chart-2/30'
       case 'A':
       case 'THREAT':
-        return 'bg-purple-500/10 text-purple-600 dark:text-purple-400 border-purple-500/30'
+        return 'bg-chart-5/10 text-chart-5 border-chart-5/30'
       default:
         return 'bg-muted text-muted-foreground border-border'
     }
@@ -37,14 +37,14 @@ export function NovaiEvidenceCard({ evidence, className = '' }: NovaiEvidenceCar
     switch (q.toLowerCase()) {
       case 'high':
         return (
-          <Badge variant='outline' className='h-5 text-[10px] gap-1 border-emerald-500/30 text-emerald-600 dark:text-emerald-400 bg-emerald-500/5 font-normal'>
+          <Badge variant='outline' className='h-5 text-xs gap-1 border-chart-2/30 text-chart-2 bg-chart-2/5 font-normal'>
             <ShieldCheck className='size-2.5' />
             <span>Evidencia Alta</span>
           </Badge>
         )
       case 'medium':
         return (
-          <Badge variant='outline' className='h-5 text-[10px] gap-1 border-blue-500/30 text-blue-600 dark:text-blue-400 bg-blue-500/5 font-normal'>
+          <Badge variant='outline' className='h-5 text-xs gap-1 border-chart-2/30 text-chart-2 bg-chart-2/5 font-normal'>
             <ShieldCheck className='size-2.5' />
             <span>Evidencia Media</span>
           </Badge>
@@ -53,7 +53,7 @@ export function NovaiEvidenceCard({ evidence, className = '' }: NovaiEvidenceCar
       case 'unverified':
       default:
         return (
-          <Badge variant='outline' className='h-5 text-[10px] gap-1 border-amber-500/30 text-amber-600 dark:text-amber-400 bg-amber-500/5 font-normal'>
+          <Badge variant='outline' className='h-5 text-xs gap-1 border-chart-4/30 text-chart-4 bg-chart-4/5 font-normal'>
             <AlertTriangle className='size-2.5' />
             <span>Por Verificar</span>
           </Badge>
@@ -89,7 +89,7 @@ export function NovaiEvidenceCard({ evidence, className = '' }: NovaiEvidenceCar
       )}
 
       {/* Source Metadata & Footer */}
-      <div className='flex items-center justify-between gap-2 text-[11px] text-muted-foreground pt-1 border-t border-border/50 flex-wrap'>
+      <div className='flex items-center justify-between gap-2 text-xs text-muted-foreground pt-1 border-t border-border/50 flex-wrap'>
         <div className='flex items-center gap-1.5 truncate'>
           <BookOpen className='size-3 text-muted-foreground shrink-0' />
           <span className='truncate font-medium text-foreground/80'>
@@ -110,10 +110,10 @@ export function NovaiEvidenceCard({ evidence, className = '' }: NovaiEvidenceCar
                 <ExternalLink className='size-2.5' />
               </a>
             }
-            className='h-6 text-[11px] gap-1 text-primary hover:text-primary px-1.5'
+            className='h-6 text-xs gap-1 text-primary hover:text-primary px-1.5'
           />
         ) : (
-          <div className='flex items-center gap-1 text-[10px] text-muted-foreground/70'>
+          <div className='flex items-center gap-1 text-xs text-muted-foreground/70'>
             <FileText className='size-3' />
             <span>Fuente Interna</span>
           </div>

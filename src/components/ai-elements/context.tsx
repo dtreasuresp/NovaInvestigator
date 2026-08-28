@@ -6,7 +6,9 @@ import {
   HoverCardContent,
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
+
 import { Progress } from "@/components/ui/progress";
+
 import { cn } from "@/lib/utils";
 import type { LanguageModelUsage } from "ai";
 import type { ComponentProps } from "react";
@@ -61,7 +63,9 @@ export const Context = ({
   );
 };
 
-const ContextIcon = () => {
+export type ContextIconProps = ComponentProps<"svg">;
+
+export const ContextIcon = ({ className, ...props }: ContextIconProps) => {
   const { usedTokens, maxTokens } = useContextValue();
   const circumference = 2 * Math.PI * ICON_RADIUS;
   const usedPercent = usedTokens / maxTokens;
@@ -75,6 +79,8 @@ const ContextIcon = () => {
       style={{ color: "currentcolor" }}
       viewBox={`0 0 ${ICON_VIEWBOX} ${ICON_VIEWBOX}`}
       width="20"
+      className={className}
+      {...props}
     >
       <circle
         cx={ICON_CENTER}
@@ -107,6 +113,7 @@ export type ContextTriggerProps = ComponentProps<typeof Button>;
 export const ContextTrigger = ({ children, ...props }: ContextTriggerProps) => {
   const { usedTokens, maxTokens } = useContextValue();
   const usedPercent = usedTokens / maxTokens;
+
   const renderedPercent = new Intl.NumberFormat("en-US", {
     maximumFractionDigits: 1,
     style: "percent",
@@ -147,13 +154,16 @@ export const ContextContentHeader = ({
 }: ContextContentHeaderProps) => {
   const { usedTokens, maxTokens } = useContextValue();
   const usedPercent = usedTokens / maxTokens;
+
   const displayPct = new Intl.NumberFormat("en-US", {
     maximumFractionDigits: 1,
     style: "percent",
   }).format(usedPercent);
+
   const used = new Intl.NumberFormat("en-US", {
     notation: "compact",
   }).format(usedTokens);
+
   const total = new Intl.NumberFormat("en-US", {
     notation: "compact",
   }).format(maxTokens);
@@ -197,6 +207,7 @@ export const ContextContentFooter = ({
   ...props
 }: ContextContentFooterProps) => {
   const { modelId, usage } = useContextValue();
+  
   const costUSD = modelId
     ? getUsage({
         modelId,
@@ -206,6 +217,7 @@ export const ContextContentFooter = ({
         },
       }).costUSD?.totalUSD
     : undefined;
+
   const totalCost = new Intl.NumberFormat("en-US", {
     currency: "USD",
     style: "currency",
@@ -272,6 +284,7 @@ export const ContextInputUsage = ({
         usage: { input: inputTokens, output: 0 },
       }).costUSD?.totalUSD
     : undefined;
+
   const inputCostText = new Intl.NumberFormat("en-US", {
     currency: "USD",
     style: "currency",
@@ -312,6 +325,7 @@ export const ContextOutputUsage = ({
         usage: { input: 0, output: outputTokens },
       }).costUSD?.totalUSD
     : undefined;
+
   const outputCostText = new Intl.NumberFormat("en-US", {
     currency: "USD",
     style: "currency",
@@ -352,6 +366,7 @@ export const ContextReasoningUsage = ({
         usage: { reasoningTokens },
       }).costUSD?.totalUSD
     : undefined;
+
   const reasoningCostText = new Intl.NumberFormat("en-US", {
     currency: "USD",
     style: "currency",
@@ -392,6 +407,7 @@ export const ContextCacheUsage = ({
         usage: { cacheReads: cacheTokens, input: 0, output: 0 },
       }).costUSD?.totalUSD
     : undefined;
+
   const cacheCostText = new Intl.NumberFormat("en-US", {
     currency: "USD",
     style: "currency",

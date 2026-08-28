@@ -22,16 +22,16 @@ export function NovaiCalculationCard({ calculation, className = '' }: NovaiCalcu
   const getMatrixBadgeColor = () => {
     switch (matrixType) {
       case 'EFI':
-        return 'bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/30'
+        return 'bg-chart-2/10 text-chart-2 border-chart-2/30'
       case 'EFE':
-        return 'bg-purple-500/10 text-purple-600 dark:text-purple-400 border-purple-500/30'
+        return 'bg-chart-5/10 text-chart-5 border-chart-5/30'
       case 'DAFO':
       case 'SWOT':
-        return 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/30'
+        return 'bg-chart-2/10 text-chart-2 border-chart-2/30'
       case 'QSPM':
-        return 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/30'
+        return 'bg-chart-4/10 text-chart-4 border-chart-4/30'
       case 'CAME':
-        return 'bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border-indigo-500/30'
+        return 'bg-chart-5/10 text-chart-5 border-chart-5/30'
       default:
         return 'bg-muted text-muted-foreground border-border'
     }
@@ -85,15 +85,15 @@ export function NovaiCalculationCard({ calculation, className = '' }: NovaiCalcu
       {/* Detailed calculation items breakdown if available */}
       {calculation.items && calculation.items.length > 0 && (
         <Collapsible open={isOpen} onOpenChange={setIsOpen} className='w-full'>
-          <CollapsibleTrigger className='flex items-center justify-between w-full h-7 text-[11px] text-muted-foreground hover:text-foreground px-2 rounded-md hover:bg-muted/40 transition-colors'>
+          <CollapsibleTrigger className='flex items-center justify-between w-full h-7 text-xs text-muted-foreground hover:text-foreground px-2 rounded-md hover:bg-muted/40 transition-colors'>
             <span>Ver desglose de factores evaluados ({calculation.items.length})</span>
             <ChevronDown className={`size-3 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
           </CollapsibleTrigger>
 
           <CollapsibleContent className='pt-2 space-y-1.5'>
-            <div className='rounded-lg border border-border/60 overflow-hidden text-[11px]'>
+            <div className='rounded-lg border border-border/60 overflow-hidden text-xs'>
               <table className='w-full text-left'>
-                <thead className='bg-muted/60 text-muted-foreground text-[10px] uppercase font-semibold border-b border-border/60'>
+                <thead className='bg-muted/60 text-muted-foreground text-xs uppercase font-semibold border-b border-border/60'>
                   <tr>
                     <th className='p-1.5 pl-2.5'>Factor</th>
                     <th className='p-1.5 text-right'>Peso</th>

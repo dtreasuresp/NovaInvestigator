@@ -170,7 +170,7 @@ export function NovaiSidebar({
             </div>
             <div>
               <h2 className='text-sm font-bold tracking-tight'>NovAi</h2>
-              <p className='text-[11px] text-muted-foreground'>Historial de chats</p>
+              <p className='text-xs text-muted-foreground'>Historial de chats</p>
             </div>
           </div>
           <Button
@@ -189,7 +189,7 @@ export function NovaiSidebar({
         >
           <Plus className='size-4' />
           <span>Nuevo chat</span>
-          <span className='ml-auto font-mono text-[10px] opacity-60 border border-border/40 px-1.5 py-0.5 rounded'>Ctrl+K</span>
+          <span className='ml-auto font-mono text-xs opacity-60 border border-border/40 px-1.5 py-0.5 rounded'>Ctrl+K</span>
         </Button>
 
         {threads.length > 3 && (
@@ -211,7 +211,7 @@ export function NovaiSidebar({
           <div className='flex flex-col items-center justify-center py-12 text-center text-muted-foreground space-y-2 px-4'>
             <MessageSquare className='size-8 stroke-1 opacity-40' />
             <p className='text-xs font-medium'>No hay conversaciones previas</p>
-            <p className='text-[11px] text-muted-foreground/80'>Inicia un nuevo chat para recibir asesoría estratégica.</p>
+            <p className='text-xs text-muted-foreground/80'>Inicia un nuevo chat para recibir asesoría estratégica.</p>
           </div>
         ) : (
           <>
@@ -304,7 +304,7 @@ function ThreadSection({
 
   return (
     <div className='space-y-1'>
-      <p className='px-2 text-[10px] font-bold uppercase tracking-wider text-muted-foreground/70'>{title}</p>
+      <p className='px-2 text-xs font-bold uppercase tracking-wider text-muted-foreground/70'>{title}</p>
       <div className='space-y-0.5'>
         {threads.filter((t): t is ChatThread => Boolean(t && t.id)).map(thread => {
           const isActive = thread.id === activeId
@@ -327,7 +327,7 @@ function ThreadSection({
                   onChange={e => setEditTitle(e.target.value)}
                   className='h-7 text-xs px-2 border-0 focus-visible:ring-0'
                 />
-                <Button size='icon' type='submit' variant='ghost' className='size-6 text-emerald-500'>
+                <Button size='icon' type='submit' variant='ghost' className='size-6 text-chart-2'>
                   <Check className='size-3.5' />
                 </Button>
                 <Button size='icon' type='button' variant='ghost' onClick={onCancelRename} className='size-6 text-muted-foreground'>

@@ -29,32 +29,32 @@ export function NovaiTraceViewer({ traces, className = '' }: NovaiTraceViewerPro
       case 'investigation':
         return <Search className='size-3 text-primary' />
       case 'evidence':
-        return <BookOpen className='size-3 text-blue-500' />
+        return <BookOpen className='size-3 text-chart-2' />
       case 'calculation':
-        return <Calculator className='size-3 text-emerald-500' />
+        return <Calculator className='size-3 text-chart-2' />
       case 'audit':
-        return <ShieldCheck className='size-3 text-amber-500' />
+        return <ShieldCheck className='size-3 text-chart-4' />
       case 'relation':
-        return <LinkIcon className='size-3 text-purple-500' />
+        return <LinkIcon className='size-3 text-chart-5' />
       case 'warning':
-        return <AlertTriangle className='size-3 text-orange-500' />
+        return <AlertTriangle className='size-3 text-chart-1' />
       case 'validation':
       default:
-        return <CheckCircle2 className='size-3 text-emerald-500' />
+        return <CheckCircle2 className='size-3 text-chart-2' />
     }
   }
 
   const getStatusIndicator = (status?: AgentTraceItem['status']) => {
     switch (status) {
       case 'running':
-        return <Clock className='size-3 animate-spin text-amber-500 shrink-0' />
+        return <Clock className='size-3 animate-spin text-chart-4 shrink-0' />
       case 'error':
         return <XCircle className='size-3 text-destructive shrink-0' />
       case 'warning':
-        return <AlertTriangle className='size-3 text-amber-500 shrink-0' />
+        return <AlertTriangle className='size-3 text-chart-4 shrink-0' />
       case 'completed':
       default:
-        return <CheckCircle2 className='size-3 text-emerald-500 shrink-0' />
+        return <CheckCircle2 className='size-3 text-chart-2 shrink-0' />
     }
   }
 
@@ -74,15 +74,15 @@ export function NovaiTraceViewer({ traces, className = '' }: NovaiTraceViewerPro
               <div className='p-1 rounded bg-primary/10 text-primary shrink-0'>
                 <Sparkles className='size-3.5' />
               </div>
-              <span className='font-semibold text-foreground text-[11px] truncate'>
+              <span className='font-semibold text-foreground text-xs truncate'>
                 Traza de Trabajo ({activeCount} pasos verificados)
               </span>
               {hasErrors ? (
-                <Badge variant='destructive' className='text-[9px] px-1.5 h-4'>Inconsistencia</Badge>
+                <Badge variant='destructive' className='text-xs px-1.5 h-4'>Inconsistencia</Badge>
               ) : hasWarnings ? (
-                <Badge variant='outline' className='text-[9px] px-1.5 h-4 border-amber-500/40 text-amber-600 dark:text-amber-400'>Avisos</Badge>
+                <Badge variant='outline' className='text-xs px-1.5 h-4 border-chart-4/40 text-chart-4'>Avisos</Badge>
               ) : (
-                <Badge variant='outline' className='text-[9px] px-1.5 h-4 border-emerald-500/40 text-emerald-600 dark:text-emerald-400'>Verificado</Badge>
+                <Badge variant='outline' className='text-xs px-1.5 h-4 border-chart-2/40 text-chart-2'>Verificado</Badge>
               )}
             </div>
           </div>
@@ -98,10 +98,10 @@ export function NovaiTraceViewer({ traces, className = '' }: NovaiTraceViewerPro
               <div className='flex-1 min-w-0'>
                 <div className='flex items-center gap-1.5 flex-wrap'>
                   {getCategoryIcon(trace.category)}
-                  <span className='font-semibold text-foreground text-[11px]'>{trace.title}</span>
+                  <span className='font-semibold text-foreground text-xs'>{trace.title}</span>
                 </div>
                 {trace.description && (
-                  <p className='text-[11px] text-muted-foreground mt-0.5 leading-snug'>
+                  <p className='text-xs text-muted-foreground mt-0.5 leading-snug'>
                     {trace.description}
                   </p>
                 )}

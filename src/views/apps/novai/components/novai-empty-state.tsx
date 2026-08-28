@@ -94,7 +94,7 @@ export function NovaiEmptyState({ userName, onSelectPrompt, currentContext }: No
             >
               <div className='space-y-1.5 w-full'>
                 <div className='flex items-center justify-between w-full'>
-                  <span className='text-[10px] font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5'>
+                  <span className='text-xs font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5'>
                     <Icon className='size-3 text-muted-foreground' />
                     {card.category}
                   </span>
@@ -103,7 +103,7 @@ export function NovaiEmptyState({ userName, onSelectPrompt, currentContext }: No
                 <h3 className='text-xs font-semibold text-foreground leading-snug'>
                   {card.title}
                 </h3>
-                <p className='text-[11px] text-muted-foreground leading-snug line-clamp-2'>
+                <p className='text-xs text-muted-foreground leading-snug line-clamp-2'>
                   {card.description}
                 </p>
               </div>

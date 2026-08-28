@@ -79,7 +79,7 @@ export function NovaiActivityTask({ traces, toolInvocations, isStreaming, classN
             <ChevronDownIcon className='size-3.5 text-muted-foreground transition-transform group-data-[state=open]:rotate-180' aria-hidden />
           </div>
         </TaskTrigger>
-        <TaskContent className='mt-2 space-y-1 border-primary/20 border-l-2 pl-3 ml-2'>
+        <TaskContent className='mt-2 space-y-1'>
           {steps.map((step) => (
             <TaskItem key={step.id} className='flex items-start gap-2 text-xs py-1 px-1.5 rounded-md hover:bg-muted/30 transition-colors'>
               <span className='mt-0.5' aria-hidden>{getStatusIndicator(step.status)}</span>
