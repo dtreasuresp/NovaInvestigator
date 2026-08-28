@@ -368,7 +368,7 @@ export interface TranslationSchema {
     aiGenerating: string
     dafoAiAppliedToast: string
     qspmAiAppliedToast: string
-    cameAnalysis: string  
+    cameAnalysis: string
   }
   userMenu: {
     myAccount: string
@@ -1184,7 +1184,7 @@ export const es: TranslationSchema = {
   novai: {
     aiCopilot: 'NovAi',
     aiCopilotTitle: 'Asistente NovAi',
-    aiCopilotDesc: 'Asesoría metodológica en tiempo real basada en tu investigación activa.',
+    aiCopilotDesc: 'Asistente en tiempo real.',
     aiSuggestedPrompts: 'Consultas rápidas sugeridas:',
     aiFreePlanNotice: 'El chat libre está disponible en planes superiores. Puedes usar los prompts sugeridos de arriba.',
     aiInputPlaceholder: 'Pregunta algo sobre tu diagnóstico estratégico...',

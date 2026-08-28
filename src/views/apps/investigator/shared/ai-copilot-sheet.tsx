@@ -515,7 +515,7 @@ export function AiCopilotSheet({ floating = true }: AiCopilotSheetProps) {
             </SheetTitle>
           </div>
           <SheetDescription className='text-xs'>
-            {t('novai.aiCopilotDesc') || 'Asesoría metodológica en tiempo real basada en tu investigación activa.'}
+            {t('novai.aiCopilotDesc')}
           </SheetDescription>
         </SheetHeader>
 
