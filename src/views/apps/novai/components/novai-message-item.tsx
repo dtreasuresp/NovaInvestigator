@@ -46,7 +46,7 @@ export function NovaiMessageItem({ message, isLast, isLoading, onRegenerate }: N
     return (
       <Message from='user' className='max-w-3xl mx-auto w-full py-1'>
         <div className='flex items-start justify-end gap-2.5 w-full group'>
-          <MessageContent className='max-w-[85%] sm:max-w-[75%] rounded-[20px] rounded-br-xs bg-muted/80 dark:bg-[#2f2f2f] px-4 py-2.5 text-sm text-foreground shadow-2xs border border-border/40'>
+          <MessageContent className='max-w-[85%] sm:max-w-[75%] rounded-2xl rounded-br-sm bg-muted/80 dark:bg-muted px-4 py-2.5 text-sm text-foreground shadow-2xs border border-border/40'>
             <p className='whitespace-pre-wrap leading-relaxed'>{message.content}</p>
           </MessageContent>
         </div>
@@ -94,7 +94,7 @@ export function NovaiMessageItem({ message, isLast, isLoading, onRegenerate }: N
           )}
 
           {/* 4. Response — elemento visual dominante */}
-          <div className='text-[15px] leading-relaxed text-foreground prose prose-sm max-w-none prose-p:my-2 prose-headings:font-semibold'>
+          <div className='text-sm leading-relaxed text-foreground prose prose-sm max-w-none prose-p:my-2 prose-headings:font-semibold'>
             {message.content ? (
               <MessageResponse className='[&>p]:my-3 [&>h3]:mt-6 [&>h3]:mb-3'>{message.content}</MessageResponse>
             ) : isLoading && isLast ? (
@@ -128,7 +128,7 @@ export function NovaiMessageItem({ message, isLast, isLoading, onRegenerate }: N
                       />
                     }
                   >
-                    {copied ? <Check className='size-3 text-emerald-500' aria-hidden /> : <Copy className='size-3' aria-hidden />}
+                    {copied ? <Check className='size-3 text-chart-2' aria-hidden /> : <Copy className='size-3' aria-hidden />}
                   </TooltipTrigger>
                   <TooltipContent><p>{copied ? 'Copiado' : 'Copiar respuesta'}</p></TooltipContent>
                 </Tooltip>

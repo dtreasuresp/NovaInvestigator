@@ -39,8 +39,8 @@ export function NovaiSourcesGroup({ sources, evidences, className = '' }: NovaiS
       <Sources {...({ defaultOpen: !shouldCollapse } as unknown as Record<string, unknown>)} className='rounded-xl border border-border/60 bg-card/40 p-2 text-xs'>
         <SourcesTrigger count={totalCount} className='w-full'>
           <div className='flex items-center gap-2 w-full cursor-pointer p-1'>
-            <span className='text-[11px]' aria-hidden>📚</span>
-            <p className='font-semibold text-foreground text-[12px]'>
+            <span className='text-xs' aria-hidden>📚</span>
+            <p className='font-semibold text-foreground text-xs'>
               {totalCount} {totalCount === 1 ? 'fuente consultada' : 'fuentes consultadas'}
             </p>
             <ChevronDownIcon className='ml-auto size-3.5 text-muted-foreground transition-transform group-data-[state=open]:rotate-180' aria-hidden />
@@ -52,16 +52,16 @@ export function NovaiSourcesGroup({ sources, evidences, className = '' }: NovaiS
             return (
               <div key={idx} className='flex items-start gap-2 rounded-lg border border-border/40 bg-background p-2.5 hover:border-primary/30 transition-colors'>
                 <div className='mt-0.5 p-1 rounded bg-muted text-muted-foreground shrink-0' aria-hidden>
-                  {isExternal ? <Globe className='size-3 text-blue-500' /> : <BookOpen className='size-3 text-primary' />}
+                  {isExternal ? <Globe className='size-3 text-chart-2' /> : <BookOpen className='size-3 text-primary' />}
                 </div>
                 <div className='flex-1 min-w-0'>
                   <Source href={src.url} title={src.name} className='text-xs font-medium text-foreground hover:text-primary truncate block'>
                     {src.name}
                   </Source>
                   {src.excerpt && (
-                    <p className='text-[11px] text-muted-foreground line-clamp-2 mt-1 leading-relaxed'>{src.excerpt}</p>
+                    <p className='text-xs text-muted-foreground line-clamp-2 mt-1 leading-relaxed'>{src.excerpt}</p>
                   )}
-                  <p className='text-[10px] text-muted-foreground/70 mt-1'>
+                  <p className='text-xs text-muted-foreground/70 mt-1'>
                     {isExternal ? 'Fuente externa' : 'Documento interno'} {src.retrievedAt ? `· ${new Date(src.retrievedAt).toLocaleDateString()}` : ''}
                   </p>
                 </div>
@@ -70,10 +70,10 @@ export function NovaiSourcesGroup({ sources, evidences, className = '' }: NovaiS
           })}
           {hasEvidenceGroup && (
             <div className='rounded-lg border border-border/40 bg-muted/20 p-2.5'>
-              <p className='text-[11px] font-medium text-foreground flex items-center gap-1.5'>
+              <p className='text-xs font-medium text-foreground flex items-center gap-1.5'>
                 <BookOpen className='size-3 text-primary' aria-hidden /> Evidencia interna del expediente
               </p>
-              <ul className='mt-1.5 space-y-1 list-disc list-inside text-[11px] text-muted-foreground'>
+              <ul className='mt-1.5 space-y-1 list-disc list-inside text-xs text-muted-foreground'>
                 {internalEvidences.slice(0, 5).map((e, i) => (
                   <li key={i} className='truncate'>
                     <span className='font-medium text-foreground/80'>{e.factorCode ?? e.name}</span>
@@ -86,7 +86,7 @@ export function NovaiSourcesGroup({ sources, evidences, className = '' }: NovaiS
               </ul>
             </div>
           )}
-          <p className='text-[10px] text-muted-foreground/60 pt-1'>Fuentes verificadas por el runtime — el modelo no puede inventar fuentes.</p>
+          <p className='text-xs text-muted-foreground/60 pt-1'>Fuentes verificadas por el runtime — el modelo no puede inventar fuentes.</p>
         </SourcesContent>
       </Sources>
     </div>

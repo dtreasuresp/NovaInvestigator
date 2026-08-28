@@ -15,9 +15,9 @@ interface NovaiContextIndicatorProps {
 }
 
 function getHealthLevel(pct: number): { label: string; color: string } {
-  if (pct < 0.6) return { label: 'Saludable', color: 'text-emerald-600' }
-  if (pct < 0.8) return { label: 'Moderado', color: 'text-amber-600' }
-  if (pct < 0.9) return { label: 'Atención', color: 'text-orange-600' }
+  if (pct < 0.6) return { label: 'Saludable', color: 'text-chart-2' }
+  if (pct < 0.8) return { label: 'Moderado', color: 'text-chart-4' }
+  if (pct < 0.9) return { label: 'Atención', color: 'text-chart-1' }
   return { label: 'Crítico', color: 'text-destructive' }
 }
 
@@ -47,10 +47,10 @@ export function NovaiContextIndicator({ usedTokens, maxTokens, usage, modelId, c
       <Context usedTokens={displayUsed} maxTokens={displayMax} usage={displayUsage} modelId={modelId} >
       <ContextTrigger
         aria-label={`Contexto ${Math.round(pct * 100)}% ${health.label}${isEstimated ? ' estimado' : ''}`}
-        className='h-6 px-2 gap-1.5 text-[11px] rounded-full border border-border/60 bg-background hover:bg-muted text-muted-foreground'
+        className='h-6 px-2 gap-1.5 text-xs rounded-full border border-border/60 bg-background hover:bg-muted text-muted-foreground'
       >
         <span className={`font-medium ${health.color}`}>Contexto {Math.round(pct * 100)}%</span>
-        {isEstimated && <span className='text-[9px] opacity-60'>(est.)</span>}
+        {isEstimated && <span className='text-xs opacity-60'>(est.)</span>}
       </ContextTrigger>
       <ContextContent className='w-72'>
         <ContextContentHeader />
@@ -59,11 +59,11 @@ export function NovaiContextIndicator({ usedTokens, maxTokens, usage, modelId, c
           <ContextOutputUsage />
           <ContextReasoningUsage />
           <ContextCacheUsage />
-          <div className='flex items-center justify-between text-[11px] pt-2 border-t border-border/40'>
+          <div className='flex items-center justify-between text-xs pt-2 border-t border-border/40'>
             <span className='text-muted-foreground'>Estado</span>
             <span className={`font-medium ${health.color}`}>{health.label}</span>
           </div>
-          {isEstimated && <p className='text-[10px] text-muted-foreground/70'>Estimación heurística — el proveedor no reportó uso real.</p>}
+          {isEstimated && <p className='text-xs text-muted-foreground/70'>Estimación heurística — el proveedor no reportó uso real.</p>}
         </ContextContentBody>
         <ContextContentFooter />
       </ContextContent>

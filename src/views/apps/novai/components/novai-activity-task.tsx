@@ -15,21 +15,21 @@ interface NovaiActivityTaskProps {
 function getCategoryIcon(category: AgentTraceItem['category']) {
   switch (category) {
     case 'investigation': return <Search className='size-3 text-primary' />
-    case 'evidence': return <BookOpen className='size-3 text-blue-500' />
-    case 'calculation': return <Calculator className='size-3 text-emerald-500' />
-    case 'audit': return <ShieldCheck className='size-3 text-amber-500' />
-    case 'relation': return <LinkIcon className='size-3 text-purple-500' />
-    case 'warning': return <AlertTriangle className='size-3 text-orange-500' />
-    default: return <CheckCircle2 className='size-3 text-emerald-500' />
+    case 'evidence': return <BookOpen className='size-3 text-chart-2' />
+    case 'calculation': return <Calculator className='size-3 text-chart-2' />
+    case 'audit': return <ShieldCheck className='size-3 text-chart-4' />
+    case 'relation': return <LinkIcon className='size-3 text-chart-5' />
+    case 'warning': return <AlertTriangle className='size-3 text-chart-1' />
+    default: return <CheckCircle2 className='size-3 text-chart-2' />
   }
 }
 
 function getStatusIndicator(status?: AgentTraceItem['status']) {
   switch (status) {
-    case 'running': return <Clock className='size-3 animate-spin text-amber-500 shrink-0' />
+    case 'running': return <Clock className='size-3 animate-spin text-chart-4 shrink-0' />
     case 'error': return <XCircle className='size-3 text-destructive shrink-0' />
-    case 'warning': return <AlertTriangle className='size-3 text-amber-500 shrink-0' />
-    default: return <CheckCircle2 className='size-3 text-emerald-500 shrink-0' />
+    case 'warning': return <AlertTriangle className='size-3 text-chart-4 shrink-0' />
+    default: return <CheckCircle2 className='size-3 text-chart-2 shrink-0' />
   }
 }
 
@@ -62,18 +62,18 @@ export function NovaiActivityTask({ traces, toolInvocations, isStreaming, classN
         <TaskTrigger title={`Actividad · ${total} pasos`} className='w-full' aria-label={`Actividad con ${total} pasos, ${completed} completados`}>
           <div className='flex items-center justify-between gap-2 w-full cursor-pointer p-1 text-xs'>
             <div className='flex items-center gap-2 min-w-0'>
-              <span className='text-[11px]'>⚙️</span>
-              <span className='font-semibold text-foreground text-[12px] truncate'>
+              <span className='text-xs'>⚙️</span>
+              <span className='font-semibold text-foreground text-xs truncate'>
                 Actividad · {total} pasos
               </span>
               {isRunning ? (
-                <Badge variant='outline' className='text-[9px] px-1.5 h-4 border-amber-500/40 text-amber-600 dark:text-amber-400 animate-pulse'>En curso</Badge>
+                <Badge variant='outline' className='text-xs px-1.5 h-4 border-chart-4/40 text-chart-4 animate-pulse'>En curso</Badge>
               ) : hasErrors ? (
-                <Badge variant='destructive' className='text-[9px] px-1.5 h-4'>Error</Badge>
+                <Badge variant='destructive' className='text-xs px-1.5 h-4'>Error</Badge>
               ) : hasWarnings ? (
-                <Badge variant='outline' className='text-[9px] px-1.5 h-4 border-amber-500/40 text-amber-600'>Avisos</Badge>
+                <Badge variant='outline' className='text-xs px-1.5 h-4 border-chart-4/40 text-chart-4'>Avisos</Badge>
               ) : (
-                <Badge variant='outline' className='text-[9px] px-1.5 h-4 border-emerald-500/40 text-emerald-600 dark:text-emerald-400'>Completado</Badge>
+                <Badge variant='outline' className='text-xs px-1.5 h-4 border-chart-2/40 text-chart-2'>Completado</Badge>
               )}
             </div>
             <ChevronDownIcon className='size-3.5 text-muted-foreground transition-transform group-data-[state=open]:rotate-180' aria-hidden />
@@ -86,16 +86,16 @@ export function NovaiActivityTask({ traces, toolInvocations, isStreaming, classN
               <div className='flex-1 min-w-0'>
                 <div className='flex items-center gap-1.5 flex-wrap'>
                   <span aria-hidden>{getCategoryIcon((step as AgentTraceItem).category ?? 'validation')}</span>
-                  <span className='font-medium text-foreground text-[11px]'>{step.title}</span>
+                  <span className='font-medium text-foreground text-xs'>{step.title}</span>
                 </div>
                 {step.description && (
-                  <p className='text-[11px] text-muted-foreground mt-0.5 leading-snug line-clamp-2'>{step.description}</p>
+                  <p className='text-xs text-muted-foreground mt-0.5 leading-snug line-clamp-2'>{step.description}</p>
                 )}
               </div>
             </TaskItem>
           ))}
           {!isRunning && (
-            <p className='text-[10px] text-muted-foreground/70 pt-1'>Actividad observable del runtime — no narrativa del modelo.</p>
+            <p className='text-xs text-muted-foreground/70 pt-1'>Actividad observable del runtime — no narrativa del modelo.</p>
           )}
         </TaskContent>
       </Task>
