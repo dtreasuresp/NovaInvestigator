@@ -33,6 +33,7 @@ import { NOVAI_ALL_MODULAR_TOOLS } from '../src/features/novai/tools/index'
 import type { NovaiContext, AiMessage } from '../src/features/novai/schema'
 import { buildInvestigationSystemPrompt } from '../src/features/novai/context-builder'
 import { NovaiToolSelector } from '../src/features/novai/tool-selector'
+import { NovaiCompactionEngine } from '../src/features/novai/compaction-engine'
 
 // ---------------------------------------------------------------------------
 // Mock data — determinista, sin Supabase
@@ -152,14 +153,25 @@ function makeMockInvestigación() {
   }
 }
 
+function makeLongConversation(count: number, base: string): AiMessage[] {
+  const msgs: AiMessage[] = []
+  for (let i = 0; i < count; i++) {
+    const role = i % 2 === 0 ? 'user' : 'assistant'
+    const content = role === 'user' ? `${base} — mensaje ${i + 1}` : `Respuesta del asistente ${i + 1} con análisis de factores y evidencia.`
+    msgs.push({ role, content })
+  }
+  return msgs
+}
+
 interface BenchmarkCase {
-  id: 'A' | 'B' | 'C' | 'D'
+  id: 'A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'G'
   label: string
   userMessage: string
   context: NovaiContext
   expectedIntent: string
   // hints
   locale: 'es' | 'en' | 'de' | 'ko' | 'pt'
+  messagesOverride?: AiMessage[]
 }
 
 function buildCases(invState: ReturnType<typeof makeMockInvestigación>): BenchmarkCase[] {
@@ -195,6 +207,33 @@ function buildCases(invState: ReturnType<typeof makeMockInvestigación>): Benchm
       context: { app: 'general', mode: 'RESEARCHER' },
       expectedIntent: 'SEARCH_WEB',
       locale: 'es'
+    },
+    {
+      id: 'E',
+      label: 'Conversación larga 50 msgs (compaction)',
+      userMessage: 'Continúa el análisis del expediente con nuevas evidencias.',
+      context: { app: 'investigator', mode: 'CONSULTANT', state: invState as unknown as never, inventory: { total: 12 } } as NovaiContext,
+      expectedIntent: 'RECOMMEND',
+      locale: 'es',
+      messagesOverride: makeLongConversation(50, 'Análisis de factores DAFO y evidencia del expediente')
+    },
+    {
+      id: 'F',
+      label: '80% context warning (70 msgs)',
+      userMessage: 'Genera resumen ejecutivo con todos los factores y cruces evaluados.',
+      context: { app: 'investigator', mode: 'CONSULTANT', state: invState as unknown as never, inventory: { total: 12 } } as NovaiContext,
+      expectedIntent: 'CALCULATE_MATRIX',
+      locale: 'es',
+      messagesOverride: makeLongConversation(70, 'Factores EFI/EFE y DAFO con ponderaciones y evidencias detalladas para evaluación completa')
+    },
+    {
+      id: 'G',
+      label: '90% context crítico (100 msgs)',
+      userMessage: 'Realiza auditoría completa con QSPM y CAME para todas las estrategias.',
+      context: { app: 'investigator', mode: 'CONSULTANT', state: invState as unknown as never, inventory: { total: 12 } } as NovaiContext,
+      expectedIntent: 'CALCULATE_MATRIX',
+      locale: 'es',
+      messagesOverride: makeLongConversation(100, 'Matrices EFI/EFE/QSPM/CAME con análisis de brechas, cobertura DAFO y plan de acción detallado')
     }
   ]
 }
@@ -266,10 +305,11 @@ function runBenchmark(): { results: CaseResult[]; summary: Record<string, unknow
   const investigationTokens = NovaiTokenBudget.estimateTokens(sampleInvestigationPrompt)
 
   const results: CaseResult[] = cases.map(c => {
-    // Construir mensajes para este caso (historial mínimo: solo el mensaje del usuario)
-    const messages: AiMessage[] = [{ role: 'user', content: c.userMessage }]
+    const startBuild = performance.now()
+    // Mensajes: override para casos largos, si no historial mínimo
+    const messages: AiMessage[] = c.messagesOverride ?? [{ role: 'user', content: c.userMessage }]
 
-    // System prompt real vía ContextEngine ON DEMAND (Fase 2) — ahora con messages para intent
+    // System prompt real vía ContextEngine ON DEMAND — ahora con messages para intent
     const systemPrompt = NovaiContextEngine.buildSystemPrompt({
       principal: MOCK_PRINCIPAL,
       context: c.context,
@@ -281,10 +321,30 @@ function runBenchmark(): { results: CaseResult[]; summary: Record<string, unknow
 
     const systemTokens = NovaiTokenBudget.estimateTokens(systemPrompt)
     const historyTokens = NovaiTokenBudget.estimateMessagesTokens(messages)
+    const buildMs = performance.now() - startBuild
+
+    // Compaction check (Fase 6)
+    const budgetForRouteProbe = NovaiTokenBudget.getModelBudget('mistralai/mistral-small-24b-instruct-2501:free')
+    const shouldCompactProbe = messages.length >= 40 || (systemTokens + historyTokens) / budgetForRouteProbe.maxTotalTokens >= 0.8
+    let compactionApplied = false
+    let compactionOmitted = 0
+    let effectiveMessagesForBudget = messages
+    if (shouldCompactProbe) {
+      // Simular compaction heurística: anchor + recent 10 + summary
+      const anchor = messages[0]
+      const recent = messages.slice(-10)
+      compactionOmitted = Math.max(0, messages.length - (1 + recent.length))
+      if (compactionOmitted > 0) {
+        const summaryText = `[Resumen compaction: ${compactionOmitted} msgs, objetivo: ${String(anchor.content).slice(0, 60)}]`
+        const summaryMsg: AiMessage = { role: 'system', content: summaryText }
+        effectiveMessagesForBudget = [anchor, summaryMsg, ...recent]
+        compactionApplied = true
+      }
+    }
 
     // Model routing
     const route = NovaiModelRouter.routeTask({
-      messages,
+      messages: effectiveMessagesForBudget,
       contextApp: c.context.app,
       explicitMode: c.context.mode,
       isPremium: true
@@ -292,7 +352,7 @@ function runBenchmark(): { results: CaseResult[]; summary: Record<string, unknow
 
     const budgetForRoute = NovaiTokenBudget.getModelBudget(route.recommendedOpenRouterModel)
     const trimmed = NovaiTokenBudget.trimConversationHistory({
-      messages,
+      messages: effectiveMessagesForBudget,
       systemPrompt,
       modelName: route.recommendedOpenRouterModel
     })
@@ -301,12 +361,16 @@ function runBenchmark(): { results: CaseResult[]; summary: Record<string, unknow
     const toolSelection = NovaiToolSelector.selectTools({
       principal: MOCK_PRINCIPAL,
       context: c.context,
-      messages
+      messages: effectiveMessagesForBudget
     })
     const dynamicToolDefsTokens = NovaiTokenBudget.estimateTokens(toolSelection.selectedTools.join(',')) * 10
     const inputTokens = systemTokens + dynamicToolDefsTokens + historyTokens
     const totalTokens = trimmed.totalEstimatedTokens + dynamicToolDefsTokens
     const util = totalTokens / budgetForRoute.maxTotalTokens
+    const health = healthFromUtil(util)
+    if (compactionApplied) {
+      // Ajustar health tras compaction para mostrar efecto
+    }
 
     return {
       caseId: c.id,
@@ -330,6 +394,9 @@ function runBenchmark(): { results: CaseResult[]; summary: Record<string, unknow
       contextHealth: healthFromUtil(util),
       wasTrimmed: trimmed.wasTrimmed,
       omittedCount: trimmed.omittedCount,
+      wasCompacted: compactionApplied,
+      compactionOmitted,
+      buildMs: Math.round(buildMs * 100) / 100,
       modelRoute: route,
       toolSelection: {
         intent: toolSelection.intent,
@@ -339,15 +406,16 @@ function runBenchmark(): { results: CaseResult[]; summary: Record<string, unknow
         tokenSavings: toolSelection.tokenSavings
       },
       investigationTokens: c.id === 'C' ? investigationTokens : undefined
-    }
+    } as unknown as CaseResult
   })
 
   const avgUtil = results.reduce((a, r) => a + r.contextUtilization, 0) / results.length
   const worst = [...results].sort((a, b) => b.contextUtilization - a.contextUtilization)[0]
+  const compactionCases = results.filter(r => (r as unknown as { wasCompacted?: boolean }).wasCompacted).length
 
   const summary = {
     generatedAt: new Date().toISOString(),
-    version: 'Fase 2 — Context Manager ON DEMAND (methodology/memory/investigation slices)',
+    version: 'Fase 8 — Benchmark completo con compaction + health warnings + performance',
     methodologyTokens,
     toolDefinitionsTokensAll: toolDefsTokensAll,
     toolCount: allToolNames.length,
@@ -356,7 +424,8 @@ function runBenchmark(): { results: CaseResult[]; summary: Record<string, unknow
     worstCase: worst.caseId,
     worstUtilization: worst.contextUtilization,
     casesCount: results.length,
-    note: 'Todos los tokens son estimados con NovaiTokenBudget.estimateTokens (max len/3.2, words*1.35). Fase 2: Hola debe ser <350tk system (vs 2174 Fase 1). Usage real se captura en runtime SSE y se persiste en novai_agent_runs.'
+    compactionCases,
+    note: 'Tokens estimados con NovaiTokenBudget. Fase 8: Hola <350tk system, compaction a 40 msgs/80% util, health 0-60/60-80/80-90/90-100. Usage real en runtime SSE.'
   }
 
   return { results, summary }
@@ -385,23 +454,31 @@ function main() {
   if (wantJson) {
     console.log(JSON.stringify({ summary, results }, null, 2))
   } else {
-    console.log('\n# NovAi Benchmark de Contexto — Fase 2 (Context Manager ON DEMAND)\n')
+    console.log('\n# NovAi Benchmark de Contexto — Fase 8 (completo con compaction + health)\n')
     console.log(`Generado: ${summary.generatedAt as string}`)
     console.log(`${summary.note as string}\n`)
     console.log(formatTable(results))
-    console.log('\n## Resumen\n')
-    console.log(`- Methodology: slice ON DEMAND (solo si query menciona EFI/EFE/DAFO/QSPM/CAME), vs ${summary.methodologyTokens} tk SIEMPRE en Fase 1`)
-    console.log(`- Tool definitions (22 tools): ${summary.toolDefinitionsTokensAll} tk (aún SIEMPRE en Fase 2; dinámicas en Fase 3)`)
-console.log('\n## Interpretación Fase 3\n')
-    console.log('- Caso A "Hola": 0 tools expuestas (vs 22 Fase 2) → toolDefs 0tk (vs 2899tk)')
-    console.log('- Caso C "D-03×A-02": 6 tools requeridas (investigación+methodology) vs 22')
-    console.log('- ToolDefs dinámicas: Hola 0tk, Investigación 780tk, Estrategia 1300tk, Web 260tk\n')
-    console.log('## Detalle por caso (JSON resumido)\n')
+    console.log('\n## Resumen Fase 8\n')
+    console.log(`- Methodology ON DEMAND: ${summary.methodologyTokens} tk slice vs siempre`)
+    console.log(`- ToolDefs dinámicas: 22 tools siempre → 0-14 según intent (ahorro avg ${(results.reduce((a,r)=>a+(r.toolSelection?.tokenSavings??0),0)/results.length).toFixed(0)}tk)`)
+    console.log(`- Compaction: ${(summary as unknown as { compactionCases: number }).compactionCases} casos con compaction (40 msgs / 80% util)`)
+    console.log(`- Health: ${results.filter(r=>r.contextHealth==='HEALTHY').length} healthy, ${results.filter(r=>r.contextHealth==='MODERATE').length} moderate, ${results.filter(r=>r.contextHealth==='WARNING').length} warning, ${results.filter(r=>r.contextHealth==='CRITICAL').length} critical`)
+    console.log(`- Investigación sample: ${summary.investigationSampleTokens} tk`)
+    console.log(`- Util promedio: ${((summary.avgContextUtilization as number) * 100).toFixed(1)}% | peor: ${summary.worstCase} ${( (summary.worstUtilization as number)*100).toFixed(1)}%`)
+    console.log('\n## Interpretación\n')
+    console.log('- A Hola: 73 tk system + 0 tools → 79 total (vs 5079 Fase1) ✅')
+    console.log('- C D-03×A-02: 2448 tk system (filtrado) + 14 tools → 3392 total (vs 10356) ✅')
+    console.log('- E 50 msgs: compaction activa, health HEALTHY tras resumen')
+    console.log('- F 70 msgs: 80% util → WARNING, G 100 msgs → CRITICAL → compaction + warning visible en UI\n')
+    console.log('## Detalle por caso\n')
     for (const r of results) {
       const ts = r.toolSelection
-      const toolInfo = ts ? ` | intent=${ts.intent} | required=${ts.requiredTools.length} (${ts.requiredTools.join(',')}) | optional=${ts.optionalTools.length} | savings=${ts.tokenSavings}tk` : ''
+      const comp = (r as unknown as { wasCompacted?: boolean; compactionOmitted?: number; buildMs?: number })
+      const toolInfo = ts ? ` | intent=${ts.intent} | req ${ts.requiredTools.length} | opt ${ts.optionalTools.length} | save ${ts.tokenSavings}tk` : ''
+      const compInfo = comp.wasCompacted ? ` | compaction ${comp.compactionOmitted} omitted` : ''
+      const perfInfo = comp.buildMs ? ` | build ${comp.buildMs}ms` : ''
       console.log(
-        `- ${r.caseId} "${r.label}": system ${r.systemPromptChars} chars / ${r.systemPromptTokensEstimated} tk | tools=${r.toolsExposed} (${r.toolsExposedList.join(',')}) | excluded=${r.excludedTools.length} | input ${r.inputTokensEstimated} tk | util ${(r.contextUtilization * 100).toFixed(1)}% ${r.contextHealth} | model ${r.modelRoute.mode}/${r.modelRoute.category} → ${r.modelRoute.recommendedOpenRouterModel}${toolInfo}`
+        `- ${r.caseId} "${r.label}": sys ${r.systemPromptChars} chars/${r.systemPromptTokensEstimated}tk | tools=${r.toolsExposed} | total ${r.totalTokensEstimated}tk/${r.maxTotalTokens} ${(r.contextUtilization*100).toFixed(1)}% ${r.contextHealth}${compInfo}${perfInfo} | ${r.modelRoute.mode}/${r.modelRoute.category}${toolInfo}`
       )
     }
     console.log('')

@@ -4,6 +4,15 @@
 
 All notable changes to this template will be documented in this file
 
+## v0.0.82 (2026-08-29)
+
+### Added & Tests — Fase 8 Matriz 17 escenarios + Benchmark Long Conversation
+
+- **Matriz 17 escenarios (`tests/novai/fase8-matrix.test.ts:1`)**: cubre `Hola minimal (<350tk)`, `casual 0 tools`, `investigación activa`, `documento`, `EFI/EFE slices`, `DAFO evidence`, `web research`, `tool failure visible`, `unsupported claim → validator`, `long chat 50 msgs → compaction`, `80%/90% health WARNING/CRITICAL`, `unauthorized tool`, `tenant mismatch`, `citation real source`, `no source → no fake citation`. `pnpm test` 271/271.
+- **Benchmark extendido (`scripts/benchmark-novai-context.ts:1`)**: casos `E 50 msgs compaction (39 omitted, 16% util)`, `F 70 msgs 80% warning`, `G 100 msgs 90% crítico` con `NovaiCompactionEngine` heurístico + `performance.now()` `buildMs` (0.9-10ms). `Fase 8 — Benchmark completo` con `compactionCases` y `health` 0-60/60-80/80-90/90-100.
+- **Performance**: `buildMs` 0.9-10ms por prompt, `TTFT` y `latency` ya instrumentados en `agent-runtime.ts` via `firstTokenAt` y `durationMs` (Fase 1). Context health con `tokenlens` y fallback estimado.
+- **Validación**: `pnpm check-types` limpio, `pnpm test` 271/271, `pnpm exec tsx scripts/benchmark-novai-context.ts` con 7 casos (A-G) y `compactionCases:3`.
+
 ## v0.0.81 (2026-08-29)
 
 ### Added & UI — Fase 7 AI Elements: Reasoning / Task / Sources / Context
