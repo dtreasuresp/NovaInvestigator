@@ -156,13 +156,16 @@ export class NovaiAgentRuntime {
       context,
       messages,
       locale,
-      explicitIntent: heuristicIntent
+      explicitIntent: heuristicIntent,
+      externalVerificationRequested: intentResult.externalVerificationRequested
     })
     
     const vercelTools = NovaiToolSelector.getSelectedVercelTools(
       principal,
       context,
-      messages
+      messages,
+      heuristicIntent,
+      intentResult.externalVerificationRequested
     )
     
     // Log tool selection para observabilidad
@@ -278,7 +281,7 @@ export class NovaiAgentRuntime {
         input_tokens: systemTokensEstimated + toolDefsTokensEstimated,
         output_tokens: 0,
         duration_ms: 0,
-        status: 'completed', // se actualizará al final con métricas reales; este insert temprano evita FK violation
+        status: 'running',
         context_snapshot: { received: receivedSnapshot, selected: { toolsExposed: toolSelection.selectedTools, systemTokensEstimated } },
         intent: heuristicIntent
       } as Record<string, unknown>
@@ -298,7 +301,7 @@ export class NovaiAgentRuntime {
             input_tokens: systemTokensEstimated,
             output_tokens: 0,
             duration_ms: 0,
-            status: 'completed'
+            status: 'running'
           }
           await earlyClient.from('novai_agent_runs').insert(fallbackEarly as never)
         }
@@ -317,23 +320,30 @@ export class NovaiAgentRuntime {
       provider: ProviderId
     }> = []
 
+    // 1. OPENROUTER (Prioridad 1 — Modelos 100% Free con Tool Calling y Privacidad)
     if (openrouterApiKey) {
       const openrouter = createOpenAI({
         baseURL: 'https://openrouter.ai/api/v1',
         apiKey: openrouterApiKey,
-        headers: { 'HTTP-Referer': 'https://novastore.app', 'X-Title': 'NovaStore ERP' }
+        headers: {
+          'HTTP-Referer': 'https://apps.dgtecnova.com',
+          'X-Title': 'NovaStore ERP',
+          'X-Data-Policy': 'never_log'
+        }
       })
 
-      const orModel = routeDecision.recommendedOpenRouterModel || process.env.OPENROUTER_MODEL || 'nvidia/nemotron-3-super-120b-a12b:free'
+      const orModel = routeDecision.recommendedOpenRouterModel || process.env.OPENROUTER_MODEL || 'openrouter/free'
 
       providerCandidates.push({ name: `OpenRouter (${orModel})`, modelInstance: openrouter(orModel), provider: 'openrouter' })
 
       const freeCandidates = [
+        'nvidia/nemotron-3-ultra-550b-a55b:free',
         'nvidia/nemotron-3-super-120b-a12b:free',
-        'deepseek/deepseek-r1:free',
-        'deepseek/deepseek-chat:free',
-        'qwen/qwen-2.5-72b-instruct:free',
-        'mistralai/mistral-small-24b-instruct-2501:free',
+        'poolside/laguna-s-2.1:free',
+        'poolside/laguna-xs-2.1:free',
+        'cohere/north-mini-code:free',
+        'inclusionai/ling-3.0-flash-fin:free',
+        'minimax/minimax-m2.7:free',
         'openrouter/free'
       ]
 
@@ -348,6 +358,23 @@ export class NovaiAgentRuntime {
       }
     }
 
+    // 2. OPENCODE ZEN (Prioridad 2 — Proveedor secundario)
+    if (zenKeys.length > 0) {
+      const zenBaseUrl = process.env.OPENCODE_ZEN_BASE_URL || 'https://opencode.ai/zen/v1'
+      const zenModel = process.env.OPENCODE_ZEN_MODEL || 'nemotron-3-ultra-free'
+      const zen = createOpenAI({ baseURL: zenBaseUrl, apiKey: zenKeys[0] })
+
+      providerCandidates.push({ name: `OpenCode Zen (${zenModel})`, modelInstance: zen(zenModel), provider: 'opencode-zen' })
+
+      const zenFreeCandidates = ['nemotron-3-ultra-free', 'mimo-v2.5-free', 'hy3-free']
+      for (const zm of zenFreeCandidates) {
+        if (zm !== zenModel) {
+          providerCandidates.push({ name: `OpenCode Zen (${zm})`, modelInstance: zen(zm), provider: 'opencode-zen' })
+        }
+      }
+    }
+
+    // 3. GOOGLE GEMINI NATIVO (Prioridad 3 — Fallback de respaldo)
     if (geminiApiKey) {
       const google = createGoogleGenerativeAI({ apiKey: geminiApiKey })
       const customGeminiModel = process.env.GEMINI_MODEL
@@ -356,16 +383,8 @@ export class NovaiAgentRuntime {
         providerCandidates.push({ name: `Gemini (${customGeminiModel})`, modelInstance: google(customGeminiModel), provider: 'gemini' })
       }
 
-      providerCandidates.push({ name: 'Gemini (gemini-2.0-flash)', modelInstance: google('gemini-2.0-flash'), provider: 'gemini' })
-      providerCandidates.push({ name: 'Gemini (gemini-1.5-flash)', modelInstance: google('gemini-1.5-flash'), provider: 'gemini' })
-    }
-
-    if (zenKeys.length > 0) {
-      const zenBaseUrl = process.env.OPENCODE_ZEN_BASE_URL || 'https://opencode.ai/zen/v1'
-      const zenModel = process.env.OPENCODE_ZEN_MODEL || 'big-pickle'
-      const zen = createOpenAI({ baseURL: zenBaseUrl, apiKey: zenKeys[0] })
-
-      providerCandidates.push({ name: `OpenCode Zen (${zenModel})`, modelInstance: zen(zenModel), provider: 'opencode-zen' })
+      providerCandidates.push({ name: 'Gemini (gemini-3.6-flash)', modelInstance: google('gemini-3.6-flash'), provider: 'gemini' })
+      providerCandidates.push({ name: 'Gemini (gemini-3.5-flash)', modelInstance: google('gemini-3.5-flash'), provider: 'gemini' })
     }
 
     // Degradación explícita por capacidades (spec §27/§29): no simular tools
@@ -450,6 +469,7 @@ export class NovaiAgentRuntime {
             const toolName = (part as any).toolName
             const toolMeta = NOVAI_ALL_MODULAR_TOOLS[toolName]?.metadata
             const toolInput = (part as any).input ?? (part as any).args ?? {}
+            const stepId = `tool-${toolName}`
 
             await emitEvent({
               type: 'tool-call',
@@ -460,11 +480,12 @@ export class NovaiAgentRuntime {
               timestamp: new Date().toISOString()
             })
 
-            // Emitir traza semántica amigable (Agent Trace)
+            // Emitir traza semántica amigable (Agent Trace) con ID estable
             await emitEvent({
               type: 'trace',
+              id: stepId,
               category: toolMeta?.category === 'investigations' ? 'investigation' : 'audit',
-              title: toolMeta?.label || `Ejecutando ${toolName}`,
+              title: toolMeta?.label || toolName,
               description: `Consultando datos bajo aislamiento tenant seguro.`,
               status: 'running'
             })
@@ -472,7 +493,8 @@ export class NovaiAgentRuntime {
             const toolName = (part as any).toolName
             const toolMeta = NOVAI_ALL_MODULAR_TOOLS[toolName]?.metadata
             const output = (part as any).output ?? (part as any).result
-            const isError = (part as any).isError
+            const isError = Boolean((part as any).isError)
+            const stepId = `tool-${toolName}`
 
             await emitEvent({
               type: 'tool-result',
@@ -485,19 +507,24 @@ export class NovaiAgentRuntime {
 
             await emitEvent({
               type: 'trace',
+              id: stepId,
               category: 'validation',
-              title: `${toolMeta?.label || toolName} completado`,
+              title: toolMeta?.label || toolName,
               description: isError ? 'Error en la ejecución de la herramienta' : 'Datos validados correctamente.',
               status: isError ? 'error' : 'completed'
             })
 
-            // Proyección a eventos estructurados de dominio (spec §24/§31-36):
-            // evidencia, auditorías y cálculos deterministas que la UI
-            // renderiza con las tarjetas NovaiEvidenceCard / NovaiAuditCard /
-            // NovaiCalculationCard / NovaiSourceCard.
+            // Proyección a eventos estructurados de dominio y persistencia en Evidence Service
             if (!isError) {
               for (const structuredEvent of projectToolResultToEvents(toolName, output)) {
                 await emitEvent(structuredEvent as NovaiEvent)
+                void NovaiEvidenceService.processEvent(principal.client, {
+                  runId,
+                  tenantId: principal.tenantId,
+                  conversationId,
+                  investigationId: (context as { investigationId?: string }).investigationId,
+                  event: structuredEvent as NovaiEvent
+                })
               }
             }
           } else if (pType === 'source' || pType === 'file' || pType === 'data') {
@@ -637,8 +664,10 @@ export class NovaiAgentRuntime {
     // El LLM genera interpretación; el runtime valida evidencia verificable.
     try {
       const lastUserMsg = [...messages].reverse().find(m => m.role === 'user')?.content || ''
-      const intent = classifyIntent(lastUserMsg)
-      const requiredTools = getRequiredToolsForIntent(intent)
+      const intent = heuristicIntent || classifyIntent(lastUserMsg)
+      const requiredTools =
+        toolSelection.requiredTools ||
+        getRequiredToolsForIntent(intent, { externalVerificationRequested: intentResult.externalVerificationRequested })
       const validation = validateResponse({
         userMessage: lastUserMsg,
         assistantText: accumulatedText,
@@ -670,11 +699,23 @@ export class NovaiAgentRuntime {
         }
       }
 
-      if (validation.action !== 'PASS' && validation.degradedPrefix) {
-        const prefix = validation.degradedPrefix
-        accumulatedText = prefix + accumulatedText
-        // No emit extra text-delta here; message-complete will carry fullText with prefix.
-        // Warning events already emitted above provide trazabilidad operacional.
+      if (validation.action === 'REJECT') {
+        accumulatedText =
+          'No tengo evidencia suficiente para confirmar esa afirmación con las fuentes disponibles. La evaluación previa del expediente no constituye nueva evidencia externa.'
+      } else if (validation.action === 'INSUFFICIENT_EVIDENCE') {
+        if (
+          intentResult.externalVerificationRequested ||
+          /fuente.*externa.*confirma|evidencia.*externa.*refuerza|las fuentes externas/i.test(accumulatedText)
+        ) {
+          accumulatedText =
+            'No se obtuvo evidencia externa suficiente para respaldar o confirmar el nivel de confianza de la investigación. Las consultas a fuentes externas no arrojaron resultados verificables que corroboren dicha afirmación.'
+        } else if (validation.degradedPrefix && !accumulatedText.startsWith(validation.degradedPrefix)) {
+          accumulatedText = validation.degradedPrefix + accumulatedText
+        }
+      } else if (validation.action === 'DEGRADE_TO_INFERENCE' && validation.degradedPrefix) {
+        if (!accumulatedText.startsWith(validation.degradedPrefix)) {
+          accumulatedText = validation.degradedPrefix + accumulatedText
+        }
       }
     } catch (valErr) {
       logger.warn('ResponseValidator error (fail-open)', {
@@ -748,8 +789,8 @@ export class NovaiAgentRuntime {
         auditFindingsInjected: selectedSnapshotBase.auditFindingsCount,
         budgetResult: selectedSnapshotBase.budgetResult,
         modelRoute: selectedSnapshotBase.modelRoute,
-toolsExposed: toolSelection.selectedTools,
-      toolsExposedCount: toolSelection.selectedTools.length,
+        toolsExposed: toolSelection.selectedTools,
+        toolsExposedCount: toolSelection.selectedTools.length,
         toolDefinitionsTokensEstimated: toolDefsTokensEstimated
       },
       intentHeuristic: heuristicIntent,
@@ -773,8 +814,8 @@ toolsExposed: toolSelection.selectedTools,
         validationAction: ((): string | undefined => {
           try {
             const lastUserMsg = [...messages].reverse().find(m => m.role === 'user')?.content || ''
-            const intent = classifyIntent(lastUserMsg)
-            const requiredTools = getRequiredToolsForIntent(intent)
+            const intent = heuristicIntent || classifyIntent(lastUserMsg)
+            const requiredTools = toolSelection.requiredTools
             const v = validateResponse({ userMessage: lastUserMsg, assistantText: accumulatedText, events: collectedEvents, intentType: intent, requiredTools })
             return v.action
           } catch {
@@ -806,12 +847,11 @@ toolsExposed: toolSelection.selectedTools,
     // Persistir async
     void NovaiInstrumentation.persistRunAsync(supabaseClient, trace as unknown as Parameters<typeof NovaiInstrumentation.persistRunAsync>[1])
 
-    // Emitir citaciones inline y grupos de fuentes al final del run
     const allEvidences = collectedEvents.filter(e => e.type === 'evidence')
     const allSources = collectedEvents.filter(e => e.type === 'source')
 
     if (allEvidences.length > 0) {
-      const citationEvents = projectCitationsFromRun(allEvidences)
+      const citationEvents = projectCitationsFromRun(allEvidences as any)
       for (const citationEvent of citationEvents) {
         await emitEvent(citationEvent as NovaiEvent)
       }

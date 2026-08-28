@@ -1,4 +1,10 @@
-import { classifyIntent as heuristicClassifyIntent, type IntentType, INTENT_REQUIREMENTS } from './intent-requirements'
+import {
+  classifyIntent as heuristicClassifyIntent,
+  detectExternalVerificationRequest,
+  isCasualGreetingText,
+  type IntentType,
+  INTENT_REQUIREMENTS
+} from './intent-requirements'
 import { getNovaiModeDefinition } from './adapters/modes'
 import { NOVAI_ALL_MODULAR_TOOLS } from './tools'
 import { logger } from '@/lib/logger'
@@ -13,6 +19,7 @@ export interface IntentClassificationResult {
   intent: IntentType
   confidence: number // 0-1
   method: 'heuristic' | 'llm'
+  externalVerificationRequested: boolean
   reasoning?: string
   alternativeIntents?: Array<{ intent: IntentType; confidence: number }>
 }
@@ -23,8 +30,8 @@ export interface ClassifierOptions {
   locale?: string
 }
 
-// LLM Cache: Map<messageHash, {intent, confidence, timestamp}>
-const llmCache = new Map<string, { intent: IntentType; confidence: number; timestamp: number }>()
+// LLM Cache: Map<messageHash, {intent, confidence, timestamp, externalVerificationRequested}>
+const llmCache = new Map<string, { intent: IntentType; confidence: number; externalVerificationRequested: boolean; timestamp: number }>()
 const CACHE_TTL_MS = 1000 * 60 * 15 // 15 minutos
 
 // Hash simple para cache
@@ -38,35 +45,31 @@ function hashMessage(text: string): string {
   return Math.abs(hash).toString(36)
 }
 
-// Heurística con scoring de confidence (versión extendida del classifyIntent original)
-function heuristicClassifyWithConfidence(text: string): { intent: IntentType; confidence: number } {
+// Heurística con scoring de confidence
+function heuristicClassifyWithConfidence(text: string): { intent: IntentType; confidence: number; externalVerificationRequested: boolean } {
   const lower = (text || '').toLowerCase().trim()
-  
-  if (!lower) {
-    return { intent: 'GENERAL_CHAT', confidence: 0.5 }
+  const externalVerificationRequested = detectExternalVerificationRequest(text)
+
+  if (!lower || isCasualGreetingText(lower)) {
+    return { intent: 'GENERAL_CHAT', confidence: 0.95, externalVerificationRequested: false }
   }
 
-  // Detectar saludo casual
-  const isCasualGreeting = /^(hola|hi|hey|buenos\s+d[ií]as|buenas\s+tardes|buenas\s+noches|qué\s+tal|how\s+are\s+you|thanks|gracias)[\s!.,?]*$/i.test(lower)
-  if (isCasualGreeting && lower.length < 50) {
-    return { intent: 'GENERAL_CHAT', confidence: 0.95 }
-  }
-
-  const hasVerify = /verifica|valid|comprueba|confianza|correcto|acertado|nivel de confianza/.test(lower)
-  const hasInvestigation = /investigaci[oó]n|expediente|matriz|efi|efe|dafo|qspm|came/.test(lower)
-  const hasWeb = /web|internet|externa|fuente confiable|busca en|informaci[oó]n confiable/.test(lower)
-  const hasFactor = /(?:^|\b)(?:d|f|o|a)[- ]?\d{1,2}\b/.test(lower) || /factor/.test(lower)
-  const hasCalculate = /calcula|índice|tas|ponderaci[oó]n|calificaci[oó]n/.test(lower)
-  const hasCompare = /compara|contrasta|vs|versus|mejor.*estrategia|escenario/.test(lower)
-  const hasRecommend = /recomiend|sugier|prop[oó]n|qu[eé] har[ií]as/.test(lower)
-  const hasFactorKeyword = /factor/.test(lower)
+  const hasVerify = /verifica|valid|comprueba|confianza|correcto|acertado|nivel de confianza|grado de confianza|respald/i.test(lower)
+  const hasInvestigation = /investigaci[oó]n|expediente|matriz|efi|efe|dafo|qspm|came|grado de confianza|nivel de confianza/i.test(lower)
+  const hasWeb = /web|internet|externa|fuente confiable|busca en|informaci[oó]n confiable|repetir.*(?:otra vez|ver si|encuentras)|noticias/i.test(lower)
+  const hasFactor = /(?:^|\b)(?:d|f|o|a)[- ]?\d{1,2}\b/i.test(lower) || /factor/i.test(lower)
+  const hasCalculate = /calcula|índice|tas|ponderaci[oó]n|calificaci[oó]n/i.test(lower)
+  const hasCompare = /compara|contrasta|vs|versus|mejor.*estrategia|escenario/i.test(lower)
+  const hasRecommend = /recomiend|sugier|prop[oó]n|qu[eé] har[ií]as/i.test(lower)
+  const hasFactorKeyword = /factor/i.test(lower)
 
   const rules: Array<{ condition: boolean; intent: IntentType; baseConfidence: number; specificity: number }> = [
-    { condition: hasVerify && hasInvestigation && hasWeb, intent: 'VERIFY_INVESTIGATION', baseConfidence: 0.9, specificity: 3 },
-    { condition: hasVerify && hasInvestigation, intent: 'VERIFY_INVESTIGATION', baseConfidence: 0.85, specificity: 2 },
-    { condition: hasWeb && (hasVerify || hasInvestigation), intent: 'SEARCH_WEB', baseConfidence: 0.8, specificity: 2 },
+    { condition: externalVerificationRequested, intent: 'VERIFY_INVESTIGATION', baseConfidence: 0.95, specificity: 4 },
+    { condition: hasVerify && hasInvestigation && hasWeb, intent: 'VERIFY_INVESTIGATION', baseConfidence: 0.92, specificity: 3 },
+    { condition: hasVerify && hasInvestigation, intent: 'VERIFY_INVESTIGATION', baseConfidence: 0.88, specificity: 2 },
+    { condition: hasWeb && (hasVerify || hasInvestigation), intent: 'SEARCH_WEB', baseConfidence: 0.85, specificity: 2 },
     { condition: hasVerify && hasFactor, intent: 'VERIFY_FACTOR', baseConfidence: 0.9, specificity: 2 },
-    { condition: hasVerify, intent: 'VERIFY_DATA', baseConfidence: 0.7, specificity: 1 },
+    { condition: hasVerify, intent: 'VERIFY_DATA', baseConfidence: 0.75, specificity: 1 },
     { condition: hasCalculate, intent: 'CALCULATE_MATRIX', baseConfidence: 0.85, specificity: 1 },
     { condition: hasCompare, intent: 'COMPARE_SCENARIOS', baseConfidence: 0.8, specificity: 1 },
     { condition: hasRecommend, intent: 'RECOMMEND', baseConfidence: 0.75, specificity: 1 },
@@ -77,34 +80,32 @@ function heuristicClassifyWithConfidence(text: string): { intent: IntentType; co
 
   for (const rule of rules) {
     if (rule.condition) {
-      const confidence = rule.baseConfidence * (1 + rule.specificity * 0.1)
+      const confidence = rule.baseConfidence * (1 + rule.specificity * 0.05)
       if (!bestMatch || confidence > bestMatch.confidence || (confidence === bestMatch.confidence && rule.specificity > bestMatch.specificity)) {
-        bestMatch = { intent: rule.intent, confidence: Math.min(confidence, 0.95), specificity: rule.specificity }
+        bestMatch = { intent: rule.intent, confidence: Math.min(confidence, 0.98), specificity: rule.specificity }
       }
     }
   }
 
   if (bestMatch) {
-    return { intent: bestMatch.intent, confidence: bestMatch.confidence }
+    return { intent: bestMatch.intent, confidence: bestMatch.confidence, externalVerificationRequested }
   }
 
-  return { intent: 'GENERAL_CHAT', confidence: 0.4 }
+  return { intent: 'GENERAL_CHAT', confidence: 0.5, externalVerificationRequested }
 }
 
 async function callLlmForIntent(
   text: string,
   context: { mode?: string; app?: string; hasInvestigation?: boolean },
   locale: string = 'es'
-): Promise<{ intent: IntentType; confidence: number } | null> {
+): Promise<{ intent: IntentType; confidence: number; externalVerificationRequested: boolean } | null> {
   const apiKey = process.env.OPENROUTER_API_KEY
   if (!apiKey) {
-    logger.warn('HybridIntentClassifier: No OPENROUTER_API_KEY, skipping LLM fallback', {
-      action: 'novai.intent.llm.no_key'
-    })
     return null
   }
 
   const prompt = buildIntentPrompt(text, context, locale)
+  const isExternal = detectExternalVerificationRequest(text)
 
   try {
     const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
@@ -116,7 +117,7 @@ async function callLlmForIntent(
         'X-Title': 'NovaStore ERP Intent Classifier'
       },
       body: JSON.stringify({
-        model: 'mistralai/mistral-small-24b-instruct-2501:free',
+        model: 'openrouter/free',
         messages: [
           { role: 'system', content: prompt },
           { role: 'user', content: text }
@@ -125,15 +126,10 @@ async function callLlmForIntent(
         max_tokens: 100,
         response_format: { type: 'json_object' }
       }),
-      signal: AbortSignal.timeout(5000)
+      signal: AbortSignal.timeout(4000)
     })
 
     if (!response.ok) {
-      const errText = await response.text()
-      logger.warn('HybridIntentClassifier: LLM API error', {
-        action: 'novai.intent.llm.error',
-        details: { status: response.status, error: errText }
-      })
       return null
     }
 
@@ -143,14 +139,14 @@ async function callLlmForIntent(
 
     const parsed = JSON.parse(content)
     if (parsed.intent && parsed.confidence !== undefined) {
-      return { intent: parsed.intent as IntentType, confidence: parsed.confidence }
+      return {
+        intent: parsed.intent as IntentType,
+        confidence: Number(parsed.confidence),
+        externalVerificationRequested: isExternal || Boolean(parsed.externalVerificationRequested)
+      }
     }
     return null
-  } catch (err) {
-    logger.warn('HybridIntentClassifier: LLM call failed', {
-      action: 'novai.intent.llm.exception',
-      details: { error: err instanceof Error ? err.message : String(err) }
-    })
+  } catch {
     return null
   }
 }
@@ -233,7 +229,12 @@ export class HybridIntentClassifier {
         action: 'novai.intent.cache_hit',
         details: { intent: cached.intent, confidence: cached.confidence }
       })
-      return { intent: cached.intent, confidence: cached.confidence, method: 'llm' }
+      return {
+        intent: cached.intent,
+        confidence: cached.confidence,
+        method: 'llm',
+        externalVerificationRequested: cached.externalVerificationRequested
+      }
     }
 
     // 2. Heurística rápida (siempre se ejecuta)
@@ -261,7 +262,8 @@ export class HybridIntentClassifier {
         // Guardar en cache
         llmCache.set(cacheKey, { 
           intent: llmResult.intent, 
-          confidence: llmResult.confidence, 
+          confidence: llmResult.confidence,
+          externalVerificationRequested: llmResult.externalVerificationRequested,
           timestamp: Date.now() 
         })
 
@@ -274,6 +276,7 @@ export class HybridIntentClassifier {
           intent: llmResult.intent,
           confidence: llmResult.confidence,
           method: 'llm',
+          externalVerificationRequested: llmResult.externalVerificationRequested,
           reasoning: `LLM overrode heuristic (${heuristicResult.intent}@${heuristicResult.confidence.toFixed(2)} → ${llmResult.intent}@${llmResult.confidence.toFixed(2)})`
         }
       }

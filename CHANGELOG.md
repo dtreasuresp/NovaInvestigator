@@ -4,6 +4,41 @@
 
 All notable changes to this template will be documented in this file
 
+## v0.0.83 (2026-08-28)
+
+### Fixed & Integrated — NovAi V2 Auditoría, Corrección e Integración End-to-End
+
+- **Intent Contracts & Detección Externa (`src/features/novai/intent-requirements.ts:1`)**:
+  - Implementado `IntentContract` con `requiredTools`, `allowedTools`, `optionalTools`, `forbiddenTools`, `requiredEvidenceType` y fallbacks tipados.
+  - Implementado `detectExternalVerificationRequest` y `isCasualGreetingText` para calibración estricta de intención.
+  - En consultas que solicitan comprobar/respaldar la confianza con información externa (Golden Query), se exige obligatoriamente `web_research` y `verify_claim`.
+- **Hybrid Intent Classifier & Model Router (`src/features/novai/intent-classifier.ts:1`, `src/features/novai/adapters/model-router.ts:1`)**:
+  - Eliminados modelos obsoletos o no gratuitos (`qwen:free`, `deepseek:free`, `llama-3.3:free`, `gemini-2.0-flash`, `gemini-1.5-flash`).
+  - Configurado catálogo de modelos 100% gratuitos verificados con Tool Calling:
+    - *Razonamiento (CONSULTANT / ARCHITECT)*: `nvidia/nemotron-3-ultra-550b-a55b:free` (1M tokens contexto).
+    - *Código (DEVELOPER)*: `poolside/laguna-s-2.1:free` (262k contexto).
+    - *Analítica / Finanzas (ANALYST / RESEARCHER)*: `inclusionai/ling-3.0-flash-fin:free` (262k contexto).
+    - *Chat / Operador (CHAT / OPERATOR)*: `openrouter/free` (200k contexto).
+  - Orden de prioridad de proveedores: 1. OpenRouter (Free) $\rightarrow$ 2. OpenCode Zen (`nemotron-3-ultra-free`, `mimo-v2.5-free`, `hy3-free`) $\rightarrow$ 3. Google Gemini Nativo (`gemini-3.6-flash`, `gemini-3.5-flash`).
+  - Cabecera de privacidad estricta en OpenRouter: `X-Data-Policy: never_log` (garantía de no entrenamiento de modelos con datos de usuarios).
+  - Propagación de `externalVerificationRequested` en resultados clasificados y en caché con TTL de 15 min.
+- **Dynamic Tool Selector & RBAC Enforcement (`src/features/novai/tool-selector.ts:1`)**:
+  - Saludos casuales (`GENERAL_CHAT`) retornan deterministamente 0 herramientas expuestas con ahorro de tokens > 80%.
+  - Integrado filtrado de herramientas por capacidades y permisos del `principal` autenticado (`investigations:calculate`, `investigations:audit`, `memory:write`).
+  - Exclusión de herramientas administrativas de la categoría `base` en intenciones de análisis y verificación.
+- **Epistemic Firewall & Response Validator (`src/features/novai/response-validator.ts:1`)**:
+  - Reemplazado `hasToolCall` por `hasSuccessfulToolResult` (`call + result + !isError`).
+  - Implementado `detectUnbackedExternalClaims` para bloquear afirmaciones de validación externa cuando no existen fuentes web reales.
+  - En caso de `REJECT` o `INSUFFICIENT_EVIDENCE`, sustitución automática del texto alucinado por respuestas honestas y calibradas.
+- **Agent Runtime & UI Trace Synchronization (`src/features/novai/agent-runtime.ts:1`, `src/views/apps/novai/components/novai-activity-task.tsx:1`)**:
+  - Inicialización de `novai_agent_runs` con `status: 'running'` para integridad de auditoría.
+  - Unificación de IDs de traza (`tool-${toolName}`) entre llamada y resultado, eliminando el estado "En curso" permanente en la UI.
+  - Conexión de eventos con `NovaiEvidenceService.processEvent` durante el streaming SSE.
+- **Tests & Benchmarks (`tests/novai/golden-benchmarks.test.ts:1`)**:
+  - 5 Golden Benchmarks (A a E) pasando al 100% incluyendo la Golden Query mandatoria.
+  - 277/277 tests del proyecto pasando sin errores (`pnpm check-types` 0 errores, `pnpm test` 277/277).
+  - Creado documento de auditoría exhaustiva en `doc/plans/NOVAI_V2_IMPLEMENTATION_AUDIT.md`.
+
 ## v0.0.82 (2026-08-29)
 
 ### Added & Tests — Fase 8 Matriz 17 escenarios + Benchmark Long Conversation

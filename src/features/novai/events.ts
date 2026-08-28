@@ -132,6 +132,7 @@ export interface SourceEvent {
 
 export interface AgentTraceEvent {
   type: 'trace'
+  id?: string
   category: 'investigation' | 'evidence' | 'audit' | 'calculation' | 'relation' | 'warning' | 'validation'
   title: string
   description: string
@@ -233,6 +234,10 @@ export type NovaiEvent =
   | SourceEvent
   | AgentTraceEvent
   | TextDeltaEvent
+  | ReasoningEvent
+  | ReasoningDeltaEvent
+  | InstrumentationEvent
+  | ContextSnapshotEvent
   | CitationEvent
   | SourceGroupEvent
   | MessageCompleteEvent

@@ -157,7 +157,7 @@ test('Fase 8 — Matriz 17 escenarios', async t => {
       requiredTools: ['get_active_investigation', 'get_factor_evidence', 'audit_factor']
     })
     assert.ok(res.action !== 'PASS')
-    assert.match(res.findings[0]?.message ?? '', /Tool|evidencia|INSUFFICIENT/i)
+    assert.match(res.findings[0]?.message ?? '', /Tool|herramienta|evidencia|INSUFFICIENT/i)
   })
 
   await t.test('11. Long chat 50 msgs → compaction', async () => {

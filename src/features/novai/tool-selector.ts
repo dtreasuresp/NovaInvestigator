@@ -1,6 +1,13 @@
 import type { InvestigationsPrincipal } from '@/lib/investigations/access'
 import type { NovaiContext } from './schema'
-import { classifyIntent, getRequiredToolsForIntent, type IntentType } from './intent-requirements'
+import {
+  classifyIntent,
+  getIntentContract,
+  detectExternalVerificationRequest,
+  isCasualGreetingText,
+  type IntentType,
+  type IntentContract
+} from './intent-requirements'
 import { getNovaiModeDefinition } from './adapters/modes'
 import { NOVAI_ALL_MODULAR_TOOLS, type ToolMetadata } from './tools'
 
@@ -16,6 +23,7 @@ export interface ToolSelectionContext {
   messages: Array<{ role: string; content: string | null }>
   locale?: string
   explicitIntent?: string // override para testing
+  externalVerificationRequested?: boolean
 }
 
 export interface ToolSelectionResult {
@@ -26,6 +34,7 @@ export interface ToolSelectionResult {
   reason: string
   requiredTools: string[]
   optionalTools: string[]
+  forbiddenTools: string[]
   toolCount: number
   tokenSavings: number // tokens ahorrados vs 22 tools
 }
@@ -34,7 +43,7 @@ export interface ToolSelectionResult {
  * Mapa de herramientas por categoría para selección contextual
  */
 const TOOLS_BY_CATEGORY = {
-  // Base: siempre disponibles si modo lo permite
+  // Base / Metadata del tenant (solo cuando se solicita información general o del espacio)
   base: [
     'list_investigations',
     'get_investigations_stats',
@@ -79,26 +88,14 @@ const TOOLS_BY_CATEGORY = {
 
 type ToolCategory = keyof typeof TOOLS_BY_CATEGORY
 
-// Mapeo intent → categorías de herramientas recomendadas
-const INTENT_TOOL_CATEGORIES: Record<string, ToolCategory[]> = {
-  VERIFY_DATA: ['base', 'investigation'],
-  VERIFY_INVESTIGATION: ['base', 'investigation', 'methodology'],
-  VERIFY_FACTOR: ['base', 'investigation', 'methodology'],
-  CALCULATE_MATRIX: ['base', 'investigation', 'methodology'],
-  SEARCH_WEB: ['base', 'web'],
-  COMPARE_SCENARIOS: ['base', 'investigation', 'methodology', 'strategy'],
-  RECOMMEND: ['base', 'investigation', 'methodology', 'strategy'],
-  GENERAL_CHAT: ['base']
-}
-
 // Mapeo modo → categorías permitidas (restringe lo que el modo autoriza)
 const MODE_ALLOWED_CATEGORIES: Record<string, ToolCategory[]> = {
   CHAT: ['base'],
-  CONSULTANT: ['base', 'investigation', 'methodology', 'strategy', 'web'],
-  ANALYST: ['base', 'investigation', 'methodology'],
+  CONSULTANT: ['base', 'investigation', 'methodology', 'strategy', 'web', 'memory'],
+  ANALYST: ['base', 'investigation', 'methodology', 'web'],
   RESEARCHER: ['base', 'investigation', 'web'],
   DEVELOPER: ['base'],
-  ARCHITECT: ['base'],
+  ARCHITECT: ['base', 'investigation', 'methodology', 'strategy'],
   OPERATOR: ['base']
 }
 
@@ -107,13 +104,29 @@ const HIGH_RISK_TOOLS = ['record_strategic_memory'] as const
 type HighRiskTool = typeof HIGH_RISK_TOOLS[number]
 
 /**
- * Verifica si el usuario tiene permiso para una herramienta de alto riesgo
+ * Verifica si el usuario tiene permiso para una herramienta de alto riesgo según principal real
  */
-function canUseHighRiskTool(_principal: InvestigationsPrincipal, tool: HighRiskTool): boolean {
+function canUseHighRiskTool(principal: InvestigationsPrincipal, tool: HighRiskTool): boolean {
   if (tool === 'record_strategic_memory') {
-    // Permitido si tiene capacidad de memory/strategic o es owner
-    // En Fase 3 simplificamos: permitir si modo CONSULTANT/RESEARCHER/ANALYST
-    return true // Fase 3: permitir por ahora; Fase 4 hará RBAC granular
+    // Si principal tiene tenantId y userId válidos, y no es guest sin permisos
+    if (!principal || !principal.tenantId || !principal.userId) return false
+    return true
+  }
+  return true
+}
+
+const TOOL_CAPABILITY_REQUIREMENTS: Record<string, string[]> = {
+  calculate_matrix: ['investigations:calculate', 'investigations:update', 'investigations:admin'],
+  audit_relationship: ['investigations:audit', 'investigations:admin'],
+  find_contradictions: ['investigations:audit', 'investigations:admin'],
+  record_strategic_memory: ['memory:write', 'investigations:update', 'investigations:admin']
+}
+
+function hasPrincipalCapability(principal: InvestigationsPrincipal, requiredCaps: string[]): boolean {
+  const p = principal as unknown as { isSuperAdmin?: boolean; role?: string; permissions?: string[] }
+  if (p.isSuperAdmin || p.role === 'admin' || p.role === 'owner') return true
+  if (Array.isArray(p.permissions) && p.permissions.length > 0) {
+    return p.permissions.some(cap => requiredCaps.includes(cap) || cap === 'investigations:*' || cap === '*:*')
   }
   return true
 }
@@ -123,28 +136,26 @@ function canUseHighRiskTool(_principal: InvestigationsPrincipal, tool: HighRiskT
  */
 function filterByPermissions(
   tools: string[],
-  _principal: InvestigationsPrincipal,
-  mode: string
+  principal: InvestigationsPrincipal,
+  _mode: string
 ): string[] {
+  if (!principal || !principal.tenantId) return []
+
   return tools.filter(tool => {
     const toolMeta = NOVAI_ALL_MODULAR_TOOLS[tool]?.metadata
-    if (!toolMeta) return true // herramienta desconocida → permitir por seguridad
-    
-    // High risk tools requieren permiso explícito
+    if (!toolMeta) return false
+
     if (HIGH_RISK_TOOLS.includes(tool as HighRiskTool)) {
-      return canUseHighRiskTool({} as InvestigationsPrincipal, tool as HighRiskTool)
+      if (!canUseHighRiskTool(principal, tool as HighRiskTool)) return false
     }
-    
+
+    const requiredCaps = TOOL_CAPABILITY_REQUIREMENTS[tool]
+    if (requiredCaps && !hasPrincipalCapability(principal, requiredCaps)) {
+      return false
+    }
+
     return true
   })
-}
-
-/**
- * Obtiene herramientas base del modo actual
- */
-function getModeBaseTools(mode: string): string[] {
-  const modeDef = getNovaiModeDefinition(mode)
-  return modeDef?.allowedTools ?? []
 }
 
 /**
@@ -155,107 +166,96 @@ export class NovaiToolSelector {
    * Selecciona herramientas dinámicamente según intent, modo, contexto y permisos
    */
   static selectTools(options: ToolSelectionContext): ToolSelectionResult {
-    const { principal, context, messages, explicitIntent } = options
+    const { principal, context, messages, explicitIntent, externalVerificationRequested } = options
     const mode = context.mode || 'CHAT'
-    
-    // 1. Clasificar intent (usar explícito o inferir del último mensaje del usuario)
+
+    // 1. Clasificar intent
     const lastUserMsgForIntent = [...messages].reverse().find(m => m.role === 'user' && m.content)?.content || ''
-    const intent = (explicitIntent as IntentType) || classifyIntent(lastUserMsgForIntent)
-    
-    // 2. Herramientas requeridas por intent (nunca se excluyen)
-    const requiredTools = getRequiredToolsForIntent(intent as IntentType)
-    
-    // 3. Herramientas base del modo (lo que el modo permite)
-    const modeTools = getModeBaseTools(mode)
-    
-    // 4. Categorías permitidas por modo
-    const allowedCategories = MODE_ALLOWED_CATEGORIES[mode] ?? ['base']
-    
-    // 5. Categorías recomendadas por intent
-    const intentCategories = INTENT_TOOL_CATEGORIES[intent] ?? ['base']
-    
-    // 6. Intersección: categorías que son permitidas por modo Y recomendadas por intent
-    const effectiveCategories = intentCategories.filter(c => allowedCategories.includes(c))
-    
-    // 7. Herramientas de esas categorías
+    const isCasual = isCasualGreetingText(lastUserMsgForIntent)
+    const isExternal = externalVerificationRequested ?? detectExternalVerificationRequest(lastUserMsgForIntent)
+    const intent: IntentType = isCasual
+      ? 'GENERAL_CHAT'
+      : ((explicitIntent as IntentType) || classifyIntent(lastUserMsgForIntent))
+
+    // 2. Obtener contrato canónico para el intent
+    const contract = getIntentContract(intent, { externalVerificationRequested: isExternal })
+
+    // 3. Si es saludo casual o GENERAL_CHAT puro: estrictamente 0 herramientas
+    if (isCasual || intent === 'GENERAL_CHAT') {
+      const allToolsCount = Object.keys(NOVAI_ALL_MODULAR_TOOLS).length
+      return {
+        selectedTools: [],
+        excludedTools: Object.keys(NOVAI_ALL_MODULAR_TOOLS),
+        intent: 'GENERAL_CHAT',
+        mode,
+        reason: 'Casual greeting or general chat without factual requirement -> 0 tools',
+        requiredTools: [],
+        optionalTools: [],
+        forbiddenTools: ['*'],
+        toolCount: 0,
+        tokenSavings: allToolsCount * 130
+      }
+    }
+
+    // 4. Determinar herramientas candidatas a partir del contrato de intent
     let candidateTools = new Set<string>()
-    for (const cat of effectiveCategories) {
-      for (const tool of TOOLS_BY_CATEGORY[cat]) {
+
+    // Siempre incluir requiredTools del contrato
+    for (const tool of contract.requiredTools) {
+      candidateTools.add(tool)
+    }
+
+    // Incluir allowedTools permitidas por el modo
+    const allowedCategories = MODE_ALLOWED_CATEGORIES[mode] ?? ['base']
+    for (const tool of contract.allowedTools) {
+      const toolCategory = this.getToolCategory(tool)
+      if (toolCategory !== 'unknown' && allowedCategories.includes(toolCategory)) {
         candidateTools.add(tool)
       }
     }
-    
-    // 8. Añadir siempre herramientas requeridas (incluso si fuera de categorías)
-    for (const tool of requiredTools) {
-      candidateTools.add(tool)
-    }
-    
-    // 9. Intersección con herramientas permitidas por el modo (modo es autoridad final)
-    // Pero mantener requiredTools aunque modo no las liste (epistemic requirement)
-    const modeToolSet = new Set(modeTools)
-    let finalTools = Array.from(candidateTools).filter(tool => 
-      modeToolSet.has(tool) || requiredTools.includes(tool)
-    )
-    
-    // 10. Filtrar por permisos/RLS
-    finalTools = filterByPermissions(finalTools, {} as InvestigationsPrincipal, mode)
-    
-    // 11. Si no hay herramientas en modo casual (GENERAL_CHAT sin investigación), retornar vacío
-    const lastUserMsgForCasual = [...messages].reverse().find(m => m.role === 'user' && m.content)?.content || ''
-    const isCasual = classifyIntent(lastUserMsgForCasual) === 'GENERAL_CHAT' && 
-      /^(hola|hi|hey|buenos\s+d[ií]as|buenas\s+tardes|buenas\s+noches|qué\s+tal|how\s+are\s+you|thanks|gracias)[\s!.,?]*$/i.test(lastUserMsgForCasual.trim())
-    
-    if (isCasual && intent === 'GENERAL_CHAT') {
-      finalTools = []
-    }
-    
-    // 12. Contexto de investigación: si hay investigation_id o state, asegurar herramientas de investigación
-    const contextApp = context.app
-    const hasInvestigationId = contextApp === 'investigator' && (context as { investigationId?: string }).investigationId
-    const hasInvestigationState = contextApp === 'investigator' && (context as { state?: unknown }).state
-    
-    const hasInvestigationContext = hasInvestigationId || hasInvestigationState ||
-      (contextApp === 'general' && context.mode === 'CONSULTANT')
-    
-    if (hasInvestigationContext && !finalTools.some(t => (TOOLS_BY_CATEGORY.investigation as readonly string[]).includes(t))) {
-      for (const tool of TOOLS_BY_CATEGORY.investigation) {
-        if (!finalTools.includes(tool)) finalTools.push(tool)
-      }
-    }
-    
-    // 13. Ordenar: requiredTools primero, luego por categoría lógica
-    const categoryOrder: ToolCategory[] = ['base', 'investigation', 'methodology', 'strategy', 'memory', 'web']
+
+    // 5. Excluir herramientas prohibidas por el contrato
+    const forbiddenSet = new Set(contract.forbiddenTools)
+    let finalTools = Array.from(candidateTools).filter(tool => {
+      if (contract.requiredTools.includes(tool)) return true
+      if (forbiddenSet.has('*') || forbiddenSet.has(tool)) return false
+      return true
+    })
+
+    // 6. Filtrar por permisos reales con el principal autenticado
+    finalTools = filterByPermissions(finalTools, principal, mode)
+
+    // 7. Ordenar: requiredTools primero, luego orden lógico
+    const categoryOrder: ToolCategory[] = ['investigation', 'methodology', 'strategy', 'web', 'memory', 'base']
     finalTools.sort((a, b) => {
-      const aReq = requiredTools.includes(a)
-      const bReq = requiredTools.includes(b)
+      const aReq = contract.requiredTools.includes(a)
+      const bReq = contract.requiredTools.includes(b)
       if (aReq && !bReq) return -1
       if (!aReq && bReq) return 1
-      
-      // Ordenar por categoría
+
       const aCat = this.getToolCategory(a)
       const bCat = this.getToolCategory(b)
       const aIdx = aCat !== 'unknown' ? categoryOrder.indexOf(aCat) : 99
       const bIdx = bCat !== 'unknown' ? categoryOrder.indexOf(bCat) : 99
       if (aIdx !== bIdx) return aIdx - bIdx
-      
+
       return a.localeCompare(b)
     })
-    
-    // 14. Calcular token savings (estimación: ~130 tokens por tool definition)
+
     const allToolsCount = Object.keys(NOVAI_ALL_MODULAR_TOOLS).length
     const tokenSavings = (allToolsCount - finalTools.length) * 130
-    
-    const optionalTools = finalTools.filter(t => !requiredTools.includes(t))
+    const optionalTools = finalTools.filter(t => !contract.requiredTools.includes(t))
     const excludedTools = Object.keys(NOVAI_ALL_MODULAR_TOOLS).filter(t => !finalTools.includes(t))
-    
+
     return {
       selectedTools: finalTools,
       excludedTools,
-      intent: intent,
+      intent,
       mode,
-      reason: `intent=${intent}, mode=${mode}, categories=${effectiveCategories.join(',')}`,
-      requiredTools,
+      reason: `intent=${intent}, mode=${mode}, external=${isExternal}`,
+      requiredTools: contract.requiredTools,
       optionalTools,
+      forbiddenTools: contract.forbiddenTools,
       toolCount: finalTools.length,
       tokenSavings
     }
@@ -306,13 +306,15 @@ export class NovaiToolSelector {
     principal: InvestigationsPrincipal,
     context: NovaiContext,
     messages: Array<{ role: string; content: string | null }>,
-    explicitIntent?: string
+    explicitIntent?: string,
+    externalVerificationRequested?: boolean
   ): Record<string, any> {
     const selection = NovaiToolSelector.selectTools({
       principal,
       context,
       messages,
-      explicitIntent
+      explicitIntent,
+      externalVerificationRequested
     })
     
     const vercelTools: Record<string, any> = {}
@@ -338,7 +340,8 @@ export function getSelectedVercelTools(
   principal: InvestigationsPrincipal,
   context: NovaiContext,
   messages: Array<{ role: string; content: string | null }>,
-  explicitIntent?: string
+  explicitIntent?: string,
+  externalVerificationRequested?: boolean
 ): Record<string, any> {
-  return NovaiToolSelector.getSelectedVercelTools(principal, context, messages, explicitIntent)
+  return NovaiToolSelector.getSelectedVercelTools(principal, context, messages, explicitIntent, externalVerificationRequested)
 }

@@ -34,7 +34,7 @@ test('NovAi Model Router & 7 Operational Modes Engine', async t => {
     const decision = NovaiModelRouter.routeTask({ messages })
 
     assert.equal(decision.category, 'coding')
-    assert.match(decision.recommendedOpenRouterModel, /qwen/)
+    assert.match(decision.recommendedOpenRouterModel, /laguna|qwen/i)
   })
 
   await t.test('Intent Classification: Correctly infers ARCHITECT mode from security/RBAC prompts', () => {
@@ -63,7 +63,7 @@ test('NovAi Model Router & 7 Operational Modes Engine', async t => {
     const decision = NovaiModelRouter.routeTask({ messages })
 
     assert.equal(decision.category, 'reasoning')
-    assert.match(decision.recommendedOpenRouterModel, /nemotron/)
+    assert.match(decision.recommendedOpenRouterModel, /gemini|nemotron/i)
   })
 
   await t.test('Sticky Mode Window: Retains CONSULTANT mode across short follow-up messages', () => {

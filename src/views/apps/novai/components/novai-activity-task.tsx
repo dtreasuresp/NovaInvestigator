@@ -50,11 +50,19 @@ export function NovaiActivityTask({ traces, toolInvocations, isStreaming, classN
 
   if (steps.length === 0) return null
 
-  const total = steps.length
-  const completed = steps.filter(s => s.status === 'completed').length
-  const hasErrors = steps.some(s => s.status === 'error')
-  const hasWarnings = steps.some(s => s.status === 'warning')
-  const isRunning = isStreaming || steps.some(s => s.status === 'running')
+  // Si ya no está en streaming, normalizar cualquier paso running a completed
+  const normalizedSteps = steps.map(s => {
+    if (!isStreaming && s.status === 'running') {
+      return { ...s, status: 'completed' as const }
+    }
+    return s
+  })
+
+  const total = normalizedSteps.length
+  const completed = normalizedSteps.filter(s => s.status === 'completed').length
+  const hasErrors = normalizedSteps.some(s => s.status === 'error')
+  const hasWarnings = normalizedSteps.some(s => s.status === 'warning')
+  const isRunning = Boolean(isStreaming) && normalizedSteps.some(s => s.status === 'running')
 
   return (
     <div className={`w-full my-2 not-prose ${className}`}>
@@ -80,7 +88,7 @@ export function NovaiActivityTask({ traces, toolInvocations, isStreaming, classN
           </div>
         </TaskTrigger>
         <TaskContent className='mt-2 space-y-1'>
-          {steps.map((step) => (
+          {normalizedSteps.map((step) => (
             <TaskItem key={step.id} className='flex items-start gap-2 text-xs py-1 px-1.5 rounded-md hover:bg-muted/30 transition-colors'>
               <span className='mt-0.5' aria-hidden>{getStatusIndicator(step.status)}</span>
               <div className='flex-1 min-w-0'>
