@@ -99,8 +99,14 @@ export function getToolResults(events: NovaiEvent[]): Array<{ tool: string; resu
 
 /**
  * Detecta si el texto afirma haber usado una tool sin haberla llamado con éxito.
+ * Fix3: No penalizar si la tool ni siquiera estuvo en requiredTools/exposed (falso positivo audit_factor).
  */
-function detectToolClaimWithoutCall(text: string, events: NovaiEvent[]): ValidationFinding[] {
+function detectToolClaimWithoutCall(
+  text: string,
+  events: NovaiEvent[],
+  requiredTools?: string[],
+  allowedTools?: string[]
+): ValidationFinding[] {
   const findings: ValidationFinding[] = []
   const lower = text.toLowerCase()
 
@@ -112,7 +118,13 @@ function detectToolClaimWithoutCall(text: string, events: NovaiEvent[]): Validat
     { phrase: /audit[eé].*factor/i, tool: 'audit_factor', label: 'auditoría de factor' }
   ]
 
+  const requiredSet = new Set(requiredTools || [])
+  const allowedSet = new Set(allowedTools || [])
+
   for (const c of toolClaims) {
+    // Fix3: si la tool no estuvo en required ni en allowed/exposed, no es hallucination sancionable (ej audit_factor excluida)
+    const wasRelevant = requiredSet.has(c.tool) || allowedSet.has(c.tool)
+    if (!wasRelevant && (requiredTools !== undefined || allowedTools !== undefined)) continue
     if (c.phrase.test(lower) && !hasSuccessfulToolResult(events, c.tool)) {
       findings.push({
         ruleId: RULES.R3_TOOL_CLAIMED_NOT_CALLED,
@@ -332,20 +344,33 @@ function detectRetrospectiveJustification(text: string, events: NovaiEvent[]): V
   return findings
 }
 
-export function validateResponse(ctx: ValidatorContext): ValidationResult {
+export interface LedgerLike {
+  evidenceStatus?: string
+  resultsCount?: number
+}
+
+export function validateResponse(
+  ctx: ValidatorContext & { ledger?: Record<string, LedgerLike>; allowedTools?: string[] }
+): ValidationResult {
   const findings: ValidationFinding[] = []
 
   // 1. Acumular reglas epistemológicas
-  findings.push(...detectToolClaimWithoutCall(ctx.assistantText, ctx.events))
+  findings.push(...detectToolClaimWithoutCall(ctx.assistantText, ctx.events, ctx.requiredTools, ctx.allowedTools))
   findings.push(...detectUnbackedExternalClaims(ctx.assistantText, ctx.events))
   findings.push(...detectScoreWithoutCalculation(ctx.assistantText, ctx.events))
   findings.push(...detectSourceClaimWithoutEvent(ctx.assistantText, ctx.events))
   findings.push(...detectExternalValidatesInternal(ctx.assistantText, ctx.events))
   findings.push(...detectRetrospectiveJustification(ctx.assistantText, ctx.events))
 
-  // 2. Validación de requiredTools (deben tener un resultado exitoso registrado)
+  // 2. Validación de requiredTools — distinguir FOUND_NOT_PERSISTED vs NONE_FOUND vía ledger
   if (ctx.requiredTools && ctx.requiredTools.length > 0) {
-    const missingSuccess = ctx.requiredTools.filter(t => !hasSuccessfulToolResult(ctx.events, t))
+    const missingSuccess = ctx.requiredTools.filter(t => {
+      if (hasSuccessfulToolResult(ctx.events, t)) return false
+      // Fix3: si ledger indica FOUND_NOT_PERSISTED, no tratar como tool no ejecutada
+      const ls = ctx.ledger?.[t]?.evidenceStatus
+      if (ls === 'FOUND_NOT_PERSISTED' && t === 'web_research') return false
+      return true
+    })
     if (missingSuccess.length > 0) {
       findings.push({
         ruleId: RULES.R12_TOOL_UNAVAILABLE_IMPROVISED,

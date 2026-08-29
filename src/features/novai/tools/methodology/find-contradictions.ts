@@ -136,7 +136,8 @@ export const findContradictionsTool: NovaiModularTool = {
       inputSchema: findContradictionsSchema,
       execute: async (args: FindContradictionsInput) => {
         const res = await executeFindContradictions(args, principal)
-        return res.result !== undefined ? res.result : { error: res.error }
+        if (!res.success) throw new Error(res.error || 'find_contradictions failed')
+        return res.result
       }
     })
 }

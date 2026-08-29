@@ -219,7 +219,7 @@ export const navItems: NavItem[] = [
           },
           {
             icon: 'ClipboardCheckIcon',
-            label: 'Investigator',
+            label: 'Research',
             href: `${INVESTIGATOR_BASE_PATH}/investigations`,
             moduleKey: 'investigator'
           }

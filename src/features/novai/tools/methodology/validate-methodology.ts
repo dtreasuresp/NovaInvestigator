@@ -164,7 +164,8 @@ export const validateMethodologyTool: NovaiModularTool = {
       inputSchema: validateMethodologySchema,
       execute: async (args: ValidateMethodologyInput) => {
         const res = await executeValidateMethodology(args, principal)
-        return res.result !== undefined ? res.result : { error: res.error }
+        if (!res.success) throw new Error(res.error || 'validate_methodology failed')
+        return res.result
       }
     })
 }

@@ -21,7 +21,7 @@ const Footer = () => {
             Web
           </Link>
           <Link
-            href='https://www.dgtecnova.com/novastore/documents'
+            href='https://www.dgtecnova.com/novaresearch/documents'
             target='_blank'
             className='text-muted-foreground hover:text-foreground text-sm transition duration-300'
           >

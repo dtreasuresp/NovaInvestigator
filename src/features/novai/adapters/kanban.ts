@@ -22,7 +22,7 @@ export function buildKanbanSystemPrompt(payload: KanbanContextPayload | null, lo
             : 'Responde OBLIGATORIAMENTE en Español.'
 
   if (!payload || (!payload.boardName && !payload.columns?.length && !payload.tasks?.length)) {
-    return `Eres NovAi, asistente de NovaStore para gestión de proyectos Kanban.
+    return `Eres NovAi, asistente para gestión de proyectos Kanban integrado en NovaResearch.
 ${langInstruction}
 Aún no hay contexto de tablero cargado. Ofrece ayuda general sobre metodologías ágiles, priorización, WIP limits y cómo estructurar columnas/tareas.`
   }
@@ -40,7 +40,7 @@ Aún no hay contexto de tablero cargado. Ofrece ayuda general sobre metodología
     ? `Total: ${payload.stats.totalTasks}, Completadas: ${payload.stats.doneTasks}, Pendientes: ${payload.stats.pendingTasks}`
     : ''
 
-  return `Eres NovAi, asistente de NovaStore para gestión de proyectos Kanban.
+  return `Eres NovAi, asistente para gestión de proyectos Kanban integrado en NovaResearch.
 ${langInstruction}
 
 Contexto activo:

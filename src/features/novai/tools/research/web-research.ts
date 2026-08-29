@@ -28,7 +28,7 @@ interface ExternalSource {
   relevanceScore?: number | null // Tavily/Brave ranking — NO es credibility (§7)
 }
 
-const FETCH_TIMEOUT_MS = 8000
+const FETCH_TIMEOUT_MS = 12000
 
 interface TavilySearchParams {
   query: string
@@ -351,7 +351,8 @@ export const webResearchTool: NovaiModularTool = {
       inputSchema: webResearchSchema,
       execute: async (args: WebResearchInput) => {
         const res = await executeWebResearch(args, principal)
-        return res.result !== undefined ? res.result : { error: res.error }
+        if (!res.success) throw new Error(res.error || 'web_research failed')
+        return res.result
       }
     })
 }

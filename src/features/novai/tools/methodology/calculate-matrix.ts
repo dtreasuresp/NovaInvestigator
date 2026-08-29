@@ -194,7 +194,8 @@ export const calculateMatrixTool: NovaiModularTool = {
       inputSchema: calculateMatrixSchema,
       execute: async (args: CalculateMatrixInput) => {
         const res = await executeCalculateMatrix(args, principal)
-        return res.result !== undefined ? res.result : { error: res.error }
+        if (!res.success) throw new Error(res.error || 'calculate_matrix failed')
+        return res.result
       }
     })
 }

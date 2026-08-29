@@ -26,7 +26,7 @@ test('email confirmation redirect preserves the invitation token', () => {
 test('direct registrations return the billing onboarding path', () => {
   const previousApplicationUrl = process.env.NEXT_PUBLIC_APP_URL
 
-  process.env.NEXT_PUBLIC_APP_URL = 'https://novastore.example'
+  process.env.NEXT_PUBLIC_APP_URL = 'https://novaresearch.example'
 
   try {
     const redirect = new URL(buildEmailConfirmationRedirect())

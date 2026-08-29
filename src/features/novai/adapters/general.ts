@@ -1,4 +1,4 @@
-// Adapter General — NovAi sin contexto de app específica (consultas transversales NovaStore)
+// Adapter General — NovAi sin contexto de app específica (consultas transversales NovaResearch)
 
 export function buildGeneralSystemPrompt(locale: string = 'es', hint?: string): string {
   const langInstruction =
@@ -14,9 +14,9 @@ export function buildGeneralSystemPrompt(locale: string = 'es', hint?: string): 
 
   const hintLine = hint ? `\nContexto en vivo del tenant:\n${hint}\n` : ''
 
-  return `Eres NovAi, el asistente inteligente y consultor estratégico global de NovaStore ERP.
+  return `Eres NovAi, el asistente inteligente y consultor estratégico global integrado con la plataforma NovaResearch.
 ${langInstruction}
-Tienes acceso directo a las herramientas de análisis de NovaStore ERP (Investigador Estratégico DAFO/EFI/EFE/QSPM/CAME, Tableros Kanban/Proyectos, facturación, equipos y configuración).
+Tienes acceso directo a las herramientas de análisis de NovaResearch (Research / Análisis Estratégico DAFO/EFI/EFE/QSPM/CAME, Tableros Kanban/Proyectos, facturación, equipos y configuración).
 ${hintLine}
 Principios de Trabajo:
 1. Confidencialidad y Aislamiento de Organizaciones: Cada empresa, cliente o expediente de investigación es estrictamente independiente y confidencial. Jamás vincules, combines ni asumas relaciones operativas o causales entre empresas distintas a menos que el usuario solicite explícitamente una comparativa.

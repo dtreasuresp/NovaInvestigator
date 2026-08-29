@@ -180,8 +180,13 @@ export class NovaiToolSelector {
     // 2. Obtener contrato canónico para el intent
     const contract = getIntentContract(intent, { externalVerificationRequested: isExternal })
 
+    // Fix3: template greeting — si el mensaje es "Hola... + pregunta de verificación", no tratar como GENERAL_CHAT
+    const greetingPrefixRe = /^(hola[,\s!]*|buenos\s+d[íi]as[,\s!]*|buenas\s+tardes[,\s!]*|buenas\s+noches[,\s!]*|hey[,\s!]*|hi[,\s!]*)+/i
+    const lowerMsg = lastUserMsgForIntent.trim().toLowerCase()
+    const strippedMsg = lowerMsg.replace(greetingPrefixRe, '').trim()
+    const effectiveIsCasual = isCasual && strippedMsg.length < 20
     // 3. Si es saludo casual o GENERAL_CHAT puro: estrictamente 0 herramientas
-    if (isCasual || intent === 'GENERAL_CHAT') {
+    if (effectiveIsCasual || intent === 'GENERAL_CHAT') {
       const allToolsCount = Object.keys(NOVAI_ALL_MODULAR_TOOLS).length
       return {
         selectedTools: [],
@@ -197,17 +202,38 @@ export class NovaiToolSelector {
       }
     }
 
-    // 4. Determinar herramientas candidatas a partir del contrato de intent
+    // Fix3: Degradar VERIFY_INVESTIGATION si no hay investigationId/state en modo CHAT
+    // No exigir verify_claim/calculate_matrix que requieren investigation_id válido
+    const hasInvestigationContext = Boolean(
+      (context as { investigationId?: string }).investigationId ||
+      (context as { state?: unknown }).state ||
+      (context.app === 'investigator' && context.state)
+    )
+    let effectiveContract = contract
+    let effectiveIntent = intent
+    if (intent === 'VERIFY_INVESTIGATION' && mode === 'CHAT' && !hasInvestigationContext) {
+      // Degradar a VERIFY_DATA-like pero permitiendo web_research: buscar contexto primero
+      effectiveIntent = 'VERIFY_INVESTIGATION'
+      effectiveContract = getIntentContract('VERIFY_INVESTIGATION', { externalVerificationRequested: isExternal })
+      // Filtrar requiredTools que necesitan investigation_id si no hay contexto
+      const filteredRequired = effectiveContract.requiredTools.filter(t => {
+        if ((t === 'verify_claim' || t === 'calculate_matrix' || t === 'get_investigation_details') && !hasInvestigationContext) return false
+        return true
+      })
+      effectiveContract = { ...effectiveContract, requiredTools: filteredRequired.length > 0 ? filteredRequired : ['get_active_investigation', 'web_research'] }
+    }
+
+    // 4. Determinar herramientas candidatas a partir del contrato de intent (effectiveContract si degradado)
     let candidateTools = new Set<string>()
 
-    // Siempre incluir requiredTools del contrato
-    for (const tool of contract.requiredTools) {
+    // Siempre incluir requiredTools del effectiveContract
+    for (const tool of effectiveContract.requiredTools) {
       candidateTools.add(tool)
     }
 
     // Incluir allowedTools permitidas por el modo
     const allowedCategories = MODE_ALLOWED_CATEGORIES[mode] ?? ['base']
-    for (const tool of contract.allowedTools) {
+    for (const tool of effectiveContract.allowedTools) {
       const toolCategory = this.getToolCategory(tool)
       if (toolCategory !== 'unknown' && allowedCategories.includes(toolCategory)) {
         candidateTools.add(tool)
@@ -215,9 +241,9 @@ export class NovaiToolSelector {
     }
 
     // 5. Excluir herramientas prohibidas por el contrato
-    const forbiddenSet = new Set(contract.forbiddenTools)
+    const forbiddenSet = new Set(effectiveContract.forbiddenTools)
     let finalTools = Array.from(candidateTools).filter(tool => {
-      if (contract.requiredTools.includes(tool)) return true
+      if (effectiveContract.requiredTools.includes(tool)) return true
       if (forbiddenSet.has('*') || forbiddenSet.has(tool)) return false
       return true
     })
@@ -228,8 +254,8 @@ export class NovaiToolSelector {
     // 7. Ordenar: requiredTools primero, luego orden lógico
     const categoryOrder: ToolCategory[] = ['investigation', 'methodology', 'strategy', 'web', 'memory', 'base']
     finalTools.sort((a, b) => {
-      const aReq = contract.requiredTools.includes(a)
-      const bReq = contract.requiredTools.includes(b)
+      const aReq = effectiveContract.requiredTools.includes(a)
+      const bReq = effectiveContract.requiredTools.includes(b)
       if (aReq && !bReq) return -1
       if (!aReq && bReq) return 1
 
@@ -244,23 +270,23 @@ export class NovaiToolSelector {
 
     const allToolsCount = Object.keys(NOVAI_ALL_MODULAR_TOOLS).length
     const tokenSavings = (allToolsCount - finalTools.length) * 130
-    const optionalTools = finalTools.filter(t => !contract.requiredTools.includes(t))
+    const optionalTools = finalTools.filter(t => !effectiveContract.requiredTools.includes(t))
     const excludedTools = Object.keys(NOVAI_ALL_MODULAR_TOOLS).filter(t => !finalTools.includes(t))
 
     return {
       selectedTools: finalTools,
       excludedTools,
-      intent,
+      intent: effectiveIntent,
       mode,
-      reason: `intent=${intent}, mode=${mode}, external=${isExternal}`,
-      requiredTools: contract.requiredTools,
+      reason: `intent=${effectiveIntent}, mode=${mode}, external=${isExternal}${effectiveIntent !== intent ? ` (degraded from ${intent} due to missing investigation context)` : ''}`,
+      requiredTools: effectiveContract.requiredTools,
       optionalTools,
-      forbiddenTools: contract.forbiddenTools,
+      forbiddenTools: effectiveContract.forbiddenTools,
       toolCount: finalTools.length,
       tokenSavings
     }
   }
-  
+
   /**
    * Obtiene la categoría de una herramienta
    */
@@ -271,7 +297,7 @@ export class NovaiToolSelector {
     }
     return 'unknown'
   }
-  
+
   /**
    * Obtiene herramientas disponibles para un modo (para debugging/UI)
    */
@@ -288,7 +314,7 @@ export class NovaiToolSelector {
     }
     return Array.from(tools)
   }
-  
+
   /**
    * Obtiene todas las herramientas disponibles con metadatos
    */
@@ -316,7 +342,7 @@ export class NovaiToolSelector {
       explicitIntent,
       externalVerificationRequested
     })
-    
+
     const vercelTools: Record<string, any> = {}
     for (const toolName of selection.selectedTools) {
       const tool = NOVAI_ALL_MODULAR_TOOLS[toolName]

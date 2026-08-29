@@ -17,24 +17,24 @@ const only = (keys: string[]) => {
 }
 
 describe('sidebar gating', () => {
-  it('con permisos por defecto, el ítem Investigator permanece visible', () => {
-    const investigator = navItems
+  it('con permisos por defecto, el ítem Research permanece visible', () => {
+    const research = navItems
       .find(group => group.groupLabel === 'Apps')
-      ?.items.find(item => item.label === 'Investigator')
+      ?.items.find(item => item.label === 'Research')
 
-    assert.ok(investigator)
-    assert.strictEqual(getAppItemAccess(investigator, allCaps, allModules), 'allowed')
+    assert.ok(research)
+    assert.strictEqual(getAppItemAccess(research, allCaps, allModules), 'allowed')
   })
 
   it('sin el módulo requerido, los ítems con moduleKey quedan bloqueados (locked)', () => {
     const apps = navItems.find(group => group.groupLabel === 'Apps')?.items || []
     const projects = apps.find(item => item.label === 'Projects')
-    const investigator = apps.find(item => item.label === 'Investigator')
+    const research = apps.find(item => item.label === 'Research')
 
     assert.ok(projects)
-    assert.ok(investigator)
+    assert.ok(research)
     assert.strictEqual(getAppItemAccess(projects, allCaps, noModules), 'locked')
-    assert.strictEqual(getAppItemAccess(investigator, allCaps, noModules), 'locked')
+    assert.strictEqual(getAppItemAccess(research, allCaps, noModules), 'locked')
   })
 
   it('un ítem sin requisito propio nunca se oculta ni se bloquea', () => {
@@ -60,16 +60,16 @@ describe('sidebar gating', () => {
     const states = new Map(apps.map(item => [item.label, getAppItemAccess(item, noCaps, only(['kanban']))]))
     const visible = apps.filter(item => states.get(item.label) !== 'hidden').map(item => item.label)
 
-    // Projects queda 'allowed' (módulo kanban otorgado), Investigator y NovAi 'locked'
+    // Projects queda 'allowed' (módulo kanban otorgado), Research y NovAi 'locked'
     // (módulo investigator denegado): ninguno se oculta, el candado los mantiene.
     assert.deepEqual(
       [...states.entries()].sort(),
       [
-        ['Investigator', 'locked'],
         ['NovAi', 'locked'],
-        ['Projects', 'allowed']
+        ['Projects', 'allowed'],
+        ['Research', 'locked']
       ]
     )
-    assert.deepEqual(visible, ['NovAi', 'Projects', 'Investigator'])
+    assert.deepEqual(visible, ['NovAi', 'Projects', 'Research'])
   })
 })

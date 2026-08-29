@@ -104,7 +104,7 @@ export function AppInitializerGate({ children }: AppInitializerGateProps) {
             </div>
 
             <div className='flex flex-col items-center gap-1.5'>
-              <h2 className='text-xl font-bold tracking-tight text-foreground'>NovaStore ERP</h2>
+              <h2 className='text-xl font-bold tracking-tight text-foreground'>NovaResearch</h2>
               <p className='text-xs text-muted-foreground'>{t('common.loading')}</p>
             </div>
 

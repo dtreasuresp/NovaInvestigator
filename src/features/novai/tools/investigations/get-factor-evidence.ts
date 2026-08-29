@@ -231,7 +231,8 @@ export const getFactorEvidenceTool: NovaiModularTool = {
       inputSchema: getFactorEvidenceSchema,
       execute: async (args: GetFactorEvidenceInput) => {
         const res = await executeGetFactorEvidence(args, principal)
-        return res.result !== undefined ? res.result : { error: res.error }
+        if (!res.success) throw new Error(res.error || 'get_factor_evidence failed')
+        return res.result
       }
     })
 }

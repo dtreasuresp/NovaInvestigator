@@ -196,7 +196,7 @@ export function AiCopilotSheet({ floating = true }: AiCopilotSheetProps) {
     {
       id: 'welcome',
       role: 'assistant',
-      content: t('novai.aiWelcomeMessage') || '¡Hola! Soy tu Copiloto Estratégico NovaStore. Puedo analizar tu diagnóstico EFI/EFE, explicarte el vector DAFO, validar la coherencia de tus ponderaciones o ayudarte a formular acciones CAME. ¿En qué te gustaría profundizar hoy?'
+      content: t('novai.aiWelcomeMessage') || '¡Hola! Soy tu Copiloto Estratégico NovaResearch. Puedo analizar tu diagnóstico EFI/EFE, explicarte el vector DAFO, validar la coherencia de tus ponderaciones o ayudarte a formular acciones CAME. ¿En qué te gustaría profundizar hoy?'
     }
   ])
 

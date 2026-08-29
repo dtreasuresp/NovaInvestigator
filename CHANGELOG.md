@@ -4,6 +4,31 @@
 
 All notable changes to this template will be documented in this file
 
+## v0.0.85 (2026-08-29)
+
+### Updated & Migrated — Migración Oficial de Identidad y Naming (NovaResearch / Research / NovAi)
+
+- **Taxonomía Canónica de Producto y Suite**:
+  - Formalizada la separación arquitectónica de tres entidades:
+    - **NovaResearch**: Plataforma SaaS multi-tenant y suite de aplicaciones (reemplaza a *NovaStore*).
+    - **Research**: Aplicación central de investigación y diagnóstico estratégico dentro de NovaResearch (reemplaza conceptualmente a *NovaInvestigator* / *Investigator*).
+    - **NovAi**: Producto de IA autónomo e independiente que se integra con NovaResearch y Research mediante API y MCP (nunca subordinado como submódulo interno).
+- **Repositorio GitHub y Control de Versiones**:
+  - Repositorio GitHub renombrado exitosamente de `dtreasuresp/NovaInvestigator` a `dtreasuresp/NovaResearch`.
+  - Configurados remotos locales `origin` hacia `https://github.com/dtreasuresp/NovaResearch.git`.
+- **Identidad de Aplicación y Metadatos**:
+  - Actualizado `package.json` (`"name": "NovaResearch"`).
+  - Actualizados metadatos OpenGraph, Twitter Cards y títulos en `src/app/layout.tsx`, `src/app/(pages)/apps/kanban/page.tsx`, `src/configs/themeConfig.ts` y `src/components/layout/AppInitializerGate.tsx`.
+- **Navegación e Internacionalización (i18n)**:
+  - Actualizado el item de navegación en `src/configs/navConfig.tsx` con la etiqueta canónica `Research`.
+  - Actualizados catálogos en 5 idiomas (`es`, `en`, `de`, `ko`, `pt`) unificando la aplicación de investigación como `Research` (`nav.investigator` y `catInvestigator`).
+- **Prompts del Runtime NovAi y Encabezados**:
+  - Actualizados adapters (`general.ts`, `kanban.ts`, `modes.ts`), `context-builder.ts`, `context-engine.ts`, `memory-engine.ts`, `methodology-knowledge.ts` y `service.ts` para reflejar la integración con la plataforma NovaResearch.
+  - Actualizados encabezados de auditoría y telemetría `X-Title` a `NovaResearch` en llamadas a modelos.
+- **Políticas de Documentación y Gobernanza**:
+  - Incorporada la sección `## Product Naming & Architecture` en `AGENTS.md`.
+  - Actualizada la documentación técnica en `README.md` y `SECURITY.MD`.
+
 ## v0.0.84 (2026-08-28)
 
 ### Fixed & Synchronized — Supabase Migrations & NovAi Database Schema Alignment

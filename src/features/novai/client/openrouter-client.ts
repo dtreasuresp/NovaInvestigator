@@ -7,7 +7,7 @@ import type { OpenAiToolCall } from '@/features/novai/tools'
 // Endpoint: https://openrouter.ai/api/v1/chat/completions
 // Modelos: openai/gpt-4o-mini, meta-llama/llama-3.3-70b-instruct:free, qwen/qwen-3-coder:free, opencode/zen, etc.
 // Requiere OPENROUTER_API_KEY + headers HTTP-Referer y X-Title
-// Default para NovaStore: opencode/zen (si no existe, fallback a openai/gpt-4o-mini)
+// Default para NovaResearch: opencode/zen (si no existe, fallback a openai/gpt-4o-mini)
 
 const OPENROUTER_URL = 'https://openrouter.ai/api/v1/chat/completions'
 const DEFAULT_OPENROUTER_MODEL = 'opencode/zen'
@@ -74,8 +74,8 @@ export async function callOpenRouterStreaming({
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${apiKey}`,
-        'HTTP-Referer': process.env.NEXT_PUBLIC_APP_URL || 'https://novastore.local',
-        'X-Title': 'NovaStore ERP',
+        'HTTP-Referer': process.env.NEXT_PUBLIC_APP_URL || 'https://novaresearch.local',
+        'X-Title': 'NovaResearch',
       },
       body: JSON.stringify(body),
       signal: controller.signal,

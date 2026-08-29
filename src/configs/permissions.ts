@@ -29,7 +29,7 @@ export const USER_PERMISSIONS: ReadonlySet<PermissionKey> = new Set<PermissionKe
 
 // Mapeo ítem de menú → clave de permiso (apps con permiso propio).
 export const APP_PERMISSION_BY_LABEL: Record<string, PermissionKey> = {
-  Investigator: 'apps.investigator',
+  Research: 'apps.investigator',
   Mail: 'apps.mail',
   Calendar: 'apps.calendar',
   Users: 'apps.users',
@@ -44,7 +44,7 @@ type AppAccessRequirement =
   | { module?: never; capability: CapabilityKey }
 
 export const APP_ACCESS_BY_LABEL: Record<string, AppAccessRequirement> = {
-  Investigator: { module: 'investigator' },
+  Research: { module: 'investigator' },
   Users: { capability: 'users.invite' },
   'Roles & Permissions': { capability: 'access.manage' }
 }

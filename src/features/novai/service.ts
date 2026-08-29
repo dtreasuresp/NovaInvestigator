@@ -519,7 +519,7 @@ export async function generateDafoProposal({
   const defaultEvaluator = state.metadata?.updatedByName || state.metadata?.author || 'Comité Evaluador'
   const factorMap = new Map([...internal, ...external].map(f => [f.id, f]))
 
-  const systemPrompt = `Eres el Consultor Metodológico Senior y Auditor Estratégico de NovaStore ERP.
+  const systemPrompt = `Eres el Consultor Metodológico Senior y Auditor Estratégico integrado en NovaResearch.
 Tu tarea es evaluar la relación de impacto estratégico causa-efecto entre Factores Internos (Fortalezas/Debilidades) y Factores Externos (Oportunidades/Amenazas) para la matriz DAFO.
 
 ${getMethodologicalPrompt()}
@@ -642,7 +642,7 @@ export async function generateQspmProposal({
   let strategies = state.strategies || []
   let proposedStrategies: Array<{ id: string; name: string; quadrant: 'FO' | 'DO' | 'FA' | 'DA'; description: string }> = []
 
-  const systemPrompt = `Eres el Consultor Estratégico Senior de NovaStore ERP.
+  const systemPrompt = `Eres el Consultor Estratégico Senior integrado en NovaResearch.
   Tu tarea es evaluar la Matriz Cuantitativa de Planificación Estratégica (QSPM) siguiendo la metodología de Fred David.
 
   ESCALA DE ATRACTIVO (AS - Attractiveness Score):

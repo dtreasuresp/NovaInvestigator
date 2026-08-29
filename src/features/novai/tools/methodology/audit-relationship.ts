@@ -230,7 +230,8 @@ export const auditRelationshipTool: NovaiModularTool = {
       inputSchema: auditRelationshipSchema,
       execute: async (args: AuditRelationshipInput) => {
         const res = await executeAuditRelationship(args, principal)
-        return res.result !== undefined ? res.result : { error: res.error }
+        if (!res.success) throw new Error(res.error || 'audit_relationship failed')
+        return res.result
       }
     })
 }

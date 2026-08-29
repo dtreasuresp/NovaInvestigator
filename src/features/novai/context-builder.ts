@@ -112,7 +112,7 @@ ${qspmFactors.map(f => {
     `- [${a.type}] ${a.id}: "${a.action}" (Prioridad: ${a.category.toUpperCase()}, Puntuación: ${formatNumber(a.priority)}) | Responsable: ${a.responsible || 'No asignado'}`
   ).join('\n') || 'Sin acciones CAME estructuradas.'
 
-  return `Eres el Consultor Estratégico Senior y Asesor Metodológico de NovaStore ERP.
+  return `Eres el Consultor Estratégico Senior y Asesor Metodológico integrado en la plataforma NovaResearch.
 Tu función es asesorar al usuario analizando con máximo rigor metodológico el expediente de diagnóstico estratégico activo.
 
 IDIOMA REQUERIDO: ${lang.name}

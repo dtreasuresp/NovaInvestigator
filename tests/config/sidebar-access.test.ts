@@ -56,15 +56,15 @@ describe('getAppItemAccess', () => {
     assert.strictEqual(getAppItemAccess(projects, grantAll, grantOnlyModules(['kanban'])), 'allowed')
   })
 
-  it('Investigator (moduleKey investigator) prioriza el módulo sobre el mapeo por label', () => {
-    const investigator = navItems.find(group => group.groupLabel === 'Apps')?.items.find(
-      item => item.label === 'Investigator'
+  it('Research (moduleKey investigator) prioriza el módulo sobre el mapeo por label', () => {
+    const research = navItems.find(group => group.groupLabel === 'Apps')?.items.find(
+      item => item.label === 'Research'
     )
 
-    assert.ok(investigator)
-    assert.strictEqual(investigator.moduleKey, 'investigator')
-    assert.strictEqual(getAppItemAccess(investigator, denyAll, grantOnlyModules(['investigator'])), 'allowed')
-    assert.strictEqual(getAppItemAccess(investigator, grantAll, grantOnlyModules([])), 'locked')
+    assert.ok(research)
+    assert.strictEqual(research.moduleKey, 'investigator')
+    assert.strictEqual(getAppItemAccess(research, denyAll, grantOnlyModules(['investigator'])), 'allowed')
+    assert.strictEqual(getAppItemAccess(research, grantAll, grantOnlyModules([])), 'locked')
   })
 
   it('requisito por capability sin permiso se mantiene hidden', () => {

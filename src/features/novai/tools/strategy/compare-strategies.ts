@@ -138,7 +138,8 @@ export const compareStrategiesTool: NovaiModularTool = {
       inputSchema: compareStrategiesSchema,
       execute: async (args: CompareStrategiesInput) => {
         const res = await executeCompareStrategies(args, principal)
-        return res.result !== undefined ? res.result : { error: res.error }
+        if (!res.success) throw new Error(res.error || 'compare_strategies failed')
+        return res.result
       }
     })
 }

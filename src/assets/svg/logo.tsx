@@ -7,7 +7,7 @@ interface LogoProps extends HTMLAttributes<HTMLDivElement> {
   alt?: string
 }
 
-const Logo = ({ className, alt = 'NovaStore', ...props }: LogoProps) => {
+const Logo = ({ className, alt = 'NovaResearch', ...props }: LogoProps) => {
   return (
     <div className={cn('relative inline-flex items-center justify-center shrink-0 select-none', className)} {...props}>
       {/* Light Mode: Colorful Logo */}

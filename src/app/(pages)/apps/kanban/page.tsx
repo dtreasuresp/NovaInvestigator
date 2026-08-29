@@ -1,7 +1,7 @@
 import KanbanView from '@/views/apps/kanban'
 
 export const metadata = {
-  title: 'Kanban | NovaStore ERP',
+  title: 'Kanban | NovaResearch',
   description: 'Tablero ágil para gestión de proyectos, iniciativas CAME y tareas.'
 }
 

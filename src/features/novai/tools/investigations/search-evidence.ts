@@ -264,7 +264,8 @@ export const searchEvidenceTool: NovaiModularTool = {
       inputSchema: searchEvidenceSchema,
       execute: async (args: SearchEvidenceInput) => {
         const res = await executeSearchEvidence(args, principal)
-        return res.result !== undefined ? res.result : { error: res.error }
+        if (!res.success) throw new Error(res.error || 'search_evidence failed')
+        return res.result
       }
     })
 }

@@ -192,7 +192,8 @@ export const traceStrategyTool: NovaiModularTool = {
       inputSchema: traceStrategySchema,
       execute: async (args: TraceStrategyInput) => {
         const res = await executeTraceStrategy(args, principal)
-        return res.result !== undefined ? res.result : { error: res.error }
+        if (!res.success) throw new Error(res.error || 'trace_strategy failed')
+        return res.result
       }
     })
 }

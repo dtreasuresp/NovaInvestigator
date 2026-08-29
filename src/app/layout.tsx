@@ -35,13 +35,13 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:4101'),
-  title: 'NovaStore',
-  description: 'NovaSotre',
+  title: 'NovaResearch',
+  description: 'Evidence-aware research, strategic analysis, and AI-assisted investigation platform',
   openGraph: {
-    title: 'NovaStore',
-    description: 'NovaStore',
+    title: 'NovaResearch',
+    description: 'Evidence-aware research, strategic analysis, and AI-assisted investigation platform',
     type: 'website',
-    siteName: 'NovaStore',
+    siteName: 'NovaResearch',
     url: process.env.NEXT_PUBLIC_APP_URL,
     images: [
       {
@@ -49,14 +49,14 @@ export const metadata: Metadata = {
         type: 'image/png',
         width: 1200,
         height: 630,
-        alt: 'NovaStore'
+        alt: 'NovaResearch'
       }
     ]
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'NovaStore',
-    description: 'NovaStore'
+    title: 'NovaResearch',
+    description: 'Evidence-aware research, strategic analysis, and AI-assisted investigation platform'
   }
 }
 

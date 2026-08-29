@@ -49,7 +49,7 @@ test('NovAi Tool Gateway & Multi-Level Memory Engine', async t => {
         scope: 'strategic',
         category: 'architecture',
         key: 'PAYMENT_PROCESSOR',
-        content: 'NovaStore delega el procesamiento de pagos a Stripe Checkout.',
+        content: 'NovaResearch delega el procesamiento de pagos a Stripe Checkout.',
         confidence: 0.95,
         status: 'active',
         createdAt: '2026-08-23',
@@ -71,7 +71,7 @@ test('NovAi Tool Gateway & Multi-Level Memory Engine', async t => {
 
     const promptText = NovaiMemoryEngine.formatMemoriesForPrompt(mockMemories)
     
-    assert.match(promptText, /MEMORIA PERSISTENTE DE NOVASTORE/)
+    assert.match(promptText, /MEMORIA PERSISTENTE DE NOVARESEARCH/)
     assert.match(promptText, /MEMORIA ESTRATÉGICA Y DECISIONES PREVIAS/)
     assert.match(promptText, /PAYMENT_PROCESSOR/)
     assert.match(promptText, /CONTEXTO Y ACUERDOS DEL WORKSPACE/)

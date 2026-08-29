@@ -216,8 +216,8 @@ export class NovaiCompactionEngine {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${apiKey}`,
-          'HTTP-Referer': 'https://novastore.app',
-          'X-Title': 'NovaStore Compaction'
+          'HTTP-Referer': 'https://novaresearch.app',
+          'X-Title': 'NovaResearch Compaction'
         },
         body: JSON.stringify({
           model: 'mistralai/mistral-small-24b-instruct-2501:free',

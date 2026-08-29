@@ -1,9 +1,43 @@
-# NovaStore ERP / NovaInvestigator — AI Assistant Instructions
+# NovaResearch / Research — AI Assistant Instructions
 
 Instrucción canónica para asistentes de IA y agentes autónomos que trabajan en este repositorio.
 Los archivos `CLAUDE.md` y `.github/copilot-instructions.md` son puntos de entrada que redirigen o derivan de aquí.
 
 Ante cualquier contradicción entre archivos de instrucciones o documentación previa, este documento prevalece de forma absoluta.
+
+---
+
+## Product Naming & Architecture
+
+Este repositorio sigue una taxonomía y arquitectura de producto estricta que no debe alterarse ni confundirse:
+
+```text
+                    NovaResearch
+                  Platform / Suite
+                         │
+                         ▼
+                      Research
+                Research Application
+                         │
+                    API / MCP
+                         │
+                         ▼
+                       NovAi
+               Independent AI Product
+```
+
+### Reglas Canónicas de Identidad:
+
+1. **NovaResearch**: Es la plataforma principal y suite de aplicaciones (reemplaza a *NovaStore*). Representa la plataforma SaaS multi-tenant, la gobernanza de accesos, facturación, workspaces y suite de productos de DGTECNOVA SRL.
+2. **Research**: Es la aplicación de investigación y análisis estratégico cuantitativo (reemplaza conceptualmente a *NovaInvestigator* / *Investigator*). Vive dentro de NovaResearch y opera sobre diagnósticos matriciales (EFI, EFE, DAFO, CAME, QSPM) y trazabilidad de evidencias.
+3. **NovAi**: Es un **producto de IA autónomo e independiente**, dotado de su propio runtime cognitivo, sistema de herramientas, memoria gobernada y adapters. Se integra con NovaResearch y la aplicación Research exclusivamente mediante **API y MCP**.
+   - ❌ **Prohibición Absoluta:** **NUNCA** describas, documentes o trates a NovAi como un submódulo hijo o propiedad interna de Research o NovaResearch.
+   - NovAi es un producto de IA desacoplado que puede ser consumido por NovaResearch / Research y por otros clientes externos mediante API y MCP.
+4. **Preservación de Identidades en Modificaciones:**
+   - Al realizar cualquier cambio de código, UI, documentación o prompts, los asistentes de IA **DEBEN** preservar estrictamente la distinción entre:
+     - **Identidad de plataforma:** NovaResearch.
+     - **Identidad de aplicación:** Research.
+     - **Identidad de producto de IA independiente:** NovAi.
 
 ---
 
@@ -39,7 +73,7 @@ Para evitar confusiones, alucinaciones o modificaciones erróneas, **todo agente
    - **Paso 5 (Validación Local & Sincronización de Dependencias):**
       - Al sincronizar el repositorio o actualizar paquetes, ejecuta `pnpm outdated` y `pnpm update` respetando las versiones del framework bloqueadas (Next.js 16.2.x, React 19.2.x, Tailwind v4).
       - Siempre ejecuta `pnpm check-types` y `pnpm test` (o `npx react-doctor@latest` para UI) antes de hacer push o dar por cerrada la tarea.
-   - **Paso 6 (Trazabilidad & Changelog):** Registra el cambio en [`CHANGELOG.md`](file:///d:/03.%20MATRIZ%20DAFO/CHANGELOG.md) siguiendo SemVer 2.0.0.
+   - **Paso 6 (Trazabilidad, Changelog & Sincronización de Documentación):** Registra el cambio en [`CHANGELOG.md`](file:///d:/03.%20MATRIZ%20DAFO/CHANGELOG.md) siguiendo SemVer 2.0.0 y evalúa si [`README.md`](file:///d:/03.%20MATRIZ%20DAFO/README.md) requiere actualización conforme a la **README Synchronization Policy**.
 
 4. **Anti-patrones Prohibidos (Lo que NUNCA debes hacer):**
    - ❌ **NO uses tecnologías inexistentes o eliminadas:** Prohibido importar o referenciar `Prisma`, `NextAuth`, `Pino`, `Upstash Redis`, `Jest` o rutas obsoletas (`docs/`, `src/styles/`).
@@ -55,7 +89,7 @@ Para evitar confusiones, alucinaciones o modificaciones erróneas, **todo agente
 
 | Aspecto | Valor |
 | :--- | :--- |
-| **App** | SaaS multi-tenant ERP & Plataforma de aplicaciones ofrecidas por DGTECNOVA SRL (NovaStore ERP) |
+| **App** | Plataforma SaaS multi-tenant NovaResearch & Aplicación Research ofrecidas por DGTECNOVA SRL |
 | **Stack** | Next.js 16.2.11 App Router, React 19.2.4, TypeScript strict 5.9, Tailwind CSS 4 |
 | **Base de Datos** | Supabase PostgreSQL, Row Level Security (RLS) nativo, migraciones en `supabase/migrations/` |
 | **Package manager** | **pnpm** (Puerto local de desarrollo: `4101` vía `pnpm dev`) |
@@ -599,6 +633,72 @@ Servidores MCP configurados en el proyecto ([`.mcp.json`](file:///d:/03.%20MATRI
 
 ---
 
+## README Synchronization Policy
+
+Esta sección establece la política permanente y obligatoria de gobernanza y sincronización de documentación técnica para todo agente de IA o desarrollador que opere en este repositorio.
+
+### 1. Regla Principal (Living Document)
+> **`README.md` is a living document and MUST remain synchronized with the actual implementation of the repository.**
+
+El archivo [`README.md`](file:///d:/03.%20MATRIZ%20DAFO/README.md) es la carta de presentación técnica y el manual arquitectónico primario del sistema. Debe reflejar fielmente las capacidades, herramientas, comandos y modelos efectivamente implementados en el código.
+
+### 2. Obligación de Evaluación por Cambio Significativo
+Cada vez que un cambio de código modifique de forma relevante cualquiera de las siguientes áreas:
+- **Arquitectura, capas y módulos** (`src/app/`, `src/views/`, `src/features/`, `src/lib/`, `supabase/`).
+- **NovAi Cognitive Runtime**: Runtime del agente, model router, context manager, compaction engine, memory engine, token budget, cuotas o telemetry.
+- **Catálogo de Tools**: Adición, modificación, renombrado o eliminación de herramientas en `src/features/novai/tools/`.
+- **Flujos de Investigación & Evidencia**: Contexto de investigación, gestión de documentos, repositorios de evidencia (`novai_evidence`, `novai_citations`) o estados epistémicos.
+- **Metodologías & Análisis Estratégico**: Motores de cálculo de matrices (EFI, EFE, DAFO/SWOT, CAME, QSPM), validaciones o reglas de auditoría.
+- **Seguridad & Autorización**: Modelos RBAC, ReBAC, catálogo de capacidades (`CAPABILITY_MANIFEST`), RLS en PostgreSQL o fronteras de autorización server-side.
+- **Billing & Entitlements**: Planes comerciales, Stripe Checkout, Customer Portal, webhooks, idempotencia o cuotas de IA.
+- **Proveedores de IA & Routing**: Modelos soportados, cascada de proveedores (OpenRouter, OpenCode Zen, Gemini) o directivas de privacidad.
+- **Configuración de Entorno**: Variables de entorno nuevas o modificadas en [`.env.example`](file:///d:/03.%20MATRIZ%20DAFO/.env.example).
+- **Comandos & Tooling**: Scripts de desarrollo, testing, build, linting o internacionalización en [`package.json`](file:///d:/03.%20MATRIZ%20DAFO/package.json).
+- **Testing & Cobertura**: Nuevas suites de pruebas automatizadas o cambios en el harness de testing.
+- **Internacionalización (i18n)**: Idiomas soportados o flujos de sincronización de catálogos.
+
+el agente **DEBE evaluar explícitamente si `README.md` requiere actualización**.
+
+### 3. Regla de Consistencia (Pregunta Interna Obligatoria)
+Antes de finalizar cualquier tarea que produzca un cambio significativo, el agente debe responder internamente:
+> *"Does this change make any statement in README.md inaccurate, incomplete or misleading?"*
+
+Si la respuesta es **SÍ**, el agente **DEBE actualizar `README.md` en la misma tarea y commit lógico**.
+
+### 4. Regla de No Actualización Innecesaria
+No es obligatorio modificar `README.md` para cambios internos o parches rutinarios que no alteren:
+- Comportamientos o capacidades documentadas.
+- Arquitectura o contratos de APIs públicas.
+- Herramientas registradas o sus propósitos.
+- Comandos de desarrollo, build o testing.
+- Requisitos, dependencias principales o seguridad.
+- Esquemas de datos relevantes para usuarios o desarrolladores.
+
+Esto previene ruido documental y cambios triviales innecesarios en el historial de control de versiones.
+
+### 5. Fuente Primaria de Verdad (Source of Truth)
+La implementación real en código fuente es siempre la **fuente primaria de verdad**. Ante cualquier contradicción entre:
+`Código implementado` $\gg$ `doc/plans/` $\gg$ `AGENTS.md` $\gg$ `README.md` $\gg$ `Comentarios`,
+el código implementado tiene prioridad absoluta para describir el estado actual. Sin embargo, las contradicciones detectadas deben corregirse de inmediato en la documentación correspondiente.
+
+### 6. Prohibiciones Estrictas de Documentación
+El agente tiene **estrictamente prohibido**:
+- ❌ Afirmar funcionalidades no implementadas o meramente planificadas.
+- ❌ Documentar herramientas o endpoints inexistentes.
+- ❌ Inventar comandos, scripts o parámetros no presentes en `package.json`.
+- ❌ Inventar variables de entorno no registradas en `.env.example`.
+- ❌ Inventar integraciones con servicios externos no verificados en el código.
+- ❌ Declarar una funcionalidad experimental o inestable como lista para producción.
+
+### 7. Atomicidad de Cambios y PRs
+Cuando un cambio de código significativo exija actualizar `README.md`, la modificación de la documentación debe formar parte del **mismo cambio lógico y PR**, asegurando que el repositorio nunca quede desincronizado.
+
+### 8. Separación de Responsabilidades Documentales
+- [`README.md`](file:///d:/03.%20MATRIZ%20DAFO/README.md): **Qué es el proyecto, cómo está construido y cómo funciona** (documentación técnica de producto, arquitectura y uso).
+- [`AGENTS.md`](file:///d:/03.%20MATRIZ%20DAFO/AGENTS.md): **Cómo debe operar un agente de IA dentro del repositorio** (reglas de conducta, seguridad, límites y protocolos).
+
+---
+
 ## Anexo A: Checklist antes de cerrar un PR
 
 ### General
@@ -621,9 +721,10 @@ Servidores MCP configurados en el proyecto ([`.mcp.json`](file:///d:/03.%20MATRI
 - [ ] Sin cadenas visibles hardcodeadas; utilicé `src/locales/`
 - [ ] Tablas grandes virtualizadas o paginadas server-side
 
-### Validación
+### Validación & Documentación
 
 - [ ] `pnpm check-types` pasa sin errores
-- [ ] `pnpm test` pasa en verde
+- [ ] `pnpm test` pasa en verde (todas las suites)
 - [ ] `npx react-doctor@latest` ejecutado si se modificó UI
-- [ ] `CHANGELOG.md` actualizado según SemVer
+- [ ] `CHANGELOG.md` actualizado según SemVer 2.0.0
+- [ ] `README.md` evaluado y sincronizado conforme a la **README Synchronization Policy** si hubo cambios significativos

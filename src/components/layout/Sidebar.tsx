@@ -62,7 +62,7 @@ const NAV_LABEL_MAP: Record<string, string> = {
   Investigations: 'nav.investigations',
   Projects: 'nav.projects',
   Apps: 'nav.apps',
-  Investigator: 'nav.investigator',
+  Research: 'nav.investigator',
   Administration: 'nav.administration',
   Users: 'nav.users',
   List: 'nav.userList',
@@ -641,7 +641,7 @@ const SidebarLayout = () => {
   )
 
   // Inactivado para evitar la inyección de apps demo de la plantilla externa.
-  // Se preserva la infraestructura para futuras aplicaciones dinámicas del ecosistema NovaStore ERP.
+  // Se preserva la infraestructura para futuras aplicaciones dinámicas del ecosistema NovaResearch.
   // if (externalApps.length > 0) {
   //   navGroups = navGroups.map(item =>
   //     item.groupLabel === 'Apps' ? { ...item, items: item.items.concat(externalApps) } : item

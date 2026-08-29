@@ -33,7 +33,7 @@ test('NovAi Evidence Repository Suite (Fase 3)', async t => {
                     excerpt: payload.excerpt,
                     location: payload.location,
                     confidence: payload.confidence,
-                    epistemic: payload.epistemic,
+                    epistemic_status: payload.epistemic_status,
                     retrieved_at: payload.retrieved_at,
                     created_at: new Date().toISOString()
                   },
@@ -54,14 +54,14 @@ test('NovAi Evidence Repository Suite (Fase 3)', async t => {
       claim: 'Crecimiento de exportaciones en 15%',
       excerpt: 'Las exportaciones regionales crecieron 15% interanual.',
       location: 'https://example.com/report',
-      epistemic: 'FACT'
+      epistemicStatus: 'FACT'
     })
 
     assert.equal(capturedTable, 'novai_evidence')
     assert.equal(capturedPayload.tenant_id, tenantId)
     assert.equal(capturedPayload.investigation_id, investigationId)
     assert.equal(capturedPayload.source_type, 'web_source')
-    assert.equal(capturedPayload.epistemic, 'FACT')
+    assert.equal(capturedPayload.epistemic_status, 'FACT')
     assert.equal(capturedPayload.confidence, 1.0)
     assert.equal(result?.id, 'ev-100')
     assert.equal(result?.tenantId, tenantId)

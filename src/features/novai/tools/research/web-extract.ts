@@ -249,7 +249,8 @@ export const webExtractTool: NovaiModularTool = {
       inputSchema: webExtractSchema,
       execute: async (args: WebExtractInput) => {
         const res = await executeWebExtract(args, principal)
-        return res.result !== undefined ? res.result : { error: res.error }
+        if (!res.success) throw new Error(res.error || 'web_extract failed')
+        return res.result
       }
     })
 }

@@ -2,7 +2,7 @@
 
 ## Supported Versions
 
-NovaStore ERP está en fase de desarrollo activo. Ninguna de las versiones inferiores a la versión 1.0.0 se considera estable o segura para uso en producción. Se recomienda a los usuarios que utilicen la última versión disponible para garantizar la mejor experiencia y seguridad. Si preesenta problemas de rendimiento o seguridad, por favor reportarlos a través de los canales oficiales para que puedan ser abordados en futuras actualizaciones.
+NovaResearch está en fase de desarrollo activo. Ninguna de las versiones inferiores a la versión 1.0.0 se considera estable o segura para uso en producción. Se recomienda a los usuarios que utilicen la última versión disponible para garantizar la mejor experiencia y seguridad. Si preesenta problemas de rendimiento o seguridad, por favor reportarlos a través de los canales oficiales para que puedan ser abordados en futuras actualizaciones.
 
 | Version | Supported      |
 | ------- | -------------- |
@@ -20,11 +20,11 @@ Para reportar una vulnerabilidad, por favor siga estos pasos:
 2. Nuestro equipo de seguridad revisará su informe y se pondrá en contacto con usted para obtener más información si es necesario.
 3. Trabajaremos para resolver la vulnerabilidad lo antes posible y le mantendremos informado sobre el progreso.
 4. Una vez que la vulnerabilidad haya sido resuelta, le notificaremos y, si lo desea, le daremos crédito por el reporte.
-5. Agradecemos su ayuda para mantener NovaStore ERP seguro para todos los usuarios.
+5. Agradecemos su ayuda para mantener NovaResearch seguro para todos los usuarios.
 
 ## Security Best Practices
 
-- Mantenga su instalación de NovaStore ERP actualizada con las últimas versiones para beneficiarse de las correcciones de seguridad.
+- Mantenga su instalación de NovaResearch actualizada con las últimas versiones para beneficiarse de las correcciones de seguridad.
 - Utilice contraseñas fuertes y únicas para todas las cuentas de usuario.
 - Habilite la autenticación de dos factores (2FA) siempre que sea posible.
 - Revise y limite los permisos de los usuarios según sea necesario.

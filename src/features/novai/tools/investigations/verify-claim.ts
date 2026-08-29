@@ -213,7 +213,8 @@ export const verifyClaimTool: NovaiModularTool = {
       inputSchema: verifyClaimSchema,
       execute: async (args: VerifyClaimInput) => {
         const res = await executeVerifyClaim(args, principal)
-        return res.result !== undefined ? res.result : { error: res.error }
+        if (!res.success) throw new Error(res.error || 'verify_claim failed')
+        return res.result
       }
     })
 }

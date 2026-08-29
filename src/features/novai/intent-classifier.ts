@@ -45,7 +45,7 @@ function hashMessage(text: string): string {
   return Math.abs(hash).toString(36)
 }
 
-// Heurística con scoring de confidence
+// Heurística con scoring de confidence — Fix3: template greeting + degrade si no hay contexto de investigación
 function heuristicClassifyWithConfidence(text: string): { intent: IntentType; confidence: number; externalVerificationRequested: boolean } {
   const lower = (text || '').toLowerCase().trim()
   const externalVerificationRequested = detectExternalVerificationRequest(text)
@@ -53,10 +53,15 @@ function heuristicClassifyWithConfidence(text: string): { intent: IntentType; co
   if (!lower || isCasualGreetingText(lower)) {
     return { intent: 'GENERAL_CHAT', confidence: 0.95, externalVerificationRequested: false }
   }
+  // Fix3: "Hola, buenos días. Quisiera que me ayudes a entender..." — plantilla de saludo + pregunta real
+  // Si los primeros 40 chars son saludo y el resto es verificación, clasificar por el resto, no como GENERAL_CHAT
+  const greetingPrefixRe = /^(hola[,\s!]*|buenos\s+d[íi]as[,\s!]*|buenas\s+tardes[,\s!]*|buenas\s+noches[,\s!]*|hey[,\s!]*|hi[,\s!]*)+/i
+  const stripped = lower.replace(greetingPrefixRe, '').trim()
+  const effectiveForClassify = stripped.length >= 20 ? stripped : lower
 
-  const hasVerify = /verifica|valid|comprueba|confianza|correcto|acertado|nivel de confianza|grado de confianza|respald/i.test(lower)
-  const hasInvestigation = /investigaci[oó]n|expediente|matriz|efi|efe|dafo|qspm|came|grado de confianza|nivel de confianza/i.test(lower)
-  const hasWeb = /web|internet|externa|fuente confiable|busca en|informaci[oó]n confiable|repetir.*(?:otra vez|ver si|encuentras)|noticias/i.test(lower)
+  const hasVerify = /verifica|valid|comprueba|confianza|correcto|acertado|nivel de confianza|grado de confianza|respald/i.test(effectiveForClassify)
+  const hasInvestigation = /investigaci[oó]n|expediente|matriz|efi|efe|dafo|qspm|came|grado de confianza|nivel de confianza/i.test(effectiveForClassify)
+  const hasWeb = /web|internet|externa|fuente confiable|busca en|informaci[oó]n confiable|repetir.*(?:otra vez|ver si|encuentras)|noticias/i.test(effectiveForClassify)
   const hasFactor = /(?:^|\b)(?:d|f|o|a)[- ]?\d{1,2}\b/i.test(lower) || /factor/i.test(lower)
   const hasCalculate = /calcula|índice|tas|ponderaci[oó]n|calificaci[oó]n/i.test(lower)
   const hasCompare = /compara|contrasta|vs|versus|mejor.*estrategia|escenario/i.test(lower)
@@ -113,8 +118,8 @@ async function callLlmForIntent(
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${apiKey}`,
-        'HTTP-Referer': 'https://novastore.app',
-        'X-Title': 'NovaStore ERP Intent Classifier'
+        'HTTP-Referer': 'https://novaresearch.app',
+        'X-Title': 'NovaResearch Intent Classifier'
       },
       body: JSON.stringify({
         model: 'openrouter/free',
@@ -156,18 +161,18 @@ function buildIntentPrompt(text: string, context: { mode?: string; app?: string;
   const appDesc = context.app ? `App: ${context.app}. ` : ''
   const invDesc = context.hasInvestigation ? 'Hay investigación activa. ' : ''
 
-  const intentsDesc = Object.entries(INTENT_REQUIREMENTS).map(([key, req]) => 
+  const intentsDesc = Object.entries(INTENT_REQUIREMENTS).map(([key, req]) =>
     `- ${key}: ${req.description} (tools: ${req.requiredTools.join(', ') || 'ninguna'})`
   ).join('\n')
 
-  const lang = locale === 'en' 
-    ? 'Respond in English.' 
-    : locale === 'de' 
-      ? 'Antworten Sie auf Deutsch.' 
-      : locale === 'ko' 
-        ? '한국어로 답변하세요.' 
-        : locale === 'pt' 
-          ? 'Responda em Português.' 
+  const lang = locale === 'en'
+    ? 'Respond in English.'
+    : locale === 'de'
+      ? 'Antworten Sie auf Deutsch.'
+      : locale === 'ko'
+        ? '한국어로 답변하세요.'
+        : locale === 'pt'
+          ? 'Responda em Português.'
           : 'Responde en Español.'
 
   return `${lang}
@@ -221,7 +226,7 @@ export class HybridIntentClassifier {
    */
   async classify(text: string, context: { mode?: string; app?: string; hasInvestigation?: boolean } = {}): Promise<IntentClassificationResult> {
     const cacheKey = hashMessage(text + JSON.stringify(context))
-    
+
     // 1. Verificar cache LLM
     const cached = llmCache.get(cacheKey)
     if (cached && Date.now() - cached.timestamp < CACHE_TTL_MS) {
@@ -239,7 +244,7 @@ export class HybridIntentClassifier {
 
     // 2. Heurística rápida (siempre se ejecuta)
     const heuristicResult = heuristicClassifyWithConfidence(text)
-    
+
     // 3. Si confidence alta, retornar heurística
     if (heuristicResult.confidence >= this.options.confidenceThreshold) {
       logger.info('HybridIntentClassifier: heuristic high confidence', {
@@ -257,14 +262,14 @@ export class HybridIntentClassifier {
       })
 
       const llmResult = await callLlmForIntent(text, context, this.options.locale)
-      
+
       if (llmResult) {
         // Guardar en cache
-        llmCache.set(cacheKey, { 
-          intent: llmResult.intent, 
+        llmCache.set(cacheKey, {
+          intent: llmResult.intent,
           confidence: llmResult.confidence,
           externalVerificationRequested: llmResult.externalVerificationRequested,
-          timestamp: Date.now() 
+          timestamp: Date.now()
         })
 
         logger.info('HybridIntentClassifier: LLM result', {
@@ -323,7 +328,7 @@ export class HybridIntentClassifier {
  * Función de conveniencia: clasifica con el clasificador singleton
  */
 export async function classifyIntentHybrid(
-  text: string, 
+  text: string,
   context?: { mode?: string; app?: string; hasInvestigation?: boolean },
   options?: ClassifierOptions
 ): Promise<IntentClassificationResult> {

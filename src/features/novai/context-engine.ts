@@ -49,7 +49,7 @@ export class NovaiContextEngine {
       // Fallback minimal legacy: core + mode only to avoid mega prompt on error
       const locale = options.locale || 'es'
       const mode = options.context.mode || 'CHAT'
-      return `Eres NovAi, asistente de NovaStore ERP. Modo ${mode}. Locale ${locale}.`
+      return `Eres NovAi, asistente integrado en NovaResearch. Modo ${mode}. Locale ${locale}.`
     }
   }
 }

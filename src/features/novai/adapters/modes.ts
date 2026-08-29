@@ -15,9 +15,9 @@ export const NOVAI_MODES: Record<NovaiMode, NovaiModeDefinition> = {
   CHAT: {
     mode: 'CHAT',
     title: 'Asistente General y Navegación',
-    description: 'Conversación ágil, resolución de dudas operativas y guía de uso de NovaStore ERP.',
+    description: 'Conversación ágil, resolución de dudas operativas y guía de uso de NovaResearch.',
     systemInstruction: `MODO OPERATIVO: CHAT GENERAL
-  - Proporciona respuestas rápidas, cordiales y concisas sobre NovaStore ERP.
+  - Proporciona respuestas rápidas, cordiales y concisas sobre la plataforma NovaResearch.
   - Guía al usuario en navegación, atajos y uso de la plataforma.
   - Mantén un tono profesional, accesible y directo.`,
     allowedTools: ['list_investigations', 'list_kanban_tasks', 'get_tenant_billing_and_quota_info'],
@@ -118,7 +118,7 @@ export const NOVAI_MODES: Record<NovaiMode, NovaiModeDefinition> = {
   DEVELOPER: {
     mode: 'DEVELOPER',
     title: 'Especialista en Código e Integraciones',
-    description: 'Consultas sobre esquemas SQL, Route Handlers, TypeScript, integraciones de API y desarrollo en NovaStore.',
+    description: 'Consultas sobre esquemas SQL, Route Handlers, TypeScript, integraciones de API y desarrollo en NovaResearch.',
     systemInstruction: `MODO OPERATIVO: ESPECIALISTA EN CÓDIGO E INTEGRACIONES
   - Experto en Next.js App Router, React 19, TypeScript strict, Supabase SQL y Tailwind CSS v4.
   - Respeta la arquitectura SODA: lógica en features/, tipos con Zod, consultas bajo RLS.

@@ -28,6 +28,7 @@ import { NovaiContextManager } from './context-manager'
 import { NovaiToolSelector } from './tool-selector'
 import { NovaiEvidenceService, type EvidenceLinkOptions } from './evidence-service'
 import { projectCitationsFromRun, projectSourceGroupFromRun } from './event-projection'
+import { createLedger, markCalled, markResult, markPersisted, hasSucceeded, ledgerToSnapshot } from './execution-ledger'
 import { NovaiCompactionEngine } from './compaction-engine'
 
 export interface AgentRuntimeOptions {
@@ -136,9 +137,9 @@ export class NovaiAgentRuntime {
 
     // Instrumentación Fase 1: snapshots de contexto recibido vs seleccionado
     const lastUserContent = [...messages].reverse().find(m => m.role === 'user')?.content || ''
-    
+
     // Fase 4: Hybrid Intent Classifier (heurística → LLM on ambiguity)
-    const intentClassifier = HybridIntentClassifier.getInstance({ 
+    const intentClassifier = HybridIntentClassifier.getInstance({
       confidenceThreshold: 0.7,
       enableLlmFallback: true,
       locale
@@ -149,7 +150,7 @@ export class NovaiAgentRuntime {
       hasInvestigation: context.app === 'investigator' && !!context.state
     })
     const heuristicIntent = intentResult.intent
-    
+
     // Fase 3: Tool Selector ON DEMAND — selección dinámica según intent, modo, permisos y contexto
     const toolSelection = NovaiToolSelector.selectTools({
       principal,
@@ -159,7 +160,7 @@ export class NovaiAgentRuntime {
       explicitIntent: heuristicIntent,
       externalVerificationRequested: intentResult.externalVerificationRequested
     })
-    
+
     const vercelTools = NovaiToolSelector.getSelectedVercelTools(
       principal,
       context,
@@ -167,7 +168,7 @@ export class NovaiAgentRuntime {
       heuristicIntent,
       intentResult.externalVerificationRequested
     )
-    
+
     // Log tool selection para observabilidad
     logger.info('NovAi tool selection', {
       action: 'novai.tool_selection',
@@ -327,7 +328,7 @@ export class NovaiAgentRuntime {
         apiKey: openrouterApiKey,
         headers: {
           'HTTP-Referer': 'https://apps.dgtecnova.com',
-          'X-Title': 'NovaStore ERP',
+          'X-Title': 'NovaResearch',
           'X-Data-Policy': 'never_log'
         }
       })
@@ -337,10 +338,10 @@ export class NovaiAgentRuntime {
       providerCandidates.push({ name: `OpenRouter (${orModel})`, modelInstance: openrouter(orModel), provider: 'openrouter' })
 
       const freeCandidates = [
-        'nvidia/nemotron-3-ultra-550b-a55b:free',
+        'nvidia/nemotron-3-nano-30b-a3b:free',
         'nvidia/nemotron-3-super-120b-a12b:free',
+        'nvidia/nemotron-3-ultra-550b-a55b:free',
         'poolside/laguna-s-2.1:free',
-        'poolside/laguna-xs-2.1:free',
         'cohere/north-mini-code:free',
         'inclusionai/ling-3.0-flash-fin:free',
         'minimax/minimax-m2.7:free',
@@ -410,6 +411,9 @@ export class NovaiAgentRuntime {
       collectedEvents.push(ev)
       await onEvent(ev)
     }
+    // Fix3: Execution Ledger determinista
+    const ledger = createLedger(runId, String(heuristicIntent), toolSelection.selectedTools, toolSelection.selectedTools)
+    const toolStartTimes = new Map<string, number>()
 
     // Métricas de observabilidad reales (no estimadas)
     let firstTokenAt: number | null = null
@@ -420,14 +424,15 @@ export class NovaiAgentRuntime {
 
     for (const candidate of filteredCandidates) {
       try {
+        const startedAt = Date.now()
         const streamResult = streamText({
           model: candidate.modelInstance,
           system: systemPrompt,
           messages: coreMessages,
           tools: vercelTools,
           maxOutputTokens: 8192,
-          maxRetries: 1,
-          stopWhen: isStepCount(5),
+          maxRetries: 0,
+          stopWhen: isStepCount(6),
           onError: (errPayload) => {
             const raw = (errPayload as { error?: unknown })?.error ?? errPayload
             const msg = raw instanceof Error ? raw.message : typeof raw === 'object' ? JSON.stringify(raw) : String(raw)
@@ -470,6 +475,8 @@ export class NovaiAgentRuntime {
             const toolMeta = NOVAI_ALL_MODULAR_TOOLS[toolName]?.metadata
             const toolInput = (part as any).input ?? (part as any).args ?? {}
             const stepId = `tool-${toolName}`
+            markCalled(ledger, toolName)
+            toolStartTimes.set(toolName, Date.now())
 
             await emitEvent({
               type: 'tool-call',
@@ -496,6 +503,9 @@ export class NovaiAgentRuntime {
             const isError = Boolean((part as any).isError)
             const stepId = `tool-${toolName}`
 
+            const startTs = toolStartTimes.get(toolName) || Date.now()
+            markResult(ledger, toolName, output, isError, Date.now() - startTs)
+
             await emitEvent({
               type: 'tool-result',
               id: (part as any).toolCallId || '',
@@ -515,6 +525,7 @@ export class NovaiAgentRuntime {
             })
 
             // Proyección a eventos estructurados de dominio y persistencia en Evidence Service
+            // Fix3: distinguir FOUND_NOT_PERSISTED — tracking de persistencia en ledger
             if (!isError) {
               for (const structuredEvent of projectToolResultToEvents(toolName, output)) {
                 await emitEvent(structuredEvent as NovaiEvent)
@@ -524,7 +535,22 @@ export class NovaiAgentRuntime {
                   conversationId,
                   investigationId: (context as { investigationId?: string }).investigationId,
                   event: structuredEvent as NovaiEvent
+                }).then(() => {
+                  if (structuredEvent.type === 'source' || structuredEvent.type === 'evidence' || structuredEvent.type === 'calculation') {
+                    markPersisted(ledger, toolName, true)
+                  }
+                }).catch((err) => {
+                  markPersisted(ledger, toolName, false, err instanceof Error ? err.message : String(err))
                 })
+              }
+              // Si no hubo structured events pero sí result, marcar persistencia conceptual
+              if (toolName === 'web_research') {
+                const r = output as Record<string, unknown> | null
+                const hasResults = r && Array.isArray(r.results) && (r.results as unknown[]).length > 0
+                if (!hasResults) {
+                  // NONE_FOUND no requiere persistencia
+                  markPersisted(ledger, toolName, true)
+                }
               }
             }
           } else if (pType === 'source' || pType === 'file' || pType === 'data') {
@@ -660,21 +686,27 @@ export class NovaiAgentRuntime {
       await emitEvent({ type: 'text-delta', delta: fallbackText })
     }
 
-    // === Epistemic Firewall: Response Validator (§35 §37 §47) ===
+    // === Epistemic Firewall: Response Validator (§35 §37 §47) — Fix3: No destructivo ===
     // El LLM genera interpretación; el runtime valida evidencia verificable.
+    // Fix3: distinguir FOUND_NOT_PERSISTED vs NONE_FOUND via ledger; nunca borrar respuesta válida.
     try {
       const lastUserMsg = [...messages].reverse().find(m => m.role === 'user')?.content || ''
       const intent = heuristicIntent || classifyIntent(lastUserMsg)
       const requiredTools =
         toolSelection.requiredTools ||
         getRequiredToolsForIntent(intent, { externalVerificationRequested: intentResult.externalVerificationRequested })
+      const ledgerSnapshot = ledgerToSnapshot(ledger) as { entries: Array<{ tool: string; evidenceStatus: string }> }
+      const ledgerMap: Record<string, { evidenceStatus: string }> = {}
+      for (const e of ledgerSnapshot.entries) ledgerMap[e.tool] = { evidenceStatus: e.evidenceStatus }
       const validation = validateResponse({
         userMessage: lastUserMsg,
         assistantText: accumulatedText,
         events: collectedEvents,
         intentType: intent,
-        requiredTools
-      })
+        requiredTools,
+        ledger: ledgerMap,
+        allowedTools: toolSelection.selectedTools,
+      } as unknown as Parameters<typeof validateResponse>[0])
 
       if (validation.findings.length > 0) {
         logger.warn('ResponseValidator findings', {
@@ -683,12 +715,12 @@ export class NovaiAgentRuntime {
             tenantId: principal.tenantId,
             intent,
             requiredTools,
+            ledger: ledgerSnapshot,
             actionTaken: validation.action,
             findings: validation.findings.map(f => ({ rule: f.ruleId, severity: f.severity, msg: f.message.slice(0, 120) }))
           }
         })
 
-        // Emitir auditorías epistémicas como trazas para observabilidad
         for (const f of validation.findings) {
           await emitEvent({
             type: 'warning',
@@ -699,21 +731,18 @@ export class NovaiAgentRuntime {
         }
       }
 
-      if (validation.action === 'REJECT') {
-        accumulatedText =
-          'No tengo evidencia suficiente para confirmar esa afirmación con las fuentes disponibles. La evaluación previa del expediente no constituye nueva evidencia externa.'
-      } else if (validation.action === 'INSUFFICIENT_EVIDENCE') {
-        if (
-          intentResult.externalVerificationRequested ||
-          /fuente.*externa.*confirma|evidencia.*externa.*refuerza|las fuentes externas/i.test(accumulatedText)
-        ) {
-          accumulatedText =
-            'No se obtuvo evidencia externa suficiente para respaldar o confirmar el nivel de confianza de la investigación. Las consultas a fuentes externas no arrojaron resultados verificables que corroboren dicha afirmación.'
+      // Fix3: Validator NO destructivo — nunca sobrescribe accumulatedText con mensaje genérico
+      // En lugar de borrar, antepone degradedPrefix y deja que el modelo explique límites
+      if (validation.action === 'REJECT' || validation.action === 'INSUFFICIENT_EVIDENCE' || validation.action === 'DEGRADE_TO_INFERENCE') {
+        const webLedger = ledger.entries['web_research']
+        const isFoundNotPersisted = webLedger?.evidenceStatus === 'FOUND_NOT_PERSISTED'
+        if (isFoundNotPersisted && validation.action === 'INSUFFICIENT_EVIDENCE') {
+          // Fix3 §4 Caso B: no decir "no existe evidencia"
+          const prefix =
+            '**Nota de trazabilidad:** Se encontraron fuentes externas relevantes, pero no fue posible persistirlas completamente con trazabilidad en esta ejecución, por lo que no puedo otorgarles el mismo nivel de verificabilidad.\n\n'
+          if (!accumulatedText.startsWith(prefix)) accumulatedText = prefix + accumulatedText
         } else if (validation.degradedPrefix && !accumulatedText.startsWith(validation.degradedPrefix)) {
-          accumulatedText = validation.degradedPrefix + accumulatedText
-        }
-      } else if (validation.action === 'DEGRADE_TO_INFERENCE' && validation.degradedPrefix) {
-        if (!accumulatedText.startsWith(validation.degradedPrefix)) {
+          // Fix3: prepend en vez de overwrite
           accumulatedText = validation.degradedPrefix + accumulatedText
         }
       }

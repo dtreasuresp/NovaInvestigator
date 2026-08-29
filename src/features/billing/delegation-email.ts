@@ -22,7 +22,7 @@ export async function sendPurchaseDelegationEmail(input: PurchaseDelegationEmail
   const applicationUrl = getApplicationUrl()
   const pricingUrl = `${applicationUrl}/pages/pricing`
   const logoUrl = `${applicationUrl}/images/brands/novastore_icon_logo_color.png`
-  const applicationName = process.env.RESEND_FROM_NAME?.trim() || 'NovaStore'
+  const applicationName = process.env.RESEND_FROM_NAME?.trim() || 'NovaResearch'
   const appName = escapeHtml(applicationName)
   const recipientName = escapeHtml(input.recipientName)
   const granterName = escapeHtml(input.granterName)

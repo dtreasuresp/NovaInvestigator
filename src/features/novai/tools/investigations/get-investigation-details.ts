@@ -149,8 +149,8 @@ export const getInvestigationDetailsTool: NovaiModularTool<typeof getInvestigati
       inputSchema: getInvestigationDetailsSchema,
       execute: async (args: GetInvestigationDetailsInput) => {
         const res = await executeGetInvestigationDetails(args, principal)
-        
-        return res.data !== undefined ? res.data : { error: res.error }
+        if (!res.success) throw new Error(res.error || 'get_investigation_details failed')
+        return res.data
       }
     })
 }

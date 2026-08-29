@@ -223,7 +223,7 @@ ${userMemories.map(m => `  - ${m.key}: ${m.content}`).join('\n')}`)
     }
 
     return `
-=== MEMORIA PERSISTENTE DE NOVASTORE (GOBERNADA) ===
+=== MEMORIA PERSISTENTE DE NOVARESEARCH (GOBERNADA) ===
 IMPORTANTE: Respeta las decisiones estratégicas y configuraciones previas registradas. No propongas alternativas que contradigan decisiones activas sin una justificación de cambio explícita.
 
 ${sections.join('\n\n')}

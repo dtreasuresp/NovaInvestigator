@@ -153,7 +153,8 @@ export const getActiveInvestigationTool: NovaiModularTool = {
       inputSchema: getActiveInvestigationSchema,
       execute: async (args: GetActiveInvestigationInput) => {
         const res = await executeGetActiveInvestigation(args, principal)
-        return res.result !== undefined ? res.result : { error: res.error }
+        if (!res.success) throw new Error(res.error || 'get_active_investigation failed')
+        return res.result
       }
     })
 }

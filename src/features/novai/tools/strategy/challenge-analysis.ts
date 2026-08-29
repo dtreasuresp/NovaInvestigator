@@ -167,7 +167,8 @@ export const challengeAnalysisTool: NovaiModularTool = {
       inputSchema: challengeAnalysisSchema,
       execute: async (args: ChallengeAnalysisInput) => {
         const res = await executeChallengeAnalysis(args, principal)
-        return res.result !== undefined ? res.result : { error: res.error }
+        if (!res.success) throw new Error(res.error || 'challenge_analysis failed')
+        return res.result
       }
     })
 }

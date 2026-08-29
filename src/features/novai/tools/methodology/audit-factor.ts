@@ -243,7 +243,8 @@ export const auditFactorTool: NovaiModularTool = {
       inputSchema: auditFactorSchema,
       execute: async (args: AuditFactorInput) => {
         const res = await executeAuditFactor(args, principal)
-        return res.result !== undefined ? res.result : { error: res.error }
+        if (!res.success) throw new Error(res.error || 'audit_factor failed')
+        return res.result
       }
     })
 }

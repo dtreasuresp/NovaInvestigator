@@ -28,7 +28,7 @@ export async function sendPurchaseNotificationToOwnerEmail(input: DelegatedPurch
   const applicationUrl = getApplicationUrl()
   const billingUrl = `${applicationUrl}/pages/user-settings?setting=billing`
   const logoUrl = `${applicationUrl}/images/brands/novastore_icon_logo_color.png`
-  const applicationName = process.env.RESEND_FROM_NAME?.trim() || 'NovaStore'
+  const applicationName = process.env.RESEND_FROM_NAME?.trim() || 'NovaResearch'
   const appName = escapeHtml(applicationName)
   const ownerName = escapeHtml(input.ownerName)
   const buyerName = escapeHtml(input.buyerName)

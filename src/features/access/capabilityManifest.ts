@@ -58,7 +58,7 @@ export const CAPABILITY_MANIFEST = [
     key: 'ai.chat',
     resource: 'ai',
     action: 'chat',
-    description: 'Chat conversacional de NovAi para toda NovaStore (Investigador, Kanban, Proyectos).'
+    description: 'Chat conversacional de NovAi para toda la plataforma NovaResearch (Research, Kanban, Proyectos).'
   },
   {
     key: 'ai.free_chat',

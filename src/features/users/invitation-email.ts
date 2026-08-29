@@ -23,7 +23,7 @@ export async function sendInvitationEmail(input: InvitationEmailInput): Promise<
   const applicationUrl = getApplicationUrl()
   const acceptanceUrl = `${applicationUrl}/pages/auth/invitations/accept?token=${encodeURIComponent(input.token)}`
   const logoUrl = `${applicationUrl}/images/brands/novastore_icon_logo_color.png`
-  const applicationName = process.env.RESEND_FROM_NAME?.trim() || 'NovaStore'
+  const applicationName = process.env.RESEND_FROM_NAME?.trim() || 'NovaResearch'
   const appName = escapeHtml(applicationName)
   const tenantName = escapeHtml(input.tenantName)
   const workspaceName = escapeHtml(input.workspaceName)

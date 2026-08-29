@@ -1,5 +1,5 @@
 const themeConfig = {
-  templateName: 'NovaStore',
+  templateName: 'NovaResearch',
   homePageUrl: '/'
 } as const
 
