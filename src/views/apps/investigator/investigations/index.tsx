@@ -45,7 +45,7 @@ import { useI18n } from '@/hooks/use-i18n'
 import { cn } from '@/lib/utils'
 
 // View Imports
-import { StageHeader } from '../shared/primitives'
+import { StageHeader } from '../components/primitives'
 import { ShareInvestigationDialog } from './share-investigation-dialog'
 
 // Icon Imports
@@ -260,70 +260,70 @@ const ResearchCard = ({
                   </Button>
                 }
               />
-            <DropdownMenuContent align='end' className='w-48'>
-              <DropdownMenuGroup>
-                <DropdownMenuItem
-                  onClick={() => setEditing(true)}
-                  disabled={archived}
-                  className='gap-2 text-xs'
-                >
-                  <Pencil className='size-3.5' /> {t('investigator.actionRename')}
-                </DropdownMenuItem>
-
-                <DropdownMenuItem onClick={onDuplicate} className='gap-2 text-xs'>
-                  <Copy className='size-3.5' /> {t('investigator.actionDuplicate')}
-                </DropdownMenuItem>
-
-                {isOwner && !archived && (
+              <DropdownMenuContent align='end' className='w-48'>
+                <DropdownMenuGroup>
                   <DropdownMenuItem
-                    onClick={() => onToggleLock(!isLocked)}
+                    onClick={() => setEditing(true)}
+                    disabled={archived}
                     className='gap-2 text-xs'
                   >
-                    {isLocked ? (
-                      <>
-                        <Unlock className='size-3.5' /> {t('investigator.actionUnlock')}
-                      </>
-                    ) : (
-                      <>
-                        <Lock className='size-3.5' /> {t('investigator.actionLock')}
-                      </>
-                    )}
+                    <Pencil className='size-3.5' /> {t('investigator.actionRename')}
                   </DropdownMenuItem>
-                )}
 
-                {isOwner && !archived && (isLocked || accessLevel !== 'team_write') && (
-                  <DropdownMenuItem onClick={onShare} className='gap-2 text-xs'>
-                    <UserPlus className='size-3.5' /> {t('investigator.actionShare')}
+                  <DropdownMenuItem onClick={onDuplicate} className='gap-2 text-xs'>
+                    <Copy className='size-3.5' /> {t('investigator.actionDuplicate')}
                   </DropdownMenuItem>
-                )}
-              </DropdownMenuGroup>
 
-              <DropdownMenuSeparator />
+                  {isOwner && !archived && (
+                    <DropdownMenuItem
+                      onClick={() => onToggleLock(!isLocked)}
+                      className='gap-2 text-xs'
+                    >
+                      {isLocked ? (
+                        <>
+                          <Unlock className='size-3.5' /> {t('investigator.actionUnlock')}
+                        </>
+                      ) : (
+                        <>
+                          <Lock className='size-3.5' /> {t('investigator.actionLock')}
+                        </>
+                      )}
+                    </DropdownMenuItem>
+                  )}
 
-              <DropdownMenuGroup>
-                {archived ? (
-                  <DropdownMenuItem onClick={onRestore} className='gap-2 text-xs'>
-                    <RotateCcw className='size-3.5' /> {t('investigator.actionRestore')}
+                  {isOwner && !archived && (isLocked || accessLevel !== 'team_write') && (
+                    <DropdownMenuItem onClick={onShare} className='gap-2 text-xs'>
+                      <UserPlus className='size-3.5' /> {t('investigator.actionShare')}
+                    </DropdownMenuItem>
+                  )}
+                </DropdownMenuGroup>
+
+                <DropdownMenuSeparator />
+
+                <DropdownMenuGroup>
+                  {archived ? (
+                    <DropdownMenuItem onClick={onRestore} className='gap-2 text-xs'>
+                      <RotateCcw className='size-3.5' /> {t('investigator.actionRestore')}
+                    </DropdownMenuItem>
+                  ) : (
+                    <DropdownMenuItem onClick={onArchive} className='gap-2 text-xs'>
+                      <Archive className='size-3.5' /> {t('investigator.actionArchive')}
+                    </DropdownMenuItem>
+                  )}
+
+                  <DropdownMenuItem
+                    onClick={onClose}
+                    disabled={archived}
+                    className='gap-2 text-xs'
+                  >
+                    <XCircle className='size-3.5' /> {t('investigator.actionClose')}
                   </DropdownMenuItem>
-                ) : (
-                  <DropdownMenuItem onClick={onArchive} className='gap-2 text-xs'>
-                    <Archive className='size-3.5' /> {t('investigator.actionArchive')}
-                  </DropdownMenuItem>
-                )}
-
-                <DropdownMenuItem
-                  onClick={onClose}
-                  disabled={archived}
-                  className='gap-2 text-xs'
-                >
-                  <XCircle className='size-3.5' /> {t('investigator.actionClose')}
-                </DropdownMenuItem>
-              </DropdownMenuGroup>
-            </DropdownMenuContent>
-          </DropdownMenu>
+                </DropdownMenuGroup>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         </div>
       </div>
-    </div>
 
       {/* Bottom Row: Full-width Audit metadata grid spanning edge-to-edge */}
       <div className='mt-3 w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs text-muted-foreground bg-muted/30 p-3 rounded-lg border border-border/50'>
@@ -393,13 +393,12 @@ const ResearchCard = ({
 export const InvestigatorInvestigationsView = () => {
   const router = useRouter()
   const { t } = useI18n()
-  
+
   const {
     state,
     investigations,
     syncStatus,
     currentUserId,
-    createNewResearch,
     openResearch,
     duplicateResearch,
     renameResearch,
@@ -408,7 +407,6 @@ export const InvestigatorInvestigationsView = () => {
     closeResearch,
     toggleLock,
     updateSharing,
-    loadDemo,
     localMigration,
     migrateLocalInvestigations
   } = useInvestigatorAnalysis()
@@ -418,23 +416,13 @@ export const InvestigatorInvestigationsView = () => {
     router.push('/apps/investigator/context')
   }
 
-  const handleCreateNew = () => {
-    createNewResearch()
-    router.push('/apps/investigator/context')
-  }
-
-  const handleLoadDemo = () => {
-    loadDemo()
-    router.push('/apps/investigator/context')
-  }
-
   const [migrationDialogOpen, setMigrationDialogOpen] = useState(false)
   const [sharingItem, setSharingItem] = useState<InvestigationState | null>(null)
   const [hydrated, setHydrated] = useState(false)
   const [sortBy, setSortBy] = useState<SortOption>('updated_desc')
 
   useEffect(() => {
-    
+
     setHydrated(true)
 
     try {
@@ -541,16 +529,6 @@ export const InvestigatorInvestigationsView = () => {
         kicker={t('investigator.manager')}
         title={t('investigator.titlemodule')}
         description={t('investigator.subtitle')}
-        action={
-          <div className='flex flex-wrap items-center gap-2 w-full sm:w-auto'>
-            <Button variant='outline' size='sm' onClick={handleLoadDemo} className='flex-1 sm:flex-initial'>
-              {t('investigator.loadDemo')}
-            </Button>
-            <Button size='sm' onClick={handleCreateNew} className='flex-1 sm:flex-initial'>
-              + {t('investigator.newInvestigation')}
-            </Button>
-          </div>
-        }
       />
 
       {localMigration.status !== 'none' && (

@@ -40,13 +40,16 @@ import { Lock } from 'lucide-react'
 // Hook Imports
 import { useInvestigatorAnalysis } from '@/hooks/use-investigator-analysis'
 import { useI18n } from '@/hooks/use-i18n'
+import { useRouter } from 'next/navigation'
+import { ProjectCreationWizard } from '@/views/apps/projects/components/project-creation-wizard'
+import { FolderKanban } from 'lucide-react'
 
 // Util Imports
 import { CAME_LABELS } from '@/utils/investigator/constants'
 import { formatNumber } from '@/utils/investigator/domain'
 
 // View Imports
-import { StageHeader } from '../shared/primitives'
+import { StageHeader } from '../components/primitives'
 
 const CATEGORY_CLASS: Record<string, string> = {
   critica: 'bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-300 font-semibold',
@@ -65,6 +68,7 @@ const CRITERIA_DEFINITIONS: { key: keyof CameCriteriaValues; label: string; desc
 
 export const InvestigatorCameView = () => {
   const { t } = useI18n()
+  const router = useRouter()
   const {
     state,
     analysis,
@@ -84,6 +88,7 @@ export const InvestigatorCameView = () => {
   const [activeTypeFilter, setActiveTypeFilter] = useState<string>('all')
   const [editingAction, setEditingAction] = useState<CameAction | null>(null)
   const [detailDialogOpen, setDetailDialogOpen] = useState(false)
+  const [isProjectWizardOpen, setIsProjectWizardOpen] = useState(false)
 
   // Edit form state for modal
   const [formData, setFormData] = useState<Partial<CameAction>>({})
@@ -215,6 +220,15 @@ export const InvestigatorCameView = () => {
               <Button size='sm' onClick={addCameAction}>
                 + Añadir ficha manual
               </Button>
+              <Button
+                size='sm'
+                variant='secondary'
+                className='gap-1.5 font-semibold text-primary'
+                onClick={() => setIsProjectWizardOpen(true)}
+              >
+                <FolderKanban className='size-3.5' />
+                + Crear Proyecto desde CAME
+              </Button>
             </div>
           )}
         </div>
@@ -299,12 +313,18 @@ export const InvestigatorCameView = () => {
             </div>
 
             <div className='space-y-1'>
-              <Label className='text-xs'>{t('investigator.cameDescription')}</Label>
+              <div className='flex items-center justify-between'>
+                <Label className='text-xs'>{t('investigator.cameDescription')}</Label>
+                <span className='text-[10px] text-muted-foreground'>
+                  {(formData.action || '').length} / 2000 caracteres
+                </span>
+              </div>
               <Textarea
                 rows={3}
+                maxLength={2000}
                 disabled={isReadOnly}
                 value={formData.action || ''}
-                placeholder={t('investigator.cameActionDetailsPlaceholder') || 'Detalla los pasos y actividades a ejecutar...'}
+                placeholder={t('investigator.cameActionDetailsPlaceholder') || 'Detalla los pasos y actividades a ejecutar (máx. 2000 caracteres)...'}
                 onChange={e => setFormData({ ...formData, action: e.target.value })}
               />
             </div>
@@ -401,6 +421,18 @@ export const InvestigatorCameView = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Reusable Project Creation Wizard */}
+      <ProjectCreationWizard
+        open={isProjectWizardOpen}
+        onOpenChange={setIsProjectWizardOpen}
+        investigationId={state.metadata?.id}
+        investigationTitle={state.metadata?.title || state.metadata?.organization}
+        investigationObjective={state.metadata?.objective}
+        investigationOwnerId={state.metadata?.ownerId}
+        cameActions={state.cameActions || []}
+        onProjectCreated={projectId => router.push(`/apps/projects?project=${projectId}`)}
+      />
     </div>
   )
 }

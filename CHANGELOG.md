@@ -4,7 +4,70 @@
 
 All notable changes to this template will be documented in this file
 
+## v0.0.86 (2026-08-30)
+
+### Updated & Refactored — Wizard de Creación de Proyectos (5 Pasos Unificados) + Combobox Múltiple de Responsables + Control Presupuestario en Tiempo Real
+
+- **Migración de Base de Datos y Capacidades (`supabase/migrations/2026-08-30T00-00-00_projects_came_integration.sql`)**:
+  - Aplicadas en Supabase PostgreSQL las tablas `projects`, `project_members`, `project_came_actions`, sus índices, triggers de actualización, políticas RLS y la función `consume_billing_entitlement_usage`.
+  - Actualizada la clave foránea `kanban_tasks_project_id_fkey` en `public.kanban_tasks` para referenciar `public.projects(id)` con eliminación en cascada en lugar de la tabla de investigaciones.
+  - Registradas las capacidades funcionales `projects.read`, `projects.create`, `projects.update`, `projects.delete` en `capabilities` y asociadas a los roles `Owner`, `Admin`, `Analyst` y `Viewer`.
+- **Validaciones Zod y Soporte de Textos Extensos (`src/features/projects/schema.ts`)**:
+  - Ampliado el límite máximo de caracteres de `projectActivityInputSchema.title` a 1000 caracteres y `projectCameActionInputSchema.title` a 2000 caracteres para admitir sin truncamientos acciones CAME detalladas.
+  - Normalización de strings vacíos `""` a `null` en identificadores UUID y fechas opcionales (`dueDate`, `columnId`, `cameActionId`, `startDate`, `endDate`).
+- **Límites Visuales y Contadores de Caracteres en UI (`src/views/apps/investigator/came/index.tsx`, `src/views/apps/projects/components/project-creation-wizard.tsx`)**:
+  - Incorporado contador en tiempo real `X / 2000 caracteres` y `maxLength={2000}` en el modal de detalle y edición de acciones CAME.
+  - Añadidos contadores y atributos `maxLength` para Nombre de Proyecto (300 caracteres), Objetivo Estratégico (4000 caracteres), Título de Actividad manual (1000 caracteres) y Descripción (4000 caracteres) en el Wizard de Proyectos.
+  - Retroalimentación descriptiva en toasts ante errores de validación de Zod (`details.issues`).
+- **Componente Shadcn Studio Combobox (`src/components/shadcn-studio/combobox/combobox-12.tsx`)**:
+  - Implementado el componente canónico `combobox-12.tsx` con soporte nativo para selección múltiple, badges con conteo, chips y búsqueda reactiva.
+- **Wizard de Proyectos (`src/views/apps/projects/components/project-creation-wizard.tsx`)**:
+  - **Unificación a 5 Pasos**: Fusionados los antiguos pasos 1 y 2 en `1. Proyecto` (Alcance, Datos Generales y Líder), seguido de `2. Acciones CAME`, `3. Presupuesto`, `4. Actividades` y `5. Revisión`.
+  - **Carga Confiable de Miembros Reales y Líder**: Resuelta la carga de miembros en `/api/kanban/route.ts` utilizando `createSupabaseAdminClient()` para cruzar `memberships`, `profiles`, `roles` y `auth.users`, resolviendo los nombres reales (`Gustavo Araujo Gutiérrez`, `Daniel Treasure Espinosa`) en lugar de fallbacks genéricos.
+  - **Preselección Inteligente del Líder**: Incorporada la prop `investigationOwnerId` para preseleccionar automáticamente al autor/propietario del expediente activo (e.g. Gustavo para FCBC, Daniel para ETECSA).
+  - **Pre-carga de Objetivo Estratégico**: Incorporada la prop `investigationObjective` para auto-poblar el objetivo desde el expediente de la investigación activa.
+  - **Inputs Monetarios Localizados (`LocalizedCurrencyInput`)**: Eliminación del `0` inicial al enfocar el campo y formateo dinámico con separadores de miles según el locale del usuario en el presupuesto total tope y en cada actividad.
+  - **Control Presupuestario en Tiempo Real en Paso Actividades**: Trasladado el comparador presupuestario (Suma asignada, Presupuesto fijado, Saldo y alerta de sobreasignación) al paso de Actividades para calibración inmediata sin retroceder de paso.
+  - **Bloqueo y Vista Multilínea en Actividades CAME**: Las actividades derivadas de CAME muestran el texto completo en bloque multilínea de solo lectura para preservar la integridad metodológica.
+  - **Selector Múltiple de Responsables**: Integrado `MultiAssigneeCombobox` basado en `ComboboxChips` para asignar múltiples responsables por actividad.
+  - **Desambiguación de Identidad**: Sustituido el icono `SparklesIcon` por `FolderKanbanIcon` en el botón final de creación para evitar confusión con el producto independiente NovAi.
+- **Layout Client y Vistas de Research (`src/app/(pages)/apps/investigator/layout-client.tsx`, `src/views/apps/investigator/summary/index.tsx`)**:
+  - Propagado `investigationObjective` desde el estado de la investigación al Wizard.
+- **Menubar de Investigación (`src/views/apps/investigator/components/investigation-menubar.tsx`)**:
+  - Incorporadas props `onCreateNewInvestigation`, `onLoadDemo` y submenú estructurado para proyectos en blanco o derivados de CAME.
+
 ## v0.0.85 (2026-08-29)
+
+### Added & Integrated — Integración Research → CAME → Projects → Kanban + Exportación PDF/DOCX + Entitlements Comerciales
+
+- **Módulo de Dominio Projects (`src/features/projects/`)**:
+  - Arquitectura limpia SODA con `schema.ts`, `errors.ts`, `access.ts`, `repository.ts`, `service.ts`, `http.ts` y `db-types.ts`.
+  - Soporte completo para proyectos independientes (*standalone* con `investigation_id = null`) y derivados de investigaciones estratégicas (*derived* con `investigation_id = UUID`).
+  - Modelo de presupuesto dual: `action_based` (el presupuesto total se computa de la suma de actividades/fichas) vs `total_first` (presupuesto global tope con validación en tiempo real de no sobreasignación).
+  - RBAC & Entitlements: registro de capabilities `projects.read`, `projects.create`, `projects.update`, `projects.delete` en `src/features/access/capabilityManifest.ts` y asignación por defecto a roles del sistema.
+  - Evaluación de cuotas y límites de plan para proyectos activos (`projects.max_active`).
+- **Base de Datos & Migraciones Supabase (`supabase/migrations/2026-08-30T00-00-00_projects_came_integration.sql`)**:
+  - Creación de tabla `public.projects` con RLS tenant-scoped, team-scoped y claves foráneas a `workspaces`, `teams` e `investigations`.
+  - Creación de tabla `public.project_members` con constraint de unicidad `(project_id, user_id)` y roles `leader`/`member`.
+  - Creación de tabla `public.project_came_actions` con snapshot JSONB inmutable y constraint de unicidad `(project_id, came_action_id)`.
+  - Extensión de tabla `public.kanban_tasks` añadiendo `budget_amount numeric(12,2)` y FK `project_id` hacia `public.projects(id)` con eliminación en cascada.
+  - Extensión de la función atómica `public.consume_billing_entitlement_usage` para contabilizar consumos de `investigations.export_docx_monthly` y `investigations.export_pdf_monthly`.
+- **Pipeline de Exportación Documental Dual (PDF & DOCX)**:
+  - Instalación de la librería `docx` (9.7.1).
+  - Creación de modelo unificado de datos `UnifiedResearchReportData` en `src/lib/export/report-model.ts` para reportes tipo *Resumen Ejecutivo* y *Reporte Completo* (incluyendo matriz DAFO, cuadrante estratégico, fichas CAME, proyectos y desglose presupuestario).
+  - Creación del renderizador ejecutivo Word en `src/lib/export/docx-renderer.ts` con tablas estilizadas, headers ejecutivos y paleta corporativa.
+  - Route handler `POST /api/investigations/[id]/export/docx` con verificación estricta de entitlements y consumo atómico de cuota.
+- **Componentes de UI y Flujos de Usuario**:
+  - `src/components/ui/menubar.tsx`: Componente de Menubar global basado en `@base-ui/react/menu` y tokens CSS de Tailwind v4.
+  - `src/views/apps/investigator/summary/components/investigation-menubar.tsx`: Barra de menús superior en el Resumen Ejecutivo con opciones: *Investigación*, *Análisis*, *Acciones*, *Exportar (PDF / DOCX)* y *Vista*.
+  - `src/views/apps/investigator/summary/components/implementation-projects-card.tsx`: Card de proyectos derivados con KPIs de ejecución, barras de progreso y accesos rápidos al Wizard y Kanban.
+  - `src/views/apps/projects/components/project-creation-wizard.tsx`: Wizard reutilizable de 5 pasos + revisión (Alcance, Datos Generales, Importación CAME, Presupuesto, Actividades y Confirmación).
+  - `src/views/apps/kanban/components/new-project-dialog.tsx`: Modal para crear proyectos standalone o derivados desde el tablero Kanban.
+  - Integración en `src/views/apps/investigator/came/index.tsx` del botón `+ Crear Proyecto desde CAME`.
+- **Suite de Pruebas Automatizadas**:
+  - `tests/projects/projects-domain.test.ts`: 11 pruebas unitarias para validación Zod, fechas, modos de presupuesto y errores estructurados.
+  - `tests/export/docx-export.test.ts`: Pruebas de construcción de DTOs y validación binaria de archivo DOCX/Zip.
+  - 298 pruebas totales ejecutadas y pasando al 100% (`pnpm test` y `pnpm check-types`).
 
 ### Updated & Migrated — Migración Oficial de Identidad y Naming (NovaResearch / Research / NovAi)
 

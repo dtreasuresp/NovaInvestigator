@@ -127,6 +127,30 @@ export const CAPABILITY_MANIFEST = [
     description: 'Eliminar o archivar un equipo de trabajo.'
   },
   {
+    key: 'projects.read',
+    resource: 'projects',
+    action: 'read',
+    description: 'Ver los proyectos del tenant y sus actividades vinculadas.'
+  },
+  {
+    key: 'projects.create',
+    resource: 'projects',
+    action: 'create',
+    description: 'Crear proyectos independientes o derivados de una investigación CAME.'
+  },
+  {
+    key: 'projects.update',
+    resource: 'projects',
+    action: 'update',
+    description: 'Actualizar datos, presupuesto y miembros de un proyecto.'
+  },
+  {
+    key: 'projects.delete',
+    resource: 'projects',
+    action: 'delete',
+    description: 'Archivar o eliminar proyectos del tenant.'
+  },
+  {
     key: 'access.read',
     resource: 'access',
     action: 'read',
@@ -352,6 +376,9 @@ export const DEFAULT_ROLE_CAPABILITIES: Record<SystemRoleKey, readonly Capabilit
     'investigations.restore',
     'investigations.close',
     'investigations.export',
+    'projects.read',
+    'projects.create',
+    'projects.update',
     'ai.chat',
     'ai.free_chat',
     'ai.report',
@@ -365,6 +392,7 @@ export const DEFAULT_ROLE_CAPABILITIES: Record<SystemRoleKey, readonly Capabilit
   ],
   viewer: [
     'investigations.read',
+    'projects.read',
     'users.read',
     'teams.read',
     'access.read',

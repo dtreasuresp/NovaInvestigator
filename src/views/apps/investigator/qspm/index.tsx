@@ -60,7 +60,7 @@ import { TYPE_LABELS } from '@/utils/investigator/constants'
 import { ORIENTATIONS, formatNumber } from '@/utils/investigator/domain'
 
 // View Imports
-import { MetricCard, StageHeader } from '../shared/primitives'
+import { MetricCard, StageHeader } from '../components/primitives'
 import { StrategyModalDialog } from './strategy-modal-dialog'
 import { QspmAiModal } from './qspm-ai-modal'
 
@@ -394,11 +394,10 @@ export const InvestigatorQspmView = () => {
                 return (
                   <div
                     key={strategy.id}
-                    className={`group relative rounded-xl border p-3.5 transition-all space-y-2.5 ${
-                      isSelected
+                    className={`group relative rounded-xl border p-3.5 transition-all space-y-2.5 ${isSelected
                         ? 'border-primary ring-2 ring-primary/20 bg-primary/5 shadow-xs'
                         : 'bg-card hover:border-primary/40'
-                    }`}
+                      }`}
                   >
                     {/* Header line of the card */}
                     <div className='flex items-center justify-between gap-2 flex-wrap'>
@@ -451,9 +450,8 @@ export const InvestigatorQspmView = () => {
                             <Button
                               size='sm'
                               variant={isSelected ? 'default' : 'outline'}
-                              className={`h-7 text-xs px-2.5 gap-1 ${
-                                isSelected ? 'bg-primary text-primary-foreground' : ''
-                              }`}
+                              className={`h-7 text-xs px-2.5 gap-1 ${isSelected ? 'bg-primary text-primary-foreground' : ''
+                                }`}
                               onClick={() => selectStrategy(isSelected ? null : strategy.id)}
                             >
                               {isSelected ? (
@@ -528,23 +526,21 @@ export const InvestigatorQspmView = () => {
                   return (
                     <div
                       key={result.strategyId}
-                      className={`p-3 rounded-xl border transition-all space-y-1.5 ${
-                        isSelected
+                      className={`p-3 rounded-xl border transition-all space-y-1.5 ${isSelected
                           ? 'border-primary ring-2 ring-primary/20 bg-primary/5'
                           : isWinner
                             ? 'bg-emerald-500/5 border-emerald-500/30'
                             : 'bg-card'
-                      }`}
+                        }`}
                     >
                       <div className='flex items-center justify-between gap-3'>
                         <div className='min-w-0 flex-1'>
                           <div className='flex items-center gap-2 flex-wrap'>
                             <span
-                              className={`font-mono text-xs font-bold px-1.5 py-0.5 rounded ${
-                                isWinner
+                              className={`font-mono text-xs font-bold px-1.5 py-0.5 rounded ${isWinner
                                   ? 'bg-amber-500 text-white dark:bg-amber-600'
                                   : 'bg-muted text-muted-foreground'
-                              }`}
+                                }`}
                             >
                               #{index + 1}
                             </span>
@@ -1049,9 +1045,8 @@ const QspmTableView = ({
                 return (
                   <TableCell
                     key={strategy.id}
-                    className={`text-center font-mono text-sm py-2.5 ${
-                      isWinner ? 'text-primary font-black bg-primary/10' : ''
-                    }`}
+                    className={`text-center font-mono text-sm py-2.5 ${isWinner ? 'text-primary font-black bg-primary/10' : ''
+                      }`}
                   >
                     <span className='block text-sm font-bold'>{formatNumber(totalTas)}</span>
                     {isWinner && (

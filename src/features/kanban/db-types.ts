@@ -22,6 +22,7 @@ export type KanbanTaskRow = {
   due_date: string | null
   project_id: string | null
   came_action_id: string | null
+  budget_amount: number | null
   position: number
   created_by: string
   created_at: string

@@ -4,7 +4,7 @@
 import { useI18n } from '@/hooks/use-i18n'
 
 // View Imports
-import { FactorEditor, RatingScale } from '../shared/factor-editor'
+import { FactorEditor, RatingScale } from '../components/factor-editor'
 
 export const InvestigatorEfiView = () => {
   const { t } = useI18n()

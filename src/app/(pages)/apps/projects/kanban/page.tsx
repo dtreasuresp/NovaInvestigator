@@ -1,4 +1,4 @@
-import KanbanView from '@/views/apps/kanban'
+import KanbanView from '@/views/apps/projects/kanban'
 
 export const metadata = {
   title: 'Kanban | NovaResearch',

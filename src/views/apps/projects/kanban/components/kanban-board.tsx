@@ -1,8 +1,9 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { PlusIcon, SearchIcon, FilterIcon, Loader2Icon, LayersIcon } from 'lucide-react'
+import { PlusIcon, SearchIcon, FilterIcon, Loader2Icon, LayersIcon, FolderPlusIcon } from 'lucide-react'
 import { toast } from 'sonner'
+import { useSearchParams } from 'next/navigation'
 
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
@@ -11,9 +12,11 @@ import { useI18n } from '@/hooks/use-i18n'
 import { KanbanColumn, type KanbanColumnData } from './kanban-column'
 import { CardFormDialog, type KanbanTask, type KanbanMember } from './card-form-dialog'
 import { ColumnFormDialog } from './column-form-dialog'
+import { NewProjectDialog } from './new-project-dialog'
 
 export function KanbanBoard() {
   const { t } = useI18n()
+  const searchParams = useSearchParams()
   const [columns, setColumns] = useState<KanbanColumnData[]>([])
   const [tasks, setTasks] = useState<KanbanTask[]>([])
   const [members, setMembers] = useState<KanbanMember[]>([])
@@ -30,6 +33,15 @@ export function KanbanBoard() {
   const [activeTask, setActiveTask] = useState<KanbanTask | null>(null)
   const [activeColumnId, setActiveColumnId] = useState<string | undefined>(undefined)
   const [columnDialogOpen, setColumnDialogOpen] = useState(false)
+  const [newProjectDialogOpen, setNewProjectDialogOpen] = useState(false)
+
+  // Check URL search params for project filter
+  useEffect(() => {
+    const urlProjectId = searchParams.get('project')
+    if (urlProjectId) {
+      setProjectFilter(urlProjectId)
+    }
+  }, [searchParams])
 
   // Fetch initial board data
   const loadBoardData = async () => {
@@ -249,16 +261,28 @@ export function KanbanBoard() {
           </Select>
         </div>
 
-        {/* Add New Column Button */}
-        <Button
-          onClick={() => setColumnDialogOpen(true)}
-          variant='outline'
-          size='sm'
-          className='h-9 gap-1.5 shrink-0'
-        >
-          <PlusIcon className='size-4' />
-          Add New Column
-        </Button>
+        {/* Action Buttons */}
+        <div className='flex items-center gap-2 shrink-0'>
+          <Button
+            onClick={() => setNewProjectDialogOpen(true)}
+            size='sm'
+            className='h-9 gap-1.5 font-semibold text-xs'
+          >
+            <FolderPlusIcon className='size-4' />
+            + Nuevo Proyecto
+          </Button>
+
+          {/* Add New Column Button */}
+          <Button
+            onClick={() => setColumnDialogOpen(true)}
+            variant='outline'
+            size='sm'
+            className='h-9 gap-1.5 text-xs'
+          >
+            <PlusIcon className='size-4' />
+            Add New Column
+          </Button>
+        </div>
       </div>
 
       {/* Kanban Board Columns Horizontal Scroll */}
@@ -303,6 +327,13 @@ export function KanbanBoard() {
         open={columnDialogOpen}
         onOpenChange={setColumnDialogOpen}
         onSave={handleSaveColumn}
+      />
+
+      {/* New Project Dialog */}
+      <NewProjectDialog
+        open={newProjectDialogOpen}
+        onOpenChange={setNewProjectDialogOpen}
+        onProjectCreated={() => loadBoardData()}
       />
     </div>
   )

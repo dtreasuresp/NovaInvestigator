@@ -1,6 +1,6 @@
 'use client'
 
-import { Fragment, Suspense, useMemo } from 'react'
+import { Fragment, Suspense, useMemo, useState } from 'react'
 import type { ReactNode } from 'react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
@@ -16,6 +16,7 @@ import {
   Lock,
   SlidersHorizontal
 } from 'lucide-react'
+import { toast } from 'sonner'
 
 import {
   Stepper,
@@ -29,6 +30,8 @@ import {
   useInvestigatorAnalysis
 } from '@/hooks/use-investigator-analysis'
 import { useI18n } from '@/hooks/use-i18n'
+import { InvestigationMenubar } from '@/views/apps/investigator/components/investigation-menubar'
+import { ProjectCreationWizard } from '@/views/apps/projects/components/project-creation-wizard'
 
 type StageMetaItem = {
   id: string
@@ -118,7 +121,17 @@ const InvestigatorLayoutInner = ({ children }: Readonly<{ children: ReactNode }>
   const pathname = usePathname()
   const router = useRouter()
   const { t } = useI18n()
-  const { isReadOnly, validation } = useInvestigatorAnalysis()
+  const { state, isReadOnly, validation, createNewResearch, loadDemo } = useInvestigatorAnalysis()
+
+  const [isProjectWizardOpen, setIsProjectWizardOpen] = useState(false)
+  const [projectWizardType, setProjectWizardType] = useState<'blank' | 'derived'>('derived')
+  const [isExportingPdf, setIsExportingPdf] = useState(false)
+  const [isExportingDocx, setIsExportingDocx] = useState(false)
+
+  const handleOpenProjectWizard = (type: 'blank' | 'derived' = 'derived') => {
+    setProjectWizardType(type)
+    setIsProjectWizardOpen(true)
+  }
 
   const isManagerView =
     pathname === '/apps/investigator/investigations' ||
@@ -137,13 +150,110 @@ const InvestigatorLayoutInner = ({ children }: Readonly<{ children: ReactNode }>
 
   const currentStep = STEP_DEFINITIONS[currentStepIndex] || STEP_DEFINITIONS[0]
   const currentStepId = currentStep.id
+  const investigationId = state?.metadata?.id
 
   const handleStepClick = (href: string) => {
     router.push(href)
   }
 
+  const handleExportPdf = async (type: 'summary' | 'full' = 'full') => {
+    if (!investigationId) {
+      toast.error('Debe seleccionar una investigación para exportar.')
+      return
+    }
+
+    try {
+      setIsExportingPdf(true)
+      toast.info(`Generando informe ${type === 'summary' ? 'Resumen' : 'Completo'} en PDF...`)
+
+      const res = await fetch('/api/generar-pdf', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ state })
+      })
+
+      if (!res.ok) {
+        if (res.status === 409) {
+          toast.error('Límite de cuota mensual de exportación PDF alcanzado para su plan.')
+          return
+        }
+        throw new Error('Error en generación de PDF')
+      }
+
+      const blob = await res.blob()
+      const url = window.URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `informe-estrategico-${type}-${investigationId.slice(0, 8)}.pdf`
+      document.body.appendChild(a)
+      a.click()
+      window.URL.revokeObjectURL(url)
+      document.body.removeChild(a)
+
+      toast.success('Documento PDF generado y descargado correctamente.')
+    } catch (err) {
+      toast.error('No se pudo generar el documento PDF.')
+    } finally {
+      setIsExportingPdf(false)
+    }
+  }
+
+  const handleExportDocx = async (reportType: 'summary' | 'full' = 'full') => {
+    if (!investigationId) {
+      toast.error('Debe seleccionar una investigación para exportar.')
+      return
+    }
+
+    try {
+      setIsExportingDocx(true)
+      toast.info(`Generando informe ${reportType === 'summary' ? 'Resumen' : 'Completo'} en Word (DOCX)...`)
+
+      const res = await fetch(`/api/investigations/${investigationId}/export/docx?type=${reportType}`, {
+        method: 'POST'
+      })
+
+      if (!res.ok) {
+        if (res.status === 409) {
+          toast.error('Límite de cuota mensual de exportación alcanzado para su plan.')
+          return
+        }
+        throw new Error('Error al generar el documento Word.')
+      }
+
+      const blob = await res.blob()
+      const url = window.URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `informe-estrategico-${reportType}-${investigationId.slice(0, 8)}.docx`
+      document.body.appendChild(a)
+      a.click()
+      window.URL.revokeObjectURL(url)
+      document.body.removeChild(a)
+
+      toast.success('Documento Word descargado correctamente.')
+    } catch (err) {
+      toast.error('No se pudo generar el documento Word.')
+    } finally {
+      setIsExportingDocx(false)
+    }
+  }
+
   return (
     <div className='flex flex-col gap-6'>
+      {/* Menú Global de Acciones de Research — Docked sticky bajo la navbar para todo el módulo */}
+      <div className='sticky top-0 z-30 -mt-2 w-full rounded-xl border border-border/80 bg-background/95 p-1.5 shadow-xs backdrop-blur-md'>
+        <InvestigationMenubar
+          investigationId={investigationId}
+          onCreateNewInvestigation={createNewResearch}
+          onLoadDemo={loadDemo}
+          onCreateProject={handleOpenProjectWizard}
+          onExportPdf={handleExportPdf}
+          onExportDocx={handleExportDocx}
+          isExporting={isExportingPdf}
+          isExportingDocx={isExportingDocx}
+        />
+      </div>
+
       {!isManagerView && (
         <div className='flex flex-col gap-5 w-full'>
           {/* Header Superior: Kicker, Title, Subtitle a la izquierda | Volver al gestor alineado arriba a la derecha */}
@@ -257,6 +367,24 @@ const InvestigatorLayoutInner = ({ children }: Readonly<{ children: ReactNode }>
       )}
 
       <div className='min-w-0'>{children}</div>
+
+      {/* Wizard Global de Proyectos (Derivado o En Blanco) */}
+      {isProjectWizardOpen && (
+        <ProjectCreationWizard
+          open={isProjectWizardOpen}
+          onOpenChange={setIsProjectWizardOpen}
+          investigationId={projectWizardType === 'derived' ? investigationId : undefined}
+          investigationTitle={projectWizardType === 'derived' ? state?.metadata?.title : undefined}
+          investigationObjective={projectWizardType === 'derived' ? state?.metadata?.objective : undefined}
+          investigationOwnerId={projectWizardType === 'derived' ? state?.metadata?.ownerId : undefined}
+          cameActions={projectWizardType === 'derived' ? (state?.cameActions || []) : []}
+          onProjectCreated={(projectId) => {
+            setIsProjectWizardOpen(false)
+            toast.success('Proyecto creado con éxito.')
+            router.push('/apps/projects')
+          }}
+        />
+      )}
     </div>
   )
 }

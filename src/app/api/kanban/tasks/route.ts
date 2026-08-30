@@ -16,7 +16,8 @@ const createTaskSchema = z.object({
   assigneeIds: z.array(z.string().uuid()).default([]),
   dueDate: z.string().optional().nullable(),
   projectId: z.string().uuid().optional().nullable(),
-  cameActionId: z.string().optional().nullable()
+  cameActionId: z.string().optional().nullable(),
+  budgetAmount: z.number().nonnegative().default(0)
 })
 
 export async function POST(request: Request) {
@@ -58,6 +59,7 @@ export async function POST(request: Request) {
         due_date: body.dueDate ? new Date(body.dueDate).toISOString() : null,
         project_id: body.projectId ?? null,
         came_action_id: body.cameActionId ?? null,
+        budget_amount: body.budgetAmount ?? 0,
         position: nextPosition,
         created_by: principal.userId
       })

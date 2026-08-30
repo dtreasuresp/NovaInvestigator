@@ -214,7 +214,7 @@ export const navItems: NavItem[] = [
           {
             icon: 'SquareKanbanIcon',
             label: 'Projects',
-            href: '/apps/kanban',
+            href: '/apps/projects',
             moduleKey: 'kanban'
           },
           {

@@ -1,7 +1,7 @@
 'use client'
 
 import { usePathname } from 'next/navigation'
-import { AiCopilotSheet } from '@/views/apps/investigator/shared/ai-copilot-sheet'
+import { AiCopilotSheet } from '@/views/apps/investigator/components/ai-copilot-sheet'
 
 export default function GlobalAiCopilot() {
   const pathname = usePathname()

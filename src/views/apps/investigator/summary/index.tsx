@@ -48,9 +48,11 @@ const STAGE_LABELS: Record<string, string> = {
 }
 
 // View Imports
-import { MetricCard, StageHeader } from '../shared/primitives'
+import { MetricCard, StageHeader } from '../components/primitives'
 import { AiReportDialog } from './ai-report-dialog'
 import { MarkdownRenderer } from '@/views/apps/novai/components/markdown-renderer'
+import { ImplementationProjectsCard } from './components/implementation-projects-card'
+import { ProjectCreationWizard } from '@/views/apps/projects/components/project-creation-wizard'
 
 const formatPercent = (value: number) => `${Math.round((value || 0) * 100)} %`
 
@@ -63,6 +65,8 @@ export const InvestigatorSummaryView = () => {
   const [activeReportTab, setActiveReportTab] = useState<'standard' | 'ai'>('standard')
   const [isSummarySheetOpen, setIsSummarySheetOpen] = useState(false)
   const [isAiDialogOpen, setIsAiDialogOpen] = useState(false)
+  const [isProjectWizardOpen, setIsProjectWizardOpen] = useState(false)
+  const [isExportingPdf, setIsExportingPdf] = useState(false)
 
   const investigationId = state.metadata?.id
 
@@ -199,6 +203,48 @@ export const InvestigatorSummaryView = () => {
     }
   }
 
+  const handleExportPdf = async (type: 'summary' | 'full' = 'full') => {
+    if (!investigationId) {
+      toast.error('Debe seleccionar una investigación para exportar.')
+      return
+    }
+
+    try {
+      setIsExportingPdf(true)
+      toast.info(`Generando informe ${type === 'summary' ? 'Resumen' : 'Completo'} en PDF...`)
+
+      const res = await fetch('/api/generar-pdf', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ state })
+      })
+
+      if (!res.ok) {
+        if (res.status === 409) {
+          toast.error('Límite de cuota mensual de exportación PDF alcanzado para su plan.')
+          return
+        }
+        throw new Error('Error en generación de PDF')
+      }
+
+      const blob = await res.blob()
+      const url = window.URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `informe-estrategico-${type}-${investigationId.slice(0, 8)}.pdf`
+      document.body.appendChild(a)
+      a.click()
+      window.URL.revokeObjectURL(url)
+      document.body.removeChild(a)
+
+      toast.success('Documento PDF generado y descargado correctamente.')
+    } catch (err) {
+      toast.error('No se pudo generar el PDF.')
+    } finally {
+      setIsExportingPdf(false)
+    }
+  }
+
   if (isLoading) {
     return (
       <div className='flex flex-col gap-6' aria-busy='true'>
@@ -248,6 +294,7 @@ export const InvestigatorSummaryView = () => {
 
   return (
     <div className='flex flex-col gap-6'>
+
       <div className='grid gap-4 sm:grid-cols-2 lg:grid-cols-4'>
         <MetricCard
           label={t('investigator.efiInternalLabel') || 'EFI · Interno'}
@@ -455,6 +502,12 @@ export const InvestigatorSummaryView = () => {
         onAuditConfidence={() => setIsAiDialogOpen(true)}
       />
 
+      {/* 6. Proyectos de Implementación y Gobernanza Operativa */}
+      <ImplementationProjectsCard
+        investigationId={investigationId}
+        onCreateProject={() => setIsProjectWizardOpen(true)}
+      />
+
       <AiReportDialog
         open={isAiDialogOpen}
         onOpenChange={setIsAiDialogOpen}
@@ -547,6 +600,18 @@ export const InvestigatorSummaryView = () => {
         open={isSummarySheetOpen}
         onOpenChange={setIsSummarySheetOpen}
         onOpenFull={() => router.push('/apps/investigator/context')}
+      />
+
+      {/* Reusable Project Creation Wizard */}
+      <ProjectCreationWizard
+        open={isProjectWizardOpen}
+        onOpenChange={setIsProjectWizardOpen}
+        investigationId={investigationId}
+        investigationTitle={state.metadata?.title || state.metadata?.organization}
+        investigationObjective={state.metadata?.objective}
+        investigationOwnerId={state.metadata?.ownerId}
+        cameActions={state.cameActions || []}
+        onProjectCreated={projectId => router.push(`/apps/projects?project=${projectId}`)}
       />
     </div>
   )

@@ -45,7 +45,7 @@ import { useI18n } from '@/hooks/use-i18n'
 import { ORIENTATIONS, formatNumber, formatPercent } from '@/utils/investigator/domain'
 
 // View Imports
-import { StageHeader } from '../shared/primitives'
+import { StageHeader } from '../components/primitives'
 import { DafoAiModal } from './dafo-ai-modal'
 
 const STRENGTH_OPTIONS = [
@@ -162,9 +162,8 @@ export const InvestigatorDafoView = () => {
           return (
             <Card
               key={quadrant}
-              className={`cursor-pointer transition-all ${
-                active ? 'ring-primary ring-2 shadow-md' : 'hover:border-primary/50'
-              } ${selectedQuadrantFilter === quadrant ? 'bg-primary/5' : ''}`}
+              className={`cursor-pointer transition-all ${active ? 'ring-primary ring-2 shadow-md' : 'hover:border-primary/50'
+                } ${selectedQuadrantFilter === quadrant ? 'bg-primary/5' : ''}`}
               onClick={() => setSelectedQuadrantFilter(selectedQuadrantFilter === quadrant ? 'all' : quadrant)}
             >
               <CardHeader className='p-4'>
@@ -268,9 +267,8 @@ export const InvestigatorDafoView = () => {
                   return (
                     <div
                       key={quadrant}
-                      className={`rounded-xl border p-4 space-y-3 ${
-                        isDom ? 'bg-primary/5 border-primary/40' : 'bg-card'
-                      }`}
+                      className={`rounded-xl border p-4 space-y-3 ${isDom ? 'bg-primary/5 border-primary/40' : 'bg-card'
+                        }`}
                     >
                       <div className='flex items-center justify-between border-b pb-2'>
                         <div className='flex items-center gap-2'>
@@ -482,22 +480,22 @@ const DafoTableView = ({
         }
       },
       {
-              accessorKey: 'strength',
-              header: 'Fuerza',
-              cell: ({ row }) => {
-                const strength = row.original.strength
-                const strengthOpt = strength === null ? STRENGTH_OPTIONS.find(s => s.value === 'null') : STRENGTH_OPTIONS.find(s => s.value === strength?.toString())
+        accessorKey: 'strength',
+        header: 'Fuerza',
+        cell: ({ row }) => {
+          const strength = row.original.strength
+          const strengthOpt = strength === null ? STRENGTH_OPTIONS.find(s => s.value === 'null') : STRENGTH_OPTIONS.find(s => s.value === strength?.toString())
 
-                return (
-                  <Badge
-                    variant='outline'
-                    className={`text-xs px-2 py-0.5 ${strengthOpt?.color || 'bg-muted text-muted-foreground'}`}
-                  >
-                    {strength === null ? 'Pendiente' : strengthOpt ? strengthOpt.label.split('·')[1].trim() : 'Pendiente'}
-                  </Badge>
-                )
-              }
-            },
+          return (
+            <Badge
+              variant='outline'
+              className={`text-xs px-2 py-0.5 ${strengthOpt?.color || 'bg-muted text-muted-foreground'}`}
+            >
+              {strength === null ? 'Pendiente' : strengthOpt ? strengthOpt.label.split('·')[1].trim() : 'Pendiente'}
+            </Badge>
+          )
+        }
+      },
       {
         id: 'justification',
         header: t('investigator.cameEvidenceSource') || 'Justificación y Evidencia',
