@@ -46,10 +46,10 @@ Este repositorio sigue una taxonomía y arquitectura de producto estricta que no
 Para evitar confusiones, alucinaciones o modificaciones erróneas, **todo agente DEBE seguir estas reglas estrictas**:
 
 1. **Jerarquía de Autoridad en Caso de Conflicto:**
-   1. **Seguridad, Multi-tenancy y RLS** (Regla no negociable bajo ninguna circunstancia).
-   2. **Documentación Maestra Vigente en [`doc/plans/`](file:///d:/03.%20MATRIZ%20DAFO/doc/plans)**.
-   3. **Skills locales** en [`.agents/skills/`](file:///d:/03.%20MATRIZ%20DAFO/.agents/skills) y [`.claude/skills/`](file:///d:/03.%20MATRIZ%20DAFO/.claude/skills).
-   4. **Patrones de código existentes** en `src/`.
+    1. **Seguridad, Multi-tenancy y RLS** (Regla no negociable bajo ninguna circunstancia).
+    2. **Documentación Maestra Vigente en** [**`doc/plans/`**](file:///d:/03.%20MATRIZ%20DAFO/doc/plans).
+    3. **Skills locales** en [`.agents/skills/`](file:///d:/03.%20MATRIZ%20DAFO/.agents/skills) y [`.claude/skills/`](file:///d:/03.%20MATRIZ%20DAFO/.claude/skills).
+    4. **Patrones de código existentes** en `src/`.
 
 2. **Resolución rápida de conflictos**:
 
@@ -61,27 +61,27 @@ Para evitar confusiones, alucinaciones o modificaciones erróneas, **todo agente
   | Petición del usuario incompatible con una regla | Rechaza solo la parte conflictiva, explica la regla aplicable y ofrece una alternativa compatible; si toca seguridad, permisos, tenant scope o RLS, aplica la regla 1 |
 
 3. **Protocolo Obligatorio de 6 Pasos para Toda Tarea:**
-   - **Paso 1 (Contexto & Skills):** Antes de codificar, identifica si existe skill relevante en este orden: 1. `.agents/skills/`, 2. `.agent/skills/`, 3. `.claude/skills/`.
-      - Si existe una skill local relevante, **léela y síguela** antes de implementar.
-      - Las tres rutas pueden coexistir; usa `.agents/skills/` como ubicación canónica para nuevas skills y trata `.agent/skills/` como compatibilidad solo si el repo ya la usa.
-      - Si no existe, usa documentación confiable y, cuando el entorno lo permita, consulta `https://skills.sh/`.
-      - Para React/Next.js, permisos/RBAC, frontend, migraciones o refactors, **revisa primero** si ya existe skill específica.  (ej. `supabase`, `stripe-best-practices`, `next-best-practices`, `tailwind-v4-shadcn`, `react-hook-form`, `zod`) y lee el plan maestro relevante en `doc/plans/`.
-      - Only create a new plan if no existing doc covers the request.
-   - **Paso 2 (Capa SODA):** Identifica la capa y feature (`src/features/<modulo>/`). Nunca mezcles lógica de base de datos en vistas o componentes.
-   - **Paso 3 (Validación de Límites):** Payloads siempre validados con Zod (`schema.ts`), permisos con `access.ts`, y `tenantId` resuelto desde la sesión del Principal autenticado.
-   - **Paso 4 (Disciplina de Alcance):** **Un cambio = un propósito.** No modifiques archivos fuera del alcance solicitado ni hagas refactors masivos no pedidos.
-   - **Paso 5 (Validación Local & Sincronización de Dependencias):**
-      - Al sincronizar el repositorio o actualizar paquetes, ejecuta `pnpm outdated` y `pnpm update` respetando las versiones del framework bloqueadas (Next.js 16.2.x, React 19.2.x, Tailwind v4).
-      - Siempre ejecuta `pnpm check-types` y `pnpm test` (o `npx react-doctor@latest` para UI) antes de hacer push o dar por cerrada la tarea.
-   - **Paso 6 (Trazabilidad, Changelog & Sincronización de Documentación):** Registra el cambio en [`CHANGELOG.md`](file:///d:/03.%20MATRIZ%20DAFO/CHANGELOG.md) siguiendo SemVer 2.0.0 y evalúa si [`README.md`](file:///d:/03.%20MATRIZ%20DAFO/README.md) requiere actualización conforme a la **README Synchronization Policy**.
+    - **Paso 1 (Contexto & Skills):** Antes de codificar, identifica si existe skill relevante en este orden: 1. `.agents/skills/`, 2. `.agent/skills/`, 3. `.claude/skills/`.
+        - Si existe una skill local relevante, **léela y síguela** antes de implementar.
+        - Las tres rutas pueden coexistir; usa `.agents/skills/` como ubicación canónica para nuevas skills y trata `.agent/skills/` como compatibilidad solo si el repo ya la usa.
+        - Si no existe, usa documentación confiable y, cuando el entorno lo permita, consulta `https://skills.sh/`.
+        - Para React/Next.js, permisos/RBAC, frontend, migraciones o refactors, **revisa primero** si ya existe skill específica.  (ej. `supabase`, `stripe-best-practices`, `next-best-practices`, `tailwind-v4-shadcn`, `react-hook-form`, `zod`) y lee el plan maestro relevante en `doc/plans/`.
+        - Only create a new plan if no existing doc covers the request.
+    - **Paso 2 (Capa SODA):** Identifica la capa y feature (`src/features/<modulo>/`). Nunca mezcles lógica de base de datos en vistas o componentes.
+    - **Paso 3 (Validación de Límites):** Payloads siempre validados con Zod (`schema.ts`), permisos con `access.ts`, y `tenantId` resuelto desde la sesión del Principal autenticado.
+    - **Paso 4 (Disciplina de Alcance):** **Un cambio = un propósito.** No modifiques archivos fuera del alcance solicitado ni hagas refactors masivos no pedidos.
+    - **Paso 5 (Validación Local & Sincronización de Dependencias):**
+        - Al sincronizar el repositorio o actualizar paquetes, ejecuta `pnpm outdated` y `pnpm update` respetando las versiones del framework bloqueadas (Next.js 16.2.x, React 19.2.x, Tailwind v4).
+        - Siempre ejecuta `pnpm check-types` y `pnpm test` (o `npx react-doctor@latest` para UI) antes de hacer push o dar por cerrada la tarea.
+    - **Paso 6 (Trazabilidad, Changelog & Sincronización de Documentación):** Registra el cambio en [`CHANGELOG.md`](file:///d:/03.%20MATRIZ%20DAFO/CHANGELOG.md) siguiendo SemVer 2.0.0 y evalúa si [`README.md`](file:///d:/03.%20MATRIZ%20DAFO/README.md) requiere actualización conforme a la **README Synchronization Policy**.
 
 4. **Anti-patrones Prohibidos (Lo que NUNCA debes hacer):**
-   - ❌ **NO uses tecnologías inexistentes o eliminadas:** Prohibido importar o referenciar `Prisma`, `NextAuth`, `Pino`, `Upstash Redis`, `Jest` o rutas obsoletas (`docs/`, `src/styles/`).
-   - ❌ **NO tomes `tenantId` del body del request:** Siempre debe resolverse de `getCurrentPrincipal()` o `requireAuthenticatedUser()`.
-   - ❌ **NO hagas consultas SQL o mutaciones directas desde vistas (`src/views/`) ni layouts:** La UI solo interactúa mediante Route Handlers `/api/*` o Server Actions que delegan en `src/features/<feature>/service.ts`.
-   - ❌ **NO uses `console.log` en producción:** Usa el logger estructurado en `src/lib/logger/index.ts`.
-   - ❌ **NO hardcodees strings en interfaces:** Usa los catálogos en `src/locales/` (`es`, `en`, `de`, `ko`, `pt`).
-   - ❌ **NO crees side-effects financieros en GET handlers o hooks de React:** Facturaciones y pagos requieren transacciones SQL e idempotencia estricta.
+    - ❌ **NO uses tecnologías inexistentes o eliminadas:** Prohibido importar o referenciar `Prisma`, `NextAuth`, `Pino`, `Upstash Redis`, `Jest` o rutas obsoletas (`docs/`, `src/styles/`).
+    - ❌ **NO tomes `tenantId` del body del request:** Siempre debe resolverse de `getCurrentPrincipal()` o `requireAuthenticatedUser()`.
+    - ❌ **NO hagas consultas SQL o mutaciones directas desde vistas (`src/views/`) ni layouts:** La UI solo interactúa mediante Route Handlers `/api/*` o Server Actions que delegan en `src/features/<feature>/service.ts`.
+    - ❌ **NO uses `console.log` en producción:** Usa el logger estructurado en `src/lib/logger/index.ts`.
+    - ❌ **NO hardcodees strings en interfaces:** Usa los catálogos en `src/locales/` (`es`, `en`, `de`, `ko`, `pt`).
+    - ❌ **NO crees side-effects financieros en GET handlers o hooks de React:** Facturaciones y pagos requieren transacciones SQL e idempotencia estricta.
 
 ---
 
@@ -108,7 +108,8 @@ Para evitar confusiones, alucinaciones o modificaciones erróneas, **todo agente
 
 El código está dividido en las siguientes capas, ordenadas de más general a más específica:
 
-``` text
+```
+text
 d:/03. MATRIZ DAFO/
 ├── .agents/skills/               # Skills operativas para agentes de IA
 ├── .claude/skills/               # Skills operativas para agentes de IA
@@ -237,7 +238,7 @@ d:/03. MATRIZ DAFO/
 
 ---
 
-## 5. SaaS / ERP Domain Rules
+## 5. PaaS / SaaS / ERP Domain Rules
 
 Esta aplicación es un **SaaS multi-tenant con módulos de ERP y Análisis Estratégico**. Las siguientes reglas son **obligatorias** para cualquier cambio que toque lógica de negocio, datos persistentes u operaciones financieras.
 

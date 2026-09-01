@@ -4,6 +4,22 @@
 
 All notable changes to this template will be documented in this file
 
+## v0.0.91 (2026-08-31)
+
+### Updated & Protected — Acuerdo de Licencia de Software Propietario Comercial y Plataforma Cloud (PaaS / SaaS)
+
+- **Actualización Integral de Licenciamiento (`LICENSE.md`)**:
+  - Reemplazada la plantilla genérica MIT heredada por el **Acuerdo de Licencia de Software Propietario y Servicio en la Nube de NovaResearch Enterprise Platform**, otorgando titularidad exclusiva de propiedad intelectual y derechos de autor a **DGTECNOVA SRL** (`Copyright (c) 2024–2026 DGTECNOVA SRL. All rights reserved`).
+  - Protección explícita de todos los componentes de la suite:
+    1. **NovaResearch**: Plataforma SaaS/PaaS multi-tenant, facturación y gobernanza de workspaces.
+    2. **Research**: Aplicación de investigación y diagnósticos cuantitativos (EFI, EFE, DAFO, CAME, QSPM).
+    3. **Projects**: Workspace de ejecución estratégica, paquetes de trabajo tácticos (`project_activities`), Kanban y gobernanza presupuestaria.
+    4. **NovAi**: Producto de inteligencia artificial independiente, runtime cognitivo y modelo epistémico.
+  - Prohibición estricta de redistribución, copia no autorizada, ingeniería inversa y uso sin suscripción de pago activa.
+  - Cláusula de titularidad de datos: Garantiza que los clientes y organizaciones retienen el 100% de la propiedad legal sobre sus datos estratégicos e investigaciones.
+- **Sincronización de Metadatos del Paquete (`package.json`)**:
+  - Actualizado el campo `"license"` a `"UNLICENSED"` conforme a la especificación estándar de npm para software privado y cerrado.
+
 ## v0.0.90 (2026-08-31)
 
 ### Fixed & Enhanced — Auditoría Global de UI/UX: Envoltura Multilínea Fluida, Erradicación de Truncamientos Rígidos y Normalización Tipográfica shadcn
