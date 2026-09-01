@@ -174,7 +174,10 @@ const ResearchCard = ({
       {/* Top Row: Title on Left, Badges + Open Button + 3-dots Menu on Right */}
       <div className='flex flex-col sm:flex-row sm:items-center justify-between gap-3'>
         <div className='min-w-0 flex-1'>
-          <p className='truncate font-semibold text-base text-foreground'>
+          <p
+            className='font-semibold text-base text-foreground break-words line-clamp-2 leading-snug'
+            title={item.metadata.title || undefined}
+          >
             {item.metadata.title || (
               <span className='text-muted-foreground'>{t('investigator.newInvestigation')}</span>
             )}

@@ -1,10 +1,11 @@
 import { requireProjectsPrincipal, assertProjectsCapability, assertTeamMemberEligible, getTeamLeaderId, assertProjectLimitEntitlement } from './access'
 import * as repository from './repository'
-import type { CreateProjectInput, UpdateProjectInput, ProjectFilterInput } from './schema'
+import type { CreateProjectInput, UpdateProjectInput, ProjectFilterInput, CreateProjectActivityInput, UpdateProjectActivityInput } from './schema'
 import { ProjectError } from './errors'
 import { logger } from '@/lib/logger'
 import { getInvestigationById } from '@/lib/investigations/repository'
 import type { InvestigationState, CameAction } from '@/types/apps/investigator-types'
+import type { ProjectActivityRow } from './db-types'
 
 export async function listProjects(filters?: ProjectFilterInput): Promise<repository.ProjectWithStats[]> {
   const principal = await requireProjectsPrincipal()
@@ -44,10 +45,20 @@ export async function createProject(input: CreateProjectInput): Promise<reposito
       resolvedLeaderId = await getTeamLeaderId(tenantId, input.teamId)
     }
 
-    // Validate all activity assignees belong to the team
+    // Validate all activity owners and assignees belong to the team
     for (const activity of input.activities) {
+      if (activity.ownerUserId) {
+        await assertTeamMemberEligible(tenantId, input.teamId, activity.ownerUserId)
+      }
       for (const assigneeId of activity.assigneeIds) {
         await assertTeamMemberEligible(tenantId, input.teamId, assigneeId)
+      }
+      if (activity.tasks) {
+        for (const task of activity.tasks) {
+          for (const assigneeId of task.assigneeIds) {
+            await assertTeamMemberEligible(tenantId, input.teamId, assigneeId)
+          }
+        }
       }
     }
   }
@@ -131,6 +142,17 @@ export async function updateProject(
   return updated
 }
 
+export async function syncProjectCameActions(
+  projectId: string,
+  cameActionIds: string[]
+): Promise<{ addedCount: number; project: repository.ProjectDetail }> {
+  const principal = await requireProjectsPrincipal()
+  await assertProjectsCapability(principal, 'projects.update')
+  const tenantId = principal.primaryTenantId!
+
+  return repository.syncProjectCameActions(tenantId, projectId, cameActionIds)
+}
+
 export async function listInvestigationProjects(investigationId: string): Promise<repository.ProjectWithStats[]> {
   const principal = await requireProjectsPrincipal()
   await assertProjectsCapability(principal, 'projects.read')
@@ -169,3 +191,123 @@ export async function listEligibleCameActions(
     isAssigned: assignedSet.has(action.id)
   }))
 }
+
+export async function listProjectActivities(projectId: string): Promise<ProjectActivityRow[]> {
+  const principal = await requireProjectsPrincipal()
+  await assertProjectsCapability(principal, 'projects.read')
+  const tenantId = principal.primaryTenantId!
+
+  return repository.listProjectActivities(tenantId, projectId)
+}
+
+export async function getProjectActivity(projectId: string, activityId: string): Promise<ProjectActivityRow> {
+  const principal = await requireProjectsPrincipal()
+  await assertProjectsCapability(principal, 'projects.read')
+  const tenantId = principal.primaryTenantId!
+
+  const activity = await repository.getProjectActivityById(tenantId, activityId)
+  if (!activity || activity.project_id !== projectId) {
+    throw ProjectError.notFound('Actividad no encontrada.')
+  }
+
+  return activity
+}
+
+export async function createProjectActivity(
+  projectId: string,
+  input: CreateProjectActivityInput
+): Promise<ProjectActivityRow> {
+  const principal = await requireProjectsPrincipal()
+  await assertProjectsCapability(principal, 'projects.update')
+  const tenantId = principal.primaryTenantId!
+
+  const project = await repository.getProjectById(tenantId, projectId)
+  if (!project) {
+    throw ProjectError.notFound('Proyecto no encontrado.')
+  }
+
+  if (input.ownerUserId && project.team_id) {
+    await assertTeamMemberEligible(tenantId, project.team_id, input.ownerUserId)
+  }
+
+  const created = await repository.createProjectActivity(tenantId, projectId, input)
+
+  logger.info('Actividad de proyecto creada', {
+    action: 'projects.activity.create',
+    details: {
+      userId: principal.userId,
+      tenantId,
+      projectId,
+      activityId: created.id,
+      title: created.title
+    }
+  })
+
+  return created
+}
+
+export async function updateProjectActivity(
+  projectId: string,
+  activityId: string,
+  input: UpdateProjectActivityInput
+): Promise<ProjectActivityRow> {
+  const principal = await requireProjectsPrincipal()
+  await assertProjectsCapability(principal, 'projects.update')
+  const tenantId = principal.primaryTenantId!
+
+  const project = await repository.getProjectById(tenantId, projectId)
+  if (!project) {
+    throw ProjectError.notFound('Proyecto no encontrado.')
+  }
+
+  const activity = await repository.getProjectActivityById(tenantId, activityId)
+  if (!activity || activity.project_id !== projectId) {
+    throw ProjectError.notFound('Actividad no encontrada.')
+  }
+
+  if (input.ownerUserId && project.team_id) {
+    await assertTeamMemberEligible(tenantId, project.team_id, input.ownerUserId)
+  }
+
+  const updated = await repository.updateProjectActivity(tenantId, activityId, input)
+
+  logger.info('Actividad de proyecto actualizada', {
+    action: 'projects.activity.update',
+    details: {
+      userId: principal.userId,
+      tenantId,
+      projectId,
+      activityId,
+      patch: input
+    }
+  })
+
+  return updated
+}
+
+export async function deleteProjectActivity(
+  projectId: string,
+  activityId: string
+): Promise<void> {
+  const principal = await requireProjectsPrincipal()
+  await assertProjectsCapability(principal, 'projects.update')
+  const tenantId = principal.primaryTenantId!
+
+  const activity = await repository.getProjectActivityById(tenantId, activityId)
+  if (!activity || activity.project_id !== projectId) {
+    throw ProjectError.notFound('Actividad no encontrada.')
+  }
+
+  await repository.deleteProjectActivity(tenantId, activityId)
+
+  logger.info('Actividad de proyecto eliminada', {
+    action: 'projects.activity.delete',
+    details: {
+      userId: principal.userId,
+      tenantId,
+      projectId,
+      activityId
+    }
+  })
+}
+

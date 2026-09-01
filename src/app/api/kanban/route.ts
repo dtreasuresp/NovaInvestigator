@@ -159,50 +159,105 @@ export async function GET(request: Request) {
       }
     })
 
-    // 4. Get tenant projects from projects table
-    const { data: rawRealProjects } = await supabase
-      .from('projects')
-      .select('id, name, description, priority, status, investigation_id, created_at')
-      .eq('tenant_id', tenantId)
-      .neq('status', 'cancelled')
-      .order('created_at', { ascending: false })
-
-    let projects: Array<{ id: string; title: string; organization: string; status: string; investigationId?: string | null }> = []
-
-    if (rawRealProjects && rawRealProjects.length > 0) {
-      projects = (rawRealProjects as unknown as Array<{ id: string; name: string; description: string; status: string; investigation_id: string | null }>).map(p => ({
-        id: p.id,
-        title: p.name,
-        organization: p.description || 'Proyecto',
-        status: p.status,
-        investigationId: p.investigation_id
-      }))
-    } else {
-      // Fallback: Get tenant investigations
-      const { data: rawInvestigations } = await supabase
+    // 4. Get tenant projects and investigations
+    const [rawRealProjectsRes, rawInvestigationsRes] = await Promise.all([
+      supabase
+        .from('projects')
+        .select('id, name, description, objective, priority, status, investigation_id, leader_user_id, budget_total, budget_mode, start_date, end_date, created_at')
+        .eq('tenant_id', tenantId)
+        .neq('status', 'cancelled')
+        .order('created_at', { ascending: false }),
+      supabase
         .from('investigations')
         .select('id, title, state, created_at, updated_at')
         .eq('tenant_id', tenantId)
         .order('updated_at', { ascending: false })
+    ])
 
-      const investigations = (rawInvestigations ?? []) as unknown as Array<{
-        id: string
-        title: string | null
-        state: unknown
-        created_at: string
-        updated_at: string
-      }>
+    const investigationsMap = new Map<string, { id: string; title: string | null; state: unknown }>()
+    const rawInvestigationsList = (rawInvestigationsRes.data ?? []) as any[]
+    rawInvestigationsList.forEach(inv => investigationsMap.set(inv.id, inv))
 
-      projects = investigations.map(inv => {
-        const state = (inv.state ?? {}) as Record<string, unknown>
-        const meta = (state.metadata ?? {}) as Record<string, unknown>
+    const rawRealProjectsList = (rawRealProjectsRes.data ?? []) as any[]
+
+    let projects: Array<{
+      id: string
+      title: string
+      organization: string
+      description: string
+      objective: string
+      priority: string
+      status: string
+      investigationId?: string | null
+      investigationTitle?: string | null
+      leaderUserId?: string | null
+      budgetTotal?: number
+      budgetMode?: string
+      startDate?: string | null
+      endDate?: string | null
+      cameActions?: any[]
+      factors?: any[]
+      strategies?: any[]
+    }> = []
+
+    if (rawRealProjectsList.length > 0) {
+      projects = rawRealProjectsList.map(p => {
+        const inv = p.investigation_id ? investigationsMap.get(p.investigation_id) : null
+        const invState = (inv?.state ?? {}) as Record<string, unknown>
+        const invMeta = (invState.metadata ?? {}) as Record<string, unknown>
+        const cameActions = (invState.cameActions ?? []) as any[]
+        const internalFactors = (invState.internal ?? []) as any[]
+        const externalFactors = (invState.external ?? []) as any[]
+        const strategies = (invState.strategies ?? []) as any[]
+
+        return {
+          id: p.id,
+          title: p.name,
+          organization: (invMeta.organization as string) || p.description || 'Proyecto Estratégico',
+          description: p.description || '',
+          objective: p.objective || (invMeta.objective as string) || '',
+          priority: p.priority || 'medium',
+          status: p.status || 'active',
+          investigationId: p.investigation_id,
+          investigationTitle: inv?.title || (invMeta.title as string) || (invMeta.organization as string) || null,
+          leaderUserId: p.leader_user_id,
+          budgetTotal: Number(p.budget_total) || 0,
+          budgetMode: p.budget_mode || 'action_based',
+          startDate: p.start_date,
+          endDate: p.end_date,
+          cameActions,
+          factors: [...internalFactors, ...externalFactors],
+          strategies
+        }
+      })
+    } else {
+      // Fallback: Get tenant investigations
+      projects = rawInvestigationsList.map(inv => {
+        const invState = (inv.state ?? {}) as Record<string, unknown>
+        const invMeta = (invState.metadata ?? {}) as Record<string, unknown>
+        const cameActions = (invState.cameActions ?? []) as any[]
+        const internalFactors = (invState.internal ?? []) as any[]
+        const externalFactors = (invState.external ?? []) as any[]
+        const strategies = (invState.strategies ?? []) as any[]
 
         return {
           id: inv.id,
-          title: inv.title || (meta.organization as string) || 'Proyecto de Investigación',
-          organization: (meta.organization as string) || 'Organización',
-          status: (meta.status as string) || 'active',
-          investigationId: inv.id
+          title: inv.title || (invMeta.title as string) || (invMeta.organization as string) || 'Expediente de Investigación',
+          organization: (invMeta.organization as string) || 'Organización',
+          description: (invMeta.problem as string) || '',
+          objective: (invMeta.objective as string) || '',
+          priority: 'medium',
+          status: (invMeta.status as string) || 'active',
+          investigationId: inv.id,
+          investigationTitle: inv.title || (invMeta.title as string) || (invMeta.organization as string) || null,
+          leaderUserId: (invMeta.ownerId as string) || null,
+          budgetTotal: 0,
+          budgetMode: 'action_based',
+          startDate: (invMeta.createdAt as string) || null,
+          endDate: null,
+          cameActions,
+          factors: [...internalFactors, ...externalFactors],
+          strategies
         }
       })
     }

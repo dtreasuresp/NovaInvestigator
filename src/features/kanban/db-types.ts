@@ -18,9 +18,11 @@ export type KanbanTaskRow = {
   description: string
   priority: 'low' | 'medium' | 'high' | 'urgent'
   cover_image: string | null
+  tags: string[] | null
   assignee_ids: string[]
   due_date: string | null
   project_id: string | null
+  activity_id: string | null
   came_action_id: string | null
   budget_amount: number | null
   position: number
@@ -47,8 +49,26 @@ type KanbanExtraTables = {
   }
   kanban_tasks: {
     Row: KanbanTaskRow
-    Insert: Partial<Pick<KanbanTaskRow, 'id' | 'created_at' | 'updated_at'>> &
-      Omit<KanbanTaskRow, 'id' | 'created_at' | 'updated_at'>
+    Insert: {
+      id?: string
+      tenant_id: string
+      column_id: string
+      title: string
+      description?: string
+      priority?: 'low' | 'medium' | 'high' | 'urgent'
+      cover_image?: string | null
+      tags?: string[] | null
+      assignee_ids?: string[]
+      due_date?: string | null
+      project_id?: string | null
+      activity_id?: string | null
+      came_action_id?: string | null
+      budget_amount?: number | null
+      position?: number
+      created_by?: string
+      created_at?: string
+      updated_at?: string
+    }
     Update: Partial<KanbanTaskRow>
     Relationships: [
       {

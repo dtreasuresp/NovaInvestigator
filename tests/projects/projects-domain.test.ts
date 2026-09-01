@@ -1,6 +1,14 @@
 import assert from 'node:assert/strict'
 import { describe, it } from 'node:test'
-import { createProjectSchema, updateProjectSchema, projectFilterSchema } from '../../src/features/projects/schema'
+import {
+  createProjectSchema,
+  updateProjectSchema,
+  projectFilterSchema,
+  syncProjectCameActionsSchema,
+  createProjectActivitySchema,
+  updateProjectActivitySchema,
+  projectActivityInputSchema
+} from '../../src/features/projects/schema'
 import { ProjectError } from '../../src/features/projects/errors'
 
 describe('projects domain - schema validation', () => {
@@ -122,6 +130,73 @@ describe('projects domain - schema validation', () => {
     }
   })
 
+  it('fails validation when budgetTotal is exceeded in total_first mode', () => {
+    const parsed = createProjectSchema.safeParse({
+      name: 'Presupuesto Inválido',
+      budgetMode: 'total_first',
+      budgetTotal: 50000,
+      cameActions: [
+        {
+          cameActionId: 'ACC-D-01',
+          actionType: 'C',
+          title: 'Acción cara',
+          budgetAllocated: 60000
+        }
+      ],
+      activities: []
+    })
+
+    assert.equal(parsed.success, false)
+    if (!parsed.success) {
+      const issue = parsed.error.issues.find(i => i.path.includes('budgetTotal'))
+      assert.ok(issue)
+    }
+  })
+
+  it('fails validation when endDate is before startDate', () => {
+    const parsed = createProjectSchema.safeParse({
+      name: 'Fechas Inválidas',
+      startDate: '2026-12-31',
+      endDate: '2026-01-01'
+    })
+
+    assert.equal(parsed.success, false)
+    if (!parsed.success) {
+      const issue = parsed.error.issues.find(i => i.path.includes('endDate'))
+      assert.ok(issue)
+    }
+  })
+
+  it('validates updateProjectSchema partial payloads', () => {
+    const parsed = updateProjectSchema.safeParse({
+      name: 'Nuevo Nombre de Proyecto',
+      priority: 'urgent',
+      status: 'active'
+    })
+
+    assert.equal(parsed.success, true)
+    if (parsed.success) {
+      assert.equal(parsed.data.name, 'Nuevo Nombre de Proyecto')
+      assert.equal(parsed.data.priority, 'urgent')
+      assert.equal(parsed.data.status, 'active')
+    }
+  })
+
+  it('validates syncProjectCameActionsSchema correctly', () => {
+    const valid = syncProjectCameActionsSchema.safeParse({
+      cameActionIds: ['ACC-F-01', 'ACC-D-02']
+    })
+    assert.equal(valid.success, true)
+    if (valid.success) {
+      assert.equal(valid.data.cameActionIds.length, 2)
+    }
+
+    const empty = syncProjectCameActionsSchema.safeParse({
+      cameActionIds: []
+    })
+    assert.equal(empty.success, false)
+  })
+
   it('validates projectFilterSchema parameters', () => {
     const valid = projectFilterSchema.safeParse({
       investigationId: '1f400e7c-7c49-4b1a-8bc7-b7e2a1b0c3d5',
@@ -133,6 +208,92 @@ describe('projects domain - schema validation', () => {
       investigationId: 'not-a-uuid'
     })
     assert.equal(invalid.success, false)
+  })
+
+  it('validates createProjectActivitySchema successfully', () => {
+    const valid = createProjectActivitySchema.safeParse({
+      title: 'Desarrollar módulo de sincronización CAME',
+      description: 'Implementación del adapter y endpoints',
+      priority: 'high',
+      cameActionId: 'ACC-D-01',
+      budget: 150000,
+      startDate: '2026-09-01',
+      endDate: '2026-09-30'
+    })
+
+    assert.equal(valid.success, true)
+    if (valid.success) {
+      assert.equal(valid.data.title, 'Desarrollar módulo de sincronización CAME')
+      assert.equal(valid.data.priority, 'high')
+      assert.equal(valid.data.budget, 150000)
+    }
+  })
+
+  it('validates projectActivityInputSchema with subtasks successfully', () => {
+    const valid = projectActivityInputSchema.safeParse({
+      title: 'Desarrollar módulo de sincronización CAME',
+      description: 'Implementación del adapter y endpoints',
+      priority: 'high',
+      cameActionId: 'ACC-D-01',
+      budget: 150000,
+      startDate: '2026-09-01',
+      endDate: '2026-09-30',
+      tasks: [
+        {
+          title: 'Diseñar esquema de base de datos',
+          priority: 'high',
+          budgetAmount: 50000
+        },
+        {
+          title: 'Implementar route handler',
+          priority: 'medium',
+          budgetAmount: 100000
+        }
+      ]
+    })
+
+    assert.equal(valid.success, true)
+    if (valid.success) {
+      assert.equal(valid.data.tasks?.length, 2)
+    }
+  })
+
+  it('validates updateProjectActivitySchema patch successfully', () => {
+    const valid = updateProjectActivitySchema.safeParse({
+      status: 'in_progress',
+      budget: 200000,
+      priority: 'urgent'
+    })
+
+    assert.equal(valid.success, true)
+    if (valid.success) {
+      assert.equal(valid.data.status, 'in_progress')
+      assert.equal(valid.data.budget, 200000)
+    }
+  })
+
+  it('validates project creation with detailed activities and subtasks', () => {
+    const valid = createProjectSchema.safeParse({
+      name: 'Plan FCBC Transformación Digital',
+      planningMode: 'detailed',
+      activities: [
+        {
+          title: 'Capacitación en competencias digitales',
+          cameActionId: 'ACC-D-04',
+          tasks: [
+            { title: 'Elaborar contenido didáctico' },
+            { title: 'Ejecutar talleres presenciales' }
+          ]
+        }
+      ]
+    })
+
+    assert.equal(valid.success, true)
+    if (valid.success) {
+      assert.equal(valid.data.planningMode, 'detailed')
+      assert.equal(valid.data.activities.length, 1)
+      assert.equal(valid.data.activities[0].tasks?.length, 2)
+    }
   })
 })
 

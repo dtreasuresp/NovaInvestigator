@@ -4,6 +4,7 @@ import type { Database, Json } from '@/lib/supabase/database.types'
 export type ProjectPriority = 'low' | 'medium' | 'high' | 'urgent'
 export type ProjectBudgetMode = 'action_based' | 'total_first'
 export type ProjectStatus = 'planning' | 'active' | 'on_hold' | 'completed' | 'cancelled'
+export type ProjectActivityStatus = 'pending' | 'in_progress' | 'completed' | 'blocked' | 'cancelled'
 export type ProjectMemberRole = 'leader' | 'member'
 export type CameActionType = 'C' | 'A' | 'M' | 'E'
 
@@ -25,6 +26,24 @@ export type ProjectRow = {
   status: ProjectStatus
   idempotency_key: string | null
   created_by: string | null
+  created_at: string
+  updated_at: string
+}
+
+export type ProjectActivityRow = {
+  id: string
+  tenant_id: string
+  project_id: string
+  came_action_id: string | null
+  title: string
+  description: string
+  owner_user_id: string | null
+  priority: ProjectPriority
+  start_date: string | null
+  end_date: string | null
+  budget: number
+  status: ProjectActivityStatus
+  position: number
   created_at: string
   updated_at: string
 }
@@ -121,6 +140,43 @@ export type ProjectsExtraTables = {
         columns: ['investigation_id']
         isOneToOne: false
         referencedRelation: 'investigations'
+        referencedColumns: ['id']
+      }
+    ]
+  }
+  project_activities: {
+    Row: ProjectActivityRow
+    Insert: {
+      id?: string
+      tenant_id: string
+      project_id: string
+      came_action_id?: string | null
+      title: string
+      description?: string | null
+      owner_user_id?: string | null
+      priority?: ProjectPriority
+      start_date?: string | null
+      end_date?: string | null
+      budget?: number
+      status?: ProjectActivityStatus
+      position?: number
+      created_at?: string
+      updated_at?: string
+    }
+    Update: Partial<ProjectActivityRow>
+    Relationships: [
+      {
+        foreignKeyName: 'project_activities_project_id_fkey'
+        columns: ['project_id']
+        isOneToOne: false
+        referencedRelation: 'projects'
+        referencedColumns: ['id']
+      },
+      {
+        foreignKeyName: 'project_activities_owner_user_id_fkey'
+        columns: ['owner_user_id']
+        isOneToOne: false
+        referencedRelation: 'users'
         referencedColumns: ['id']
       }
     ]

@@ -5,6 +5,8 @@ import { logger } from '@/lib/logger'
 import type { NovaiModularTool, ToolExecutionResult } from '../types'
 
 export const listKanbanTasksSchema = z.object({
+  projectId: z.string().uuid().optional().describe('ID opcional del proyecto o investigación estratégica para filtrar las tareas.'),
+  investigationId: z.string().uuid().optional().describe('ID opcional de la investigación asociada.'),
   column_slug: z.enum(['backlog', 'in_progress', 'review', 'done']).optional().describe('Filtrar tareas por columna.'),
   priority: z.enum(['low', 'medium', 'high', 'urgent']).optional().describe('Filtrar tareas por prioridad.'),
   limit: z.number().int().min(1).max(30).optional().describe('Número máximo de tareas a retornar (por defecto 15).')
@@ -17,6 +19,7 @@ export async function executeListKanbanTasks(
   principal: InvestigationsPrincipal
 ): Promise<ToolExecutionResult> {
   try {
+    const targetContextId = args.projectId || args.investigationId
     const columnSlug = args.column_slug
     const priority = args.priority
     const limit = typeof args.limit === 'number' ? Math.min(Math.max(1, args.limit), 30) : 15
@@ -27,10 +30,14 @@ export async function executeListKanbanTasks(
 
     let query = generalClient
       .from('kanban_tasks')
-      .select('id, title, description, priority, due_date, tags, position, column_id, created_at, updated_at')
+      .select('id, title, description, priority, due_date, tags, position, column_id, came_action_id, budget_amount, assignee_ids, project_id, created_at, updated_at')
       .eq('tenant_id', principal.tenantId)
       .order('position', { ascending: true })
       .limit(limit)
+
+    if (targetContextId) {
+      query = query.eq('project_id', targetContextId)
+    }
 
     if (priority) {
       query = query.eq('priority', priority)
@@ -63,6 +70,9 @@ export async function executeListKanbanTasks(
       due_date: string | null
       tags: string[] | null
       column_id: string
+      came_action_id: string | null
+      budget_amount: number | null
+      assignee_ids: string[] | null
     }>
 
     let mappedTasks = taskList.map(t => ({
@@ -72,6 +82,9 @@ export async function executeListKanbanTasks(
       priority: t.priority,
       dueDate: t.due_date,
       tags: t.tags,
+      cameActionId: t.came_action_id,
+      budgetAmount: t.budget_amount,
+      assigneeCount: t.assignee_ids?.length || 0,
       column: colMap.get(t.column_id)?.name || 'Desconocida',
       columnSlug: colMap.get(t.column_id)?.slug || 'unknown'
     }))
@@ -84,6 +97,7 @@ export async function executeListKanbanTasks(
       toolName: 'list_kanban_tasks',
       success: true,
       data: {
+        contextId: targetContextId || 'all',
         totalReturned: mappedTasks.length,
         tasks: mappedTasks
       }
@@ -103,30 +117,38 @@ export const listKanbanTasksTool: NovaiModularTool<typeof listKanbanTasksSchema>
   metadata: {
     name: 'list_kanban_tasks',
     label: 'Listar Tareas Kanban',
-    description: 'Lista las tareas y proyectos del tablero Kanban accesibles para el usuario, con sus columnas, prioridades y fechas límite.',
+    description: 'Lista las tareas y actividades del tablero Kanban filtradas opcionalmente por investigación, proyecto, columna o prioridad.',
     category: 'kanban',
     riskLevel: 'low'
   },
   schema: listKanbanTasksSchema,
   openAiDeclaration: {
     name: 'list_kanban_tasks',
-    description: 'Lista las tareas y proyectos del tablero Kanban accesibles para el usuario, con sus columnas, prioridades y fechas límite.',
+    description: 'Lista las tareas y actividades del tablero Kanban filtradas opcionalmente por investigación, proyecto, columna o prioridad.',
     parameters: {
       type: 'object',
       properties: {
+        projectId: {
+          type: 'string',
+          description: 'ID opcional del proyecto o investigación estratégica.'
+        },
+        investigationId: {
+          type: 'string',
+          description: 'ID opcional de la investigación asociada.'
+        },
         column_slug: {
           type: 'string',
           enum: ['backlog', 'in_progress', 'review', 'done'],
-          description: 'Filtrar tareas por columna (opcional).'
+          description: 'Filtrar por slug de columna.'
         },
         priority: {
           type: 'string',
           enum: ['low', 'medium', 'high', 'urgent'],
-          description: 'Filtrar tareas por prioridad (opcional).'
+          description: 'Filtrar por prioridad.'
         },
         limit: {
-          type: 'integer',
-          description: 'Número máximo de tareas a retornar (por defecto 15).'
+          type: 'number',
+          description: 'Límite de resultados (máx 30).'
         }
       }
     }
@@ -134,11 +156,10 @@ export const listKanbanTasksTool: NovaiModularTool<typeof listKanbanTasksSchema>
   execute: executeListKanbanTasks,
   toVercelTool: (principal: InvestigationsPrincipal) =>
     tool({
-      description: 'Lista las tareas y proyectos del tablero Kanban accesibles para el usuario.',
+      description: 'Lista las tareas y actividades del tablero Kanban filtradas opcionalmente por investigación o proyecto.',
       inputSchema: listKanbanTasksSchema,
       execute: async (args: ListKanbanTasksInput) => {
         const res = await executeListKanbanTasks(args, principal)
-        
         return res.data !== undefined ? res.data : { error: res.error }
       }
     })

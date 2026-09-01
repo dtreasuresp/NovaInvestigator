@@ -9,6 +9,11 @@ export {
   createProjectTransaction,
   countActiveProjects,
   listAssignedCameActionIds,
+  listProjectActivities as listProjectActivitiesRepo,
+  getProjectActivityById,
+  createProjectActivity as createProjectActivityRepo,
+  updateProjectActivity as updateProjectActivityRepo,
+  deleteProjectActivity as deleteProjectActivityRepo,
   type ProjectWithStats,
   type ProjectDetail
 } from './repository'
@@ -19,5 +24,10 @@ export {
   updateProject,
   listInvestigationProjects,
   listEligibleCameActions,
+  listProjectActivities,
+  getProjectActivity,
+  createProjectActivity,
+  updateProjectActivity,
+  deleteProjectActivity,
   type EligibleCameActionItem
 } from './service'

@@ -233,7 +233,11 @@ export function KanbanBoard() {
           {projects.length > 0 && (
             <Select value={projectFilter} onValueChange={val => setProjectFilter(val ?? 'all')}>
               <SelectTrigger className='h-9 w-full sm:w-52 text-xs'>
-                <SelectValue placeholder={t('kanban.allProjects')} />
+                <SelectValue placeholder={t('kanban.allProjects')}>
+                  {projectFilter === 'all'
+                    ? t('kanban.allProjects')
+                    : (projects.find(p => p.id === projectFilter)?.title ?? 'Contexto no disponible')}
+                </SelectValue>
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value='all'>{t('kanban.allProjects')}</SelectItem>

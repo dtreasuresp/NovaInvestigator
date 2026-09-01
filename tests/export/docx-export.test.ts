@@ -160,6 +160,7 @@ describe('docx export pipeline', () => {
           created_at: '2026-08-30T00:00:00Z'
         }
       ],
+      activities: [],
       tasks: [
         {
           id: 'task-1',

@@ -7,15 +7,14 @@ import {
   ChevronRightIcon,
   ChevronLeftIcon,
   AlertCircleIcon,
-  UsersIcon,
-  CalendarIcon,
-  DollarSignIcon,
   LayersIcon,
   Loader2Icon,
   PlusIcon,
   Trash2Icon,
-  FileTextIcon,
-  ListTodoIcon
+  ListTodoIcon,
+  DollarSignIcon,
+  TargetIcon,
+  InfoIcon
 } from 'lucide-react'
 import { toast } from 'sonner'
 
@@ -48,7 +47,7 @@ import { useCurrentUser } from '@/hooks/use-current-user'
 import { useI18n } from '@/hooks/use-i18n'
 import { cn } from '@/lib/utils'
 import type { CameAction } from '@/types/apps/investigator-types'
-import type { CreateProjectInput, ProjectCameActionInput, ProjectActivityInput } from '@/features/projects'
+import type { CreateProjectInput, ProjectCameActionInput, ProjectActivityInput, ProjectTaskInput } from '@/features/projects'
 
 export interface TeamMemberOption {
   userId: string
@@ -70,10 +69,10 @@ export interface ProjectCreationWizardProps {
 }
 
 const STEPS = [
-  { id: 1, title: 'Proyecto', desc: 'Datos generales y líder' },
+  { id: 1, title: 'Proyecto', desc: 'Datos y líder' },
   { id: 2, title: 'Acciones CAME', desc: 'Acciones origen' },
   { id: 3, title: 'Presupuesto', desc: 'Modo y límite' },
-  { id: 4, title: 'Actividades', desc: 'Kanban y responsables' },
+  { id: 4, title: 'Actividades', desc: 'Planificación 1:1 o 1:N' },
   { id: 5, title: 'Revisión', desc: 'Confirmación' }
 ]
 
@@ -98,63 +97,48 @@ function LocalizedCurrencyInput({
   const { locale } = useI18n()
   const formatLocale = locale === 'en' ? 'en-US' : locale === 'de' ? 'de-DE' : locale === 'pt' ? 'pt-PT' : 'es-ES'
   const [isFocused, setIsFocused] = useState(false)
-  const [displayString, setDisplayString] = useState('')
+  const [rawText, setRawText] = useState('')
 
-  const formatNumber = (num: number) => {
-    if (!num && num !== 0) return ''
+  const formattedDisplay = useMemo(() => {
+    if (value === 0 || isNaN(value)) return ''
     return new Intl.NumberFormat(formatLocale, {
       maximumFractionDigits: 2,
-      useGrouping: true
-    }).format(num)
-  }
+      minimumFractionDigits: 0
+    }).format(value)
+  }, [value, formatLocale])
 
-  useEffect(() => {
-    if (!isFocused) {
-      setDisplayString(value > 0 ? formatNumber(value) : '')
-    }
-  }, [value, isFocused, locale])
-
-  const handleFocus = (e: React.FocusEvent<HTMLInputElement>) => {
+  const handleFocus = () => {
     setIsFocused(true)
-    if (value === 0) {
-      setDisplayString('')
-    } else {
-      setDisplayString(String(value))
-    }
-    e.target.select()
+    setRawText(value === 0 ? '' : String(value))
   }
 
   const handleBlur = () => {
     setIsFocused(false)
-    setDisplayString(value > 0 ? formatNumber(value) : '')
+    const cleaned = rawText.replace(/[^0-9.]/g, '')
+    const parsed = parseFloat(cleaned)
+    onChange(isNaN(parsed) || parsed < 0 ? 0 : parsed)
   }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const raw = e.target.value.replace(/[^0-9.]/g, '')
-    const parts = raw.split('.')
-    const cleanRaw = parts.length > 2 ? `${parts[0]}.${parts.slice(1).join('')}` : raw
-    const num = cleanRaw === '' ? 0 : Number(cleanRaw)
-
-    setDisplayString(cleanRaw)
-    if (!Number.isNaN(num)) {
-      onChange(num)
-    }
+    const text = e.target.value
+    setRawText(text)
+    const cleaned = text.replace(/[^0-9.]/g, '')
+    const parsed = parseFloat(cleaned)
+    onChange(isNaN(parsed) || parsed < 0 ? 0 : parsed)
   }
 
   return (
-    <div className='relative flex items-center'>
-      {prefix && (
-        <span className='pointer-events-none absolute left-2.5 text-xs text-muted-foreground font-medium'>
-          {prefix}
-        </span>
-      )}
+    <div className={cn('relative flex items-center w-full min-w-0', className)}>
+      <span className='absolute left-3 text-muted-foreground text-xs font-semibold select-none pointer-events-none'>
+        {prefix}
+      </span>
       <Input
         type='text'
-        inputMode='decimal'
+        inputMode='numeric'
         disabled={disabled}
-        className={cn(prefix ? 'pl-6 text-xs' : 'text-xs', className)}
+        className='pl-7 text-xs font-medium h-9 w-full min-w-0'
         placeholder={placeholder}
-        value={isFocused ? displayString : value > 0 ? formatNumber(value) : ''}
+        value={isFocused ? rawText : (formattedDisplay ? `${formattedDisplay}` : '')}
         onFocus={handleFocus}
         onBlur={handleBlur}
         onChange={handleChange}
@@ -163,23 +147,21 @@ function LocalizedCurrencyInput({
   )
 }
 
-// Selector Múltiple de Responsables usando Shadcn Combobox
+// Selector multi-asignado con Combobox
+interface MultiAssigneeComboboxProps {
+  teamMembers: TeamMemberOption[]
+  assigneeIds: string[]
+  onChange: (ids: string[]) => void
+  disabled?: boolean
+}
+
 function MultiAssigneeCombobox({
   teamMembers,
   assigneeIds,
   onChange,
   disabled = false
-}: {
-  teamMembers: TeamMemberOption[]
-  assigneeIds: string[]
-  onChange: (ids: string[]) => void
-  disabled?: boolean
-}) {
-  const [open, setOpen] = useState(false)
+}: MultiAssigneeComboboxProps) {
   const anchor = useComboboxAnchor()
-  const inputRef = useRef<HTMLInputElement>(null)
-
-  const memberIds = useMemo(() => teamMembers.map(m => m.userId), [teamMembers])
 
   const memberMap = useMemo(() => {
     const map = new Map<string, TeamMemberOption>()
@@ -188,72 +170,49 @@ function MultiAssigneeCombobox({
   }, [teamMembers])
 
   return (
-    <div className='w-full'>
+    <div className='w-full min-w-0'>
       <Combobox
         multiple
-        autoHighlight
-        items={memberIds}
         value={assigneeIds}
-        onValueChange={(val: string[]) => onChange(val || [])}
-        open={open}
-        onOpenChange={setOpen}
+        onValueChange={(nextValues: string[] | null) => onChange(nextValues || [])}
         disabled={disabled}
       >
-        <ComboboxChips
-          ref={anchor}
-          className='min-h-8 text-xs py-1 px-2 gap-1 cursor-pointer bg-background w-full'
-          onClick={() => {
-            if (!disabled) {
-              setOpen(true)
-              inputRef.current?.focus()
-            }
-          }}
-        >
-          <ComboboxValue>
-            {(values: string[]) =>
-              values.length > 0 ? (
-                <div className='flex flex-wrap items-center gap-1 w-full'>
-                  <Badge variant='secondary' className='rounded-md text-[10px] px-1.5 py-0 h-5 font-semibold shrink-0'>
-                    {values.length}
-                  </Badge>
-                  <span className='text-[11px] text-foreground truncate max-w-[140px]'>
-                    {values.map(id => memberMap.get(id)?.name || id).join(', ')}
-                  </span>
-                  <ComboboxChipsInput ref={inputRef} className='text-xs h-5 min-w-8' />
-                </div>
-              ) : (
-                <div className='flex items-center justify-between w-full'>
-                  <span className='text-[11px] text-muted-foreground'>Seleccionar responsables...</span>
-                  <ComboboxChipsInput ref={inputRef} className='text-xs h-5 min-w-8' />
-                </div>
-              )
-            }
-          </ComboboxValue>
+        <ComboboxChips ref={anchor} className='min-h-9 w-full text-xs p-1 bg-background'>
+          {assigneeIds.map(userId => {
+            const member = memberMap.get(userId)
+            if (!member) return null
+            return (
+              <ComboboxValue key={userId}>
+                <span className='truncate max-w-[120px]'>{member.name}</span>
+              </ComboboxValue>
+            )
+          })}
+          <ComboboxChipsInput
+            placeholder={assigneeIds.length === 0 ? 'Seleccionar responsables...' : ''}
+            className='text-xs'
+          />
         </ComboboxChips>
-        <ComboboxContent anchor={anchor} className='min-w-[220px] text-xs z-50'>
-          <ComboboxEmpty className='text-xs py-2 text-center text-muted-foreground'>
-            No se encontraron miembros.
-          </ComboboxEmpty>
-          <ComboboxList className='max-h-48 text-xs'>
-            {userId => {
-              const member = memberMap.get(userId)
-              if (!member) return null
-              return (
-                <ComboboxItem key={userId} value={userId} className='text-xs py-1.5'>
-                  <div className='flex items-center gap-2'>
-                    <span className='size-5 rounded-full bg-primary/10 text-primary flex items-center justify-center text-[10px] font-bold shrink-0'>
-                      {member.name.slice(0, 1).toUpperCase()}
-                    </span>
-                    <div className='flex flex-col min-w-0'>
-                      <span className='font-medium text-foreground truncate'>{member.name}</span>
-                      {member.email && (
-                        <span className='text-[10px] text-muted-foreground truncate'>{member.email}</span>
-                      )}
-                    </div>
+
+        <ComboboxContent align='start' className='w-[260px] p-0'>
+          <ComboboxList className='max-h-52 overflow-y-auto p-1'>
+            <ComboboxEmpty className='py-3 text-center text-xs text-muted-foreground'>
+              No se encontraron miembros.
+            </ComboboxEmpty>
+            {teamMembers.map(m => (
+              <ComboboxItem key={m.userId} value={m.userId} className='text-xs py-1.5'>
+                <div className='flex items-center gap-2 min-w-0'>
+                  <span className='size-5 rounded-full bg-primary/10 text-primary flex items-center justify-center text-xs font-bold shrink-0'>
+                    {m.name.slice(0, 1).toUpperCase()}
+                  </span>
+                  <div className='flex flex-col min-w-0'>
+                    <span className='font-medium text-foreground truncate'>{m.name}</span>
+                    {m.email && (
+                      <span className='text-xs text-muted-foreground truncate'>{m.email}</span>
+                    )}
                   </div>
-                </ComboboxItem>
-              )
-            }}
+                </div>
+              </ComboboxItem>
+            ))}
           </ComboboxList>
         </ComboboxContent>
       </Combobox>
@@ -288,6 +247,7 @@ export function ProjectCreationWizard({
   const [leaderUserId, setLeaderUserId] = useState<string>('')
   const [budgetMode, setBudgetMode] = useState<'action_based' | 'total_first'>('action_based')
   const [budgetTotal, setBudgetTotal] = useState<number>(0)
+  const [planningMode, setPlanningMode] = useState<'quick' | 'detailed'>('quick')
   const [selectedActionIds, setSelectedActionIds] = useState<Set<string>>(new Set())
   const [activities, setActivities] = useState<ProjectActivityInput[]>([])
 
@@ -298,53 +258,46 @@ export function ProjectCreationWizard({
       return
     }
 
-    // Default name and objective if derived from investigation
-    if (investigationTitle && !name) {
-      setName(`Implementación: ${investigationTitle}`)
+    // Default project name from investigation if derived
+    if (investigationId && investigationTitle) {
+      setName(`Plan de Ejecución — ${investigationTitle}`)
+      if (investigationObjective) {
+        setObjective(investigationObjective)
+      }
+    } else {
+      setName('')
+      setObjective('')
     }
-    if (investigationObjective && !objective) {
-      setObjective(investigationObjective)
-    }
+    setDescription('')
+    setPriority('medium')
+    setBudgetMode('action_based')
+    setBudgetTotal(0)
+    setPlanningMode('quick')
+    setActivities([])
 
-    // Fetch team members for user's active tenant
+    // Load available workspace members for assignment
     setLoadingMembers(true)
-    fetch('/api/kanban')
+    fetch('/api/users/profile')
       .then(async res => {
         if (!res.ok) return
         const data = await res.json()
-        if (data.ok && Array.isArray(data.members) && data.members.length > 0) {
-          const memberMap = new Map<string, TeamMemberOption>()
-          data.members.forEach((m: { id: string; name: string; email?: string; role?: string }) => {
-            if (m.id && !memberMap.has(m.id)) {
-              memberMap.set(m.id, {
-                userId: m.id,
-                name: m.name,
-                email: m.email || '',
-                role: m.role || 'member',
-                isLeader: m.role === 'team_leader' || m.role === 'owner' || m.role === 'admin'
-              })
-            }
-          })
-          const members = Array.from(memberMap.values())
-          setTeamMembers(members)
-
-          // Preselect leader: prioritize investigation owner, then team leader/owner, then first member
-          const targetLeader =
-            (investigationOwnerId && members.find(m => m.userId === investigationOwnerId)) ||
-            members.find(m => m.isLeader) ||
-            members[0]
-
-          if (targetLeader) {
-            setLeaderUserId(targetLeader.userId)
+        if (data?.user) {
+          const userOption: TeamMemberOption = {
+            userId: data.user.id,
+            name: data.user.name || data.user.email || 'Usuario Principal',
+            email: data.user.email,
+            role: 'owner',
+            isLeader: true
           }
+          setTeamMembers([userOption])
+          setLeaderUserId(data.user.id)
         }
       })
       .catch(() => {
-        // Fallback with current user if network fails
-        if (currentUser && teamMembers.length === 0) {
+        if (currentUser) {
           const fallbackMember: TeamMemberOption = {
             userId: currentUser.id,
-            name: currentUser.fullName || currentUser.email?.split('@')[0] || 'Mi Usuario',
+            name: currentUser.fullName || currentUser.email || 'Líder de Proyecto',
             email: currentUser.email || '',
             role: 'owner',
             isLeader: true
@@ -385,25 +338,73 @@ export function ProjectCreationWizard({
       a => selectedActionIds.has(a.id)
     )
 
-    if (selectedActionsList.length > 0 && activities.length === 0) {
-      const initialActs: ProjectActivityInput[] = selectedActionsList.map(a => ({
-        title: a.action || a.objective || `Actividad ${a.id}`,
-        description: `Derivada de la acción CAME ${a.id} (${a.type}): ${a.problem || ''}`,
-        priority: 'medium',
-        assigneeIds: leaderUserId ? [leaderUserId] : [],
-        cameActionId: a.id,
-        budgetAmount: 0,
-        dueDate: a.endDate || null
-      }))
-      setActivities(initialActs)
-    }
-  }, [selectedActionIds, eligibleActions, cameActions, leaderUserId])
+    if (selectedActionsList.length > 0) {
+      // Reconcile activities with selected CAME actions
+      setActivities(prev => {
+        const existingMap = new Map<string, ProjectActivityInput>()
+        prev.forEach(act => {
+          if (act.cameActionId) existingMap.set(act.cameActionId, act)
+        })
 
-  // Presupuestos calculados
-  const sumActivitiesBudget = useMemo(
-    () => activities.reduce((acc, a) => acc + (Number(a.budgetAmount) || 0), 0),
-    [activities]
-  )
+        return selectedActionsList.map(a => {
+          const existing = existingMap.get(a.id)
+          if (existing) return existing
+
+          const defaultTitle = a.action || a.objective || `Actividad ${a.id}`
+          return {
+            title: defaultTitle,
+            description: a.problem ? `Problema estratégico: ${a.problem}` : `Acción CAME ${a.id} (${a.type})`,
+            priority: 'medium',
+            ownerUserId: leaderUserId || null,
+            assigneeIds: leaderUserId ? [leaderUserId] : [],
+            cameActionId: a.id,
+            budget: 0,
+            budgetAmount: 0,
+            startDate: startDate || null,
+            endDate: a.endDate || null,
+            dueDate: a.endDate || null,
+            status: 'pending',
+            tasks: []
+          }
+        })
+      })
+    } else if (!investigationId && activities.length === 0) {
+      // For blank projects without investigation, start with 1 blank package
+      setActivities([
+        {
+          title: 'Paquete de Trabajo 1',
+          description: 'Definición de objetivos operativos',
+          priority: 'medium',
+          ownerUserId: leaderUserId || null,
+          assigneeIds: leaderUserId ? [leaderUserId] : [],
+          cameActionId: null,
+          budget: 0,
+          budgetAmount: 0,
+          startDate: startDate || null,
+          endDate: endDate || null,
+          dueDate: endDate || null,
+          status: 'pending',
+          tasks: []
+        }
+      ])
+    }
+  }, [selectedActionIds, eligibleActions, cameActions, leaderUserId, startDate, investigationId])
+
+  // Presupuestos calculados (Suma de actividades y sus subtareas)
+  const sumActivitiesBudget = useMemo(() => {
+    return activities.reduce((acc, act) => {
+      const actBudget = Number(act.budget || act.budgetAmount) || 0
+      const tasksBudget = (act.tasks || []).reduce((tAcc, t) => tAcc + (Number(t.budgetAmount) || 0), 0)
+      return acc + Math.max(actBudget, tasksBudget)
+    }, 0)
+  }, [activities])
+
+  const totalKanbanTasksCount = useMemo(() => {
+    return activities.reduce((acc, act) => {
+      const taskCount = act.tasks && act.tasks.length > 0 ? act.tasks.length : 1
+      return acc + taskCount
+    }, 0)
+  }, [activities])
 
   const isBudgetValid = useMemo(() => {
     if (budgetMode === 'total_first' && budgetTotal > 0) {
@@ -424,6 +425,12 @@ export function ProjectCreationWizard({
       }
       if (startDate && endDate && new Date(endDate) < new Date(startDate)) {
         toast.error('La fecha de fin no puede ser anterior a la fecha de inicio.')
+        return
+      }
+    }
+    if (currentStep === 2) {
+      if (investigationId && selectedActionIds.size === 0) {
+        toast.error('Debe seleccionar al menos una acción CAME para continuar.')
         return
       }
     }
@@ -457,12 +464,18 @@ export function ProjectCreationWizard({
             ...current,
             {
               title: action.action || action.objective || `Actividad ${action.id}`,
-              description: `Derivada de la acción CAME ${action.id} (${action.type}): ${action.problem || ''}`,
+              description: action.problem ? `Problema estratégico: ${action.problem}` : `Acción CAME ${action.id} (${action.type})`,
               priority: 'medium',
+              ownerUserId: leaderUserId || null,
               assigneeIds: leaderUserId ? [leaderUserId] : [],
               cameActionId: action.id,
+              budget: 0,
               budgetAmount: 0,
-              dueDate: action.endDate || null
+              startDate: startDate || null,
+              endDate: action.endDate || endDate || null,
+              dueDate: action.endDate || endDate || null,
+              status: 'pending',
+              tasks: []
             }
           ])
         }
@@ -475,13 +488,19 @@ export function ProjectCreationWizard({
     setActivities(prev => [
       ...prev,
       {
-        title: 'Nueva actividad operativa',
+        title: `Paquete de Trabajo ${prev.length + 1}`,
         description: '',
         priority: 'medium',
+        ownerUserId: leaderUserId || null,
         assigneeIds: leaderUserId ? [leaderUserId] : [],
         cameActionId: null,
+        budget: 0,
         budgetAmount: 0,
-        dueDate: null
+        startDate: startDate || null,
+        endDate: endDate || null,
+        dueDate: endDate || null,
+        status: 'pending',
+        tasks: []
       }
     ])
   }
@@ -494,37 +513,105 @@ export function ProjectCreationWizard({
     setActivities(prev => prev.filter((_, i) => i !== index))
   }
 
+  const handleAddTaskToActivity = (activityIndex: number) => {
+    setActivities(prev =>
+      prev.map((act, i) => {
+        if (i !== activityIndex) return act
+        const currentTasks = act.tasks || []
+        return {
+          ...act,
+          tasks: [
+            ...currentTasks,
+            {
+              title: `Tarea operativa ${currentTasks.length + 1}`,
+              description: '',
+              priority: act.priority || 'medium',
+              columnId: null,
+              assigneeIds:
+                act.assigneeIds && act.assigneeIds.length > 0
+                  ? [act.assigneeIds[0]]
+                  : act.ownerUserId
+                    ? [act.ownerUserId]
+                    : leaderUserId
+                      ? [leaderUserId]
+                      : [],
+              dueDate: act.endDate || act.dueDate || null,
+              budgetAmount: 0
+            }
+          ]
+        }
+      })
+    )
+  }
+
+  const handleUpdateActivityTask = (
+    activityIndex: number,
+    taskIndex: number,
+    patch: Partial<ProjectTaskInput>
+  ) => {
+    setActivities(prev =>
+      prev.map((act, i) => {
+        if (i !== activityIndex) return act
+        const updatedTasks = (act.tasks || []).map((t, ti) => (ti === taskIndex ? { ...t, ...patch } : t))
+        return {
+          ...act,
+          tasks: updatedTasks
+        }
+      })
+    )
+  }
+
+  const handleRemoveActivityTask = (activityIndex: number, taskIndex: number) => {
+    setActivities(prev =>
+      prev.map((act, i) => {
+        if (i !== activityIndex) return act
+        return {
+          ...act,
+          tasks: (act.tasks || []).filter((_, ti) => ti !== taskIndex)
+        }
+      })
+    )
+  }
+
   const handleFinishCreate = async () => {
     try {
       setSubmitting(true)
 
-      const selectedActionsList = (eligibleActions.length > 0 ? eligibleActions.map(e => e.action) : cameActions).filter(
-        a => selectedActionIds.has(a.id)
-      )
-
-      const cameActionsPayload: ProjectCameActionInput[] = selectedActionsList.map(a => ({
-        cameActionId: a.id,
-        actionType: a.type as 'C' | 'A' | 'M' | 'E',
-        title: (a.action || a.objective || a.id).slice(0, 2000),
-        budgetAllocated: 0,
-        snapshot: {
-          problem: a.problem || '',
-          objective: a.objective || '',
-          action: a.action || '',
-          responsible: a.responsible || '',
-          criteria: a.criteria || {}
+      const cameActionsPayload: ProjectCameActionInput[] = Array.from(selectedActionIds).map(cameId => {
+        const fullAction = (eligibleActions.length > 0 ? eligibleActions.map(e => e.action) : cameActions).find(
+          a => a.id === cameId
+        )
+        return {
+          cameActionId: cameId,
+          title: fullAction?.action || fullAction?.objective || `Acción CAME ${cameId}`,
+          actionType: fullAction?.type || 'C',
+          budgetAllocated: 0,
+          snapshot: fullAction ? JSON.parse(JSON.stringify(fullAction)) : {}
         }
-      }))
+      })
 
       const activitiesPayload: ProjectActivityInput[] = activities.map(act => ({
-        title: (act.title || '').trim().slice(0, 1000),
-        description: (act.description || '').trim().slice(0, 4000),
+        title: act.title.trim().slice(0, 1000),
+        description: act.description ? act.description.trim().slice(0, 4000) : '',
         priority: act.priority || 'medium',
-        columnId: act.columnId || null,
-        assigneeIds: Array.isArray(act.assigneeIds) ? act.assigneeIds.filter(Boolean) : [],
-        dueDate: act.dueDate || null,
+        ownerUserId: act.ownerUserId || (act.assigneeIds && act.assigneeIds[0]) || leaderUserId || null,
+        assigneeIds: act.assigneeIds || [],
         cameActionId: act.cameActionId || null,
-        budgetAmount: typeof act.budgetAmount === 'number' && act.budgetAmount >= 0 ? act.budgetAmount : 0
+        budget: Number(act.budget || act.budgetAmount) || 0,
+        budgetAmount: Number(act.budget || act.budgetAmount) || 0,
+        startDate: act.startDate || startDate || null,
+        endDate: act.endDate || act.dueDate || endDate || null,
+        dueDate: act.dueDate || act.endDate || endDate || null,
+        status: act.status || 'pending',
+        tasks: (act.tasks || []).map(t => ({
+          title: t.title.trim().slice(0, 1000),
+          description: t.description ? t.description.trim().slice(0, 4000) : '',
+          priority: t.priority || act.priority || 'medium',
+          columnId: t.columnId || null,
+          assigneeIds: Array.isArray(t.assigneeIds) ? t.assigneeIds.filter(Boolean) : [],
+          dueDate: t.dueDate || act.endDate || null,
+          budgetAmount: Number(t.budgetAmount) || 0
+        }))
       }))
 
       const payload: CreateProjectInput = {
@@ -538,6 +625,7 @@ export function ProjectCreationWizard({
         leaderUserId: leaderUserId || null,
         budgetMode,
         budgetTotal: budgetMode === 'action_based' ? sumActivitiesBudget : budgetTotal,
+        planningMode,
         cameActions: cameActionsPayload,
         activities: activitiesPayload,
         idempotencyKey: `proj-create-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`
@@ -564,10 +652,10 @@ export function ProjectCreationWizard({
         throw new Error(data?.error?.messageKey || 'Error al crear el proyecto.')
       }
 
-      toast.success('Proyecto estratégico y actividades Kanban creados con éxito.')
+      toast.success('Proyecto estratégico y estructura de actividades Kanban creados con éxito.')
       onOpenChange(false)
       onProjectCreated?.(data.project.id)
-    } catch (err) {
+    } catch {
       toast.error('No se pudo crear el proyecto.')
     } finally {
       setSubmitting(false)
@@ -578,60 +666,66 @@ export function ProjectCreationWizard({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className='max-h-[90vh] max-w-3xl overflow-y-auto sm:max-w-4xl'>
-        <DialogHeader>
-          <div className='flex items-center gap-2'>
-            <div className='flex size-8 items-center justify-center rounded-md bg-primary/10 text-primary'>
-              <FolderKanbanIcon className='size-4' />
+      <DialogContent className='max-h-[90vh] sm:max-h-[85vh] w-[95vw] sm:max-w-4xl lg:max-w-5xl p-0 flex flex-col overflow-hidden bg-background border border-border shadow-2xl rounded-2xl'>
+        {/* Header Fijo */}
+        <DialogHeader className='p-6 pb-4 border-b shrink-0'>
+          <div className='flex items-center gap-3'>
+            <div className='flex size-9 items-center justify-center rounded-lg bg-primary/10 text-primary shrink-0'>
+              <FolderKanbanIcon className='size-5' />
             </div>
-            <div>
-              <DialogTitle className='text-lg font-bold'>
+            <div className='min-w-0 flex-1'>
+              <DialogTitle className='text-base sm:text-lg font-bold text-foreground truncate'>
                 {investigationId ? 'Nuevo proyecto derivado de CAME' : 'Nuevo proyecto estratégico en blanco'}
               </DialogTitle>
-              <DialogDescription className='text-xs'>
+              <DialogDescription className='text-xs text-muted-foreground mt-0.5 truncate'>
                 Configure datos generales, equipo, acciones CAME, presupuesto y actividades para el tablero Kanban.
               </DialogDescription>
             </div>
           </div>
         </DialogHeader>
 
-        {/* Stepper Navigation (5 Pasos Unificados) */}
-        <div className='flex items-center justify-between border-y bg-muted/20 px-4 py-2.5'>
+        {/* Stepper Responsive Fijo */}
+        <div className='flex items-center justify-between border-b bg-muted/30 px-4 sm:px-6 py-2.5 shrink-0 select-none'>
           {STEPS.map((s, idx) => (
-            <div key={s.id} className='flex items-center gap-2'>
+            <div key={s.id} className='flex items-center gap-1.5 sm:gap-2 shrink-0'>
               <div
-                className={`flex size-6 items-center justify-center rounded-full text-xs font-bold transition-colors ${
+                className={`flex size-6 sm:size-7 items-center justify-center rounded-full text-xs font-bold transition-all ${
                   currentStep === s.id
-                    ? 'bg-primary text-primary-foreground'
+                    ? 'bg-primary text-primary-foreground shadow-xs'
                     : currentStep > s.id
-                      ? 'bg-primary/20 text-primary'
+                      ? 'bg-primary/15 text-primary'
                       : 'bg-muted text-muted-foreground'
                 }`}
               >
-                {currentStep > s.id ? <CheckCircle2Icon className='size-3.5' /> : s.id}
+                {currentStep > s.id ? <CheckCircle2Icon className='size-3.5 sm:size-4' /> : s.id}
               </div>
-              <div className='hidden flex-col sm:flex'>
+              <div className='hidden md:flex flex-col min-w-0'>
                 <span
-                  className={`text-xs font-semibold ${
+                  className={`text-xs font-semibold truncate ${
                     currentStep === s.id ? 'text-foreground' : 'text-muted-foreground'
                   }`}
                 >
                   {s.title}
                 </span>
               </div>
-              {idx < STEPS.length - 1 && <ChevronRightIcon className='size-3.5 text-muted-foreground/40' />}
+              {idx < STEPS.length - 1 && (
+                <ChevronRightIcon className='size-3.5 text-muted-foreground/30 shrink-0 ml-1' />
+              )}
             </div>
           ))}
         </div>
 
-        {/* Step Content */}
-        <div className='py-4'>
+        {/* Contenedor Central con Scroll Vertical Limpio (CERO scroll horizontal) */}
+        <div className='flex-1 overflow-y-auto overflow-x-hidden p-6 space-y-5 min-w-0'>
           {/* PASO 1: Proyecto (Alcance, Datos Generales & Líder) */}
           {currentStep === 1 && (
-            <div className='space-y-4'>
+            <div className='space-y-4 min-w-0'>
               {investigationId && (
-                <div className='rounded-lg border bg-muted/40 p-3'>
-                  <span className='text-xs font-semibold text-foreground'>Investigación de Origen</span>
+                <div className='rounded-lg border bg-muted/30 p-3.5 space-y-1'>
+                  <div className='flex items-center gap-2 text-xs font-semibold text-foreground'>
+                    <TargetIcon className='size-3.5 text-primary' />
+                    <span>Investigación de Origen</span>
+                  </div>
                   <p className='text-xs text-muted-foreground'>{investigationTitle || investigationId}</p>
                 </div>
               )}
@@ -639,10 +733,10 @@ export function ProjectCreationWizard({
               <div className='space-y-1.5'>
                 <div className='flex items-center justify-between'>
                   <Label className='text-xs font-medium'>Nombre del Proyecto *</Label>
-                  <span className='text-[10px] text-muted-foreground'>{name.length} / 300</span>
+                  <span className='text-xs text-muted-foreground'>{name.length} / 300</span>
                 </div>
                 <Input
-                  className='text-xs'
+                  className='text-xs h-9'
                   maxLength={300}
                   placeholder='Ej. Implementación del Plan de Transformación Digital'
                   value={name}
@@ -653,13 +747,13 @@ export function ProjectCreationWizard({
               <div className='space-y-1.5'>
                 <div className='flex items-center justify-between'>
                   <Label className='text-xs font-medium'>Objetivo Estratégico</Label>
-                  <span className='text-[10px] text-muted-foreground'>{objective.length} / 4000</span>
+                  <span className='text-xs text-muted-foreground'>{objective.length} / 4000</span>
                 </div>
                 <Textarea
-                  className='text-xs'
-                  rows={2}
+                  className='text-xs resize-none'
+                  rows={3}
                   maxLength={4000}
-                  placeholder='Defina el impacto esperado del proyecto (máx. 4000 caracteres)...'
+                  placeholder='Defina el impacto esperado del proyecto...'
                   value={objective}
                   onChange={e => setObjective(e.target.value)}
                 />
@@ -669,12 +763,12 @@ export function ProjectCreationWizard({
                 <div className='space-y-1.5'>
                   <Label className='text-xs font-medium'>Líder del Proyecto (Team Leader) *</Label>
                   {loadingMembers ? (
-                    <div className='flex items-center text-xs text-muted-foreground'>
+                    <div className='flex items-center text-xs text-muted-foreground h-9'>
                       <Loader2Icon className='mr-2 size-3.5 animate-spin' /> Cargando miembros...
                     </div>
                   ) : (
                     <Select value={leaderUserId} onValueChange={val => setLeaderUserId(val || '')}>
-                      <SelectTrigger className='text-xs'>
+                      <SelectTrigger className='text-xs h-9'>
                         <SelectValue placeholder='Seleccione el líder responsable'>
                           {(() => {
                             const selected = teamMembers.find(m => m.userId === leaderUserId)
@@ -694,7 +788,7 @@ export function ProjectCreationWizard({
                       </SelectContent>
                     </Select>
                   )}
-                  <p className='text-[11px] text-muted-foreground'>
+                  <p className='text-xs text-muted-foreground'>
                     El líder supervisará la ejecución del tablero Kanban y el presupuesto.
                   </p>
                 </div>
@@ -707,7 +801,7 @@ export function ProjectCreationWizard({
                       if (val) setPriority(val)
                     }}
                   >
-                    <SelectTrigger className='text-xs'>
+                    <SelectTrigger className='text-xs h-9'>
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -720,12 +814,12 @@ export function ProjectCreationWizard({
                 </div>
               </div>
 
-              <div className='grid grid-cols-1 gap-3 sm:grid-cols-2'>
+              <div className='grid grid-cols-1 gap-4 sm:grid-cols-2'>
                 <div className='space-y-1.5'>
                   <Label className='text-xs font-medium'>Fecha de Inicio</Label>
                   <Input
                     type='date'
-                    className='text-xs'
+                    className='text-xs h-9'
                     value={startDate}
                     onChange={e => setStartDate(e.target.value)}
                   />
@@ -735,7 +829,7 @@ export function ProjectCreationWizard({
                   <Label className='text-xs font-medium'>Fecha Estimada de Fin</Label>
                   <Input
                     type='date'
-                    className='text-xs'
+                    className='text-xs h-9'
                     value={endDate}
                     onChange={e => setEndDate(e.target.value)}
                   />
@@ -746,25 +840,27 @@ export function ProjectCreationWizard({
 
           {/* PASO 2: Acciones CAME */}
           {currentStep === 2 && (
-            <div className='space-y-3'>
+            <div className='space-y-3 min-w-0'>
               <div className='flex items-center justify-between'>
                 <div>
-                  <h4 className='text-xs font-semibold text-foreground'>Acciones Estratégicas CAME</h4>
-                  <p className='text-[11px] text-muted-foreground'>
-                    Seleccione las acciones CAME que formarán parte de este proyecto de ejecución.
+                  <h4 className='text-sm font-semibold text-foreground'>Acciones Estratégicas CAME</h4>
+                  <p className='text-xs text-muted-foreground'>
+                    Seleccione las acciones estratégicas CAME que formarán la base de ejecución de este proyecto.
                   </p>
                 </div>
-                <Badge variant='outline' className='text-xs'>
+                <Badge variant='outline' className='text-xs font-semibold'>
                   {selectedActionIds.size} seleccionadas
                 </Badge>
               </div>
 
               {actionsPool.length === 0 ? (
-                <div className='rounded-lg border border-dashed p-6 text-center text-xs text-muted-foreground'>
-                  No se encontraron acciones CAME en esta investigación o es un proyecto en blanco. Podrá agregar actividades manualmente en el paso de Actividades.
+                <div className='rounded-xl border border-dashed p-8 text-center text-xs text-muted-foreground space-y-2'>
+                  <InfoIcon className='size-6 mx-auto text-muted-foreground/60' />
+                  <p className='font-medium text-foreground'>No se encontraron acciones CAME disponibles.</p>
+                  <p>Puede continuar al siguiente paso para definir actividades operativas manualmente.</p>
                 </div>
               ) : (
-                <div className='max-h-72 space-y-2 overflow-y-auto pr-1'>
+                <div className='max-h-72 space-y-2.5 overflow-y-auto pr-1'>
                   {actionsPool.map(action => {
                     const isSelected = selectedActionIds.has(action.id)
                     const typeLabel =
@@ -780,34 +876,34 @@ export function ProjectCreationWizard({
                       <div
                         key={action.id}
                         onClick={() => handleToggleAction(action.id)}
-                        className={`flex cursor-pointer items-start justify-between rounded-lg border p-3 transition-colors ${
+                        className={`flex cursor-pointer items-start justify-between rounded-xl border p-3.5 transition-all shadow-xs ${
                           isSelected
-                            ? 'border-primary/50 bg-primary/5'
-                            : 'border-border bg-card hover:bg-accent/40'
+                            ? 'border-primary bg-primary/5 ring-1 ring-primary/20'
+                            : 'border-border bg-card hover:bg-muted/40'
                         }`}
                       >
-                        <div className='space-y-1 pr-2'>
-                          <div className='flex items-center gap-2'>
+                        <div className='space-y-1.5 pr-3 min-w-0 flex-1'>
+                          <div className='flex items-center gap-2 flex-wrap'>
                             <Badge
                               variant={isSelected ? 'default' : 'secondary'}
-                              className='text-[10px]'
+                              className='text-xs font-semibold'
                             >
-                              {action.id} ({typeLabel})
+                              {action.id} · {typeLabel}
                             </Badge>
-                            <span className='text-xs font-medium text-foreground'>
+                            <span className='text-xs font-semibold text-foreground leading-snug break-words'>
                               {action.action || action.objective}
                             </span>
                           </div>
                           {action.problem && (
-                            <p className='text-[11px] text-muted-foreground'>
-                              <span className='font-semibold'>Problema:</span> {action.problem}
+                            <p className='text-xs text-muted-foreground leading-relaxed'>
+                              <span className='font-medium text-foreground/80'>Problema:</span> {action.problem}
                             </p>
                           )}
                         </div>
 
                         <div className='flex items-center shrink-0 pt-0.5'>
                           <div
-                            className={`flex size-5 items-center justify-center rounded-md border text-xs ${
+                            className={`flex size-5 items-center justify-center rounded-md border transition-colors ${
                               isSelected
                                 ? 'border-primary bg-primary text-primary-foreground'
                                 : 'border-muted-foreground/30'
@@ -826,53 +922,52 @@ export function ProjectCreationWizard({
 
           {/* PASO 3: Presupuesto */}
           {currentStep === 3 && (
-            <div className='space-y-4'>
-              <div className='grid grid-cols-1 gap-3 sm:grid-cols-2'>
+            <div className='space-y-4 min-w-0'>
+              <div className='grid grid-cols-1 gap-4 sm:grid-cols-2'>
                 <div
                   onClick={() => setBudgetMode('action_based')}
-                  className={`cursor-pointer rounded-lg border p-4 transition-colors ${
+                  className={`cursor-pointer rounded-xl border p-4 transition-all shadow-xs ${
                     budgetMode === 'action_based'
                       ? 'border-primary bg-primary/5 ring-1 ring-primary'
-                      : 'border-border bg-card hover:bg-accent/40'
+                      : 'border-border bg-card hover:bg-muted/40'
                   }`}
                 >
                   <div className='flex items-center gap-2'>
                     <DollarSignIcon className='size-4 text-primary' />
-                    <span className='text-xs font-bold'>Modo A: Base Acciones (Bottom-Up)</span>
+                    <span className='text-xs font-bold text-foreground'>Modo A: Base Acciones (Bottom-Up)</span>
                   </div>
-                  <p className='mt-1 text-[11px] text-muted-foreground'>
+                  <p className='mt-1.5 text-xs text-muted-foreground leading-relaxed'>
                     El presupuesto total se calcula dinámicamente de la suma de cada actividad asignada en el paso siguiente.
                   </p>
                 </div>
 
                 <div
                   onClick={() => setBudgetMode('total_first')}
-                  className={`cursor-pointer rounded-lg border p-4 transition-colors ${
+                  className={`cursor-pointer rounded-xl border p-4 transition-all shadow-xs ${
                     budgetMode === 'total_first'
                       ? 'border-primary bg-primary/5 ring-1 ring-primary'
-                      : 'border-border bg-card hover:bg-accent/40'
+                      : 'border-border bg-card hover:bg-muted/40'
                   }`}
                 >
                   <div className='flex items-center gap-2'>
                     <DollarSignIcon className='size-4 text-primary' />
-                    <span className='text-xs font-bold'>Modo B: Presupuesto Fijado (Top-Down)</span>
+                    <span className='text-xs font-bold text-foreground'>Modo B: Presupuesto Fijado (Top-Down)</span>
                   </div>
-                  <p className='mt-1 text-[11px] text-muted-foreground'>
+                  <p className='mt-1.5 text-xs text-muted-foreground leading-relaxed'>
                     Se define un techo presupuestario máximo global que la suma de actividades no podrá exceder.
                   </p>
                 </div>
               </div>
 
               {budgetMode === 'total_first' && (
-                <div className='space-y-1.5 rounded-lg border bg-muted/20 p-3.5'>
+                <div className='space-y-2 rounded-xl border bg-muted/20 p-4'>
                   <Label className='text-xs font-medium'>Presupuesto Total Tope ($) *</Label>
                   <LocalizedCurrencyInput
                     value={budgetTotal}
                     onChange={val => setBudgetTotal(val)}
                     placeholder='0'
-                    className='h-8'
                   />
-                  <p className='text-[11px] text-muted-foreground'>
+                  <p className='text-xs text-muted-foreground'>
                     Fije el importe límite. En el paso de actividades podrá distribuir los fondos en tiempo real.
                   </p>
                 </div>
@@ -880,24 +975,63 @@ export function ProjectCreationWizard({
             </div>
           )}
 
-          {/* PASO 4: Actividades Kanban y Control Presupuestario */}
+          {/* PASO 4: Planificación Táctica y Operativa (Modo Rápido 1:1 vs Modo Detallado 1:N) */}
           {currentStep === 4 && (
-            <div className='space-y-4'>
-              {/* Sección Superior: Control Presupuestario en Tiempo Real */}
-              <div className='rounded-lg border bg-muted/30 p-3.5 space-y-2'>
+            <div className='space-y-4 min-w-0'>
+              {/* Cabecera y Selector de Modo */}
+              <div className='flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between border-b pb-3'>
+                <div>
+                  <h4 className='text-sm font-bold text-foreground'>Planificación Táctica y Operativa</h4>
+                  <p className='text-xs text-muted-foreground'>
+                    {planningMode === 'quick'
+                      ? 'Modo Rápido: Se genera automáticamente 1 tarea Kanban por cada acción estratégica CAME.'
+                      : 'Modo Detallado: Desglose manual de múltiples tareas operativas Kanban para cada acción estratégica CAME.'}
+                  </p>
+                </div>
+
+                <div className='flex items-center gap-1 rounded-lg border bg-muted/40 p-1 shrink-0'>
+                  <button
+                    type='button'
+                    onClick={() => setPlanningMode('quick')}
+                    className={cn(
+                      'px-3 py-1.5 text-xs font-medium rounded-md transition-all',
+                      planningMode === 'quick'
+                        ? 'bg-background shadow-xs text-foreground font-semibold'
+                        : 'text-muted-foreground hover:text-foreground'
+                    )}
+                  >
+                    Modo Rápido (1:1)
+                  </button>
+                  <button
+                    type='button'
+                    onClick={() => setPlanningMode('detailed')}
+                    className={cn(
+                      'px-3 py-1.5 text-xs font-medium rounded-md transition-all',
+                      planningMode === 'detailed'
+                        ? 'bg-background shadow-xs text-foreground font-semibold'
+                        : 'text-muted-foreground hover:text-foreground'
+                    )}
+                  >
+                    Modo Detallado (1:N)
+                  </button>
+                </div>
+              </div>
+
+              {/* Gobernanza Financiera en Tiempo Real */}
+              <div className='rounded-xl border bg-muted/30 p-4 space-y-2.5'>
                 <div className='flex items-center justify-between text-xs'>
                   <span className='font-semibold text-foreground flex items-center gap-1.5'>
                     <DollarSignIcon className='size-3.5 text-primary' />
-                    Control Presupuestario ({budgetMode === 'action_based' ? 'Base Acciones' : 'Presupuesto Tope'})
+                    Gobernanza Financiera ({budgetMode === 'action_based' ? 'Base Acciones' : 'Presupuesto Tope'})
                   </span>
-                  <span className='text-muted-foreground text-[11px]'>
-                    {activities.length} {activities.length === 1 ? 'actividad' : 'actividades'}
+                  <span className='text-muted-foreground text-xs'>
+                    {activities.length} actividades · {totalKanbanTasksCount} tareas Kanban
                   </span>
                 </div>
 
-                <div className='grid grid-cols-1 sm:grid-cols-3 gap-2 pt-1 border-t text-xs'>
+                <div className='grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2 border-t text-xs'>
                   <div>
-                    <span className='text-muted-foreground text-[11px] block'>Suma Asignada en Actividades:</span>
+                    <span className='text-muted-foreground text-xs block'>Suma Asignada en Actividades:</span>
                     <span className='font-bold text-foreground text-sm'>
                       ${sumActivitiesBudget.toLocaleString()}
                     </span>
@@ -905,16 +1039,18 @@ export function ProjectCreationWizard({
                   {budgetMode === 'total_first' && (
                     <>
                       <div>
-                        <span className='text-muted-foreground text-[11px] block'>Presupuesto Fijado (Tope):</span>
+                        <span className='text-muted-foreground text-xs block'>Presupuesto Fijado (Tope):</span>
                         <span className='font-bold text-foreground text-sm'>
                           ${budgetTotal.toLocaleString()}
                         </span>
                       </div>
                       <div>
-                        <span className='text-muted-foreground text-[11px] block'>Saldo Restante:</span>
+                        <span className='text-muted-foreground text-xs block'>Saldo Restante:</span>
                         <span
                           className={`font-bold text-sm ${
-                            budgetTotal - sumActivitiesBudget < 0 ? 'text-destructive' : 'text-emerald-600 dark:text-emerald-400'
+                            budgetTotal - sumActivitiesBudget < 0
+                              ? 'text-destructive'
+                              : 'text-emerald-600 dark:text-emerald-400'
                           }`}
                         >
                           ${(budgetTotal - sumActivitiesBudget).toLocaleString()}
@@ -925,138 +1061,217 @@ export function ProjectCreationWizard({
                 </div>
 
                 {budgetMode === 'total_first' && !isBudgetValid && (
-                  <div className='flex items-center gap-1.5 rounded-md bg-destructive/10 p-2 text-xs text-destructive font-medium'>
+                  <div className='flex items-center gap-2 rounded-lg bg-destructive/10 p-2.5 text-xs text-destructive font-medium'>
                     <AlertCircleIcon className='size-4 shrink-0' />
-                    <span>La suma de actividades (${sumActivitiesBudget.toLocaleString()}) supera el presupuesto tope (${budgetTotal.toLocaleString()}).</span>
+                    <span>
+                      La suma de actividades (${sumActivitiesBudget.toLocaleString()}) supera el presupuesto tope ($
+                      {budgetTotal.toLocaleString()}).
+                    </span>
                   </div>
                 )}
               </div>
 
-              {/* Encabezado del listado de actividades */}
-              <div className='flex items-center justify-between'>
-                <div>
-                  <h4 className='text-xs font-semibold text-foreground'>Actividades del Tablero Kanban</h4>
-                  <p className='text-[11px] text-muted-foreground'>
-                    Asigne responsables múltiples y presupuesto individual para cada actividad.
-                  </p>
-                </div>
-                <Button
-                  size='sm'
-                  variant='outline'
-                  className='gap-1 text-xs h-7'
-                  onClick={handleAddManualActivity}
-                >
-                  <PlusIcon className='size-3.5' />
-                  Agregar Actividad
-                </Button>
-              </div>
-
-              {/* Listado de Actividades con Vista Multilínea y Combobox Múltiple */}
-              <div className='max-h-80 space-y-3 overflow-y-auto pr-1'>
+              {/* LISTA DE ACCIONES CAME Y SUS TAREAS OPERATIVAS */}
+              <div className='max-h-96 space-y-4 overflow-y-auto pr-1 min-w-0'>
                 {activities.length === 0 ? (
-                  <div className='rounded-lg border border-dashed p-6 text-center text-xs text-muted-foreground'>
-                    No hay actividades registradas. Haga clic en "+ Agregar Actividad" para comenzar.
+                  <div className='rounded-xl border border-dashed p-8 text-center text-xs text-muted-foreground space-y-2'>
+                    <InfoIcon className='size-6 mx-auto text-muted-foreground/60' />
+                    <p className='font-medium text-foreground'>No hay actividades registradas.</p>
+                    <p>Regrese al Paso 2 para seleccionar acciones CAME o agregue una actividad inicial.</p>
+                    <Button size='sm' variant='outline' onClick={handleAddManualActivity} className='mt-2 text-xs'>
+                      <PlusIcon className='size-3.5 mr-1' /> Agregar Actividad Manual
+                    </Button>
                   </div>
                 ) : (
-                  activities.map((act, index) => {
-                    const isCameActivity = Boolean(act.cameActionId)
+                  activities.map((act, actIdx) => {
+                    const cameAction = act.cameActionId
+                      ? (eligibleActions.length > 0 ? eligibleActions.map(e => e.action) : cameActions).find(
+                          a => a.id === act.cameActionId
+                        )
+                      : null
+
+                    const typeLabel =
+                      cameAction?.type === 'C'
+                        ? 'Corregir'
+                        : cameAction?.type === 'A'
+                          ? 'Afrontar'
+                          : cameAction?.type === 'M'
+                            ? 'Mantener'
+                            : 'Explotar'
 
                     return (
-                      <div key={index} className='space-y-2 rounded-lg border bg-card p-3 shadow-xs'>
-                        {/* Cabecera / Título de la actividad */}
-                        <div className='flex items-start justify-between gap-2'>
-                          <div className='flex-1 min-w-0'>
-                            {isCameActivity ? (
-                              <div className='space-y-1'>
-                                <div className='flex items-center gap-1.5'>
-                                  <Badge variant='outline' className='text-[10px] font-bold shrink-0 bg-primary/5 text-primary'>
-                                    {act.cameActionId}
+                      <div
+                        key={actIdx}
+                        className='rounded-xl border border-border bg-card shadow-xs overflow-hidden min-w-0 space-y-0'
+                      >
+                        {/* Cabecera de la Acción Estratégica CAME */}
+                        <div className='bg-muted/40 p-4 border-b space-y-2'>
+                          <div className='flex items-start justify-between gap-3'>
+                            <div className='space-y-1 min-w-0 flex-1'>
+                              <div className='flex items-center gap-2 flex-wrap'>
+                                {act.cameActionId ? (
+                                  <Badge variant='default' className='text-xs font-bold shrink-0'>
+                                    {act.cameActionId} · {typeLabel}
                                   </Badge>
-                                  <span className='text-xs font-semibold text-foreground leading-relaxed break-words'>
-                                    {act.title}
-                                  </span>
-                                </div>
-                                {act.description && (
-                                  <p className='text-[11px] text-muted-foreground leading-normal break-words'>
-                                    {act.description}
-                                  </p>
+                                ) : (
+                                  <Badge variant='outline' className='text-xs font-semibold shrink-0'>
+                                    Actividad Manual
+                                  </Badge>
                                 )}
+                                <span className='text-xs font-semibold text-foreground leading-snug break-words'>
+                                  {act.title}
+                                </span>
                               </div>
-                            ) : (
-                              <div className='space-y-1.5'>
-                                <div className='flex items-center justify-between'>
-                                  <span className='text-[10px] font-medium text-muted-foreground'>Actividad manual</span>
-                                  <span className='text-[10px] text-muted-foreground'>{(act.title || '').length} / 1000</span>
-                                </div>
-                                <Input
-                                  className='h-7 text-xs font-semibold'
-                                  maxLength={1000}
-                                  placeholder='Nombre de la actividad (máx. 1000 caracteres)...'
-                                  value={act.title}
-                                  onChange={e => handleUpdateActivity(index, { title: e.target.value })}
-                                />
-                                <div className='flex items-center justify-between'>
-                                  <span className='text-[10px] text-muted-foreground'>Descripción opcional</span>
-                                  <span className='text-[10px] text-muted-foreground'>{(act.description || '').length} / 4000</span>
-                                </div>
-                                <Input
-                                  className='h-6 text-[11px] text-muted-foreground'
-                                  maxLength={4000}
-                                  placeholder='Descripción u objetivo (máx. 4000 caracteres)...'
-                                  value={act.description || ''}
-                                  onChange={e => handleUpdateActivity(index, { description: e.target.value })}
-                                />
-                              </div>
+                              {cameAction?.problem && (
+                                <p className='text-xs text-muted-foreground leading-relaxed'>
+                                  <span className='font-medium text-foreground/80'>Problema estratégico:</span>{' '}
+                                  {cameAction.problem}
+                                </p>
+                              )}
+                            </div>
+
+                            {planningMode === 'detailed' && (
+                              <Button
+                                size='sm'
+                                variant='outline'
+                                className='h-8 gap-1.5 text-xs shrink-0 font-semibold bg-background'
+                                onClick={() => handleAddTaskToActivity(actIdx)}
+                              >
+                                <PlusIcon className='size-3.5' />
+                                Añadir Tarea
+                              </Button>
                             )}
                           </div>
-
-                          <Button
-                            size='icon'
-                            variant='ghost'
-                            className='size-7 text-destructive shrink-0 hover:bg-destructive/10'
-                            onClick={() => handleRemoveActivity(index)}
-                            title='Eliminar actividad'
-                          >
-                            <Trash2Icon className='size-3.5' />
-                          </Button>
                         </div>
 
-                        {/* Campos de Asignación, Presupuesto y Fecha */}
-                        <div className='grid grid-cols-1 gap-2.5 sm:grid-cols-3 pt-1 border-t'>
-                          <div>
-                            <Label className='text-[10px] text-muted-foreground font-medium mb-1 block'>
-                              Responsables
-                            </Label>
-                            <MultiAssigneeCombobox
-                              teamMembers={teamMembers}
-                              assigneeIds={act.assigneeIds || []}
-                              onChange={ids => handleUpdateActivity(index, { assigneeIds: ids })}
-                            />
+                        {/* Parámetros de la Actividad: Responsable, Presupuesto, Fechas */}
+                        <div className='p-4 space-y-4'>
+                          <div className='grid grid-cols-1 gap-3 sm:grid-cols-3'>
+                            <div className='space-y-1 min-w-0'>
+                              <Label className='text-xs text-muted-foreground font-medium block'>
+                                Responsable del Paquete
+                              </Label>
+                              <MultiAssigneeCombobox
+                                teamMembers={teamMembers}
+                                assigneeIds={act.assigneeIds || []}
+                                onChange={ids => handleUpdateActivity(actIdx, { assigneeIds: ids })}
+                              />
+                            </div>
+
+                            <div className='space-y-1 min-w-0'>
+                              <Label className='text-xs text-muted-foreground font-medium block'>
+                                Presupuesto Asignado ($)
+                              </Label>
+                              <LocalizedCurrencyInput
+                                value={Number(act.budget || act.budgetAmount) || 0}
+                                onChange={val => handleUpdateActivity(actIdx, { budget: val, budgetAmount: val })}
+                                placeholder='0'
+                              />
+                            </div>
+
+                            <div className='space-y-1 min-w-0'>
+                              <Label className='text-xs text-muted-foreground font-medium block'>
+                                Fecha Límite
+                              </Label>
+                              <Input
+                                type='date'
+                                className='h-9 text-xs'
+                                value={act.endDate ? act.endDate.split('T')[0] : (act.dueDate ? act.dueDate.split('T')[0] : '')}
+                                onChange={e =>
+                                  handleUpdateActivity(actIdx, {
+                                    endDate: e.target.value || null,
+                                    dueDate: e.target.value || null
+                                  })
+                                }
+                              />
+                            </div>
                           </div>
 
-                          <div>
-                            <Label className='text-[10px] text-muted-foreground font-medium mb-1 block'>
-                              Presupuesto ($)
-                            </Label>
-                            <LocalizedCurrencyInput
-                              value={Number(act.budgetAmount) || 0}
-                              onChange={val => handleUpdateActivity(index, { budgetAmount: val })}
-                              placeholder='0'
-                              className='h-8'
-                            />
-                          </div>
+                          {/* MODO RÁPIDO (1:1) — Tarea Automática */}
+                          {planningMode === 'quick' && (
+                            <div className='rounded-lg border bg-muted/20 p-3 flex items-center gap-2 text-xs text-muted-foreground'>
+                              <CheckCircle2Icon className='size-4 text-primary shrink-0' />
+                              <span>
+                                Se generará automáticamente 1 tarea Kanban inicial para esta acción estratégica con el responsable y presupuesto fijados.
+                              </span>
+                            </div>
+                          )}
 
-                          <div>
-                            <Label className='text-[10px] text-muted-foreground font-medium mb-1 block'>
-                              Fecha Entrega
-                            </Label>
-                            <Input
-                              type='date'
-                              className='h-8 text-xs'
-                              value={act.dueDate ? act.dueDate.split('T')[0] : ''}
-                              onChange={e => handleUpdateActivity(index, { dueDate: e.target.value || null })}
-                            />
-                          </div>
+                          {/* MODO DETALLADO (1:N) — Desglose de Tareas Operativas */}
+                          {planningMode === 'detailed' && (
+                            <div className='rounded-xl bg-muted/20 border p-3.5 space-y-3'>
+                              <div className='flex items-center justify-between'>
+                                <span className='text-xs font-semibold text-foreground flex items-center gap-1.5'>
+                                  <ListTodoIcon className='size-3.5 text-primary' />
+                                  Tareas Operativas Kanban ({(act.tasks || []).length})
+                                </span>
+                                <Button
+                                  size='sm'
+                                  variant='ghost'
+                                  className='h-7 px-2 text-xs gap-1 text-primary hover:text-primary hover:bg-primary/10'
+                                  onClick={() => handleAddTaskToActivity(actIdx)}
+                                >
+                                  <PlusIcon className='size-3.5' />
+                                  Añadir Tarea
+                                </Button>
+                              </div>
+
+                              {(act.tasks || []).length === 0 ? (
+                                <div className='rounded-lg border border-dashed bg-background/50 p-4 text-center text-xs text-muted-foreground'>
+                                  No hay tareas operativas desglosadas aún. Haga clic en "+ Añadir Tarea" para detallar el trabajo operativo.
+                                </div>
+                              ) : (
+                                <div className='space-y-2.5 min-w-0'>
+                                  {act.tasks!.map((task, taskIdx) => (
+                                    <div
+                                      key={taskIdx}
+                                      className='grid grid-cols-1 sm:grid-cols-12 gap-2.5 items-center rounded-lg border bg-background p-3 shadow-2xs min-w-0'
+                                    >
+                                      <div className='col-span-12 sm:col-span-8 min-w-0 space-y-1'>
+                                        <Label className='text-xs font-medium text-muted-foreground block'>
+                                          Tarea operativa #{taskIdx + 1}
+                                        </Label>
+                                        <Input
+                                          className='h-9 text-xs font-medium min-w-0 w-full'
+                                          placeholder='Nombre de la tarea operativa...'
+                                          value={task.title}
+                                          onChange={e =>
+                                            handleUpdateActivityTask(actIdx, taskIdx, { title: e.target.value })
+                                          }
+                                        />
+                                      </div>
+
+                                      <div className='col-span-9 sm:col-span-3 min-w-0 space-y-1'>
+                                        <Label className='text-xs font-medium text-muted-foreground block'>
+                                          Costo ($)
+                                        </Label>
+                                        <LocalizedCurrencyInput
+                                          value={Number(task.budgetAmount) || 0}
+                                          onChange={val =>
+                                            handleUpdateActivityTask(actIdx, taskIdx, { budgetAmount: val })
+                                          }
+                                          placeholder='0'
+                                        />
+                                      </div>
+
+                                      <div className='col-span-3 sm:col-span-1 flex justify-end sm:pt-5'>
+                                        <Button
+                                          type='button'
+                                          size='icon'
+                                          variant='ghost'
+                                          className='size-9 text-destructive hover:bg-destructive/10 shrink-0'
+                                          onClick={() => handleRemoveActivityTask(actIdx, taskIdx)}
+                                          title='Eliminar tarea'
+                                        >
+                                          <Trash2Icon className='size-4' />
+                                        </Button>
+                                      </div>
+                                    </div>
+                                  ))}
+                                </div>
+                              )}
+                            </div>
+                          )}
                         </div>
                       </div>
                     )
@@ -1066,55 +1281,79 @@ export function ProjectCreationWizard({
             </div>
           )}
 
-          {/* PASO 5: Revisión y Confirmación */}
+          {/* PASO 5: Revisión y Confirmación Jerárquica */}
           {currentStep === 5 && (
-            <div className='space-y-4'>
-              <div className='rounded-lg border bg-muted/20 p-4 space-y-3'>
+            <div className='space-y-4 min-w-0'>
+              <div className='rounded-xl border bg-muted/20 p-4 space-y-3'>
                 <h4 className='text-xs font-bold text-foreground flex items-center gap-1.5'>
                   <FolderKanbanIcon className='size-4 text-primary' />
                   Resumen Ejecutivo del Proyecto
                 </h4>
                 <div className='grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs'>
                   <div>
-                    <span className='text-muted-foreground text-[11px] block'>Nombre:</span>
-                    <p className='font-semibold text-foreground'>{name}</p>
+                    <span className='text-muted-foreground text-xs block'>Nombre del Proyecto:</span>
+                    <p className='font-semibold text-foreground text-sm'>{name}</p>
                   </div>
                   <div>
-                    <span className='text-muted-foreground text-[11px] block'>Líder del Proyecto:</span>
-                    <p className='font-semibold text-foreground'>
+                    <span className='text-muted-foreground text-xs block'>Líder del Proyecto:</span>
+                    <p className='font-semibold text-foreground text-sm'>
                       {teamMembers.find(m => m.userId === leaderUserId)?.name || 'No asignado'}
                     </p>
                   </div>
                   <div>
-                    <span className='text-muted-foreground text-[11px] block'>Modelo Presupuestario:</span>
-                    <p className='font-semibold text-foreground'>
+                    <span className='text-muted-foreground text-xs block'>Modelo Presupuestario:</span>
+                    <p className='font-semibold text-foreground text-sm'>
                       ${(budgetMode === 'action_based' ? sumActivitiesBudget : budgetTotal).toLocaleString()} (
                       {budgetMode === 'action_based' ? 'Base Acciones' : 'Presupuesto Fijado'})
                     </p>
                   </div>
                   <div>
-                    <span className='text-muted-foreground text-[11px] block'>Tarjetas Kanban a Generar:</span>
-                    <p className='font-semibold text-foreground'>{activities.length} actividades programadas</p>
+                    <span className='text-muted-foreground text-xs block'>Modo de Planificación:</span>
+                    <p className='font-semibold text-foreground text-sm'>
+                      {planningMode === 'quick' ? 'Modo Rápido (1:1)' : 'Modo Detallado (1:N)'}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Tarjeta de Trazabilidad Jerárquica */}
+              <div className='rounded-xl border bg-card p-4 space-y-3'>
+                <h5 className='text-xs font-bold text-foreground flex items-center gap-1.5'>
+                  <LayersIcon className='size-3.5 text-primary' />
+                  Estructura Jerárquica a Desplegar
+                </h5>
+                <div className='grid grid-cols-3 gap-3 text-center text-xs'>
+                  <div className='rounded-lg border bg-muted/30 p-3'>
+                    <span className='text-xl font-bold text-primary block'>{selectedActionIds.size}</span>
+                    <span className='text-xs text-muted-foreground font-medium'>Acciones CAME</span>
+                  </div>
+                  <div className='rounded-lg border bg-muted/30 p-3'>
+                    <span className='text-xl font-bold text-foreground block'>{activities.length}</span>
+                    <span className='text-xs text-muted-foreground font-medium'>Paquetes de Trabajo</span>
+                  </div>
+                  <div className='rounded-lg border bg-muted/30 p-3'>
+                    <span className='text-xl font-bold text-foreground block'>{totalKanbanTasksCount}</span>
+                    <span className='text-xs text-muted-foreground font-medium'>Tareas Kanban</span>
                   </div>
                 </div>
               </div>
 
               <p className='text-center text-xs text-muted-foreground'>
-                Al confirmar, se persistirá el proyecto en la base de datos y se desplegarán inmediatamente las tareas en el tablero Kanban.
+                Al confirmar, se persistirá el proyecto, las actividades tácticas y se desplegarán las tareas operativas en el tablero Kanban.
               </p>
             </div>
           )}
         </div>
 
-        {/* Footer Actions */}
-        <DialogFooter className='flex items-center justify-between border-t pt-3'>
+        {/* Footer Fijo */}
+        <DialogFooter className='flex items-center justify-between border-t bg-muted/20 px-6 py-3.5 shrink-0'>
           <Button
             type='button'
             variant='outline'
             size='sm'
             onClick={handleBack}
             disabled={currentStep === 1 || submitting}
-            className='gap-1 text-xs'
+            className='gap-1 text-xs h-9'
           >
             <ChevronLeftIcon className='size-3.5' />
             Anterior
@@ -1127,7 +1366,7 @@ export function ProjectCreationWizard({
               size='sm'
               onClick={() => onOpenChange(false)}
               disabled={submitting}
-              className='text-xs'
+              className='text-xs h-9'
             >
               Cancelar
             </Button>
@@ -1137,7 +1376,7 @@ export function ProjectCreationWizard({
                 type='button'
                 size='sm'
                 onClick={handleNext}
-                className='gap-1 text-xs'
+                className='gap-1 text-xs h-9'
               >
                 Siguiente
                 <ChevronRightIcon className='size-3.5' />
@@ -1148,7 +1387,7 @@ export function ProjectCreationWizard({
                 size='sm'
                 onClick={handleFinishCreate}
                 disabled={submitting}
-                className='gap-1.5 text-xs'
+                className='gap-1.5 text-xs h-9'
               >
                 {submitting ? (
                   <>

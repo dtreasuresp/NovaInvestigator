@@ -1,7 +1,11 @@
 import { createSupabaseServerClient } from '@/lib/supabase/server'
-import { asProjectsClient, type ProjectRow, type ProjectMemberRow, type ProjectCameActionRow } from './db-types'
+import { asProjectsClient, type ProjectRow, type ProjectMemberRow, type ProjectCameActionRow, type ProjectActivityRow } from './db-types'
 import { asKanbanClient, type KanbanDatabase } from '@/features/kanban/db-types'
-import type { CreateProjectInput, UpdateProjectInput, ProjectFilterInput } from './schema'
+import { asInvestigationsClient } from '@/lib/investigations/db-types'
+import { getInvestigationById } from '@/lib/investigations/repository'
+import type { CameAction, InvestigationState } from '@/types/apps/investigator-types'
+import type { Json } from '@/lib/supabase/database.types'
+import type { CreateProjectInput, UpdateProjectInput, ProjectFilterInput, CreateProjectActivityInput, UpdateProjectActivityInput } from './schema'
 import { ProjectError } from './errors'
 import { logger } from '@/lib/logger'
 
@@ -18,6 +22,7 @@ export interface ProjectWithStats extends ProjectRow {
 export interface ProjectDetail extends ProjectRow {
   members: Array<ProjectMemberRow & { profile?: { displayName?: string; email?: string; avatarUrl?: string | null } }>
   cameActions: ProjectCameActionRow[]
+  activities: ProjectActivityRow[]
   tasks: Array<{
     id: string
     title: string
@@ -26,6 +31,7 @@ export interface ProjectDetail extends ProjectRow {
     dueDate: string | null
     assigneeIds: string[]
     cameActionId: string | null
+    activityId?: string | null
     budgetAmount: number
     columnId: string
     status?: string
@@ -49,12 +55,15 @@ export async function listProjectsByTenant(
   if (filters?.investigationId) {
     query = query.eq('investigation_id', filters.investigationId)
   }
+
   if (filters?.teamId) {
     query = query.eq('team_id', filters.teamId)
   }
+
   if (filters?.workspaceId) {
     query = query.eq('workspace_id', filters.workspaceId)
   }
+
   if (filters?.status) {
     query = query.eq('status', filters.status)
   }
@@ -67,6 +76,7 @@ export async function listProjectsByTenant(
   }
 
   const projects = rawProjects ?? []
+
   if (projects.length === 0) return []
 
   const projectIds = projects.map(p => p.id)
@@ -117,12 +127,16 @@ export async function listProjectsByTenant(
     const projectCameActions = cameActions.filter(c => c.project_id === project.id)
 
     const tasksTotal = projectTasks.length
+
     const tasksCompleted = projectTasks.filter(t => {
       const colSlug = (t.kanban_columns as unknown as { slug?: string } | null)?.slug?.toLowerCase() || ''
+
       return colSlug.includes('done') || colSlug.includes('complet')
     }).length
+
     const tasksInProgress = projectTasks.filter(t => {
       const colSlug = (t.kanban_columns as unknown as { slug?: string } | null)?.slug?.toLowerCase() || ''
+
       return colSlug.includes('progress') || colSlug.includes('proceso') || colSlug.includes('review')
     }).length
 
@@ -187,10 +201,20 @@ export async function getProjectById(
     .eq('project_id', projectId)
     .eq('tenant_id', tenantId)
 
+  // Fetch project activities
+  const { data: rawActivities } = await projectsClient
+    .from('project_activities')
+    .select('*')
+    .eq('project_id', projectId)
+    .eq('tenant_id', tenantId)
+    .order('position', { ascending: true })
+
+  const activities = (rawActivities ?? []) as unknown as Array<any>
+
   // Fetch tasks
   const { data: rawTasks } = await supabase
     .from('kanban_tasks')
-    .select('id, title, description, priority, due_date, assignee_ids, came_action_id, budget_amount, column_id, kanban_columns(slug, name)')
+    .select('id, title, description, priority, due_date, assignee_ids, came_action_id, activity_id, budget_amount, column_id, kanban_columns(slug, name)')
     .eq('project_id', projectId)
     .eq('tenant_id', tenantId)
     .order('position', { ascending: true })
@@ -203,6 +227,7 @@ export async function getProjectById(
     due_date: string | null
     assignee_ids: string[] | null
     came_action_id: string | null
+    activity_id: string | null
     budget_amount: number | null
     column_id: string
     kanban_columns: { slug?: string; name?: string } | null
@@ -216,14 +241,17 @@ export async function getProjectById(
     dueDate: t.due_date,
     assigneeIds: t.assignee_ids || [],
     cameActionId: t.came_action_id,
+    activityId: t.activity_id,
     budgetAmount: Number(t.budget_amount) || 0,
     columnId: t.column_id,
     status: t.kanban_columns?.name || 'Backlog'
   }))
 
   const tasksTotal = tasks.length
+
   const tasksCompleted = typedTasks.filter(t => {
     const colSlug = t.kanban_columns?.slug?.toLowerCase() || ''
+
     return colSlug.includes('done') || colSlug.includes('complet')
   }).length
 
@@ -231,6 +259,7 @@ export async function getProjectById(
 
   const members = typedMembers.map(m => {
     const prof = m.profiles
+
     return {
       id: m.id,
       tenant_id: m.tenant_id,
@@ -250,6 +279,7 @@ export async function getProjectById(
     ...project,
     members,
     cameActions: cameActions ?? [],
+    activities: activities ?? [],
     tasks,
     progressPercentage
   }
@@ -276,6 +306,7 @@ export async function createProjectTransaction(
 
     if (existing) {
       const detail = await getProjectById(tenantId, existing.id)
+
       if (detail) return detail
     }
   }
@@ -311,12 +342,15 @@ export async function createProjectTransaction(
 
   const projectId = newProject.id
 
-  // 3. Insert project members (Leader + any unique assignees)
+  // 3. Insert project members (Leader + any unique assignees/owners)
   const memberUserIds = new Set<string>()
+
   if (resolvedLeaderId) memberUserIds.add(resolvedLeaderId)
 
   input.activities.forEach(act => {
+    if (act.ownerUserId) memberUserIds.add(act.ownerUserId)
     act.assigneeIds.forEach(id => memberUserIds.add(id))
+    act.tasks?.forEach(t => t.assigneeIds.forEach(id => memberUserIds.add(id)))
   })
 
   const memberRows = Array.from(memberUserIds).map(uid => ({
@@ -361,52 +395,102 @@ export async function createProjectTransaction(
     }
   }
 
-  // 5. Insert Kanban tasks if any
+  // 5. Insert Project Activities and Kanban tasks
   if (input.activities && input.activities.length > 0) {
-    // Resolve default Backlog column for tenant if columnId not provided
-    let defaultColumnId = input.activities[0].columnId
-    if (!defaultColumnId) {
-      const { data: firstCol } = await kanbanClient
-        .from('kanban_columns')
+    // Resolve default Backlog column for tenant
+    const { data: firstCol } = await kanbanClient
+      .from('kanban_columns')
+      .select('id')
+      .eq('tenant_id', tenantId)
+      .order('position', { ascending: true })
+      .limit(1)
+      .maybeSingle()
+
+    const defaultColumnId = firstCol?.id ?? null
+
+    for (let actIdx = 0; actIdx < input.activities.length; actIdx++) {
+      const act = input.activities[actIdx]
+      const ownerId = act.ownerUserId || (act.assigneeIds && act.assigneeIds[0]) || resolvedLeaderId
+
+      // Insert Project Activity
+      const { data: insertedActivity, error: actErr } = await projectsClient
+        .from('project_activities')
+        .insert({
+          tenant_id: tenantId,
+          project_id: projectId,
+          came_action_id: act.cameActionId ?? null,
+          title: act.title,
+          description: act.description || '',
+          owner_user_id: ownerId,
+          priority: act.priority || 'medium',
+          start_date: act.startDate ? new Date(act.startDate).toISOString() : null,
+          end_date: act.endDate ? new Date(act.endDate).toISOString() : (act.dueDate ? new Date(act.dueDate).toISOString() : null),
+          budget: act.budget || act.budgetAmount || 0,
+          status: act.status || 'pending',
+          position: actIdx
+        })
         .select('id')
-        .eq('tenant_id', tenantId)
-        .order('position', { ascending: true })
-        .limit(1)
-        .maybeSingle()
+        .single()
 
-      defaultColumnId = firstCol?.id ?? null
-    }
+      if (actErr) {
+        logger.error('Error inserting project activity', { details: { error: actErr.message, projectId } })
+      }
 
-    if (defaultColumnId) {
-      const taskRows: KanbanDatabase['public']['Tables']['kanban_tasks']['Insert'][] = input.activities.map((act, index) => ({
-        tenant_id: tenantId,
-        column_id: act.columnId || defaultColumnId!,
-        project_id: projectId,
-        came_action_id: act.cameActionId ?? null,
-        title: act.title,
-        description: act.description || '',
-        priority: act.priority,
-        cover_image: null,
-        tags: [],
-        due_date: act.dueDate ? new Date(act.dueDate).toISOString() : null,
-        assignee_ids: act.assigneeIds,
-        budget_amount: act.budgetAmount || 0,
-        position: index,
-        created_by: userId
-      }))
+      const activityId = insertedActivity?.id ?? null
 
-      const { error: tasksError } = await kanbanClient
-        .from('kanban_tasks')
-        .insert(taskRows)
+      // Insert child Kanban tasks
+      if (defaultColumnId) {
+        if (act.tasks && act.tasks.length > 0) {
+          // Multiple explicit granular subtasks
+          const subtaskRows: Array<KanbanDatabase['public']['Tables']['kanban_tasks']['Insert']> = act.tasks.map((task, tIdx) => ({
+            tenant_id: tenantId,
+            column_id: task.columnId || defaultColumnId,
+            project_id: projectId,
+            activity_id: activityId,
+            came_action_id: act.cameActionId ?? null,
+            title: task.title,
+            description: task.description || '',
+            priority: task.priority,
+            cover_image: null,
+            tags: [],
+            due_date: task.dueDate ? new Date(task.dueDate).toISOString() : (act.endDate ? new Date(act.endDate).toISOString() : null),
+            assignee_ids: task.assigneeIds.length > 0 ? task.assigneeIds : (ownerId ? [ownerId] : []),
+            budget_amount: task.budgetAmount || 0,
+            position: actIdx * 100 + tIdx,
+            created_by: userId
+          }))
 
-      if (tasksError) {
-        logger.error('Error inserting kanban tasks for project', { details: { error: tasksError.message } })
+          await kanbanClient.from('kanban_tasks').insert(subtaskRows)
+        } else {
+          // Single default task for quick-start mode
+          const singleTaskRow: KanbanDatabase['public']['Tables']['kanban_tasks']['Insert'] = {
+            tenant_id: tenantId,
+            column_id: act.columnId || defaultColumnId,
+            project_id: projectId,
+            activity_id: activityId,
+            came_action_id: act.cameActionId ?? null,
+            title: act.title,
+            description: act.description || '',
+            priority: act.priority,
+            cover_image: null,
+            tags: [],
+            due_date: act.dueDate ? new Date(act.dueDate).toISOString() : (act.endDate ? new Date(act.endDate).toISOString() : null),
+            assignee_ids: act.assigneeIds.length > 0 ? act.assigneeIds : (ownerId ? [ownerId] : []),
+            budget_amount: act.budgetAmount || act.budget || 0,
+            position: actIdx,
+            created_by: userId
+          }
+
+          await kanbanClient.from('kanban_tasks').insert([singleTaskRow])
+        }
       }
     }
   }
 
   const result = await getProjectById(tenantId, projectId)
+
   if (!result) throw ProjectError.internal({ message: 'Could not load created project' })
+
   return result
 }
 
@@ -419,6 +503,7 @@ export async function updateProject(
   const projectsClient = asProjectsClient(supabase)
 
   const updateData: Partial<ProjectRow> = {}
+
   if (patch.name !== undefined) updateData.name = patch.name
   if (patch.description !== undefined) updateData.description = patch.description
   if (patch.objective !== undefined) updateData.objective = patch.objective
@@ -442,7 +527,9 @@ export async function updateProject(
   }
 
   const updated = await getProjectById(tenantId, projectId)
+
   if (!updated) throw ProjectError.notFound()
+
   return updated
 }
 
@@ -458,6 +545,7 @@ export async function countActiveProjects(tenantId: string): Promise<number> {
 
   if (error) {
     logger.error('Error counting active projects', { details: { error: error.message, tenantId } })
+
     return 0
   }
 
@@ -479,8 +567,271 @@ export async function listAssignedCameActionIds(
 
   if (error) {
     logger.error('Error fetching assigned came action ids', { details: { error: error.message } })
+
     return []
   }
 
   return (data ?? []).map(r => r.came_action_id)
+}
+
+export async function syncProjectCameActions(
+  tenantId: string,
+  projectId: string,
+  cameActionIds: string[]
+): Promise<{ addedCount: number; project: ProjectDetail }> {
+  const supabase = await createSupabaseServerClient()
+  const projectsClient = asProjectsClient(supabase)
+  const kanbanClient = asKanbanClient(supabase)
+
+  const project = await getProjectById(tenantId, projectId)
+
+  if (!project) {
+    throw ProjectError.notFound()
+  }
+
+  if (!project.investigation_id) {
+    throw ProjectError.validation('El proyecto no tiene una investigación asociada.')
+  }
+
+  // Fetch investigation with domain repository
+  const inv = await getInvestigationById(asInvestigationsClient(supabase), tenantId, project.investigation_id)
+
+  if (!inv) {
+    throw ProjectError.notFound('Investigación de origen no encontrada.')
+  }
+
+  const invState = (inv.state as unknown as InvestigationState) || {}
+  
+  const cameActionsList = (invState.cameActions || []).filter(a =>
+    cameActionIds.includes(a.id)
+  )
+
+  if (cameActionsList.length === 0) {
+    return { addedCount: 0, project }
+  }
+
+  // Fetch default backlog column
+  const { data: cols } = await kanbanClient
+    .from('kanban_columns')
+    .select('id, slug, position')
+    .eq('tenant_id', tenantId)
+    .order('position', { ascending: true })
+
+  const colList = cols || []
+  const backlogColId = colList[0]?.id || null
+
+  // 1. Insert into project_came_actions
+  const cameInserts = cameActionsList.map(action => ({
+    tenant_id: tenantId,
+    project_id: projectId,
+    investigation_id: project.investigation_id!,
+    came_action_id: action.id,
+    action_type: (action.type || 'C') as 'C' | 'A' | 'M' | 'E',
+    budget_allocated: 0,
+    snapshot: JSON.parse(JSON.stringify(action)) as Json
+  }))
+
+  await projectsClient
+    .from('project_came_actions')
+    .upsert(cameInserts, { onConflict: 'project_id, came_action_id' })
+
+  // 2. Insert into kanban_tasks
+  const taskInserts: Array<KanbanDatabase['public']['Tables']['kanban_tasks']['Insert']> = cameActionsList.map((action, idx) => ({
+    tenant_id: tenantId,
+    project_id: projectId,
+    activity_id: null,
+    title: (action.action || action.objective || `Acción CAME ${action.id}`).slice(0, 1000),
+    description: action.problem || action.justification || '',
+    came_action_id: action.id,
+    budget_amount: 0,
+    column_id: backlogColId || '',
+    priority: 'medium',
+    cover_image: null,
+    tags: [],
+    assignee_ids: project.leader_user_id ? [project.leader_user_id] : [],
+    due_date: action.endDate || null,
+    position: (colList.length || 0) * 100 + idx,
+    created_by: project.leader_user_id || 'system'
+  }))
+
+  await kanbanClient
+    .from('kanban_tasks')
+    .insert(taskInserts)
+
+  logger.info('Acciones CAME sincronizadas con el proyecto', {
+    action: 'projects.came_sync',
+    details: {
+      tenantId,
+      projectId,
+      addedCount: cameActionsList.length,
+      actionIds: cameActionIds
+    }
+  })
+
+  const updated = await getProjectById(tenantId, projectId)
+
+  return { addedCount: cameActionsList.length, project: updated! }
+}
+
+export async function listProjectActivities(
+  tenantId: string,
+  projectId: string
+): Promise<ProjectActivityRow[]> {
+  const supabase = await createSupabaseServerClient()
+  const projectsClient = asProjectsClient(supabase)
+
+  const { data, error } = await projectsClient
+    .from('project_activities')
+    .select('*')
+    .eq('tenant_id', tenantId)
+    .eq('project_id', projectId)
+    .order('position', { ascending: true })
+
+  if (error) {
+    logger.error('Error listing project activities', { details: { error: error.message, projectId } })
+    throw ProjectError.internal({ message: error.message })
+  }
+
+  return (data || []) as ProjectActivityRow[]
+}
+
+export async function getProjectActivityById(
+  tenantId: string,
+  activityId: string
+): Promise<ProjectActivityRow | null> {
+  const supabase = await createSupabaseServerClient()
+  const projectsClient = asProjectsClient(supabase)
+
+  const { data, error } = await projectsClient
+    .from('project_activities')
+    .select('*')
+    .eq('tenant_id', tenantId)
+    .eq('id', activityId)
+    .maybeSingle()
+
+  if (error || !data) return null
+
+  return data as ProjectActivityRow
+}
+
+export async function createProjectActivity(
+  tenantId: string,
+  projectId: string,
+  input: CreateProjectActivityInput
+): Promise<ProjectActivityRow> {
+  const supabase = await createSupabaseServerClient()
+  const projectsClient = asProjectsClient(supabase)
+
+  // Verify project exists
+  const project = await getProjectById(tenantId, projectId)
+
+  if (!project) {
+    throw ProjectError.notFound('Proyecto no encontrado.')
+  }
+
+  // Get current max position
+  const { data: lastAct } = await projectsClient
+    .from('project_activities')
+    .select('position')
+    .eq('tenant_id', tenantId)
+    .eq('project_id', projectId)
+    .order('position', { ascending: false })
+    .limit(1)
+    .maybeSingle()
+
+  const position = lastAct?.position !== undefined && lastAct.position !== null ? lastAct.position + 1 : 0
+
+  const { data, error } = await projectsClient
+    .from('project_activities')
+    .insert({
+      tenant_id: tenantId,
+      project_id: projectId,
+      came_action_id: input.cameActionId ?? null,
+      title: input.title,
+      description: input.description ?? '',
+      owner_user_id: input.ownerUserId ?? null,
+      priority: input.priority,
+      start_date: input.startDate ? new Date(input.startDate).toISOString() : null,
+      end_date: input.endDate ? new Date(input.endDate).toISOString() : null,
+      budget: input.budget,
+      status: input.status,
+      position
+    })
+    .select('*')
+    .single()
+
+  if (error || !data) {
+    logger.error('Error creating project activity', { details: { error: error?.message, projectId } })
+    throw ProjectError.internal({ message: error?.message })
+  }
+
+  return data as ProjectActivityRow
+}
+
+export async function updateProjectActivity(
+  tenantId: string,
+  activityId: string,
+  input: UpdateProjectActivityInput
+): Promise<ProjectActivityRow> {
+  const supabase = await createSupabaseServerClient()
+  const projectsClient = asProjectsClient(supabase)
+
+  const existing = await getProjectActivityById(tenantId, activityId)
+
+  if (!existing) {
+    throw ProjectError.notFound('Actividad no encontrada.')
+  }
+
+  const patch: any = {}
+
+  if (input.title !== undefined) patch.title = input.title
+  if (input.description !== undefined) patch.description = input.description
+  if (input.ownerUserId !== undefined) patch.owner_user_id = input.ownerUserId
+  if (input.priority !== undefined) patch.priority = input.priority
+  if (input.startDate !== undefined) patch.start_date = input.startDate ? new Date(input.startDate).toISOString() : null
+  if (input.endDate !== undefined) patch.end_date = input.endDate ? new Date(input.endDate).toISOString() : null
+  if (input.budget !== undefined) patch.budget = input.budget
+  if (input.status !== undefined) patch.status = input.status
+  if (input.position !== undefined) patch.position = input.position
+  if (input.cameActionId !== undefined) patch.came_action_id = input.cameActionId
+
+  const { data, error } = await projectsClient
+    .from('project_activities')
+    .update(patch)
+    .eq('tenant_id', tenantId)
+    .eq('id', activityId)
+    .select('*')
+    .single()
+
+  if (error || !data) {
+    logger.error('Error updating project activity', { details: { error: error?.message, activityId } })
+    throw ProjectError.internal({ message: error?.message })
+  }
+
+  return data as ProjectActivityRow
+}
+
+export async function deleteProjectActivity(
+  tenantId: string,
+  activityId: string
+): Promise<void> {
+  const supabase = await createSupabaseServerClient()
+  const projectsClient = asProjectsClient(supabase)
+
+  const existing = await getProjectActivityById(tenantId, activityId)
+  
+  if (!existing) {
+    throw ProjectError.notFound('Actividad no encontrada.')
+  }
+
+  const { error } = await projectsClient
+    .from('project_activities')
+    .delete()
+    .eq('tenant_id', tenantId)
+    .eq('id', activityId)
+
+  if (error) {
+    logger.error('Error deleting project activity', { details: { error: error.message, activityId } })
+    throw ProjectError.internal({ message: error.message })
+  }
 }

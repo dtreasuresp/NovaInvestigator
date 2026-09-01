@@ -4,6 +4,114 @@
 
 All notable changes to this template will be documented in this file
 
+## v0.0.90 (2026-08-31)
+
+### Fixed & Enhanced — Auditoría Global de UI/UX: Envoltura Multilínea Fluida, Erradicación de Truncamientos Rígidos y Normalización Tipográfica shadcn
+
+- **Tarjetas de Portafolio de Proyectos (`src/views/apps/projects/components/project-portfolio-view.tsx`)**:
+  - **Cabecera Flex-Wrap sin Recortes**: Sustituido el contenedor rígido por `flex flex-wrap items-center justify-between gap-2 min-w-0` y badges con ancho elástico (`break-words max-w-full`) e inspección completa vía `title={project.organization}`.
+  - **Títulos y Objetivos Multilínea**: Sustituido `line-clamp-1` por `break-words line-clamp-2 leading-snug` con atributo `title` en títulos y `line-clamp-3 leading-relaxed` en objetivos estratégicos.
+  - **Normalización de Tipografía**: Erradicados `text-[9px]`, `text-[10px]` y `text-[11px]`, reemplazados por tokens de la escala semántica de shadcn (`text-xs`, `text-sm`, `text-base`).
+- **Cabecera de Ejecución Estratégica (`src/views/apps/projects/components/strategic-execution-header.tsx`)**:
+  - Título principal con multilínea natural `break-words leading-tight text-lg sm:text-xl` y objetivo estratégico sin cortes artificiales.
+  - Normalización de las 5 tarjetas de KPI a `text-xs font-medium` y `text-xs font-semibold`.
+- **Selector de Contexto Estratégico (`src/views/apps/projects/components/strategic-context-switcher.tsx`)**:
+  - Añadido soporte para `title={project.title}` e inspección completa de nombres de proyectos y organizaciones largas en el menú desplegable.
+- **Tabla de Actividades y Tareas (`src/views/apps/projects/components/activities-table-view.tsx`)**:
+  - Columnas de actividad configuradas con ancho mínimo y elástico (`min-w-[220px] max-w-md`), permitiendo que el título y la descripción ocupen de 2 a 3 líneas naturales con `break-words line-clamp-2`.
+- **Gobernanza Presupuestaria (`src/views/apps/projects/components/budget-governance-view.tsx`)**:
+  - Ranking de actividades con celdas `break-words line-clamp-2 leading-snug` y badges de estado y prioridad estandarizados a `text-xs`.
+- **Resumen Ejecutivo y Alertas (`src/views/apps/projects/components/execution-overview.tsx`)**:
+  - Eliminados anchos rígidos (`max-w-[200px] truncate`) en alertas de tareas vencidas, urgentes y sin asignar, permitiendo envoltura fluida en 2 líneas (`break-words line-clamp-2 leading-snug flex-1 min-w-0`).
+- **Alineación Estratégica CAME-Kanban (`src/views/apps/projects/components/strategic-alignment-view.tsx`)**:
+  - Sub-tarjetas de tareas vinculadas con envoltura multilínea elástica y visualización completa de justificaciones y evidencias DAFO.
+- **Listado de Investigaciones en Research (`src/views/apps/investigator/investigations/index.tsx`)**:
+  - Título de investigación con `break-words line-clamp-2 font-semibold text-base leading-snug` para visualización completa de títulos corporativos largos.
+
+## v0.0.89 (2026-08-31)
+
+### Refactored & Enhanced — Rediseño Integral de UI/UX, Tokens shadcn, Responsive y Desglose 1:1 vs 1:N en Wizard de Proyectos y Kanban Card Dialog
+
+- **Refactorización Integral del Wizard de Creación (`src/views/apps/projects/components/project-creation-wizard.tsx`)**:
+  - **Alineación Conceptual Estricta 1:1 vs 1:N**: En proyectos derivados de CAME, el 100% de las tareas operativas emanan directamente de las acciones estratégicas CAME seleccionadas. Eliminada la sección ambigua de "actividades complementarias/libres" para preservar la integridad de la cadena de valor estratégica.
+    - **Modo Rápido (1:1)**: Genera automáticamente 1 tarea operativa Kanban para cada acción estratégica CAME con sus parámetros de responsable y presupuesto.
+    - **Modo Detallado (1:N)**: Desglose manual de múltiples tareas operativas Kanban por cada acción estratégica CAME seleccionada, con asignación granular de costos y responsables.
+  - **Arquitectura Modal y Responsive sin Scroll Horizontal**:
+    - Reestructurado el layout del diálogo con `DialogHeader` fijo, stepper responsive fijo, cuerpo central con scroll vertical (`overflow-y-auto overflow-x-hidden`) y `DialogFooter` fijo.
+    - Eliminados márgenes negativos (`-mx-3.5`) y elementos con anchos rígidos (`w-28 shrink-0` sin `min-w-0`), resolviendo definitivamente el desbordamiento horizontal y los scrollbars indeseados.
+    - Grilla responsive adaptable `grid grid-cols-1 sm:grid-cols-12 gap-2.5` en las filas de tareas operativas para garantizar renderizado perfecto en viewports móviles y de escritorio.
+  - **Estandarización de Tokens y Tipografía shadcn/ui**:
+    - Reemplazadas todas las fuentes arbitrarias (`text-[10px]`, `text-[11px]`) por la escala tipográfica canónica de shadcn (`text-xs`, `text-sm`, `text-base`).
+    - Unificadas las alturas de inputs y botones en `h-9` y `h-8` con tokens semánticos de Tailwind v4 (`bg-card`, `bg-muted/40`, `border-border`, `text-muted-foreground`, `text-foreground`).
+- **Sección de Origen Estratégico en Diálogo de Tarjetas Kanban (`src/views/apps/projects/kanban/components/card-form-dialog.tsx`)**:
+  - Implementada la card de **"Origen Estratégico"** que muestra la investigación origen, categoría CAME (`Corregir`, `Afrontar`, `Mantener`, `Explotar`), acción CAME, factor DAFO y paquete táctico asociado cuando una tarjeta deriva de Research.
+  - Ocultamiento limpio de la sección para tareas manuales/independientes creadas directamente en el tablero Kanban.
+  - Estandarización de inputs monetarios (`budget_amount`) y tipografía con tokens oficiales de shadcn.
+
+## v0.0.88 (2026-08-31)
+
+### Added & Refactored — Jerarquía Multi-Nivel de Ejecución Estratégica: CAME → Project Activities (Work Packages) → Kanban Tasks
+
+- **Migración SQL y Gobernanza de Datos (`supabase/migrations/2026-08-31T00-00-00_project_activities_hierarchy.sql`)**:
+  - Creada la tabla `public.project_activities` para modelar paquetes de trabajo tácticos con `tenant_id`, `project_id`, `came_action_id`, `title`, `description`, `priority`, `budget`, `status`, `owner_user_id`, `start_date`, `end_date`, `position`.
+  - Vinculada la tabla `public.kanban_tasks` con la columna `activity_id uuid references public.project_activities(id) on delete set null` e índice `kanban_tasks_activity_id_idx`.
+  - Habilitado Row Level Security (RLS) en `project_activities` con políticas basadas en `public.has_capability(auth.uid(), tenant_id, 'projects.read' | 'projects.update')`.
+- **Capa de Dominio y Repositorio SODA (`src/features/projects/`)**:
+  - `src/features/projects/db-types.ts`: Incorporados los tipos `ProjectActivityStatus` ('pending' | 'in_progress' | 'completed' | 'blocked' | 'cancelled'), `ProjectActivityRow`, y la definición de tabla `project_activities` para Supabase PostgREST.
+  - `src/features/projects/schema.ts`: Implementados `createProjectActivitySchema`, `updateProjectActivitySchema`, `projectTaskInputSchema`, `planningModeSchema` y validaciones jerárquicas cruzadas (fechas, presupuestos multinivel).
+  - `src/features/projects/repository.ts`: Actualizada la transacción de creación de proyectos `createProjectTransaction` para insertar concurrentemente proyectos, miembros, acciones CAME, actividades tácticas (`project_activities`) y tareas Kanban operativas vinculadas con `activity_id`.
+  - Incorporados métodos CRUD completos para actividades: `listProjectActivities`, `getProjectActivityById`, `createProjectActivity`, `updateProjectActivity`, `deleteProjectActivity`.
+  - `src/features/projects/service.ts`: Añadidos servicios de negocio con verificación de principal, verificación de capacidades funcionales (`projects.read`, `projects.update`) y auditoría estructurada con PII sanitizado.
+- **Route Handlers RESTful (`src/app/api/projects/[id]/activities/`, `src/app/api/projects/[id]/activities/[activityId]/`)**:
+  - `GET /api/projects/[id]/activities`: Lista todas las actividades tácticas del proyecto.
+  - `POST /api/projects/[id]/activities`: Crea una nueva actividad táctica para el proyecto.
+  - `GET /api/projects/[id]/activities/[activityId]`: Obtiene el detalle de una actividad.
+  - `PATCH /api/projects/[id]/activities/[activityId]`: Actualiza en caliente el alcance, estado, presupuesto, fechas o responsable de la actividad.
+  - `DELETE /api/projects/[id]/activities/[activityId]`: Elimina la actividad y desvincula sus tareas Kanban asociadas.
+- **Wizard de Creación de Proyectos en 2 Modos (`src/views/apps/projects/components/project-creation-wizard.tsx`)**:
+  - Incorporado selector de modo de planificación en el Paso 4:
+    - **Modo A (Rápido 1:1)**: Genera automáticamente 1 actividad y 1 tarea Kanban por cada acción CAME seleccionada.
+    - **Modo B (Detallado / Desglose Táctico)**: Permite desglosar cada acción CAME en múltiples actividades tácticas (work packages), y cada actividad en múltiples subtareas Kanban operativas con asignación de responsables y costos individuales.
+  - Paso 5 (Revisión): Resumen jerárquico que desglosa visualmente la cadena `Acciones CAME seleccionadas` → `Actividades Tácticas` → `Tareas Kanban operativas`.
+- **Suite de Pruebas Automatizadas (`tests/projects/projects-domain.test.ts`, `tests/export/docx-export.test.ts`)**:
+  - Añadidas pruebas unitarias para `createProjectActivitySchema`, `updateProjectActivitySchema`, `projectActivityInputSchema`, `planningMode` y proyectos multi-actividad y multi-tarea. 306 tests superados en 43 suites con 0 fallos.
+
+## v0.0.87 (2026-08-30)
+
+### Added & Updated — Strategic Execution Workspace Hub + Trazabilidad Estratégica CAME-Kanban + Contextualización NovAi
+
+- **Strategic Execution Workspace Hub (`src/views/apps/projects/index.tsx`)**:
+  - Implementada la vista central unificada del Strategic Execution Workspace que coordina la gobernanza operativa, las investigaciones y la ejecución estratégica.
+  - Soporte para navegación multidimensional mediante pestañas: `Overview`, `Board (Kanban)`, `Activities`, `Strategy (CAME Alignment)` y `Budget`.
+  - Sincronización bidireccional continua de estado con la URL mediante query params (`?project=...&tab=...`).
+- **Strategic Context Switcher Robusto (`src/views/apps/projects/components/strategic-context-switcher.tsx`)**:
+  - Eliminado el renderizado de UUIDs crudos en la interfaz, sustituyéndolo por resolución asíncrona de títulos reales, organizaciones, insignias de estado y búsqueda instantánea.
+  - Estados visuales controlados: `Loading` (skeleton/spinner), `Selected` (nombre, organización y badge), `All` ("Todos los Contextos Estratégicos") y `Not Found` ("Contexto no disponible").
+- **Strategic Execution Header (`src/views/apps/projects/components/strategic-execution-header.tsx`)**:
+  - Cabecera ejecutiva con identidad del proyecto/investigación, objetivo estratégico, enlace directo al expediente en Research (`/apps/investigator?id=...`) y selector de líder.
+  - 5 KPIs calculados en tiempo real desde datos reales: Progreso de Ejecución (`%` y completadas/totales), Actividades Vencidas (alerta en rojo), Salud Presupuestaria (`$ asignado` vs `$ tope`), Cobertura Estratégica CAME (`%` de acciones CAME cubiertas con actividades) y Grupo de Avatares del Equipo con tooltip institucional.
+- **Panel Ejecutivo de Resumen (`src/views/apps/projects/components/execution-overview.tsx`)**:
+  - Vista ejecutiva con alertas de riesgos operativos (actividades vencidas, tareas urgentes, actividades sin responsable) y cuellos de botella por columna de flujo de trabajo.
+  - Progreso de ejecución desglosado por cada acción CAME derivada de la investigación.
+- **Tabla Ejecutiva de Actividades (`src/views/apps/projects/components/activities-table-view.tsx`)**:
+  - Tabla interactiva con ordenamiento multi-campo (Título, Fecha Límite, Prioridad, Presupuesto), búsqueda en tiempo real y filtrado por estado de columna, nivel de prioridad y responsable.
+- **Matriz de Alineación Estratégica CAME (`src/views/apps/projects/components/strategic-alignment-view.tsx`)**:
+  - Visualización metodológica de la cadena de trazabilidad bidireccional completa:
+    `Acción CAME [C/A/M/E] → Tareas Kanban Vinculadas (con avance y presupuesto) → Factor DAFO de Origen (F-01/D-01 con justificación) → Evidencias Documentadas`.
+  - Acciones rápidas para generar actividades Kanban directamente desde una acción CAME huérfana.
+- **Gobernanza Financiera y Presupuestaria (`src/views/apps/projects/components/budget-governance-view.tsx`)**:
+  - Panel de control de fondos con contraste entre presupuesto tope autorizado y presupuesto asignado a tareas, semáforo de sobreasignación y desglose porcentual por actividad.
+- **Vista Portafolio Global (`src/views/apps/projects/components/project-portfolio-view.tsx`)**:
+  - Implementada la vista consolidada de portafolio multi-proyecto del tenant: métricas consolidadas (proyectos activos/planificación/completados, presupuesto global asignado vs tope, equipo disponible) y mosaico de tarjetas de proyecto con barras de avance individual y botón de acceso rápido.
+- **Sincronización Dinámica de Acciones CAME (`src/features/projects/`, `src/app/api/projects/[id]/came-sync/route.ts`)**:
+  - Incorporada la capacidad `syncProjectCameActions` y el endpoint `POST /api/projects/[id]/came-sync` para importar acciones CAME pendientes desde la investigación hacia un proyecto existente y generar sus tareas Kanban en una sola transacción.
+- **Drawer de Configuración de Proyecto en 4 Pestañas (`src/views/apps/projects/components/project-settings-drawer.tsx`)**:
+  - Rediseñado con estructura de pestañas: `General` (Nombre, Descripción, Objetivo Estratégico), `Equipo` (Líder responsable, Estado, Prioridad), `Presupuesto` (Modo presupuestario, Presupuesto Tope, Fechas) y `CAME` (Lista de acciones ya vinculadas e importación interactiva de acciones CAME pendientes).
+- **Enriquecimiento del Backend Kanban (`src/app/api/kanban/route.ts`)**:
+  - La respuesta de `/api/kanban` ahora adjunta el contexto estratégico completo de las investigaciones (acciones CAME, factores DAFO, evidencias y objetivo) evitando roundtrips adicionales.
+- **Contextualización de Herramientas NovAi (`src/features/novai/tools/kanban/`)**:
+  - Actualizadas `get_kanban_board_summary` y `list_kanban_tasks` para aceptar parámetros opcionales `projectId` e `investigationId`, permitiendo al agente NovAi responder con precisión a consultas como *"¿Cuál es el estado de ejecución de la investigación FCBC?"*.
+
 ## v0.0.86 (2026-08-30)
 
 ### Updated & Refactored — Wizard de Creación de Proyectos (5 Pasos Unificados) + Combobox Múltiple de Responsables + Control Presupuestario en Tiempo Real
