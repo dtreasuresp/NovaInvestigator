@@ -1,6 +1,6 @@
 # NovaResearch Enterprise Platform — Proprietary Software & Cloud Service License Agreement
 
-**Copyright (c) 2024–2026 DGTECNOVA SRL. All rights reserved. / Todos los derechos reservados.**
+**Copyright (c) 2026–2030 DGTECNOVA SRL. All rights reserved. / Todos los derechos reservados.**
 
 ---
 
