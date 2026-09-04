@@ -6,6 +6,29 @@ import { logger } from '@/lib/logger'
 import { getInvestigationById } from '@/lib/investigations/repository'
 import type { InvestigationState, CameAction } from '@/types/apps/investigator-types'
 import type { ProjectActivityRow } from './db-types'
+import { getStrategicObjectiveById } from '@/features/strategy/repository'
+
+async function validateStrategicObjectiveScope(
+  tenantId: string,
+  objectiveId: string | null | undefined,
+  workspaceId: string | null | undefined,
+  teamId: string | null | undefined
+): Promise<void> {
+  if (!objectiveId) return
+
+  const objective = await getStrategicObjectiveById(tenantId, objectiveId)
+  if (!objective) {
+    throw ProjectError.notFound('strategy.errors.objectiveNotFound')
+  }
+
+  if (objective.workspace_id && objective.workspace_id !== workspaceId) {
+    throw ProjectError.validation('strategy.errors.objectiveWorkspaceMismatch')
+  }
+
+  if (objective.team_id && objective.team_id !== teamId) {
+    throw ProjectError.validation('strategy.errors.objectiveTeamMismatch')
+  }
+}
 
 export async function listProjects(filters?: ProjectFilterInput): Promise<repository.ProjectWithStats[]> {
   const principal = await requireProjectsPrincipal()
@@ -30,6 +53,7 @@ export async function createProject(input: CreateProjectInput): Promise<reposito
   const principal = await requireProjectsPrincipal()
   await assertProjectsCapability(principal, 'projects.create')
   const tenantId = principal.primaryTenantId!
+  await validateStrategicObjectiveScope(tenantId, input.strategicObjectiveId, input.workspaceId, input.teamId)
 
   // 1. Quota / Entitlement evaluation
   const currentCount = await repository.countActiveProjects(tenantId)
@@ -126,6 +150,13 @@ export async function updateProject(
   if (patch.leaderUserId && existing.team_id) {
     await assertTeamMemberEligible(tenantId, existing.team_id, patch.leaderUserId)
   }
+
+  await validateStrategicObjectiveScope(
+    tenantId,
+    patch.strategicObjectiveId ?? existing.strategic_objective_id,
+    patch.workspaceId ?? existing.workspace_id,
+    patch.teamId ?? existing.team_id
+  )
 
   const updated = await repository.updateProject(tenantId, projectId, patch)
 
@@ -310,4 +341,3 @@ export async function deleteProjectActivity(
     }
   })
 }
-

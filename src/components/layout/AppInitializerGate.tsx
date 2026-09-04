@@ -18,16 +18,19 @@ interface AppInitializerGateProps {
 export function AppInitializerGate({ children }: AppInitializerGateProps) {
   const { t } = useI18n()
   const pathname = usePathname()
-  const { loading: permissionsLoading, refetch: refetchPermissions } = usePermissions()
+  const { snapshot, loading: permissionsLoading, refetch: refetchPermissions } = usePermissions()
   const { loading: userLoading, refetch: refetchUser, user } = useCurrentUser()
 
   const isAuthPage = pathname.startsWith('/pages/auth')
   const prevPathnameRef = useRef(pathname)
   const prevUserIdRef = useRef(user?.id)
-  const hasInitializedRef = useRef(false)
+  const hasInitializedRef = useRef(Boolean(snapshot && user))
 
   const [isRefreshing, setIsRefreshing] = useState(false)
-  const [showOverlay, setShowOverlay] = useState(true)
+  const [showOverlay, setShowOverlay] = useState(() => {
+    if (isAuthPage) return false
+    return !snapshot || !user
+  })
   const [isFading, setIsFading] = useState(false)
 
   // Detect transition from auth page (login) to a protected app page
@@ -36,17 +39,22 @@ export function AppInitializerGate({ children }: AppInitializerGateProps) {
     const isNowProtected = !pathname.startsWith('/pages/auth')
 
     if (wasAuthPage && isNowProtected) {
-      hasInitializedRef.current = false
-      setIsRefreshing(true)
-      setShowOverlay(true)
-      setIsFading(false)
-      void Promise.all([refetchPermissions(), refetchUser()]).finally(() => {
-        setIsRefreshing(false)
-      })
+      if (!snapshot || !user) {
+        hasInitializedRef.current = false
+        setIsRefreshing(true)
+        setShowOverlay(true)
+        setIsFading(false)
+        void Promise.all([refetchPermissions(), refetchUser()]).finally(() => {
+          setIsRefreshing(false)
+        })
+      } else {
+        hasInitializedRef.current = true
+        setShowOverlay(false)
+      }
     }
 
     prevPathnameRef.current = pathname
-  }, [pathname, refetchPermissions, refetchUser])
+  }, [pathname, refetchPermissions, refetchUser, snapshot, user])
 
   // Detect user state change (e.g. from guest/null to logged-in user)
   useEffect(() => {
@@ -54,18 +62,20 @@ export function AppInitializerGate({ children }: AppInitializerGateProps) {
     const currentUserId = user?.id
 
     if (!prevUserId && currentUserId && !isAuthPage) {
-      setIsRefreshing(true)
-      setShowOverlay(true)
-      setIsFading(false)
-      void refetchPermissions().finally(() => {
-        setIsRefreshing(false)
-      })
+      if (!snapshot) {
+        setIsRefreshing(true)
+        setShowOverlay(true)
+        setIsFading(false)
+        void refetchPermissions().finally(() => {
+          setIsRefreshing(false)
+        })
+      }
     }
 
     prevUserIdRef.current = currentUserId
-  }, [user?.id, isAuthPage, refetchPermissions])
+  }, [user?.id, isAuthPage, refetchPermissions, snapshot])
 
-  const isLoading = (permissionsLoading || userLoading || isRefreshing) && !isAuthPage
+  const isLoading = (permissionsLoading || userLoading || isRefreshing) && !isAuthPage && (!snapshot || !user)
 
   useEffect(() => {
     if (!isLoading) {
@@ -77,13 +87,13 @@ export function AppInitializerGate({ children }: AppInitializerGateProps) {
       }, 300)
 
       return () => clearTimeout(timer)
-    } else if (!isAuthPage && !hasInitializedRef.current) {
+    } else if (!isAuthPage && !hasInitializedRef.current && (!snapshot || !user)) {
       setShowOverlay(true)
       setIsFading(false)
     } else {
       setShowOverlay(false)
     }
-  }, [isLoading, isAuthPage])
+  }, [isLoading, isAuthPage, snapshot, user])
 
   return (
     <>

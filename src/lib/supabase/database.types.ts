@@ -31,6 +31,16 @@ export type TrialEntitlementNamespace = 'modules' | 'actions' | 'limits'
 export type AuditSource = 'user' | 'admin' | 'system' | 'migration'
 export type VidRequestStatus = 'pending' | 'under_review' | 'approved' | 'rejected' | 'needs_resubmission'
 export type VidVerificationMethod = 'manual' | 'provider'
+export type StrategicObjectiveStatus = 'draft' | 'active' | 'at_risk' | 'achieved' | 'cancelled' | 'archived'
+export type OkrPeriodType = 'quarterly' | 'annual' | 'custom'
+export type OkrCycleStatus = 'draft' | 'active' | 'closed' | 'archived'
+export type OkrCycleObjectiveStatus =
+  | 'not_started'
+  | 'on_track'
+  | 'at_risk'
+  | 'off_track'
+  | 'achieved'
+  | 'dropped'
 export type LegalRetentionArchiveSource =
   | 'audit_logs'
   | 'billing_invoices'
@@ -134,6 +144,177 @@ export interface Database {
           status?: ProfileStatus
           vid_status?: VidStatus
           vid_verified_at?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      strategic_objectives: {
+        Row: {
+          id: string
+          tenant_id: string
+          workspace_id: string | null
+          team_id: string | null
+          title: string
+          description: string
+          status: StrategicObjectiveStatus
+          owner_user_id: string | null
+          source_investigation_id: string | null
+          source_came_action_id: string | null
+          source_snapshot: Json
+          archived_at: string | null
+          created_by: string | null
+          updated_by: string | null
+          version: number
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          tenant_id: string
+          workspace_id?: string | null
+          team_id?: string | null
+          title: string
+          description?: string
+          status?: StrategicObjectiveStatus
+          owner_user_id?: string | null
+          source_investigation_id?: string | null
+          source_came_action_id?: string | null
+          source_snapshot?: Json
+          archived_at?: string | null
+          created_by?: string | null
+          updated_by?: string | null
+          version?: number
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          tenant_id?: string
+          workspace_id?: string | null
+          team_id?: string | null
+          title?: string
+          description?: string
+          status?: StrategicObjectiveStatus
+          owner_user_id?: string | null
+          source_investigation_id?: string | null
+          source_came_action_id?: string | null
+          source_snapshot?: Json
+          archived_at?: string | null
+          created_by?: string | null
+          updated_by?: string | null
+          version?: number
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      okr_cycles: {
+        Row: {
+          id: string
+          tenant_id: string
+          workspace_id: string | null
+          team_id: string | null
+          name: string
+          description: string
+          period_type: OkrPeriodType
+          start_date: string
+          end_date: string
+          status: OkrCycleStatus
+          owner_user_id: string | null
+          archived_at: string | null
+          created_by: string | null
+          updated_by: string | null
+          version: number
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          tenant_id: string
+          workspace_id?: string | null
+          team_id?: string | null
+          name: string
+          description?: string
+          period_type?: OkrPeriodType
+          start_date: string
+          end_date: string
+          status?: OkrCycleStatus
+          owner_user_id?: string | null
+          archived_at?: string | null
+          created_by?: string | null
+          updated_by?: string | null
+          version?: number
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          tenant_id?: string
+          workspace_id?: string | null
+          team_id?: string | null
+          name?: string
+          description?: string
+          period_type?: OkrPeriodType
+          start_date?: string
+          end_date?: string
+          status?: OkrCycleStatus
+          owner_user_id?: string | null
+          archived_at?: string | null
+          created_by?: string | null
+          updated_by?: string | null
+          version?: number
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      okr_cycle_objectives: {
+        Row: {
+          id: string
+          tenant_id: string
+          cycle_id: string
+          strategic_objective_id: string
+          owner_user_id: string | null
+          commitment: string
+          weight: number
+          status: OkrCycleObjectiveStatus
+          progress: number
+          created_by: string | null
+          updated_by: string | null
+          version: number
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          tenant_id: string
+          cycle_id: string
+          strategic_objective_id: string
+          owner_user_id?: string | null
+          commitment?: string
+          weight?: number
+          status?: OkrCycleObjectiveStatus
+          progress?: number
+          created_by?: string | null
+          updated_by?: string | null
+          version?: number
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          tenant_id?: string
+          cycle_id?: string
+          strategic_objective_id?: string
+          owner_user_id?: string | null
+          commitment?: string
+          weight?: number
+          status?: OkrCycleObjectiveStatus
+          progress?: number
+          created_by?: string | null
+          updated_by?: string | null
+          version?: number
           created_at?: string
           updated_at?: string
         }

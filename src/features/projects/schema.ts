@@ -67,6 +67,7 @@ export const createProjectSchema = z.object({
   investigationId: z.string().uuid().optional().nullable().or(z.literal('').transform(() => null)),
   workspaceId: z.string().uuid().optional().nullable().or(z.literal('').transform(() => null)),
   teamId: z.string().uuid().optional().nullable().or(z.literal('').transform(() => null)),
+  strategicObjectiveId: z.string().uuid().optional().nullable().or(z.literal('').transform(() => null)),
   leaderUserId: z.string().uuid().optional().nullable().or(z.literal('').transform(() => null)),
   budgetMode: projectBudgetModeSchema.default('action_based'),
   budgetTotal: z.number().nonnegative().default(0),
@@ -112,6 +113,9 @@ export const updateProjectSchema = z.object({
   priority: projectPrioritySchema.optional(),
   startDate: z.string().optional().nullable(),
   endDate: z.string().optional().nullable(),
+  workspaceId: z.string().uuid().optional().nullable(),
+  teamId: z.string().uuid().optional().nullable(),
+  strategicObjectiveId: z.string().uuid().optional().nullable(),
   leaderUserId: z.string().uuid().optional().nullable(),
   budgetTotal: z.number().nonnegative().optional(),
   budgetMode: projectBudgetModeSchema.optional(),
@@ -180,6 +184,7 @@ export const projectFilterSchema = z.object({
   investigationId: z.string().uuid().optional(),
   teamId: z.string().uuid().optional(),
   workspaceId: z.string().uuid().optional(),
+  strategicObjectiveId: z.string().uuid().optional(),
   status: projectStatusSchema.optional()
 })
 
@@ -196,4 +201,3 @@ export type ProjectCameActionInput = z.infer<typeof projectCameActionInputSchema
 export type ProjectActivityInput = z.infer<typeof projectActivityInputSchema>
 export type ProjectTaskInput = z.infer<typeof projectTaskInputSchema>
 export type ProjectFilterInput = z.infer<typeof projectFilterSchema>
-

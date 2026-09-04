@@ -2998,8 +2998,34 @@ validaciones futuras:
     - **Persistencia Multi-Dispositivo de NovAi en Supabase PostgreSQL:** En `src/views/apps/novai/index.tsx`, se conecta la gestión de hilos y mensajes directamente a los endpoints `/api/novai/conversations` (listar, crear, actualizar título, archivar, borrar) y `/api/novai/conversations/[id]` (mensajes). Los mensajes generados mediante `/api/novai/chat` se persisten en `novai_messages` y `novai_conversations`, permitiendo a los usuarios continuar sus conversaciones sin importar si acceden desde PC, smartphone o tablet.
     - **Botón Único de Auditoría de Confianza en `InvestigationConfidenceCard`:** Se unifican las acciones en el botón insignia `[✨ Auditar Confianza y Estrategia con NovAi]`. Ejecuta una evaluación holística de los 4 pilares diagnósticos (Cruces DAFO, Mitigación CAME, Balances EFI/EFE) y actualiza el dictamen dentro de la tarjeta de confianza con persistencia en el expediente.
 
+49. **Resuelta (2026-09-04): Bootstrap de Sesión, Prehidratación SSR de Permisos y Usuario, y Eliminación de Cascada Client-Side:**
+    - **Server-Side Rendering de Permisos y Sesión en `PagesLayout`:** En `src/app/(pages)/layout.tsx`, el layout principal se transforma en un React Server Component (RSC) que resuelve de forma atómica y en una sola pasada en el servidor `getCurrentPrincipal()` y `resolveEffectiveAccessSnapshot()`. Los datos de sesión resueltos (`initialSnapshot` e `initialUser`) se inyectan directamente al componente cliente `src/app/(pages)/layout-client.tsx`.
+    - **Eliminación del Diálogo Bloqueante de Carga (`AppInitializerGate`):** Se actualiza `src/components/layout/AppInitializerGate.tsx` para que, cuando el usuario y el snapshot de accesos efectivos ya vienen prehidratados desde el servidor, el overlay modal ("NovaResearch Cargando...") no se muestre en absoluto, permitiendo una entrada instantánea a la aplicación sin pantallas intermedias ni parpadeos.
+    - **Prehidratación y Deduplicación en `PermProvider` (`use-permissions.tsx`):** `PermProvider` acepta `initialSnapshot` como prop opcional, inicializando el estado con `loading: false` y evitando el `fetch('/api/access/effective')` en frío. Además, se incorpora deduplicación en vuelo (`inFlightEffectivePromise`) para evitar carreras y consultas redundantes.
+    - **Deduplicación y Compartición de Estado en `useCurrentUser` (`use-current-user.ts`):** Se dota al hook `useCurrentUser` de deduplicación de promesas en vuelo (`inFlightUserPromise`) y soporte de prehidratación, eliminando las múltiples peticiones concurrentes a `/api/auth/me` disparadas por diferentes componentes en el montaje.
+    - **Carga Perezosa (*Lazy Loading*) en NovAi Copilot (`AiCopilotSheet`):** Se condiciona el `useEffect` de carga de hilos y mensajes en `src/views/apps/investigator/components/ai-copilot-sheet.tsx` para que solo se ejecute cuando `open === true`. El Copilot flotante en estado cerrado ya no genera tráfico de red ni satura Supabase en el arranque de la app.
+    - **Caché y Deduplicación de Planes (`use-plan-catalog.ts`):** `usePlanCatalog` implementa caché en memoria y deduplicación de peticiones a `/api/billing/plans`, evitando reconsultas innecesarias al catálogo público.
+
+50. **Resuelta (2026-09-04): Arquitectura de Manejo de Errores, Error Boundaries (App Router) y Normalización de Excepciones de Red:**
+    - **Error Boundaries Canónicos en Next.js App Router (`src/app/(pages)/error.tsx` y `src/app/global-error.tsx`):**
+      - Se implementa `src/app/(pages)/error.tsx` como Client Component para capturar fallos no controlados en Server Components, Layouts y sub-árboles de rutas (ej. `/apps/novai`, `/apps/investigator`, `/apps/projects/kanban`), impidiendo que caídas de red o timeouts desmoronen la aplicación o muestren volcados JSON sin formato.
+      - Se implementa `src/app/global-error.tsx` como Client Component con etiquetas `<html>` y `<body>` para capturar fallos fatales en el root layout.
+      - Se asegura una experiencia visual idéntica y armónica con `src/app/not-found.tsx`:
+        - Layout centrado `flex h-screen w-screen flex-col items-center justify-center gap-9 p-6`.
+        - Ilustración vectorial `Icon500` creada en `src/assets/svg/500.tsx` con soporte nativo de variables CSS del tema (`var(--primary)`) y capas de opacidad (`0.1`, `0.2`, `0.4`, `0.5`, `0.6`).
+        - Tipografía en `text-muted-foreground text-xl sm:text-2xl`.
+        - Botón interactivo principal `Button className='rounded-full' onClick={() => reset()}` para reintentar la acción sin recargar la página.
+        - Botón secundario `Button variant='outline' className='rounded-full' render={<Link href='/' />} nativeButton={false}` para volver al inicio cumpliendo accesibilidad Base UI.
+        - Trazabilidad técnica sutil con `error.digest` o mensaje resumido para soporte técnico.
+    - **Normalización de Excepciones de Red y PostgREST en `src/features/access/access-service.ts`:**
+      - Se incorpora normalización de errores para evitar el relanzamiento de objetos POJO planos `{ message, details, hint, code }` provenientes de fallos de red (`ConnectTimeoutError`, `UND_ERR_CONNECT_TIMEOUT`, rechazos de `fetch`) en `@supabase/postgrest-js`.
+      - Todo error devuelto por el cliente de base de datos se transforma en una instancia tipada de `Error`, preservando el stack de depuración y evitando excepciones no tipadas en React Server DOM.
+    - **Alineación de la Vista de Contingencia `src/views/pages/misc/error-page/index.tsx`:**
+      - Se corrige la página de error `/pages/misc/error-page` para sustituir el `404` residual por el componente `Icon500` y textos correspondientes a error 500 de servidor.
+
 Estas decisiones sustituyen las reglas comerciales anteriores y deben gobernar las
 migraciones, contratos API y validaciones futuras. Las migraciones ya aplicadas
 no se editarán destructivamente; cualquier cambio de nomenclatura o contrato se
 realizará mediante una nueva migración forward.
+
 

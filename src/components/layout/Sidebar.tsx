@@ -252,7 +252,7 @@ const SidebarGroupedMenuItems = ({
       setOpenMobile(false)
     }
   }
-  
+
   const displayGroupLabel = groupLabel && NAV_LABEL_MAP[groupLabel] ? t(NAV_LABEL_MAP[groupLabel]) : groupLabel
 
   return (
@@ -494,7 +494,7 @@ function getPlanDisplayName(
 
   if (plans) {
     const matched = plans.find(p => p.code.toLowerCase() === normalized)
-    
+
     if (matched?.name) return matched.name
   }
 
@@ -663,7 +663,6 @@ const SidebarLayout = () => {
               }}
               render={<Link href={`${themeConfig.homePageUrl}`} />}
             >
-              <LogoSvg className='size-8' />
               <div className='flex flex-col items-start'>
                 <span className='text-lg font-semibold text-nowrap'>{themeConfig.templateName}</span>
                 <span className='text-xs font-light text-nowrap'>{t('nav.brandSubtitle')}</span>

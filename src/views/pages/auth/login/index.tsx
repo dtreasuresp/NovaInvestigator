@@ -36,24 +36,24 @@ const Login = ({ returnToBilling = false, invitationToken }: LoginProps) => {
 
       <Card className='z-1 w-full gap-6 py-6 sm:max-w-lg'>
         <CardHeader className='gap-6 px-6'>
-          <Link href='/'>
+          {/* <Link href='/'>
             <Logo className='gap-3' />
-          </Link>
+          </Link> */}
 
           <div>
             <CardTitle className='mb-2 text-2xl font-semibold'>
-              {isMagicLink ? 'Sign in with Magic Link in NovaStore' : 'Sign in to NovaStore'}
+              {isMagicLink ? 'Sign in with Magic Link in NovaStore' : 'Iniciar sesión'}
             </CardTitle>
-            <CardDescription className='text-base'>
+            {/* <CardDescription className='text-base'>
               {isMagicLink
                 ? 'We will send a sign-in link to your verified email address.'
                 : 'The smart way to manage your future.'}
-            </CardDescription>
+            </CardDescription> */}
           </div>
         </CardHeader>
 
         <CardContent className='px-6'>
-          <p className='text-muted-foreground mb-6 text-base'>
+          {/* <p className='text-muted-foreground mb-6 text-base'>
             {isMagicLink ? 'Prefer password? ' : 'Login with '}
             <button
               type='button'
@@ -62,7 +62,7 @@ const Login = ({ returnToBilling = false, invitationToken }: LoginProps) => {
             >
               {isMagicLink ? 'Password' : 'Magic Link'}
             </button>
-          </p>
+          </p> */}
 
           {/* Login Form */}
           <div className='space-y-4'>
@@ -78,7 +78,7 @@ const Login = ({ returnToBilling = false, invitationToken }: LoginProps) => {
                 Create an account
               </Link>
             </p>
-
+{/*
             <div className='flex items-center gap-4'>
               <Separator className='flex-1' />
               <p className='text-base'>{t('common.or')}</p>
@@ -87,7 +87,7 @@ const Login = ({ returnToBilling = false, invitationToken }: LoginProps) => {
 
             <Button variant='ghost' className='w-full' render={<Link href='#' />} nativeButton={false}>
               Sign in with google
-            </Button>
+            </Button> */}
           </div>
         </CardContent>
       </Card>

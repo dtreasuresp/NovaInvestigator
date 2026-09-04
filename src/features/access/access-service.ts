@@ -14,6 +14,7 @@ import {
   CapabilityDeniedError,
   CommercialAccessRequiredError,
   CommercialAccessResolutionError,
+  DatabaseConnectionError,
   EntitlementLimitExceededError,
   EntitlementRequiredError,
   EntitlementResolutionError,
@@ -49,6 +50,20 @@ import { GUEST_TRIAL_COOKIE_NAME, getGuestTrialStatus } from '@/features/billing
 
 import { evaluateCommercialAccess } from './commercial-access'
 import { evaluateEntitlement, isSubscriptionUsable, type ResolvedEntitlement } from './entitlement-evaluator'
+
+function normalizePostgrestError(error: unknown, context: string): Error {
+  if (error instanceof Error) {
+    return error
+  }
+
+  if (typeof error === 'object' && error !== null && 'message' in error) {
+    const pg = error as { message?: string; details?: string; hint?: string; code?: string }
+
+    return new DatabaseConnectionError(context, pg.message)
+  }
+
+  return new DatabaseConnectionError(context, String(error))
+}
 
 // Server-side resolver for the current request's principal (identity +
 // tenant memberships + derived access state) and the guard functions built
@@ -190,7 +205,7 @@ async function requireActiveTenantMembership(
     .maybeSingle()
 
   if (error) {
-    throw error
+    throw normalizePostgrestError(error, 'active tenant check')
   }
 
   if (!data) {
@@ -243,7 +258,7 @@ async function resolveCapability(principal: Principal, tenantId: string, capabil
   })
 
   if (error) {
-    throw error
+    throw normalizePostgrestError(error, 'has_capability')
   }
 
   return data === true
@@ -278,7 +293,7 @@ export async function getEffectiveCapabilities(tenantId: string): Promise<Readon
   })
 
   if (error) {
-    throw error
+    throw normalizePostgrestError(error, 'get_effective_capabilities')
   }
 
   const capabilities = new Set<CapabilityKey>()
@@ -782,7 +797,7 @@ export async function hasPlatformCapability(capability: PlatformCapabilityKey): 
   })
 
   if (error) {
-    throw error
+    throw normalizePostgrestError(error, 'has_platform_capability')
   }
 
   return data === true
@@ -803,7 +818,7 @@ export async function getPlatformCapabilities(): Promise<ReadonlySet<PlatformCap
   })
 
   if (error) {
-    throw error
+    throw normalizePostgrestError(error, 'get_platform_capabilities')
   }
 
   for (const row of data ?? []) {

@@ -33,6 +33,7 @@ describe('projects domain - schema validation', () => {
       name: 'Plan Estratégico Derivado',
       investigationId: '1f400e7c-7c49-4b1a-8bc7-b7e2a1b0c3d5',
       teamId: '2f400e7c-7c49-4b1a-8bc7-b7e2a1b0c3d5',
+      strategicObjectiveId: '4f400e7c-7c49-4b1a-8bc7-b7e2a1b0c3d5',
       priority: 'high',
       budgetMode: 'action_based',
       cameActions: [
@@ -61,6 +62,7 @@ describe('projects domain - schema validation', () => {
       assert.equal(parsed.data.cameActions.length, 1)
       assert.equal(parsed.data.activities.length, 1)
       assert.equal(parsed.data.activities[0].cameActionId, 'C1')
+      assert.equal(parsed.data.strategicObjectiveId, '4f400e7c-7c49-4b1a-8bc7-b7e2a1b0c3d5')
     }
   })
 
@@ -171,7 +173,8 @@ describe('projects domain - schema validation', () => {
     const parsed = updateProjectSchema.safeParse({
       name: 'Nuevo Nombre de Proyecto',
       priority: 'urgent',
-      status: 'active'
+      status: 'active',
+      strategicObjectiveId: '4f400e7c-7c49-4b1a-8bc7-b7e2a1b0c3d5'
     })
 
     assert.equal(parsed.success, true)
@@ -179,6 +182,7 @@ describe('projects domain - schema validation', () => {
       assert.equal(parsed.data.name, 'Nuevo Nombre de Proyecto')
       assert.equal(parsed.data.priority, 'urgent')
       assert.equal(parsed.data.status, 'active')
+      assert.equal(parsed.data.strategicObjectiveId, '4f400e7c-7c49-4b1a-8bc7-b7e2a1b0c3d5')
     }
   })
 
@@ -200,6 +204,7 @@ describe('projects domain - schema validation', () => {
   it('validates projectFilterSchema parameters', () => {
     const valid = projectFilterSchema.safeParse({
       investigationId: '1f400e7c-7c49-4b1a-8bc7-b7e2a1b0c3d5',
+      strategicObjectiveId: '4f400e7c-7c49-4b1a-8bc7-b7e2a1b0c3d5',
       status: 'active'
     })
     assert.equal(valid.success, true)

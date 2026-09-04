@@ -14,6 +14,7 @@ export type ProjectRow = {
   workspace_id: string | null
   team_id: string | null
   investigation_id: string | null
+  strategic_objective_id?: string | null
   name: string
   description: string
   objective: string
@@ -103,6 +104,13 @@ export type ProjectsExtraTables = {
         columns: ['investigation_id']
         isOneToOne: false
         referencedRelation: 'investigations'
+        referencedColumns: ['id']
+      },
+      {
+        foreignKeyName: 'projects_strategic_objective_id_fkey'
+        columns: ['strategic_objective_id']
+        isOneToOne: false
+        referencedRelation: 'strategic_objectives'
         referencedColumns: ['id']
       }
     ]

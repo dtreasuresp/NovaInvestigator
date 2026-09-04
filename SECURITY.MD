@@ -2,7 +2,7 @@
 
 ## Supported Versions
 
-NovaResearch está en fase de desarrollo activo. Ninguna de las versiones inferiores a la versión 1.0.0 se considera estable o segura para uso en producción. Se recomienda a los usuarios que utilicen la última versión disponible para garantizar la mejor experiencia y seguridad. Si preesenta problemas de rendimiento o seguridad, por favor reportarlos a través de los canales oficiales para que puedan ser abordados en futuras actualizaciones.
+NovaResearch está en fase de desarrollo activo. Ninguna de las versiones inferiores a la versión 1.0.0 se considera estable o segura para uso en producción. Se recomienda a los usuarios que utilicen la última versión disponible para garantizar la mejor experiencia y seguridad. Si presenta problemas de rendimiento o seguridad, por favor repórtelos a través de los canales oficiales para que puedan ser abordados en futuras actualizaciones.
 
 | Version | Supported      |
 | ------- | -------------- |
@@ -41,3 +41,10 @@ Para reportar una vulnerabilidad, por favor siga estos pasos:
 - El Centro Único de Roles y Permissions usa capacidades platform explícitas, RLS, RPC con `search_path` fijo, optimistic locking y auditoría before/after; `platform.access.capabilities.manage` permite asignar capacidades tenant/global sin conceder capacidades `platform.*` a roles tenant.
 - La función `replace_role_capabilities` no es ejecutable por `anon`; la ejecución pública está revocada y solo se concede a `authenticated` y `service_role`. La protección del último `super_admin` se aplica mediante triggers y validaciones de dominio.
 - La policy RLS de inserción directa en `role_capabilities` aplica la misma frontera que el RPC y rechaza `platform.*` y `billing.plans.manage`, incluso para actores con `platform.access.capabilities.manage`.
+
+## Contractual security terms
+
+This public policy explains vulnerability reporting and selected security
+controls. It does not replace the contractual `SECURITY_ADDENDUM.md`, the
+`DATA_PROCESSING_AGREEMENT.md` or the service-specific commitments in
+`SERVICE_LEVEL_AGREEMENT.md`.

@@ -116,7 +116,7 @@ function Teams({ className }: TeamsProps) {
       </CardContent>
       {teams.length > 0 && (
         <CardContent>
-          <Button variant='outline' render={<Link href='/pages/user-profile?view=teams' />} className='w-full'>
+          <Button variant='outline' render={<Link href='/pages/user-profile?view=teams' />} nativeButton={false} className='w-full'>
             View All Teams
           </Button>
         </CardContent>

@@ -12,6 +12,7 @@ export async function GET(request: Request) {
       investigationId: searchParams.get('investigationId') || undefined,
       teamId: searchParams.get('teamId') || undefined,
       workspaceId: searchParams.get('workspaceId') || undefined,
+      strategicObjectiveId: searchParams.get('strategicObjectiveId') || undefined,
       status: searchParams.get('status') || undefined
     }
 

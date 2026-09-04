@@ -8,6 +8,7 @@ import { TooltipProvider } from './ui/tooltip'
 
 // Hook Imports
 import { PermProvider } from '@/hooks/use-permissions'
+import { CurrentUserProvider } from '@/hooks/use-current-user'
 import { CurrencyProvider } from '@/hooks/use-currency'
 import { I18nProvider } from '@/hooks/use-i18n'
 
@@ -23,13 +24,15 @@ const Providers = ({ children, sidebarDefaultOpen }: Props) => {
     <ThemeProvider attribute='class' defaultTheme='system' enableSystem={true}>
       <I18nProvider>
         <PermProvider>
-          <AppInitializerGate>
-            <CurrencyProvider>
-              <TooltipProvider>
-                <SidebarProvider defaultOpen={sidebarDefaultOpen}>{children}</SidebarProvider>
-              </TooltipProvider>
-            </CurrencyProvider>
-          </AppInitializerGate>
+          <CurrentUserProvider>
+            <AppInitializerGate>
+              <CurrencyProvider>
+                <TooltipProvider>
+                  <SidebarProvider defaultOpen={sidebarDefaultOpen}>{children}</SidebarProvider>
+                </TooltipProvider>
+              </CurrencyProvider>
+            </AppInitializerGate>
+          </CurrentUserProvider>
         </PermProvider>
       </I18nProvider>
     </ThemeProvider>

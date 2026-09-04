@@ -4,6 +4,87 @@
 
 All notable changes to this template will be documented in this file
 
+## v0.0.95 (2026-09-04)
+
+### Added
+
+- **Ilustración Isométrica `Icon500` (`src/assets/svg/500.tsx`)**:
+  - Componente vectorial con estética isométrica idéntica a `Icon404`, adaptativo mediante tokens CSS `var(--primary)` y gradaciones de opacidad (`0.1` a `0.6`).
+- **Error Boundaries Canónicos de Next.js App Router (`src/app/(pages)/error.tsx`, `src/app/error.tsx` y `src/app/global-error.tsx`)**:
+  - Implementado `src/app/(pages)/error.tsx` para atrapar excepciones en Server Components, Layouts de módulo (`/apps/novai`, `/apps/investigator`, `/apps/projects/kanban`) y subrutas.
+  - Implementados `src/app/error.tsx` y `src/app/global-error.tsx` para capturar fallos fatales en el root layout y layouts de primer nivel.
+  - Interfaz visual alineada con `not-found.tsx`: centrado responsivo, `Icon500`, botón "Reintentar" (`reset()`), botón "Volver al inicio" (`Link href='/'` con `nativeButton={false}`) y soporte de `error.digest`.
+- **Clase de Error `DatabaseConnectionError` (`src/features/access/errors.ts`)**:
+  - Especialización de `AccessError` para tipar adecuadamente errores de red o timeouts de base de datos.
+
+### Fixed & Optimized
+
+- **Normalización de Excepciones PostgREST en `src/features/access/access-service.ts`**:
+  - Reemplazados los `throw error` crudos por `normalizePostgrestError()`, evitando que fallos de red (`ConnectTimeoutError`, `UND_ERR_CONNECT_TIMEOUT`, rechazos de `fetch`) arrojen objetos POJO planos `{ message, details, hint, code }` al stream de React Flight.
+- **Alineación de la Vista de Error `/pages/misc/error-page` (`src/views/pages/misc/error-page/index.tsx`)**:
+  - Corregido el componente para mostrar la ilustración `Icon500`, títulos y textos de error de servidor en lugar de la duplicación previa de 404.
+- **Supresión de Mensaje Duplicado en NovAi Chat (`novai-message-item.tsx`)**:
+  - Eliminado el bloque redundante `Formulando respuesta...` en la sección de respuesta para evitar doble indicador de carga simultáneo con el estado de análisis, iniciando el renderizado de la respuesta directamente cuando `content` comienza a transmitirse.
+
+## v0.0.94 (2026-09-04)
+
+### Fixed & Optimized
+
+- **Bootstrap de Sesión y Prehidratación SSR (`(pages)/layout.tsx`)**:
+  - `src/app/(pages)/layout.tsx` transformado en React Server Component (RSC) que resuelve `getCurrentPrincipal()` y `resolveEffectiveAccessSnapshot()` de forma atómica en el servidor.
+  - Creado `src/app/(pages)/layout-client.tsx` para inyectar `initialSnapshot` e `initialUser` a los Providers, logrando renderizado inmediato con módulos y aplicaciones desbloqueadas en el Sidebar desde el primer frame.
+- **Eliminación del Diálogo Bloqueante de Carga (`AppInitializerGate`)**:
+  - `AppInitializerGate` optimizado para omitir el overlay modal de pantalla completa cuando `snapshot` y `user` ya están presentes, eliminando pantallas intermedias de carga al iniciar sesión.
+- **Deduplicación y Contexto Unificado de Usuario (`use-current-user.ts`)**:
+  - Implementado `CurrentUserProvider` y deduplicación de promesas en vuelo (`inFlightUserPromise`), colapsando las múltiples llamadas concurrentes a `/api/auth/me` en una única consulta compartida.
+- **Deduplicación y Prehidratación en Permisos (`use-permissions.tsx`)**:
+  - `PermProvider` ahora acepta `initialSnapshot` opcional e implementa deduplicación en vuelo (`inFlightEffectivePromise`), eliminando llamadas redundantes a `/api/access/effective`.
+- **Carga Perezosa (*Lazy Loading*) en NovAi Copilot (`AiCopilotSheet`)**:
+  - Sincronización de hilos y mensajes en `src/views/apps/investigator/components/ai-copilot-sheet.tsx` condicionada a `open === true`, suprimiendo llamadas prematuras a `/api/novai/conversations` en el arranque de la app.
+- **Caché y Deduplicación del Catálogo de Planes (`use-plan-catalog.ts`)**:
+  - Añadida caché en memoria y deduplicación de peticiones a `/api/billing/plans`.
+
+## v0.0.93 (2026-09-02)
+
+### Added
+
+- Added the tenant-scoped Strategy/OKR foundation:
+  `strategic_objectives`, independent `okr_cycles` and
+  `okr_cycle_objectives`.
+- Added optimistic locking, lifecycle constraints, scope validation and RLS
+  policies for strategic objectives and OKR cycles.
+- Added the nullable normalized `projects.strategic_objective_id` link without
+  backfilling or duplicating Research CAME JSONB.
+- Added dedicated Strategy capabilities and synchronized owner, admin, analyst
+  and viewer role presets.
+
+## v0.0.92 (2026-09-01)
+
+### Added
+
+- Added a separated draft legal-document package for the proprietary
+  NovaResearch platform:
+  `MASTER_SAAS_AGREEMENT.md`, `PRIVACY_POLICY.md`,
+  `DATA_PROCESSING_AGREEMENT.md`, `SECURITY_ADDENDUM.md`,
+  `SERVICE_LEVEL_AGREEMENT.md`, `ACCEPTABLE_USE_POLICY.md`,
+  `NOVAI_TERMS.md`, `CONSUMER_TERMS.md` and `THIRD_PARTY_NOTICES.md`.
+
+### Updated
+
+- Reduced `LICENSE.md` to a proprietary software license. SaaS terms,
+  privacy, security, consumer, AI and third-party obligations now live in
+  separate documents.
+- Clarified the allocation of responsibility between DGTECNOVA, business
+  customers, consumers and Stripe by processing purpose.
+- Updated the README to remove the MIT license statement and link to the
+  proprietary legal documents.
+
+### Fixed
+
+- Removed the implication that public repository visibility grants a license
+  to use, copy or distribute NovaResearch.
+- Preserved the distinction between NovaResearch, Research and NovAi.
+
 ## v0.0.91 (2026-08-31)
 
 ### Updated & Protected — Acuerdo de Licencia de Software Propietario Comercial y Plataforma Cloud (PaaS / SaaS)
@@ -595,7 +676,7 @@ All notable changes to this template will be documented in this file
 
 - **Renderizado Visual de Tools y Reasoning en UI de NovAi**:
   - En [`src/views/apps/novai/components/novai-message-item.tsx`](file:///d:/03.%20MATRIZ%20DAFO/src/views/apps/novai/components/novai-message-item.tsx) y [`src/views/apps/novai/index.tsx`](file:///d:/03.%20MATRIZ%20DAFO/src/views/apps/novai/index.tsx): Renderizado en tiempo real de tarjetas colapsables de herramientas (`ToolCard`) y trazas de razonamiento (`<Reasoning>`) usando componentes de `@ai-elements`.
-  
+
 - **Sugerencias Flotantes y Sincronización en `AiCopilotSheet`**:
   - En [`src/views/apps/investigator/shared/ai-copilot-sheet.tsx`](file:///d:/03.%20MATRIZ%20DAFO/src/views/apps/investigator/shared/ai-copilot-sheet.tsx): Eliminada la barra fija superior; las sugerencias rápidas ahora se muestran directamente dentro del chat (`ConversationContent`) como chips flotantes dinámicos que desaparecen al interactuar.
   - Sincronización bidireccional del hilo de conversación con la base de datos PostgreSQL a través de `/api/novai/conversations`.

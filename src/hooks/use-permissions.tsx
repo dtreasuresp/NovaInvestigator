@@ -17,42 +17,72 @@ export interface PermissionsContextValue {
   snapshot: EffectiveAccessSnapshot | null
   loading: boolean
   refetch: () => Promise<void>
+  setSnapshot: (snapshot: EffectiveAccessSnapshot | null) => void
 }
 
 const PermissionsContext = createContext<PermissionsContextValue | null>(null)
 
-export const PermProvider = ({ children }: Readonly<{ children: ReactNode }>) => {
-  const [snapshot, setSnapshot] = useState<EffectiveAccessSnapshot | null>(null)
-  const [loading, setLoading] = useState(true)
+let inFlightEffectivePromise: Promise<EffectiveAccessSnapshot | null> | null = null
+
+export interface PermProviderProps {
+  children: ReactNode
+  initialSnapshot?: EffectiveAccessSnapshot | null
+}
+
+export const PermProvider = ({ children, initialSnapshot = null }: PermProviderProps) => {
+  const [snapshot, setSnapshot] = useState<EffectiveAccessSnapshot | null>(initialSnapshot)
+  const [loading, setLoading] = useState(!initialSnapshot)
 
   const fetchEffective = useCallback(async () => {
-    setLoading(true)
+    if (inFlightEffectivePromise) {
+      const existing = await inFlightEffectivePromise
 
-    try {
-      const response = await fetch('/api/access/effective', {
-        cache: 'no-store',
-        headers: { Accept: 'application/json' }
-      })
-
-      if (!response.ok) {
-        setSnapshot(null)
-
-        return
+      if (existing) {
+        setSnapshot(existing)
       }
 
-      const nextSnapshot = (await response.json()) as EffectiveAccessSnapshot
+      return
+    }
 
-      setSnapshot(nextSnapshot)
-    } catch {
-      setSnapshot(null)
-    } finally {
-      setLoading(false)
+    setLoading(true)
+
+    inFlightEffectivePromise = (async () => {
+      try {
+        const response = await fetch('/api/access/effective', {
+          cache: 'no-store',
+          headers: { Accept: 'application/json' }
+        })
+
+        if (!response.ok) {
+          return null
+        }
+
+        const nextSnapshot = (await response.json()) as EffectiveAccessSnapshot
+
+        return nextSnapshot
+      } catch {
+        return null
+      } finally {
+        inFlightEffectivePromise = null
+        setLoading(false)
+      }
+    })()
+
+    const result = await inFlightEffectivePromise
+
+    if (result) {
+      setSnapshot(result)
     }
   }, [])
 
   useEffect(() => {
-    void fetchEffective()
-  }, [fetchEffective])
+    if (initialSnapshot && !snapshot) {
+      setSnapshot(initialSnapshot)
+      setLoading(false)
+    } else if (!snapshot && !initialSnapshot) {
+      void fetchEffective()
+    }
+  }, [initialSnapshot, snapshot, fetchEffective])
 
   const capabilities = useMemo(() => new Set(snapshot?.capabilities ?? []), [snapshot])
   const platformCapabilities = useMemo(() => new Set(snapshot?.platformCapabilities ?? []), [snapshot])
@@ -99,7 +129,8 @@ export const PermProvider = ({ children }: Readonly<{ children: ReactNode }>) =>
       platformCapabilities,
       snapshot,
       loading,
-      refetch: fetchEffective
+      refetch: fetchEffective,
+      setSnapshot
     }),
     [capabilities, fetchEffective, has, hasAction, hasModule, loading, platformCapabilities, snapshot]
   )
@@ -113,4 +144,22 @@ export const usePermissions = (): PermissionsContextValue => {
   if (!context) throw new Error('usePermissions debe usarse dentro de PermProvider')
 
   return context
+}
+
+export const PermHydrator = ({
+  initialSnapshot,
+  children
+}: {
+  initialSnapshot?: EffectiveAccessSnapshot | null
+  children: ReactNode
+}) => {
+  const { setSnapshot } = usePermissions()
+
+  useEffect(() => {
+    if (initialSnapshot) {
+      setSnapshot(initialSnapshot)
+    }
+  }, [initialSnapshot, setSnapshot])
+
+  return <>{children}</>
 }

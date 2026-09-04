@@ -97,11 +97,6 @@ export function NovaiMessageItem({ message, isLast, isLoading, onRegenerate }: N
           <div className='text-sm leading-relaxed text-foreground prose prose-sm max-w-none prose-p:my-2 prose-headings:font-semibold'>
             {message.content ? (
               <MessageResponse className='[&>p]:my-3 [&>h3]:mt-6 [&>h3]:mb-3'>{message.content}</MessageResponse>
-            ) : isLoading && isLast ? (
-              <div className='flex items-center gap-2 text-xs text-muted-foreground py-2' role='status' aria-live='polite'>
-                <RefreshCw className='size-3.5 animate-spin text-primary' aria-hidden />
-                <span>Formulando respuesta...</span>
-              </div>
             ) : null}
             {message.isStreaming && <span className='inline-block size-2 rounded-full bg-foreground animate-pulse ml-1 align-middle' aria-hidden />}
             {message.error && (

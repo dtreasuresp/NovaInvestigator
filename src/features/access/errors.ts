@@ -170,3 +170,12 @@ export class PlatformCapabilityDeniedError extends AccessError {
     this.capability = capability
   }
 }
+
+export class DatabaseConnectionError extends AccessError {
+  readonly code = 'database_connection_failed'
+
+  constructor(context: string, originalMessage?: string) {
+    super(`Database or network connection failed while resolving ${context}${originalMessage ? `: ${originalMessage}` : ''}.`)
+    this.name = 'DatabaseConnectionError'
+  }
+}

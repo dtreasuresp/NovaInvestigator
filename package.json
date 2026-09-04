@@ -1,6 +1,6 @@
 {
   "name": "NovaResearch",
-  "version": "1.0.0",
+  "version": "0.0.95",
   "license": "UNLICENSED",
   "scripts": {
     "dev": "next dev -p 4101",

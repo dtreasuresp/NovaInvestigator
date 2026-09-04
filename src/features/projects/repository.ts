@@ -64,6 +64,10 @@ export async function listProjectsByTenant(
     query = query.eq('workspace_id', filters.workspaceId)
   }
 
+  if (filters?.strategicObjectiveId) {
+    query = query.eq('strategic_objective_id', filters.strategicObjectiveId)
+  }
+
   if (filters?.status) {
     query = query.eq('status', filters.status)
   }
@@ -319,6 +323,7 @@ export async function createProjectTransaction(
       workspace_id: input.workspaceId ?? null,
       team_id: input.teamId ?? null,
       investigation_id: input.investigationId ?? null,
+      strategic_objective_id: input.strategicObjectiveId ?? null,
       name: input.name,
       description: input.description ?? '',
       objective: input.objective ?? '',
@@ -514,6 +519,9 @@ export async function updateProject(
   if (patch.budgetTotal !== undefined) updateData.budget_total = patch.budgetTotal
   if (patch.budgetMode !== undefined) updateData.budget_mode = patch.budgetMode
   if (patch.status !== undefined) updateData.status = patch.status
+  if (patch.workspaceId !== undefined) updateData.workspace_id = patch.workspaceId
+  if (patch.teamId !== undefined) updateData.team_id = patch.teamId
+  if (patch.strategicObjectiveId !== undefined) updateData.strategic_objective_id = patch.strategicObjectiveId
 
   const { error } = await projectsClient
     .from('projects')

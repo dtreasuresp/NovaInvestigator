@@ -113,7 +113,7 @@ function Connections({ className }: ConnectionsProps) {
       </CardContent>
       {connections.length > 0 && (
         <CardContent>
-          <Button variant='outline' render={<Link href='/pages/user-profile?view=connections' />} className='w-full'>
+          <Button variant='outline' render={<Link href='/pages/user-profile?view=connections' />} nativeButton={false} className='w-full'>
             View All Connections
           </Button>
         </CardContent>

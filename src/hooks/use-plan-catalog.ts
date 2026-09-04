@@ -14,15 +14,47 @@ type PlansResponse = {
   error?: { messageKey?: string }
 }
 
+let inFlightPlansPromise: Promise<PlansResponse> | null = null
+let cachedPlansResponse: { data: PlansResponse; timestamp: number } | null = null
+const PLANS_CACHE_TTL_MS = 60000
+
+export async function fetchPlansShared(): Promise<PlansResponse> {
+  const now = Date.now()
+
+  if (cachedPlansResponse && now - cachedPlansResponse.timestamp < PLANS_CACHE_TTL_MS) {
+    return cachedPlansResponse.data
+  }
+
+  if (inFlightPlansPromise) {
+    return inFlightPlansPromise
+  }
+
+  inFlightPlansPromise = (async () => {
+    try {
+      const response = await fetch('/api/billing/plans', { cache: 'no-store' })
+      const payload = (await response.json()) as PlansResponse
+
+      if (response.ok && payload.plans) {
+        cachedPlansResponse = { data: payload, timestamp: Date.now() }
+      }
+
+      return payload
+    } finally {
+      inFlightPlansPromise = null
+    }
+  })()
+
+  return inFlightPlansPromise
+}
+
 export const usePlanCatalog = () => {
-  const [plans, setPlans] = useState<BillingPlan[] | null>(null)
-  const [loading, setLoading] = useState(true)
+  const [plans, setPlans] = useState<BillingPlan[] | null>(cachedPlansResponse?.data.plans ?? null)
+  const [loading, setLoading] = useState(!cachedPlansResponse)
 
   useEffect(() => {
     let mounted = true
 
-    fetch('/api/billing/plans', { cache: 'no-store' })
-      .then(response => response.json() as Promise<PlansResponse>)
+    fetchPlansShared()
       .then(payload => {
         if (mounted) {
           setPlans(payload.plans ?? null)

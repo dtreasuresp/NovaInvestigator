@@ -234,7 +234,7 @@ export default function PlatformBillingView() {
             value={row.limitValue ?? ''}
             onChange={event => {
               const nextValue = event.target.value
-              
+
               setPlanForm(prev => ({
                 ...prev,
                 entitlements: prev.entitlements.map(e =>
@@ -863,7 +863,7 @@ export default function PlatformBillingView() {
                 value='plans'
                 className='not-data-active:hover:group-data-horizontal/tabs:after:bg-muted-foreground/30 shrink-0 border-0 group-data-horizontal/tabs:after:bottom-[-0.5px] not-data-active:hover:group-data-horizontal/tabs:after:opacity-100 sm:flex-0'
               >
-                Catálogo de Planes & Prueba
+                Catálogo
               </TabsTrigger>
               <TabsTrigger
                 value='modules'
@@ -1659,7 +1659,7 @@ export default function PlatformBillingView() {
                   value={planForm.interval}
                   onValueChange={(val: string | null) => {
                     const nextInterval = (val as BillingInterval) ?? 'month'
-                    
+
                     setPlanForm(prev => ({
                       ...prev,
                       interval: nextInterval,

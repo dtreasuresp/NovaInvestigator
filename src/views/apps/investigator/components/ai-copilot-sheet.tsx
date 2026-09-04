@@ -204,8 +204,10 @@ export function AiCopilotSheet({ floating = true }: AiCopilotSheetProps) {
   const [isLoading, setIsLoading] = useState(false)
   const abortControllerRef = useRef<AbortController | null>(null)
 
-  // 1. Sincronización con base de datos en mount
+  // 1. Sincronización con base de datos al abrir el panel (lazy loading bajo demanda)
   useEffect(() => {
+    if (!open) return
+
     let isMounted = true
 
     const initThread = async () => {
@@ -262,7 +264,7 @@ export function AiCopilotSheet({ floating = true }: AiCopilotSheetProps) {
     return () => {
       isMounted = false
     }
-  }, [])
+  }, [open])
 
   // Refresca cuota al abrir el sheet
   useEffect(() => {

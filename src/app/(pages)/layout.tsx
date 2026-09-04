@@ -1,44 +1,56 @@
-'use client'
-
-// React Imports
-import { Suspense } from 'react'
 import type { ReactNode } from 'react'
-import { usePathname } from 'next/navigation'
 
-// Component Imports
-import Footer from '@/components/layout/Footer'
-import CommercialAccessGate from '@/components/layout/CommercialAccessGate'
-import Header from '@/components/layout/Header'
-import Sidebar from '@/components/layout/Sidebar'
-import GlobalAiCopilot from '@/components/shared/GlobalAiCopilot'
-import { SidebarInset } from '@/components/ui/sidebar'
-import { Toaster } from '@/components/ui/sonner'
+import { getCurrentPrincipal } from '@/features/access'
+import { resolveEffectiveAccessSnapshot } from '@/features/access/access-service'
+import { createSupabaseServerClient } from '@/lib/supabase/server'
+import PagesClientLayout from './layout-client'
+import type { CurrentUser } from '@/hooks/use-current-user'
+import type { EffectiveAccessSnapshot } from '@/features/access/types'
 
-const PagesLayout = ({ children }: Readonly<{ children: ReactNode }>) => {
-  const pathname = usePathname()
-  const isFullBleedApp = pathname?.startsWith('/apps/novai')
+export const dynamic = 'force-dynamic'
+
+export default async function PagesLayout({ children }: Readonly<{ children: ReactNode }>) {
+  let initialUser: CurrentUser | null = null
+  let initialSnapshot: EffectiveAccessSnapshot | null = null
+
+  try {
+    const [principal, snapshot] = await Promise.all([
+      getCurrentPrincipal().catch(() => null),
+      resolveEffectiveAccessSnapshot().catch(() => null)
+    ])
+
+    initialSnapshot = snapshot
+
+    if (principal && !principal.isAnonymous) {
+      const supabase = await createSupabaseServerClient()
+      const [{ data: authUserData }, { data: profile }] = await Promise.all([
+        supabase.auth.getUser(),
+        supabase.from('profiles').select('display_name, avatar_url').eq('id', principal.userId).maybeSingle()
+      ])
+
+      const userMetadata = (authUserData?.user?.user_metadata ?? {}) as Record<string, unknown>
+      const metaFirstName = (userMetadata.firstName as string) ?? ''
+      const metaLastName = (userMetadata.lastName as string) ?? ''
+      const metaFullName = `${metaFirstName} ${metaLastName}`.trim()
+      const fullName = profile?.display_name?.trim() || metaFullName || principal.email?.split('@')[0] || 'Usuario'
+
+      initialUser = {
+        id: principal.userId,
+        email: principal.email,
+        fullName,
+        avatar: profile?.avatar_url ?? (userMetadata.avatarUrl as string) ?? null,
+        isAnonymous: false,
+        accessMode: 'registered_manual',
+        vidStatus: principal.vidStatus
+      }
+    }
+  } catch {
+    // Fail-safe: client hooks will transparently fetch if server-side resolution fails
+  }
 
   return (
-    <div className='flex h-full w-full min-w-0'>
-      <Suspense>
-        <Sidebar />
-      </Suspense>
-      <SidebarInset className={`flex flex-1 flex-col ${isFullBleedApp ? 'h-screen max-h-screen overflow-hidden' : ''}`}>
-        <Header />
-        <Suspense fallback={null}>
-          <CommercialAccessGate>
-            <main className={isFullBleedApp ? 'flex-1 min-h-0 w-full overflow-hidden' : 'mx-auto size-full max-w-360 flex-1 px-4 py-6 sm:px-6'}>
-              {children}
-            </main>
-          </CommercialAccessGate>
-
-        </Suspense>
-        <Toaster />
-        <GlobalAiCopilot />
-        {!isFullBleedApp && <Footer />}
-      </SidebarInset>
-    </div>
+    <PagesClientLayout initialSnapshot={initialSnapshot} initialUser={initialUser}>
+      {children}
+    </PagesClientLayout>
   )
 }
-
-export default PagesLayout

@@ -151,6 +151,66 @@ export const CAPABILITY_MANIFEST = [
     description: 'Archivar o eliminar proyectos del tenant.'
   },
   {
+    key: 'strategy.objectives.read',
+    resource: 'strategy.objectives',
+    action: 'read',
+    description: 'Ver objetivos estratégicos dentro del alcance del tenant o workspace.'
+  },
+  {
+    key: 'strategy.objectives.create',
+    resource: 'strategy.objectives',
+    action: 'create',
+    description: 'Crear objetivos estratégicos dentro del tenant.'
+  },
+  {
+    key: 'strategy.objectives.update',
+    resource: 'strategy.objectives',
+    action: 'update',
+    description: 'Actualizar objetivos estratégicos no archivados.'
+  },
+  {
+    key: 'strategy.objectives.archive',
+    resource: 'strategy.objectives',
+    action: 'archive',
+    description: 'Archivar objetivos estratégicos sin borrado físico.'
+  },
+  {
+    key: 'strategy.okr_cycles.read',
+    resource: 'strategy.okr_cycles',
+    action: 'read',
+    description: 'Ver ciclos OKR y sus periodos dentro del alcance autorizado.'
+  },
+  {
+    key: 'strategy.okr_cycles.create',
+    resource: 'strategy.okr_cycles',
+    action: 'create',
+    description: 'Crear ciclos OKR independientes para el tenant.'
+  },
+  {
+    key: 'strategy.okr_cycles.update',
+    resource: 'strategy.okr_cycles',
+    action: 'update',
+    description: 'Actualizar ciclos OKR en borrador o activos.'
+  },
+  {
+    key: 'strategy.okr_cycles.close',
+    resource: 'strategy.okr_cycles',
+    action: 'close',
+    description: 'Cerrar ciclos OKR activos e impedir cambios posteriores.'
+  },
+  {
+    key: 'strategy.okr_cycles.archive',
+    resource: 'strategy.okr_cycles',
+    action: 'archive',
+    description: 'Archivar ciclos OKR conservando su historial.'
+  },
+  {
+    key: 'strategy.okr_cycle_objectives.manage',
+    resource: 'strategy.okr_cycle_objectives',
+    action: 'manage',
+    description: 'Vincular objetivos a ciclos OKR y actualizar su compromiso y progreso.'
+  },
+  {
     key: 'access.read',
     resource: 'access',
     action: 'read',
@@ -379,6 +439,16 @@ export const DEFAULT_ROLE_CAPABILITIES: Record<SystemRoleKey, readonly Capabilit
     'projects.read',
     'projects.create',
     'projects.update',
+    'strategy.objectives.read',
+    'strategy.objectives.create',
+    'strategy.objectives.update',
+    'strategy.objectives.archive',
+    'strategy.okr_cycles.read',
+    'strategy.okr_cycles.create',
+    'strategy.okr_cycles.update',
+    'strategy.okr_cycles.close',
+    'strategy.okr_cycles.archive',
+    'strategy.okr_cycle_objectives.manage',
     'ai.chat',
     'ai.free_chat',
     'ai.report',
@@ -393,6 +463,8 @@ export const DEFAULT_ROLE_CAPABILITIES: Record<SystemRoleKey, readonly Capabilit
   viewer: [
     'investigations.read',
     'projects.read',
+    'strategy.objectives.read',
+    'strategy.okr_cycles.read',
     'users.read',
     'teams.read',
     'access.read',

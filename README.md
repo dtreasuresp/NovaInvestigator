@@ -40,6 +40,7 @@ As a platform, NovaResearch enforces a multi-layer security model (RBAC + ReBAC 
   - [CAME Multicriteria Action Plan](#came-multicriteria-action-plan)
   - [Quantitative Strategic Planning Matrix (QSPM)](#quantitative-strategic-planning-matrix-qspm)
   - [Formal Validation & Consistency Checks](#formal-validation--consistency-checks)
+- [Strategic Execution & OKR Foundation](#-strategic-execution--okr-foundation)
 - [System Architecture](#-system-architecture)
 - [Project Structure](#-project-structure)
 - [Security Model & Access Control](#-security-model--access-control)
@@ -312,7 +313,7 @@ $$\text{Priority} = 0.2 \cdot \text{Impact} + 0.2 \cdot \text{Urgency} + 0.2 \cd
 Evaluates the relative attractiveness of alternative strategies against normalized factor weights:
 - **Attractiveness Score (AS)**: 1 (Not attractive), 2 (Somewhat attractive), 3 (Reasonably attractive), 4 (Highly attractive).
 - **Total Attractiveness Score (TAS)**:
-  $$\text{TAS}_{s} = \sum_{f} (\text{NormalizedWeight}_f \times \text{AS}_{f, s})$$
+  $$\text{TAS}*{s} = \sum*{f} (\text{NormalizedWeight}*f \times \text{AS}*{f, s})$$
 - Automatically detects winning strategies, score differences, ties, and flags uncompleted factor evaluations.
 
 ### Formal Validation & Consistency Checks
@@ -322,6 +323,28 @@ The `validateInvestigation` engine checks:
 - Minimum and maximum factor thresholds.
 - Unassigned relationships or missing justifications.
 - Incomplete CAME actions or unrated QSPM factors.
+
+---
+
+## 🎯 Strategic Execution & OKR Foundation
+
+NovaResearch now provides the first normalized layer for strategic execution
+without duplicating Research's CAME model:
+
+- `strategic_objectives` stores durable, tenant-scoped objectives and can
+  retain the originating Research investigation and CAME action snapshot.
+- `okr_cycles` stores independent quarterly, annual or custom periods. Multiple
+  cycles may coexist by tenant, workspace or team.
+- `okr_cycle_objectives` records the cycle-specific commitment, weight,
+  responsible user, status and progress for each objective.
+- Existing Projects can reference a strategic objective through the nullable
+  `strategic_objective_id` relationship; the legacy text field remains
+  backward-compatible during the incremental rollout.
+
+The lifecycle is governed server-side (`draft → active → closed → archived`)
+with optimistic locking, tenant/workspace/team scope validation, immutable
+closed cycles, append-only audit integration points and dedicated capabilities.
+There is intentionally no automatic backfill from `investigations.state`.
 
 ---
 
@@ -336,7 +359,7 @@ flowchart TD
     subgraph Next.js App Router Layer
         Proxy[Proxy Guard & Session Refresh: src/proxy.ts]
         PageRoutes[Page Routes & Views: src/app, src/views]
-        RouteHandlers[API Route Handlers: /api/billing, /api/novai, /api/investigations]
+        RouteHandlers[API Route Handlers: /api/billing, /api/novai, /api/investigations, /api/strategy]
     end
 
     subgraph Domain Features Layer: src/features
@@ -344,6 +367,7 @@ flowchart TD
         NovaiDomain[NovAi Cognitive Agent Runtime]
         BillingDomain[Billing, Checkout & Entitlements]
         InvestigatorDomain[Investigator & Strategic Matrices]
+        StrategyDomain[Strategic Objectives & OKR Cycles]
         KanbanDomain[Kanban & Workspace Operations]
         PlatformDomain[Platform Admin, VID & Audit]
     end
@@ -369,6 +393,7 @@ flowchart TD
     RouteHandlers --> NovaiDomain
     RouteHandlers --> BillingDomain
     RouteHandlers --> InvestigatorDomain
+    RouteHandlers --> StrategyDomain
     RouteHandlers --> KanbanDomain
     RouteHandlers --> PlatformDomain
 
@@ -379,6 +404,7 @@ flowchart TD
     BillingDomain --> SupabaseClient
     BillingDomain --> StripeSDK
     InvestigatorDomain --> SupabaseClient
+    StrategyDomain --> SupabaseClient
 
     SupabaseClient --> Postgres
     StripeSDK --> StripeAPI
@@ -389,7 +415,7 @@ flowchart TD
 ## 📁 Project Structure
 
 ```
-d:/03. MATRIZ DAFO/
+NOVARESEARCH/
 ├── .agents/skills/              # Local operational skills for AI agents
 ├── .claude/skills/              # Mirror skills for Claude agents
 ├── doc/plans/                   # Master plans, forensic audits & architecture specs
@@ -418,6 +444,7 @@ d:/03. MATRIZ DAFO/
     │   ├── access/              # RBAC, ReBAC, capability manifest, authorization
     │   ├── billing/             # Stripe service, repository, guest trials, quotas
     │   ├── kanban/              # Kanban board and task domain logic
+    │   ├── strategy/            # Strategic objectives and independent OKR cycles
     │   ├── novai/               # Agent runtime, router, context engine, tools, firewall
     │   ├── platform/            # Tenant management, VID identity, retention
     │   ├── users/               # Member management, invitations, profiles
@@ -476,6 +503,9 @@ The single source of truth is `CAPABILITY_MANIFEST` in `src/features/access/capa
 - `ai.*`: `chat`, `free_chat`, `report`.
 - `users.*`: `read`, `invite`, `update`, `disable`.
 - `teams.*`: `read`, `create`, `update`, `members.manage`, `delete`.
+- `strategy.objectives.*`: `read`, `create`, `update`, `archive`.
+- `strategy.okr_cycles.*`: `read`, `create`, `update`, `close`, `archive`.
+- `strategy.okr_cycle_objectives.manage`: Manage objective commitments within a cycle.
 - `access.*`: `read`, `manage`.
 - `billing.*`: `plans.read`, `checkout.create`, `purchase.manage`, `subscription.read`, `subscription.manage`, `invoices.read`, `invoices.download`, `plans.manage`, `trial.read`, `trial.start`, `trial.manage`, `entitlements.read`.
 - `platform.*`: `tenants.*`, `memberships.*`, `vid.*`, `billing.*`, `audit.*`, `access.*`, `auth.registrations.manage`.
@@ -512,6 +542,7 @@ The single source of truth is `CAPABILITY_MANIFEST` in `src/features/access/capa
 - **Core Database Domains**:
   - **Identity & Access**: `tenants`, `memberships`, `roles`, `capabilities`, `role_capabilities`, `member_capability_overrides`.
   - **Investigations**: `investigations`, `investigation_revisions`, `investigation_ai_reports`.
+  - **Strategic Execution**: `strategic_objectives`, `okr_cycles`, `okr_cycle_objectives`, plus the normalized Project link.
   - **NovAi Intelligence**: `novai_conversations`, `novai_messages`, `novai_memories`, `novai_agent_runs`, `novai_evidence`, `novai_citations`, `novai_audit_events`.
   - **Billing & Subscriptions**: `plans`, `plan_entitlements`, `subscriptions`, `billing_customers`, `billing_invoices`, `billing_webhook_events`.
   - **Platform & Security**: `platform_modules`, `registration_cleanup_policies`, `legal_retention_records`.
@@ -595,7 +626,7 @@ All scripts are executed via `pnpm`:
 | `pnpm i18n:sync` | Sincroniza traducciones hacia los catálogos en `de`, `en`, `ko` y `pt` usando Google Gemini CLI. |
 | `pnpm i18n:check` | Comprueba consistencia de claves y detecta traducciones huérfanas en los catálogos. |
 | `pnpm i18n:scan` | Audita las vistas de React en busca de textos no traducidos o strings hardcodeados. |
-| `pnpm i18n:orphans`| Identifica claves de traducción declaradas pero no utilizadas en el código. |
+| `pnpm i18n:orphans` | Identifica claves de traducción declaradas pero no utilizadas en el código. |
 
 ---
 
@@ -613,7 +644,25 @@ Catalogs are maintained in `src/locales/`. Hardcoded user-facing strings are str
 
 ---
 
-## 📄 License & Attribution
+## License and legal documents
 
-- **Platform & Applications**: Developed by DGTECNOVA SRL.
-- **License**: MIT License.
+NovaResearch, Research and NovAi are proprietary products of DGTECNOVA S.R.L.
+The repository may be visible publicly, but that visibility does not grant
+permission to copy, modify, deploy, distribute or commercially exploit the
+software.
+
+- [Proprietary software license](./LICENSE.md)
+- [Master SaaS agreement](./MASTER_SAAS_AGREEMENT.md)
+- [Privacy policy](./PRIVACY_POLICY.md)
+- [Data processing agreement](./DATA_PROCESSING_AGREEMENT.md)
+- [Security addendum](./SECURITY_ADDENDUM.md)
+- [Public security policy](./SECURITY.MD)
+- [Service level agreement](./SERVICE_LEVEL_AGREEMENT.md)
+- [Acceptable use policy](./ACCEPTABLE_USE_POLICY.md)
+- [NovAi product terms](./NOVAI_TERMS.md)
+- [Consumer terms](./CONSUMER_TERMS.md)
+- [Third-party and open-source notices](./THIRD_PARTY_NOTICES.md)
+
+The legal documents are drafts until the provider identity, jurisdiction,
+retention periods, provider register and market-specific terms are completed
+and reviewed.

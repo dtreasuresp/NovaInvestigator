@@ -1,53 +1,78 @@
-# NovaResearch Enterprise Platform — Proprietary Software & Cloud Service License Agreement
+# NovaResearch Proprietary Software License
 
-**Copyright (c) 2026–2030 DGTECNOVA SRL. All rights reserved. / Todos los derechos reservados.**
+**Status:** Draft - requires legal review before publication or acceptance
+**Copyright:** (c) 2026-2030 DGTECNOVA S.R.L. All rights reserved.
 
----
+This license applies only to original software, source code, object code,
+documentation, interfaces, architecture, workflows, data structures,
+analytical engines, integrations and other materials owned or controlled by
+DGTECNOVA S.R.L. (the "Provider Materials").
 
-### 1. Proprietary & Confidential Software Notice / Naturaleza Propietaria y Confidencial
+## 1. No open-source grant
 
-The source code, user interfaces, database architectures, strategic diagnostics, tactical execution engines, and artificial intelligence models comprising the **NovaResearch** platform and its suite of applications—specifically including:
+The Provider Materials are proprietary. No open-source, public-domain,
+redistribution, sublicensing or other implied license is granted by this file,
+by publication of the repository, or by access to any public mirror.
 
-1. **NovaResearch**: Multi-tenant SaaS/PaaS platform architecture, billing governance, tenant entitlement management, and enterprise workspace infrastructure.
-2. **Research**: Strategic diagnostic application and quantitative matrix methodologies (EFI, EFE, DAFO/SWOT, CAME, QSPM).
-3. **Projects**: Strategic execution workspace hub, tactical work packages (`project_activities`), Kanban operations, budgetary governance, and CAME-to-execution alignment engines.
-4. **NovAi**: Autonomous, decoupled artificial intelligence product, cognitive runtime, epistemic evidence model, memory system, and tool harness.
+Access to the NovaResearch repository while it is publicly visible does not
+authorize any person to use, deploy, copy, modify, distribute, sell, publish,
+host or commercially exploit the Provider Materials.
 
-are the exclusive intellectual property and proprietary trade secrets of **DGTECNOVA SRL**.
+## 2. Authorized use
 
-Este software, su arquitectura y su código fuente constituyen propiedad intelectual exclusiva y secretos comerciales de **DGTECNOVA SRL**.
+An authorized customer may access and use the hosted NovaResearch services
+only under the applicable SaaS agreement, order form and product terms.
 
----
+A separate written agreement is required for any source-code delivery,
+installation, deployment, copying, modification, redistribution, sublicensing
+or other use outside the hosted services.
 
-### 2. Commercial License & Terms of Service / Licenciamiento Comercial (PaaS / SaaS)
+## 3. Restrictions
 
-1. **Restricted Access & Paid Subscription**: Access to, operation of, or deployment of this software and its applications (**Research**, **Projects**, **NovAi**) is granted strictly under active, paid commercial subscription agreements (Enterprise / PaaS SaaS Agreement) executed directly with **DGTECNOVA SRL** or through its authorized platform portals (`https://apps.dgtecnova.com`).
-2. **Prohibited Activities / Acciones Prohibidas**:
-   - Unauthorized copying, reproduction, distribution, transfer, selling, leasing, sublicensing, or publication of the source code, database schemas, or binary assets in any form or by any medium is strictly prohibited.
-   - Decompiling, reverse engineering, disassembling, or creating derivative works of the platform, the Research application, the Projects workspace, or the NovAi engine without express written authorization is strictly prohibited.
-   - Using the source code or proprietary methodology to operate competing commercial SaaS/PaaS platforms or multi-tenant services without an enterprise license agreement is forbidden.
+Unless expressly authorized in writing, no person may:
 
----
+1. copy, reproduce, modify or create derivative works of the Provider
+   Materials;
+2. distribute, publish, sell, lease, sublicense or provide them as a service;
+3. reverse engineer, decompile or disassemble them, except to the extent a
+   mandatory law expressly permits that activity;
+4. remove proprietary notices;
+5. circumvent authentication, entitlement, tenant-isolation or security
+   controls;
+6. scrape or systematically reproduce protected functionality; or
+7. use the Provider Materials to create a competing product or service.
 
-### 3. Customer Data Ownership vs. Platform IP / Datos del Cliente y Propiedad Intelectual
+Nothing in this license restricts rights that cannot lawfully be restricted
+under mandatory applicable law.
 
-- **Customer Data Ownership**: Customers, tenants, and authorized users retain 100% full legal ownership of all strategic data, diagnostic inputs, project plans, budgets, corporate evidence, and business matrices uploaded to or created within their tenant workspaces.
-- **Platform IP**: **DGTECNOVA SRL** retains exclusive and unencumbered ownership of the underlying software, source code, data schemas, hierarchical execution algorithms, AI harnesses, and user interfaces.
+## 4. Customer data and third-party components
 
----
+Customer content and personal data are not Provider Materials. Their use is
+governed by the applicable SaaS agreement, Privacy Policy and Data Processing
+Agreement. Data subjects retain rights granted by applicable law.
 
-### 4. Disclaimer of Warranties & Limitation of Liability / Limitación de Responsabilidad
+Third-party and open-source components remain subject to their own licenses.
+Those licenses do not grant rights to the Provider Materials. Notices for
+verified third-party components are maintained in
+`THIRD_PARTY_NOTICES.md`.
 
-THE SOFTWARE AND ASSOCIATED CLOUD SERVICES ARE PROVIDED "AS IS" AND "AS AVAILABLE", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, AND NON-INFRINGEMENT.
+## 5. Hosted services and legal terms
 
-IN NO EVENT SHALL **DGTECNOVA SRL**, ITS DIRECTORS, EMPLOYEES, OR AFFILIATES BE LIABLE FOR ANY CLAIM, DAMAGES, OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT, OR OTHERWISE, ARISING FROM, OUT OF, OR IN CONNECTION WITH THE SOFTWARE, THE USE OF THE CLOUD PLATFORM, OR THE EXECUTION OF STRATEGIC/TACTICAL DECISIONS DERIVED FROM ITS DIAGNOSTIC OUTPUTS AND PROJECT WORKSPACES.
+Hosted access is governed by
+`MASTER_SAAS_AGREEMENT.md`, `PRIVACY_POLICY.md`, `DATA_PROCESSING_AGREEMENT.md`
+where applicable, `SECURITY_ADDENDUM.md`, `SERVICE_LEVEL_AGREEMENT.md`,
+`ACCEPTABLE_USE_POLICY.md`, `NOVAI_TERMS.md`, `CONSUMER_TERMS.md` and the
+applicable order form.
 
----
+## 6. Disclaimer
 
-### 5. Corporate & Legal Inquiries / Contacto Corporativo y Legal
+To the maximum extent permitted by applicable law, the Provider Materials are
+provided without warranties except for warranties expressly made in a signed
+agreement. This clause does not exclude mandatory statutory rights or
+protections.
 
-For enterprise licensing, commercial agreements, custom deployments, or permission inquiries, please contact:
+## 7. Provider contact
 
-- **Entity**: DGTECNOVA SRL
-- **Platform**: [https://apps.dgtecnova.com](https://apps.dgtecnova.com)
-- **Legal & Engineering Contact**: `dev@dgtecnova.com`
+**DGTECNOVA S.R.L.**
+Registered legal name, address, registration and legal contact:
+**[TO BE COMPLETED AND VERIFIED]**
